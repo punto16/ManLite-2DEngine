@@ -1,14 +1,11 @@
 #pragma once
+#include "Module.h"
 
-#include <iostream>
-#include <sstream>
-#include <vector>
-#include <chrono>
-#include <thread>
 #include <string>
 #include <list>
 
 class Module;
+class Gui;
 
 enum class GameState
 {
@@ -34,58 +31,60 @@ public:
 	int GetArgc() const;
 	const char* GetArgv(int index) const;
 
-	int GetFrameRate() const;
-	void SetFrameRate(int refreshRate);
+	//int GetFrameRate() const;
+	//void SetFrameRate(int refreshRate);
 
-	double GetDeltaTime() const;
-	void SetDeltaTime(double dt);
+	//double GetDeltaTime() const;
+	//void SetDeltaTime(double dt);
 
 
-	GameState state;
-	void Play();
-	void Pause();
-	void PlayOnce();
-	bool IsPlaying();
-	bool IsInGameState();
-	void Stop();
+	//GameState state;
+	//void Play();
+	//void Pause();
+	//void PlayOnce();
+	//bool IsPlaying();
+	//bool IsInGameState();
+	//void Stop();
 
 private:
-	void PrepareUpdate();
+	//void PrepareUpdate();
 	bool PreUpdate();
 	bool DoUpdate();
 	bool PostUpdate();
-	void FinishUpdate();
+	//void FinishUpdate();
 
-	Timer* game_timer;
-	Timer* start_timer;
+	//Timer* game_timer;
+	//Timer* start_timer;
 
-	float time_since_start;
-	float game_time;
-	float scale_time;
+	//float time_since_start;
+	//float game_time;
+	//float scale_time;
 
 public:
 	//modules
+	Gui* gui = nullptr;
 
 
+
+	std::string title;
+	std::string organization;
 private:
 
 
 	int argc;
 	char** args;
-	std::string title;
-	std::string organization;
 
 	std::list<Module*> modules;
 
 	//fps control
-	std::chrono::duration<double> targetFrameDuration;
-	std::chrono::steady_clock::time_point frameStart, frameEnd;
+	//std::chrono::duration<double> targetFrameDuration;
+	//std::chrono::steady_clock::time_point frameStart, frameEnd;
 
-	int frameRate = 240;
-	double dt = 0;
-	double dtCount = 0;
-	int frameCount = 0;
-	int fps = 0;
+	//int frameRate = 240;
+	//double dt = 0;
+	//double dtCount = 0;
+	//int frameCount = 0;
+	//int fps = 0;
 };
 
 extern App* app;

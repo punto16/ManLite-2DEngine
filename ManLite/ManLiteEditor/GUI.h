@@ -2,6 +2,9 @@
 #define __GUI_H__
 #pragma once
 
+#define _CRT_SECURE_NO_WARNINGS
+#pragma warning(disable:4996)
+
 #include "Module.h"
 
 enum class Aspect
@@ -11,12 +14,12 @@ enum class Aspect
 	A_21x9
 };
 
-struct EditColor
-{
-	std::string id;
-	ImVec4 color;
-	ImVec4 previousColor;
-};
+//struct EditColor
+//{
+//	std::string id;
+//	ImVec4 color;
+//	ImVec4 previousColor;
+//};
 
 class Gui : public Module
 {

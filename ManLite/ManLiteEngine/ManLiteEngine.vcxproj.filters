@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Core">
+      <UniqueIdentifier>{0b09f5c5-b2bb-4870-ab10-a7b32874318f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="EngineModules">
+      <UniqueIdentifier>{e2fbea8a-8e98-46e1-ba9d-8a64500e21bc}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="EngineCore.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="WindowEM.cpp">
+      <Filter>EngineModules</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="EngineCore.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="EngineModule.h">
+      <Filter>EngineModules</Filter>
+    </ClInclude>
+    <ClInclude Include="WindowEM.h">
+      <Filter>EngineModules</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
