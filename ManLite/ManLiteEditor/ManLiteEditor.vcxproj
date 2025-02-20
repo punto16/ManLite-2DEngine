@@ -109,13 +109,13 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\vcpkg\installed\x64-windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\vcpkg\installed\x64-windows\include;$(SolutionDir);$(SolutionDir)ManLiteEditor\;$(SolutionDir)ManLiteEngine\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)..\vcpkg\installed\x64-windows\debug\lib\;$(SolutionDir)..\vcpkg\installed\x64-windows\debug\lib\manual-link\;$(SolutionDir)..\vcpkg\installed\x64-windows\lib\;$(SolutionDir)..\vcpkg\installed\x64-windows\lib\manual-link\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>imguizmo.lib;imguid.lib;SDL2.lib;SDL2maind.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>imguizmo.lib;imguid.lib;SDL2.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
       <Command>pushd "$(SolutionDir).."
@@ -136,14 +136,14 @@ popd
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\vcpkg\installed\x64-windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\vcpkg\installed\x64-windows\include;$(SolutionDir);$(SolutionDir)ManLiteEditor\;$(SolutionDir)ManLiteEngine\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>imguizmo.lib;imgui.lib;SDL2.lib;SDL2main.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>imguizmo.lib;imgui.lib;SDL2.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)..\vcpkg\installed\x64-windows\lib\;$(SolutionDir)..\vcpkg\installed\x64-windows\lib\manual-link\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PreBuildEvent>
@@ -166,6 +166,11 @@ popd
     <ClInclude Include="GUI.h" />
     <ClInclude Include="Module.h" />
     <ClInclude Include="Timer.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ManLiteEngine\ManLiteEngine.vcxproj">
+      <Project>{56225d11-006d-47ca-9bd8-873dfbeefeb6}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

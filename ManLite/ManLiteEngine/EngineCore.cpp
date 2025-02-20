@@ -1,6 +1,7 @@
 #include "EngineCore.h"
 
 #include "EngineModule.h"
+#include "WindowEM.h"
 
 EngineCore::EngineCore()
 {
