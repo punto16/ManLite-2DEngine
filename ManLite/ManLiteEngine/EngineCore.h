@@ -8,6 +8,8 @@
 
 class EngineModule;
 class WindowEM;
+class InputEM;
+class RendererEM;
 
 class EngineCore
 {
@@ -32,6 +34,8 @@ private:
 public:
 	//engine modules
 	WindowEM* window_em = nullptr;
+	InputEM* input_em = nullptr;
+	RendererEM* renderer_em = nullptr;
 
 private:
 

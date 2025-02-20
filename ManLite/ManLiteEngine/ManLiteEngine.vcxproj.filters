@@ -15,6 +15,12 @@
     <ClCompile Include="WindowEM.cpp">
       <Filter>EngineModules</Filter>
     </ClCompile>
+    <ClCompile Include="InputEM.cpp">
+      <Filter>EngineModules</Filter>
+    </ClCompile>
+    <ClCompile Include="RendererEM.cpp">
+      <Filter>EngineModules</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="EngineCore.h">
@@ -24,6 +30,12 @@
       <Filter>EngineModules</Filter>
     </ClInclude>
     <ClInclude Include="WindowEM.h">
+      <Filter>EngineModules</Filter>
+    </ClInclude>
+    <ClInclude Include="InputEM.h">
+      <Filter>EngineModules</Filter>
+    </ClInclude>
+    <ClInclude Include="RendererEM.h">
       <Filter>EngineModules</Filter>
     </ClInclude>
   </ItemGroup>

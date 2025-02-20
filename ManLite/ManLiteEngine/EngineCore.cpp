@@ -2,15 +2,25 @@
 
 #include "EngineModule.h"
 #include "WindowEM.h"
+#include "InputEM.h"
+#include "RendererEM.h"
 
 EngineCore::EngineCore()
 {
 	//create engine modules
 	window_em = new WindowEM(this);
+	input_em = new InputEM(this);
+
+	//renderer last
+	renderer_em = new RendererEM(this);
 
 
 	//add modules
 	AddEngineModule(window_em, true);
+	AddEngineModule(input_em, true);
+
+	//renderer last
+	AddEngineModule(renderer_em, true);
 }
 
 EngineCore::~EngineCore()

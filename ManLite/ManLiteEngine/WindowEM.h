@@ -4,6 +4,7 @@
 
 #include "EngineModule.h"
 #include <SDL2/SDL.h>
+#include <string>
 
 class WindowEM : public EngineModule
 {
@@ -16,9 +17,17 @@ public:
 
 	bool CleanUp();
 
+
+	void SetTitle(std::string title);
+	void SetIcon(std::string path);
+	void GetWindowSize(unsigned int& w, unsigned int& h) const;
+	SDL_Window* GetSDLWindow() const { return this->window; }
+	SDL_Surface* GetSDLSurface() const { return this->screenSurface; }
+
+
 private:
 	SDL_Window* window;
-
+	SDL_Surface* screenSurface;
 
 	unsigned int width = 1700, height = 900;
 };
