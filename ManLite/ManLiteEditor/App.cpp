@@ -39,7 +39,7 @@ void App::AddModule(Module* module, bool activate)
 
 bool App::Awake()
 {
-	bool ret = false;
+	bool ret = true;
 
 	//targetFrameDuration = (std::chrono::duration<double>)1 / frameRate;
 	title = "ManLite 2D Engine";
@@ -78,7 +78,7 @@ bool App::Update()
 
 	if (ret) ret = PreUpdate();
 
-	if (ret) ret = Update();
+	if (ret) ret = DoUpdate();
 
 	if (ret) ret = PostUpdate();
 

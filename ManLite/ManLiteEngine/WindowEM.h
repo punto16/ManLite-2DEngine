@@ -20,7 +20,7 @@ private:
 	SDL_Window* window;
 
 
-	unsigned int width = 800, height = 600;
+	unsigned int width = 1700, height = 900;
 };
 
 #endif // !__EWINDOW_EM_H__

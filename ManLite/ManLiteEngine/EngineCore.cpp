@@ -39,7 +39,7 @@ void EngineCore::Start()
 	for (auto& item : engine_modules)
 	{
 		if (!item->active) continue;
-		item->Awake();
+		item->Start();
 	}
 }
 
