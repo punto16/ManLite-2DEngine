@@ -123,8 +123,12 @@
       <AdditionalLibraryDirectories>$(SolutionDir)..\vcpkg\installed\x64-windows\lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
     <PreBuildEvent>
-      <Command>call $(SolutionDir)..\vcpkg\bootstrap-vcpkg.bat
-$(SolutionDir)..\vcpkg\vcpkg.exe install sdl2 sdl2_mixer sdl2_ttf box2d --recurse --overlay-triplets=$(SolutionDir)custom-triplets</Command>
+      <Command>pushd "$(SolutionDir).."
+call vcpkg\bootstrap-vcpkg.bat
+vcpkg\vcpkg.exe install sdl2 sdl2-mixer sdl2-ttf box2d --recurse --overlay-triplets="custom-triplets"
+copy "vcpkg\installed\x64-windows\bin\*.*" "$(OutDir)"
+popd
+</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -152,8 +156,12 @@ $(SolutionDir)..\vcpkg\vcpkg.exe install sdl2 sdl2_mixer sdl2_ttf box2d --recurs
       <AdditionalLibraryDirectories>$(SolutionDir)..\vcpkg\installed\x64-windows\lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
     <PreBuildEvent>
-      <Command>call $(SolutionDir)..\vcpkg\bootstrap-vcpkg.bat
-$(SolutionDir)..\vcpkg\vcpkg.exe install sdl2 sdl2_mixer sdl2_ttf box2d --recurse --overlay-triplets=$(SolutionDir)custom-triplets</Command>
+      <Command>pushd "$(SolutionDir).."
+call vcpkg\bootstrap-vcpkg.bat
+vcpkg\vcpkg.exe install sdl2 sdl2-mixer sdl2-ttf box2d --recurse --overlay-triplets="custom-triplets"
+copy "vcpkg\installed\x64-windows\bin\*.*" "$(OutDir)"
+popd
+</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

@@ -118,9 +118,12 @@
       <AdditionalDependencies>imguizmo.lib;imguid.lib;SDL2.lib;SDL2maind.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
-      <Command>call $(SolutionDir)..\vcpkg\bootstrap-vcpkg.bat
-$(SolutionDir)..\vcpkg\vcpkg.exe install sdl2 imgui[sdl2-binding,docking-experimental] imguizmo --recurse --overlay-triplets=$(SolutionDir)custom-triplets
-copy "..\vcpkg\installed\x64-windows\bin\*.*" "$(OutDir)"</Command>
+      <Command>pushd "$(SolutionDir).."
+call vcpkg\bootstrap-vcpkg.bat
+vcpkg\vcpkg.exe install sdl2 imgui[sdl2-binding,docking-experimental] imguizmo --recurse --overlay-triplets="custom-triplets"
+copy "vcpkg\installed\x64-windows\bin\*.*" "$(OutDir)"
+popd
+</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -144,9 +147,12 @@ copy "..\vcpkg\installed\x64-windows\bin\*.*" "$(OutDir)"</Command>
       <AdditionalLibraryDirectories>$(SolutionDir)..\vcpkg\installed\x64-windows\lib\;$(SolutionDir)..\vcpkg\installed\x64-windows\lib\manual-link\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PreBuildEvent>
-      <Command>call $(SolutionDir)..\vcpkg\bootstrap-vcpkg.bat
-$(SolutionDir)..\vcpkg\vcpkg.exe install sdl2 imgui[sdl2-binding,docking-experimental] imguizmo --recurse --overlay-triplets=$(SolutionDir)custom-triplets
-copy "..\vcpkg\installed\x64-windows\bin\*.*" "$(OutDir)"</Command>
+      <Command>pushd "$(SolutionDir).."
+call vcpkg\bootstrap-vcpkg.bat
+vcpkg\vcpkg.exe install sdl2 imgui[sdl2-binding,docking-experimental] imguizmo --recurse --overlay-triplets="custom-triplets"
+copy "vcpkg\installed\x64-windows\bin\*.*" "$(OutDir)"
+popd
+</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
