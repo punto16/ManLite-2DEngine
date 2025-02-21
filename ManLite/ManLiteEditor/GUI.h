@@ -7,6 +7,14 @@
 
 #include "Module.h"
 
+#include <list>
+
+class Panel;
+class PanelHierarchy;
+class PanelProject;
+class PanelInspector;
+class PanelScene;
+
 enum class Aspect
 {
 	A_FREE,
@@ -42,9 +50,21 @@ public:
 	void HandleInput();
 	void ProcessEvent();
 
+	bool IsInitialized(Panel* panel);
+	std::list<Panel*> GetPanels() { return panels; }
 
 private:
 
+
+public:
+	//panels
+	PanelHierarchy* hierarchy_panel = nullptr;
+	PanelProject* project_panel = nullptr;
+	PanelInspector* inspector_panel = nullptr;
+	PanelScene* scene_panel = nullptr;
+
+private:
+	std::list<Panel*> panels;
 };
 
 #endif // !__GUI_H__

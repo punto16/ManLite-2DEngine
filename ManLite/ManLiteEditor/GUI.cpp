@@ -4,21 +4,49 @@
 #include "RendererEM.h"
 #include "WindowEM.h"
 
+#include "GuiPanel.h"
+#include "PanelHierarchy.h"
+#include "PanelProject.h"
+#include "PanelInspector.h"
+#include "PanelScene.h"
+
 #include <imgui.h>
 #include <imgui_impl_sdl2.h>
 #include <imgui_impl_sdlrenderer2.h>
 
-Gui::Gui(App* parent) : Module(parent)
+Gui::Gui(App* parent) : Module(parent),
+hierarchy_panel(nullptr),
+project_panel(nullptr),
+inspector_panel(nullptr),
+scene_panel(nullptr)
 {
 }
 
 Gui::~Gui()
 {
+	for (auto panel : panels)
+		delete panel;
 }
 
 bool Gui::Awake()
 {
 	bool ret = true;
+
+	hierarchy_panel = new PanelHierarchy(PanelType::HIERARCHY, "Hierarchy", true);
+	panels.push_back(hierarchy_panel);
+	ret *= IsInitialized(hierarchy_panel);
+
+	project_panel = new PanelProject(PanelType::PROJECT, "Project", true);
+	panels.push_back(project_panel);
+	ret *= IsInitialized(project_panel);
+
+	inspector_panel = new PanelInspector(PanelType::INSPECTOR, "Inspector", true);
+	panels.push_back(inspector_panel);
+	ret *= IsInitialized(inspector_panel);
+
+	scene_panel = new PanelScene(PanelType::SCENE, "Scene", true);
+	panels.push_back(scene_panel);
+	ret *= IsInitialized(scene_panel);
 
 	return ret;
 }
@@ -47,6 +75,9 @@ bool Gui::Start()
 
 #pragma endregion IMGUI_STYLE
 
+	for (const auto& panel : panels)
+		panel->Start();
+
 	return ret;
 }
 
@@ -67,6 +98,7 @@ bool Gui::Update(double dt)
 {
 	bool ret = true;
 
+	//main menu bar
 	if (ImGui::BeginMainMenuBar())
 	{
 		if (ImGui::BeginMenu("File"))
@@ -77,11 +109,15 @@ bool Gui::Update(double dt)
 		ImGui::EndMainMenuBar();
 	}
 
-	ImGui::Begin("title");
-	ImGui::Text("text");
-	ImGui::End();
-
+	//test window
 	ImGui::ShowDemoWindow();
+
+	//draw all panels
+	for (const auto& panel : panels)
+	{
+		if (panel->GetState())
+			if (!panel->Draw()) return false;
+	}
 
 	return ret;
 }
@@ -115,7 +151,24 @@ bool Gui::CleanUp()
 
 	SDL_Quit();
 
+	for (const auto& panel : panels)
+	{
+		if (panel->GetState())
+			panel->CleanUp();
+	}
+
 	return ret;
+}
+
+bool Gui::IsInitialized(Panel* panel)
+{
+	if (!panel)
+	{
+		//LOG(LogType::LOG_ERROR, "-%s", panel->GetName().c_str());
+		return false;
+	}
+	//LOG(LogType::LOG_OK, "-%s", panel->GetName().c_str());
+	return true;
 }
 
 void Gui::MainWindowDockspace()

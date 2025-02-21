@@ -10,6 +10,9 @@
     <Filter Include="Modules">
       <UniqueIdentifier>{4b28d6d2-2c8c-417f-9dff-80a65104fb4b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Modules\GuiPanels">
+      <UniqueIdentifier>{0a748f5b-18f7-4557-85a3-4e341c72d392}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -24,6 +27,18 @@
     <ClCompile Include="GUI.cpp">
       <Filter>Modules</Filter>
     </ClCompile>
+    <ClCompile Include="PanelHierarchy.cpp">
+      <Filter>Modules\GuiPanels</Filter>
+    </ClCompile>
+    <ClCompile Include="PanelProject.cpp">
+      <Filter>Modules\GuiPanels</Filter>
+    </ClCompile>
+    <ClCompile Include="PanelInspector.cpp">
+      <Filter>Modules\GuiPanels</Filter>
+    </ClCompile>
+    <ClCompile Include="PanelScene.cpp">
+      <Filter>Modules\GuiPanels</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.h">
@@ -37,6 +52,21 @@
     </ClInclude>
     <ClInclude Include="GUI.h">
       <Filter>Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="GuiPanel.h">
+      <Filter>Modules\GuiPanels</Filter>
+    </ClInclude>
+    <ClInclude Include="PanelHierarchy.h">
+      <Filter>Modules\GuiPanels</Filter>
+    </ClInclude>
+    <ClInclude Include="PanelProject.h">
+      <Filter>Modules\GuiPanels</Filter>
+    </ClInclude>
+    <ClInclude Include="PanelInspector.h">
+      <Filter>Modules\GuiPanels</Filter>
+    </ClInclude>
+    <ClInclude Include="PanelScene.h">
+      <Filter>Modules\GuiPanels</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

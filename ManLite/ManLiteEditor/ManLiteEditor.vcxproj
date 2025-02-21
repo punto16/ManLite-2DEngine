@@ -159,12 +159,21 @@ popd
     <ClCompile Include="App.cpp" />
     <ClCompile Include="GUI.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="PanelHierarchy.cpp" />
+    <ClCompile Include="PanelInspector.cpp" />
+    <ClCompile Include="PanelProject.cpp" />
+    <ClCompile Include="PanelScene.cpp" />
     <ClCompile Include="Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.h" />
     <ClInclude Include="GUI.h" />
+    <ClInclude Include="GuiPanel.h" />
     <ClInclude Include="Module.h" />
+    <ClInclude Include="PanelHierarchy.h" />
+    <ClInclude Include="PanelInspector.h" />
+    <ClInclude Include="PanelProject.h" />
+    <ClInclude Include="PanelScene.h" />
     <ClInclude Include="Timer.h" />
   </ItemGroup>
   <ItemGroup>
