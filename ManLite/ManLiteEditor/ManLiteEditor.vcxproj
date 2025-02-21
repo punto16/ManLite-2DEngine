@@ -120,7 +120,7 @@
     <PreBuildEvent>
       <Command>pushd "$(SolutionDir).."
 call vcpkg\bootstrap-vcpkg.bat
-vcpkg\vcpkg.exe install sdl2 imgui[sdl2-binding,docking-experimental] imguizmo --recurse --overlay-triplets="custom-triplets"
+vcpkg\vcpkg.exe install sdl2 imgui[sdl2-binding,sdl2-renderer-binding,docking-experimental] imguizmo --recurse --overlay-triplets="custom-triplets"
 copy "vcpkg\installed\x64-windows\bin\*.*" "$(OutDir)"
 popd
 </Command>
@@ -149,7 +149,7 @@ popd
     <PreBuildEvent>
       <Command>pushd "$(SolutionDir).."
 call vcpkg\bootstrap-vcpkg.bat
-vcpkg\vcpkg.exe install sdl2 imgui[sdl2-binding,docking-experimental] imguizmo --recurse --overlay-triplets="custom-triplets"
+vcpkg\vcpkg.exe install sdl2 imgui[sdl2-binding,sdl2-renderer-binding,docking-experimental] imguizmo --recurse --overlay-triplets="custom-triplets"
 copy "vcpkg\installed\x64-windows\bin\*.*" "$(OutDir)"
 popd
 </Command>

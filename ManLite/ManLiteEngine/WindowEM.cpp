@@ -35,7 +35,7 @@ bool WindowEM::Awake()
 	}
 	else
 	{
-		screenSurface = SDL_GetWindowSurface(window);
+		//screenSurface = SDL_GetWindowSurface(window);
 	}
 
 	return ret;

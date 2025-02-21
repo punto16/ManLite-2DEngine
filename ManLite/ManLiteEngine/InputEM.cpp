@@ -2,6 +2,7 @@
 
 #include <string.h>
 #include <SDL2/SDL.h>
+#include <imgui_impl_sdl2.h>
 
 InputEM::InputEM(EngineCore* parent) : EngineModule(parent)
 {
@@ -61,6 +62,8 @@ bool InputEM::PreUpdate()
 
 	while (SDL_PollEvent(&event) != SDL_FIRSTEVENT)
 	{
+		ImGui_ImplSDL2_ProcessEvent(&event);
+
 		switch (event.type)
 		{
 		case SDL_QUIT:
@@ -85,7 +88,6 @@ bool InputEM::PreUpdate()
 			case SDL_WINDOWEVENT_MAXIMIZED:
 			case SDL_WINDOWEVENT_RESTORED:
 				windowEvents[WindowEvent_Show] = true;
-				break;
 				break;
 			}
 			break;

@@ -23,13 +23,13 @@ bool RendererEM::Awake()
 	Uint32 flags = SDL_RENDERER_ACCELERATED;
 	if (vsync) flags |= SDL_RENDERER_PRESENTVSYNC;
 	renderer = SDL_CreateRenderer(engine->window_em->GetSDLWindow(), -1, flags);
-
+	
 	if (renderer == NULL) return false;
 	else
 	{
 		camera = new SDL_Rect();
-		camera->w = engine->window_em->GetSDLSurface()->w;
-		camera->h = engine->window_em->GetSDLSurface()->h;
+		camera->w = 1700;//engine->window_em->GetSDLSurface()->w;
+		camera->h = 900;//engine->window_em->GetSDLSurface()->h;
 		camera->x = 0;
 		camera->y = 0;
 	}
@@ -110,8 +110,8 @@ void RendererEM::MoveCamera(const SDL_Rect& rect)
 
 void RendererEM::ResetCamera()
 {
-	camera->w = engine->window_em->GetSDLSurface()->w;
-	camera->h = engine->window_em->GetSDLSurface()->h;
+	camera->w = 1700;//engine->window_em->GetSDLSurface()->w;
+	camera->h = 900;//engine->window_em->GetSDLSurface()->h;
 	camera->x = 0;
 	camera->y = 0;
 }
