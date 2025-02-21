@@ -37,6 +37,8 @@ public:
 	//bool IsInitialized(Panel* panel);
 	//std::list<Panel*> GetPanels();
 
+	void MainWindowDockspace();
+
 	void HandleInput();
 	void ProcessEvent();
 

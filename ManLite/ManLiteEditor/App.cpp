@@ -116,13 +116,14 @@ bool App::DoUpdate()
 {
 	bool ret = true;
 
-	if (!engine->Update(/*dt*/0.0166f)) return false;
-
 	for (auto& item : modules)
 	{
 		if (!item->active) continue;
 		if (!item->Update(/*dt*/0.0166f)) return false;
 	}
+
+	if (!engine->Update(/*dt*/0.0166f)) return false;
+	
 	return true;
 }
 
@@ -130,13 +131,14 @@ bool App::PostUpdate()
 {
 	bool ret = true;
 
-	if (!engine->PostUpdate()) return false;
-
 	for (auto& item : modules)
 	{
 		if (!item->active) continue;
 		if (!item->PostUpdate()) return false;
 	}
+
+	if (!engine->PostUpdate()) return false;
+
 	return true;
 }
 
