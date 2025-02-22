@@ -16,6 +16,7 @@ class PanelInspector;
 class PanelScene;
 class PanelGame;
 class PanelConsole;
+class PanelAnimation;
 
 enum class Aspect
 {
@@ -77,6 +78,7 @@ public:
 	PanelScene* scene_panel = nullptr;
 	PanelGame* game_panel = nullptr;
 	PanelConsole* console_panel = nullptr;
+	PanelAnimation* animation_panel = nullptr;
 
 private:
 	std::list<Panel*> panels;

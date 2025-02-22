@@ -11,6 +11,7 @@
 #include "PanelScene.h"
 #include "PanelGame.h"
 #include "PanelConsole.h"
+#include "PanelAnimation.h"
 
 #include <imgui.h>
 #include <imgui_impl_sdl2.h>
@@ -22,7 +23,8 @@ project_panel(nullptr),
 inspector_panel(nullptr),
 scene_panel(nullptr),
 game_panel(nullptr),
-console_panel(nullptr)
+console_panel(nullptr),
+animation_panel(nullptr)
 {
 }
 
@@ -59,6 +61,10 @@ bool Gui::Awake()
 	console_panel = new PanelConsole(PanelType::CONSOLE, "Console", true);
 	panels.push_back(console_panel);
 	ret *= IsInitialized(console_panel);
+
+	animation_panel = new PanelAnimation(PanelType::ANIMATION, "Animation", true);
+	panels.push_back(animation_panel);
+	ret *= IsInitialized(animation_panel);
 
 	return ret;
 }
@@ -139,6 +145,12 @@ bool Gui::PostUpdate()
 	SDL_RenderClear(engine->renderer_em->GetRenderer());
 	ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData(), engine->renderer_em->GetRenderer());
 	SDL_RenderPresent(engine->renderer_em->GetRenderer());
+
+	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+	{
+		ImGui::UpdatePlatformWindows();
+		ImGui::RenderPlatformWindowsDefault();
+	}
 
 	return ret;
 }

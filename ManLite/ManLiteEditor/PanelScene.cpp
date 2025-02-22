@@ -18,7 +18,7 @@ bool PanelScene::Draw()
 
 	if (ImGui::Begin(name.c_str(), &enabled))
 	{
-
+		
 	}
 	ImGui::End();
 
