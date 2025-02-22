@@ -39,6 +39,12 @@
     <ClCompile Include="PanelScene.cpp">
       <Filter>Modules\GuiPanels</Filter>
     </ClCompile>
+    <ClCompile Include="PanelGame.cpp">
+      <Filter>Modules\GuiPanels</Filter>
+    </ClCompile>
+    <ClCompile Include="PanelConsole.cpp">
+      <Filter>Modules\GuiPanels</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.h">
@@ -66,6 +72,12 @@
       <Filter>Modules\GuiPanels</Filter>
     </ClInclude>
     <ClInclude Include="PanelScene.h">
+      <Filter>Modules\GuiPanels</Filter>
+    </ClInclude>
+    <ClInclude Include="PanelGame.h">
+      <Filter>Modules\GuiPanels</Filter>
+    </ClInclude>
+    <ClInclude Include="PanelConsole.h">
       <Filter>Modules\GuiPanels</Filter>
     </ClInclude>
   </ItemGroup>

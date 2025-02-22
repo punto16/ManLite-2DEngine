@@ -14,6 +14,8 @@ class PanelHierarchy;
 class PanelProject;
 class PanelInspector;
 class PanelScene;
+class PanelGame;
+class PanelConsole;
 
 enum class Aspect
 {
@@ -45,7 +47,18 @@ public:
 	//bool IsInitialized(Panel* panel);
 	//std::list<Panel*> GetPanels();
 
+	//dockspace
 	void MainWindowDockspace();
+
+	//top main bar menus
+	void MainMenuBar();
+	void FileMenu();
+	void EditMenu();
+	void AssetsMenu();
+	void GameObjectMenu();
+	void ComponentMenu();
+	void WindowMenu();
+	void HelpMenu();
 
 	void HandleInput();
 	void ProcessEvent();
@@ -62,6 +75,8 @@ public:
 	PanelProject* project_panel = nullptr;
 	PanelInspector* inspector_panel = nullptr;
 	PanelScene* scene_panel = nullptr;
+	PanelGame* game_panel = nullptr;
+	PanelConsole* console_panel = nullptr;
 
 private:
 	std::list<Panel*> panels;

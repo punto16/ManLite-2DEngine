@@ -9,6 +9,8 @@
 #include "PanelProject.h"
 #include "PanelInspector.h"
 #include "PanelScene.h"
+#include "PanelGame.h"
+#include "PanelConsole.h"
 
 #include <imgui.h>
 #include <imgui_impl_sdl2.h>
@@ -18,7 +20,9 @@ Gui::Gui(App* parent) : Module(parent),
 hierarchy_panel(nullptr),
 project_panel(nullptr),
 inspector_panel(nullptr),
-scene_panel(nullptr)
+scene_panel(nullptr),
+game_panel(nullptr),
+console_panel(nullptr)
 {
 }
 
@@ -47,6 +51,14 @@ bool Gui::Awake()
 	scene_panel = new PanelScene(PanelType::SCENE, "Scene", true);
 	panels.push_back(scene_panel);
 	ret *= IsInitialized(scene_panel);
+
+	game_panel = new PanelGame(PanelType::GAME, "Game", true);
+	panels.push_back(game_panel);
+	ret *= IsInitialized(game_panel);
+
+	console_panel = new PanelConsole(PanelType::CONSOLE, "Console", true);
+	panels.push_back(console_panel);
+	ret *= IsInitialized(console_panel);
 
 	return ret;
 }
@@ -98,21 +110,11 @@ bool Gui::Update(double dt)
 {
 	bool ret = true;
 
-	//main menu bar
-	if (ImGui::BeginMainMenuBar())
-	{
-		if (ImGui::BeginMenu("File"))
-		{
-			ImGui::Text("Me acabo de masturbar");
-			ImGui::EndMenu();
-		}
-		ImGui::EndMainMenuBar();
-	}
+	MainMenuBar();
 
 	//test window
 	ImGui::ShowDemoWindow();
 
-	//draw all panels
 	for (const auto& panel : panels)
 	{
 		if (panel->GetState())
@@ -205,6 +207,84 @@ void Gui::MainWindowDockspace()
 	}
 
 	ImGui::End();
+}
+
+void Gui::MainMenuBar()
+{
+	if (ImGui::BeginMainMenuBar())
+	{
+		if (ImGui::BeginMenu("File"))
+		{
+			FileMenu();
+			ImGui::EndMenu();
+		}
+		if (ImGui::BeginMenu("Edit"))
+		{
+			EditMenu();
+			ImGui::EndMenu();
+		}
+		if (ImGui::BeginMenu("Assets"))
+		{
+			AssetsMenu();
+			ImGui::EndMenu();
+		}
+		if (ImGui::BeginMenu("GameObject"))
+		{
+			GameObjectMenu();
+			ImGui::EndMenu();
+		}
+		if (ImGui::BeginMenu("Component"))
+		{
+			ComponentMenu();
+			ImGui::EndMenu();
+		}
+		if (ImGui::BeginMenu("Window"))
+		{
+			WindowMenu();
+			ImGui::EndMenu();
+		}
+		if (ImGui::BeginMenu("Help"))
+		{
+			HelpMenu();
+			ImGui::EndMenu();
+		}
+		ImGui::EndMainMenuBar();
+	}
+}
+
+void Gui::FileMenu()
+{
+	ImGui::Text("File Menu test text");
+}
+
+void Gui::EditMenu()
+{
+	ImGui::Text("Edit Menu test text");
+}
+
+void Gui::AssetsMenu()
+{
+	ImGui::Text("Assets Menu test text");
+}
+
+void Gui::GameObjectMenu()
+{
+	ImGui::Text("GameObject Menu test text");
+}
+
+void Gui::ComponentMenu()
+{
+	ImGui::Text("Component Menu test text");
+}
+
+void Gui::WindowMenu()
+{
+	ImGui::Text("Window Menu test text");
+}
+
+void Gui::HelpMenu()
+{
+	ImGui::Text("Help Menu test text");
 }
 
 void Gui::HandleInput()
