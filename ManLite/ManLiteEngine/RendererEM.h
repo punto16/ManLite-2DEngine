@@ -35,12 +35,14 @@ public:
 	bool DrawCircle(int x, int y, int rad, SDL_Color c, bool useCamera = true) const;
 
 	SDL_Renderer* GetRenderer() const { return this->renderer; }
+	SDL_Texture* GetRendererTexture() const { return this->renderer_texture; }
 
 private:
 
 	bool vsync;
 
 	SDL_Renderer* renderer;
+	SDL_Texture* renderer_texture;
 	SDL_Rect* camera;
 	SDL_Rect* viewport;
 	SDL_Color background_color;

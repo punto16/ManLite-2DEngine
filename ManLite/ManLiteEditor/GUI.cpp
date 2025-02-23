@@ -13,9 +13,11 @@
 #include "PanelConsole.h"
 #include "PanelAnimation.h"
 
+#include <SDL2/SDL_opengl.h>
+#include <gl/GL.h>
 #include <imgui.h>
 #include <imgui_impl_sdl2.h>
-#include <imgui_impl_sdlrenderer2.h>
+#include <imgui_impl_opengl3.h>
 
 Gui::Gui(App* parent) : Module(parent),
 hierarchy_panel(nullptr),
@@ -84,8 +86,11 @@ bool Gui::Start()
 	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;       // Enable Multi-Viewport / Platform Windows
 	if (!&io) return false;
 
-	ImGui_ImplSDL2_InitForSDLRenderer(engine->window_em->GetSDLWindow(), engine->renderer_em->GetRenderer());
-	ImGui_ImplSDLRenderer2_Init(engine->renderer_em->GetRenderer());
+	SDL_Window* window = engine->window_em->GetSDLWindow();
+	SDL_GLContext gl_context = SDL_GL_CreateContext(window);
+	SDL_GL_MakeCurrent(window, gl_context);
+	ImGui_ImplSDL2_InitForOpenGL(window, gl_context);
+	ImGui_ImplOpenGL3_Init("#version 330");
 
 #pragma region IMGUI_STYLE
 
@@ -103,7 +108,7 @@ bool Gui::PreUpdate()
 {
 	bool ret = true;
 
-	ImGui_ImplSDLRenderer2_NewFrame();
+	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplSDL2_NewFrame();
 	ImGui::NewFrame();
 
@@ -140,17 +145,21 @@ bool Gui::PostUpdate()
 	io.DisplaySize = ImVec2((float)w, (float) h);
 
 	ImGui::Render();
-
-	SDL_SetRenderDrawColor(engine->renderer_em->GetRenderer(), 0, 0, 0, 255);
-	SDL_RenderClear(engine->renderer_em->GetRenderer());
-	ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData(), engine->renderer_em->GetRenderer());
-	SDL_RenderPresent(engine->renderer_em->GetRenderer());
+	glViewport(0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y);
+	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
 	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
 	{
+		SDL_Window* backup_current_window = SDL_GL_GetCurrentWindow();
+		SDL_GLContext backup_current_context = SDL_GL_GetCurrentContext();
+
 		ImGui::UpdatePlatformWindows();
 		ImGui::RenderPlatformWindowsDefault();
+
+		SDL_GL_MakeCurrent(backup_current_window, backup_current_context);
 	}
+
+	SDL_GL_SwapWindow(engine->window_em->GetSDLWindow());
 
 	return ret;
 }
@@ -159,9 +168,10 @@ bool Gui::CleanUp()
 {
 	bool ret = true;
 
-	ImGui_ImplSDLRenderer2_Shutdown();
+	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplSDL2_Shutdown();
 	ImGui::DestroyContext();
+	SDL_GL_DeleteContext(SDL_GL_GetCurrentContext());
 
 	SDL_Quit();
 

@@ -4,6 +4,9 @@
 
 #include "GuiPanel.h"
 
+
+class SDL_Texture;
+
 class PanelScene : public Panel
 {
 public:
@@ -13,7 +16,6 @@ public:
 	bool Draw();
 
 private:
-
 };
 
 #endif // !__PANEL_SCENE_H__

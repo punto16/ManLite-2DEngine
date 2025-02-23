@@ -34,6 +34,15 @@ bool RendererEM::Awake()
 		camera->y = 0;
 	}
 
+	renderer_texture = SDL_CreateTexture(
+		renderer,
+		SDL_PIXELFORMAT_RGBA32,
+		SDL_TEXTUREACCESS_TARGET,
+		camera->w,
+		camera->h
+	);
+	if (renderer_texture == NULL) return false;
+
 	return ret;
 }
 
@@ -66,8 +75,8 @@ bool RendererEM::PostUpdate()
 {
 	bool ret = true;
 
-	SDL_SetRenderDrawColor(renderer, background_color.r, background_color.g, background_color.b, background_color.a);
-	SDL_RenderPresent(renderer);
+	//SDL_SetRenderDrawColor(renderer, background_color.r, background_color.g, background_color.b, background_color.a);
+	//SDL_RenderPresent(renderer);
 
 	return ret;
 }
