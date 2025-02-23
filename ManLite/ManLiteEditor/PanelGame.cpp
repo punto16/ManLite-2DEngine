@@ -12,7 +12,7 @@ PanelGame::~PanelGame()
 {
 }
 
-bool PanelGame::Draw()
+bool PanelGame::Update()
 {
 	bool ret = true;
 

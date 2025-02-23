@@ -10,7 +10,7 @@ public:
 	PanelHierarchy(PanelType type, std::string name, bool enabled);
 	~PanelHierarchy();
 
-	bool Draw();
+	bool Update();
 
 private:
 

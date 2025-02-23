@@ -10,7 +10,7 @@ public:
 	PanelProject(PanelType type, std::string name, bool enabled);
 	~PanelProject();
 
-	bool Draw();
+	bool Update();
 
 private:
 

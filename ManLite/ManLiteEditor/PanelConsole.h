@@ -10,7 +10,7 @@ public:
 	PanelConsole(PanelType type, std::string name, bool enabled);
 	~PanelConsole();
 
-	bool Draw();
+	bool Update();
 
 private:
 

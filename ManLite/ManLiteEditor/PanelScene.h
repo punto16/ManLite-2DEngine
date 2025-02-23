@@ -4,6 +4,7 @@
 
 #include "GuiPanel.h"
 
+#include <SDL2/SDL_opengl.h>
 
 class SDL_Texture;
 
@@ -13,9 +14,13 @@ public:
 	PanelScene(PanelType type, std::string name, bool enabled);
 	~PanelScene();
 
-	bool Draw();
+	void Start();
+	bool Update();
+	bool CleanUp();
 
 private:
+
+	GLuint openglTextureID = 0;
 };
 
 #endif // !__PANEL_SCENE_H__

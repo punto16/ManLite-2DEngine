@@ -10,7 +10,7 @@ public:
 	PanelInspector(PanelType type, std::string name, bool enabled);
 	~PanelInspector();
 
-	bool Draw();
+	bool Update();
 
 private:
 

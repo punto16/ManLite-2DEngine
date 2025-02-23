@@ -10,7 +10,7 @@ public:
 	PanelGame(PanelType type, std::string name, bool enabled);
 	~PanelGame();
 
-	bool Draw();
+	bool Update();
 
 private:
 

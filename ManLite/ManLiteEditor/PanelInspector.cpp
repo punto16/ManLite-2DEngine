@@ -12,7 +12,7 @@ PanelInspector::~PanelInspector()
 {
 }
 
-bool PanelInspector::Draw()
+bool PanelInspector::Update()
 {
 	bool ret = true;
 

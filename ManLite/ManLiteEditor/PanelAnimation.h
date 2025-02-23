@@ -10,7 +10,7 @@ public:
 	PanelAnimation(PanelType type, std::string name, bool enabled);
 	~PanelAnimation();
 
-	bool Draw();
+	bool Update();
 
 private:
 

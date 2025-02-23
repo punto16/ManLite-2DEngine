@@ -12,7 +12,7 @@ PanelProject::~PanelProject()
 {
 }
 
-bool PanelProject::Draw()
+bool PanelProject::Update()
 {
 	bool ret = true;
 

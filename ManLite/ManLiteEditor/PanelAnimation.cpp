@@ -12,7 +12,7 @@ PanelAnimation::~PanelAnimation()
 {
 }
 
-bool PanelAnimation::Draw()
+bool PanelAnimation::Update()
 {
 	bool ret = true;
 

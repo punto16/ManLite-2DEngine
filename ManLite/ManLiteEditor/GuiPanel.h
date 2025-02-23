@@ -29,7 +29,7 @@ public:
 	virtual ~Panel() {}
 
 	virtual void Start() {}
-	virtual bool Draw() = 0;
+	virtual bool Update() = 0;
 	virtual bool CleanUp() { return true; }
 
 	virtual void OnSceneChange() {}

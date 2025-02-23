@@ -12,6 +12,7 @@ RendererEM::RendererEM(EngineCore* parent) : EngineModule(parent)
 RendererEM::~RendererEM()
 {
 	delete renderer;
+	delete renderer_texture;
 	delete camera;
 	delete viewport;
 }
@@ -36,7 +37,7 @@ bool RendererEM::Awake()
 
 	renderer_texture = SDL_CreateTexture(
 		renderer,
-		SDL_PIXELFORMAT_RGBA32,
+		SDL_PIXELFORMAT_RGBA8888,
 		SDL_TEXTUREACCESS_TARGET,
 		camera->w,
 		camera->h
@@ -59,6 +60,8 @@ bool RendererEM::PreUpdate()
 {
 	bool ret = true;
 
+	SDL_SetRenderTarget(renderer, renderer_texture);
+	SDL_SetRenderDrawColor(renderer, background_color.r, background_color.g, background_color.b, background_color.a);
 	SDL_RenderClear(renderer);
 
 	return ret;
@@ -75,7 +78,8 @@ bool RendererEM::PostUpdate()
 {
 	bool ret = true;
 
-	//SDL_SetRenderDrawColor(renderer, background_color.r, background_color.g, background_color.b, background_color.a);
+
+	SDL_SetRenderTarget(renderer, NULL);
 	//SDL_RenderPresent(renderer);
 
 	return ret;

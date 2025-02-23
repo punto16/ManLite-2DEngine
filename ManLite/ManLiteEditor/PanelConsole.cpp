@@ -12,7 +12,7 @@ PanelConsole::~PanelConsole()
 {
 }
 
-bool PanelConsole::Draw()
+bool PanelConsole::Update()
 {
 	bool ret = true;
 

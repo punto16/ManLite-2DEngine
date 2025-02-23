@@ -12,7 +12,7 @@ PanelHierarchy::~PanelHierarchy()
 {
 }
 
-bool PanelHierarchy::Draw()
+bool PanelHierarchy::Update()
 {
 	bool ret = true;
 

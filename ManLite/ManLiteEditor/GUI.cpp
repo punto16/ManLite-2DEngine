@@ -52,14 +52,6 @@ bool Gui::Awake()
 	panels.push_back(inspector_panel);
 	ret *= IsInitialized(inspector_panel);
 
-	scene_panel = new PanelScene(PanelType::SCENE, "Scene", true);
-	panels.push_back(scene_panel);
-	ret *= IsInitialized(scene_panel);
-
-	game_panel = new PanelGame(PanelType::GAME, "Game", true);
-	panels.push_back(game_panel);
-	ret *= IsInitialized(game_panel);
-
 	console_panel = new PanelConsole(PanelType::CONSOLE, "Console", true);
 	panels.push_back(console_panel);
 	ret *= IsInitialized(console_panel);
@@ -67,6 +59,15 @@ bool Gui::Awake()
 	animation_panel = new PanelAnimation(PanelType::ANIMATION, "Animation", true);
 	panels.push_back(animation_panel);
 	ret *= IsInitialized(animation_panel);
+
+	//"renders" last
+	scene_panel = new PanelScene(PanelType::SCENE, "Scene", true);
+	panels.push_back(scene_panel);
+	ret *= IsInitialized(scene_panel);
+
+	game_panel = new PanelGame(PanelType::GAME, "Game", true);
+	panels.push_back(game_panel);
+	ret *= IsInitialized(game_panel);
 
 	return ret;
 }
@@ -129,7 +130,8 @@ bool Gui::Update(double dt)
 	for (const auto& panel : panels)
 	{
 		if (panel->GetState())
-			if (!panel->Draw()) return false;
+			//IMGUI LOGIC
+			if (!panel->Update()) return false;
 	}
 
 	return ret;
@@ -144,6 +146,7 @@ bool Gui::PostUpdate()
 	engine->window_em->GetWindowSize(w, h);
 	io.DisplaySize = ImVec2((float)w, (float) h);
 
+	//IMGUI RENDERS ITS TABS HERE
 	ImGui::Render();
 	glViewport(0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y);
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
