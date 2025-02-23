@@ -35,13 +35,17 @@ bool PanelScene::Update()
 	SDL_Texture* sdlTexture = engine->renderer_em->GetRendererTexture();
 	void* pixels;
 	int pitch;
-	SDL_LockTexture(sdlTexture, nullptr, &pixels, &pitch);
+	if (SDL_LockTexture(sdlTexture, nullptr, &pixels, &pitch))
+	{
+		const char* error = SDL_GetError();
+		return false;
+	}
 
 	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, openglTextureID);
 	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 1700, 900, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
 
 	SDL_UnlockTexture(sdlTexture);
-
 
 	if (ImGui::Begin(name.c_str(), &enabled))
 	{

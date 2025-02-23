@@ -5,7 +5,7 @@
 
 RendererEM::RendererEM(EngineCore* parent) : EngineModule(parent)
 {
-	background_color = { 255,255,255,255 };
+	background_color = { 0,0,0,0 };
 	vsync = true;
 }
 
@@ -38,11 +38,20 @@ bool RendererEM::Awake()
 	renderer_texture = SDL_CreateTexture(
 		renderer,
 		SDL_PIXELFORMAT_RGBA8888,
-		SDL_TEXTUREACCESS_TARGET,
+		SDL_TEXTUREACCESS_STREAMING,
 		camera->w,
 		camera->h
 	);
 	if (renderer_texture == NULL) return false;
+
+	renderer_target = SDL_CreateTexture(
+		renderer,
+		SDL_PIXELFORMAT_RGBA8888,
+		SDL_TEXTUREACCESS_TARGET,
+		camera->w,
+		camera->h
+	);
+	if (renderer_target == NULL) return false;
 
 	return ret;
 }
@@ -60,7 +69,8 @@ bool RendererEM::PreUpdate()
 {
 	bool ret = true;
 
-	SDL_SetRenderTarget(renderer, renderer_texture);
+
+	SDL_SetRenderTarget(renderer, renderer_target);
 	SDL_SetRenderDrawColor(renderer, background_color.r, background_color.g, background_color.b, background_color.a);
 	SDL_RenderClear(renderer);
 
@@ -78,11 +88,22 @@ bool RendererEM::PostUpdate()
 {
 	bool ret = true;
 
-	SDL_Rect r = { 10,10,100,100 };
-	DrawRectangle(r, { 0,0,0,255 }, true);
+	SDL_Texture* prev_target = SDL_GetRenderTarget(renderer);
+	void* pixels;
+	int pitch;
+	SDL_LockTexture(renderer_texture, nullptr, &pixels, &pitch);
+	SDL_RenderReadPixels(
+		renderer,
+		nullptr,
+		SDL_PIXELFORMAT_RGBA8888,
+		pixels,
+		pitch
+	);
+	SDL_UnlockTexture(renderer_texture);
+	SDL_SetRenderTarget(renderer, prev_target);
+	SDL_UpdateTexture(renderer_texture, nullptr, pixels, camera->w * 4);
 
 	SDL_SetRenderTarget(renderer, NULL);
-	//SDL_RenderPresent(renderer);
 
 	return ret;
 }

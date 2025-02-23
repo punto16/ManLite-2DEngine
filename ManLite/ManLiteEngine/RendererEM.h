@@ -43,6 +43,7 @@ private:
 
 	SDL_Renderer* renderer;
 	SDL_Texture* renderer_texture;
+	SDL_Texture* renderer_target;
 	SDL_Rect* camera;
 	SDL_Rect* viewport;
 	SDL_Color background_color;
