@@ -48,6 +48,9 @@
     <ClCompile Include="PanelAnimation.cpp">
       <Filter>Modules\GuiPanels</Filter>
     </ClCompile>
+    <ClCompile Include="PanelAbout.cpp">
+      <Filter>Modules\GuiPanels</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.h">
@@ -84,6 +87,9 @@
       <Filter>Modules\GuiPanels</Filter>
     </ClInclude>
     <ClInclude Include="PanelAnimation.h">
+      <Filter>Modules\GuiPanels</Filter>
+    </ClInclude>
+    <ClInclude Include="PanelAbout.h">
       <Filter>Modules\GuiPanels</Filter>
     </ClInclude>
   </ItemGroup>

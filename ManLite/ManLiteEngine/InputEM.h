@@ -41,7 +41,11 @@ public:
 	void GetMousePosition(int& x, int& y) { x = this->mouseX; y = this->mouseY; }
 	void GetMouseMotion(int& x, int& y) { x = this->mouse_motionX; y = this->mouse_motionY; }
 
+	void CloseApp();
+
 private:
+
+	bool close_app;
 
 	bool windowEvents[WindowEvent_Count];
 	KeyState* keyboard;

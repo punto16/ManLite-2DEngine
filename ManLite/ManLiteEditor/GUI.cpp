@@ -3,6 +3,7 @@
 #include "EngineCore.h"
 #include "RendererEM.h"
 #include "WindowEM.h"
+#include "InputEM.h"
 
 #include "GuiPanel.h"
 #include "PanelHierarchy.h"
@@ -12,12 +13,14 @@
 #include "PanelGame.h"
 #include "PanelConsole.h"
 #include "PanelAnimation.h"
+#include "PanelAbout.h"
 
 #include <SDL2/SDL_opengl.h>
 #include <gl/GL.h>
 #include <imgui.h>
 #include <imgui_impl_sdl2.h>
 #include <imgui_impl_opengl3.h>
+#include <shellapi.h>
 
 Gui::Gui(App* parent) : Module(parent),
 hierarchy_panel(nullptr),
@@ -26,7 +29,8 @@ inspector_panel(nullptr),
 scene_panel(nullptr),
 game_panel(nullptr),
 console_panel(nullptr),
-animation_panel(nullptr)
+animation_panel(nullptr),
+about_panel(nullptr)
 {
 }
 
@@ -59,6 +63,10 @@ bool Gui::Awake()
 	animation_panel = new PanelAnimation(PanelType::ANIMATION, "Animation", true);
 	panels.push_back(animation_panel);
 	ret *= IsInitialized(animation_panel);
+
+	about_panel = new PanelAbout(PanelType::ABOUT, "About", false);
+	panels.push_back(about_panel);
+	ret *= IsInitialized(about_panel);
 
 	//"renders" last
 	scene_panel = new PanelScene(PanelType::SCENE, "Scene", true);
@@ -279,37 +287,196 @@ void Gui::MainMenuBar()
 
 void Gui::FileMenu()
 {
-	ImGui::Text("File Menu test text");
+	if (ImGui::MenuItem("New Scene", "Ctrl+N", false, false))
+	{
+
+	}
+	if (ImGui::MenuItem("Open Scene", "Ctrl+O", false, false))
+	{
+
+	}
+
+	ImGui::Separator();
+
+	if (ImGui::MenuItem("Save Scene", "Ctrl+S", false, false))
+	{
+
+	}
+	if (ImGui::MenuItem("Save As...", 0, false, false))
+	{
+
+	}
+
+	ImGui::Separator();
+
+	if (ImGui::MenuItem("Settings", 0, false, false))
+	{
+
+	}
+
+	ImGui::Separator();
+
+	if (ImGui::MenuItem("Build", 0, false, false))
+	{
+
+	}
+
+	ImGui::Separator();
+
+	if (ImGui::MenuItem("Exit"))
+	{
+		engine->input_em->CloseApp();
+	}
 }
 
 void Gui::EditMenu()
 {
-	ImGui::Text("Edit Menu test text");
+	if (ImGui::MenuItem("Undo", "Ctrl+Z", false, false))
+	{
+
+	}
+	if (ImGui::MenuItem("Redo", "Ctrl+Y", false, false))
+	{
+
+	}
+
+	ImGui::Separator();
+
+	if (ImGui::MenuItem("Copy", "Ctrl+C", false, false))
+	{
+
+	}
+	if (ImGui::MenuItem("Paste", "Ctrl+V", false, false))
+	{
+
+	}
+	if (ImGui::MenuItem("Cut", "Ctrl+X", false, false))
+	{
+
+	}
+	if (ImGui::MenuItem("Duplicate", "Ctrl+D", false, false))
+	{
+
+	}
 }
 
 void Gui::AssetsMenu()
 {
-	ImGui::Text("Assets Menu test text");
+	if (ImGui::BeginMenu("Create"))
+	{
+		if (ImGui::MenuItem("Folder", 0, false, false))
+		{
+
+		}
+
+		ImGui::Separator();
+
+		if (ImGui::MenuItem("Script", 0, false, false))
+		{
+
+		}
+		if (ImGui::MenuItem("Shader", 0, false, false))
+		{
+
+		}
+
+		ImGui::EndMenu();
+	}
 }
 
 void Gui::GameObjectMenu()
 {
-	ImGui::Text("GameObject Menu test text");
+	if (ImGui::MenuItem("Create Empty", "Ctrl+Shift+N", false, false))
+	{
+
+	}
+	if (ImGui::MenuItem("Camera", 0, false, false))
+	{
+
+	}
+	if (ImGui::MenuItem("Canvas", 0, false, false))
+	{
+
+	}
 }
 
 void Gui::ComponentMenu()
 {
-	ImGui::Text("Component Menu test text");
+	if (ImGui::MenuItem("Camera", 0, false, false))
+	{
+
+	}
+	if (ImGui::MenuItem("Collider 2D", 0, false, false))
+	{
+
+	}
+	if (ImGui::MenuItem("Script", 0, false, false))
+	{
+
+	}
+	if (ImGui::MenuItem("Camera", 0, false, false))
+	{
+
+	}
+
+	ImGui::Separator();
+
+	if (ImGui::MenuItem("Canvas", 0, false, false))
+	{
+
+	}
+
+	ImGui::Separator();
+
+	if (ImGui::MenuItem("Particle System", 0, false, false))
+	{
+
+	}
+
+	ImGui::Separator();
+
+	if (ImGui::MenuItem("Audio Source", 0, false, false))
+	{
+
+	}
+	if (ImGui::MenuItem("Audio Listener", 0, false, false))
+	{
+
+	}
+
+	ImGui::Separator();
+
+	if (ImGui::MenuItem("Animation", 0, false, false))
+	{
+
+	}
 }
 
 void Gui::WindowMenu()
 {
-	ImGui::Text("Window Menu test text");
+	for (auto panel : panels)
+	{
+		if (panel->GetType() == PanelType::ABOUT || panel->GetType() == PanelType::BUILD)
+			continue;
+
+		if (ImGui::MenuItem(panel->GetName().c_str(), NULL, panel->GetState()))
+			panel->SwitchState();
+	}
 }
 
 void Gui::HelpMenu()
 {
-	ImGui::Text("Help Menu test text");
+	if (ImGui::MenuItem("About ManLite Engine"))
+	{
+		about_panel->SwitchState();
+	}
+
+	ImGui::Separator();
+
+	if (ImGui::MenuItem("Documentation"))
+	{
+		OpenURL("https://github.com/punto16/ManLite-2DEngine");
+	}
 }
 
 void Gui::HandleInput()
@@ -318,4 +485,9 @@ void Gui::HandleInput()
 
 void Gui::ProcessEvent()
 {
+}
+
+void Gui::OpenURL(const char* url) const
+{
+	ShellExecuteA(0, 0, url, 0, 0, SW_SHOW);
 }

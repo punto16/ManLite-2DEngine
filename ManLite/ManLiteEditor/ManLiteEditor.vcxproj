@@ -159,6 +159,7 @@ popd
     <ClCompile Include="App.cpp" />
     <ClCompile Include="GUI.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="PanelAbout.cpp" />
     <ClCompile Include="PanelAnimation.cpp" />
     <ClCompile Include="PanelConsole.cpp" />
     <ClCompile Include="PanelGame.cpp" />
@@ -173,6 +174,7 @@ popd
     <ClInclude Include="GUI.h" />
     <ClInclude Include="GuiPanel.h" />
     <ClInclude Include="Module.h" />
+    <ClInclude Include="PanelAbout.h" />
     <ClInclude Include="PanelAnimation.h" />
     <ClInclude Include="PanelConsole.h" />
     <ClInclude Include="PanelGame.h" />

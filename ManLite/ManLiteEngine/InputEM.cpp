@@ -4,7 +4,7 @@
 #include <SDL2/SDL.h>
 #include <imgui_impl_sdl2.h>
 
-InputEM::InputEM(EngineCore* parent) : EngineModule(parent)
+InputEM::InputEM(EngineCore* parent) : EngineModule(parent), close_app(false)
 {
 	keyboard = new KeyState[MAX_KEYS];
 	memset(keyboard, KEY_IDLE, sizeof(KeyState) * MAX_KEYS);
@@ -115,7 +115,7 @@ bool InputEM::PreUpdate()
 		}
 	}
 
-	return ret;
+	return close_app ? false : ret;
 }
 
 bool InputEM::CleanUp()
@@ -125,4 +125,9 @@ bool InputEM::CleanUp()
 	SDL_QuitSubSystem(SDL_INIT_EVENTS);
 
 	return ret;
+}
+
+void InputEM::CloseApp()
+{
+	close_app = true;
 }

@@ -17,6 +17,7 @@ class PanelScene;
 class PanelGame;
 class PanelConsole;
 class PanelAnimation;
+class PanelAbout;
 
 enum class Aspect
 {
@@ -67,6 +68,8 @@ public:
 	bool IsInitialized(Panel* panel);
 	std::list<Panel*> GetPanels() { return panels; }
 
+	void OpenURL(const char* url) const;
+
 private:
 
 
@@ -79,6 +82,7 @@ public:
 	PanelGame* game_panel = nullptr;
 	PanelConsole* console_panel = nullptr;
 	PanelAnimation* animation_panel = nullptr;
+	PanelAbout* about_panel = nullptr;
 
 private:
 	std::list<Panel*> panels;

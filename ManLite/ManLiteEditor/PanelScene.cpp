@@ -25,7 +25,6 @@ void PanelScene::Start()
 	std::vector<uint8_t> emptyData(1700 * 900 * 4, 0); // RGBA: 0,0,0,0
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1700, 900, 0, GL_RGBA, GL_UNSIGNED_BYTE, emptyData.data());
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 

@@ -5,7 +5,7 @@
 
 RendererEM::RendererEM(EngineCore* parent) : EngineModule(parent)
 {
-	background_color = { 0,0,0,0 };
+	background_color = { 255,255,255,255 };
 	vsync = true;
 }
 
@@ -78,6 +78,8 @@ bool RendererEM::PostUpdate()
 {
 	bool ret = true;
 
+	SDL_Rect r = { 10,10,100,100 };
+	DrawRectangle(r, { 0,0,0,255 }, true);
 
 	SDL_SetRenderTarget(renderer, NULL);
 	//SDL_RenderPresent(renderer);
