@@ -117,6 +117,8 @@ bool Gui::PreUpdate()
 {
 	bool ret = true;
 
+	HandleInput();
+
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplSDL2_NewFrame();
 	ImGui::NewFrame();
@@ -414,10 +416,6 @@ void Gui::ComponentMenu()
 	{
 
 	}
-	if (ImGui::MenuItem("Camera", 0, false, false))
-	{
-
-	}
 
 	ImGui::Separator();
 
@@ -481,6 +479,8 @@ void Gui::HelpMenu()
 
 void Gui::HandleInput()
 {
+	for (auto& event : engine->input_em->GetSDLEvents())
+		ImGui_ImplSDL2_ProcessEvent(&event);
 }
 
 void Gui::ProcessEvent()

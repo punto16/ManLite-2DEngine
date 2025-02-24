@@ -4,6 +4,9 @@
 
 #include "EngineModule.h"
 
+#include <vector>
+#include <SDL2/SDL.h>
+
 #define MAX_KEYS 300
 #define MAX_MOUSE_BUTTONS 5
 
@@ -43,6 +46,8 @@ public:
 
 	void CloseApp();
 
+	std::vector<SDL_Event> GetSDLEvents() { return events; }
+
 private:
 
 	bool close_app;
@@ -50,8 +55,9 @@ private:
 	bool windowEvents[WindowEvent_Count];
 	KeyState* keyboard;
 	KeyState mouse_buttons[5];
-
 	int mouseX, mouseY, mouse_motionX, mouse_motionY;
+
+	std::vector<SDL_Event> events;
 };
 
 #endif // __INPUT_EM_H__

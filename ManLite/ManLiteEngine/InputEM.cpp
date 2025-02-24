@@ -60,9 +60,10 @@ bool InputEM::PreUpdate()
 		if (mouse_buttons[i] == KEY_UP) mouse_buttons[i] = KEY_IDLE;
 	}
 
+	events.clear();
 	while (SDL_PollEvent(&event) != SDL_FIRSTEVENT)
 	{
-		ImGui_ImplSDL2_ProcessEvent(&event);
+		events.push_back(event);
 
 		switch (event.type)
 		{
