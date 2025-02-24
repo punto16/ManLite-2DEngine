@@ -41,7 +41,7 @@ public:
 	bool DrawRectangle(const SDL_Rect& rect, SDL_Color c, bool filled = true, bool useCamera = true) const;
 	bool DrawLine(int x1, int y1, int x2, int y2, SDL_Color c, bool useCamera = true) const;
 	bool DrawCircle(int x, int y, int rad, SDL_Color c, bool useCamera = true) const;
-	void DrawGrid(int rows, int columns, SDL_Color c, bool useCamera = true) const;
+	void DrawGrid(int spacing, SDL_Color c, bool useCamera = true) const;
 
 	SDL_Renderer* GetRenderer() const { return this->renderer; }
 	SDL_Texture* GetRendererTexture() const { return this->renderer_texture; }

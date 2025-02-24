@@ -38,7 +38,7 @@ bool RendererEM::Awake()
 
 	renderer_texture = SDL_CreateTexture(
 		renderer,
-		SDL_PIXELFORMAT_RGBA8888,
+		SDL_PIXELFORMAT_ABGR8888,
 		SDL_TEXTUREACCESS_STREAMING,
 		DEFAULT_CAM_WIDTH,
 		DEFAULT_CAM_HEIGHT
@@ -47,7 +47,7 @@ bool RendererEM::Awake()
 
 	renderer_target = SDL_CreateTexture(
 		renderer,
-		SDL_PIXELFORMAT_RGBA8888,
+		SDL_PIXELFORMAT_ABGR8888,
 		SDL_TEXTUREACCESS_TARGET,
 		DEFAULT_CAM_WIDTH,
 		DEFAULT_CAM_HEIGHT
@@ -90,7 +90,6 @@ bool RendererEM::PostUpdate()
 
 	SDL_Rect r = { -5,-5,10,10 };
 	DrawRectangle(r, { 0,0,0,255 }, true);
-	DrawGrid(50,50, { 0,0,0,100 });
 
 	SDL_Texture* prev_target = SDL_GetRenderTarget(renderer);
 	void* pixels;
@@ -99,7 +98,7 @@ bool RendererEM::PostUpdate()
 	SDL_RenderReadPixels(
 		renderer,
 		nullptr,
-		SDL_PIXELFORMAT_RGBA8888,
+		SDL_PIXELFORMAT_ABGR8888,
 		pixels,
 		pitch
 	);
@@ -262,19 +261,29 @@ bool RendererEM::DrawCircle(int x, int y, int rad, SDL_Color c, bool useCamera) 
 	return ret;
 }
 
-void RendererEM::DrawGrid(int rows, int columns, SDL_Color c, bool useCamera) const {
-	const int spacing = 100;
+void RendererEM::DrawGrid(int spacing, SDL_Color c, bool useCamera) const {
+	int screenWidth, screenHeight;
+	SDL_GetRendererOutputSize(renderer, &screenWidth, &screenHeight);
 
-	const int halfWidth = (columns * spacing) / 2;
-	const int halfHeight = (rows * spacing) / 2;
+	int camX = -camera->x;
+	int camY = -camera->y;
 
-	for (int i = 0; i <= rows; ++i) {
-		int y = i * spacing - halfHeight;
-		DrawLine(-halfWidth, y, halfWidth, y, c, useCamera);
+	int visibleLeft = camX - screenWidth;
+	int visibleRight = camX + 2 * screenWidth;
+	int visibleTop = camY - screenHeight;
+	int visibleBottom = camY + 2 * screenHeight;
+
+	int startX = (visibleLeft / spacing) * spacing;
+	int endX = (visibleRight / spacing) * spacing + spacing;
+
+	for (int x = startX; x <= endX; x += spacing) {
+		DrawLine(x, visibleTop, x, visibleBottom, c, useCamera);
 	}
 
-	for (int i = 0; i <= columns; ++i) {
-		int x = i * spacing - halfWidth;
-		DrawLine(x, -halfHeight, x, halfHeight, c, useCamera);
+	int startY = (visibleTop / spacing) * spacing;
+	int endY = (visibleBottom / spacing) * spacing + spacing;
+
+	for (int y = startY; y <= endY; y += spacing) {
+		DrawLine(visibleLeft, y, visibleRight, y, c, useCamera);
 	}
 }

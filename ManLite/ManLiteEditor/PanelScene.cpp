@@ -35,6 +35,9 @@ bool PanelScene::Update()
 
 	if (ImGui::Begin(name.c_str(), &enabled))
 	{
+		//draw grid
+		engine->renderer_em->DrawGrid(100, { 0,0,0,100 });
+
 		//movement of scene camera
 		cam_speed = 5.0f;
 		if (engine->input_em->GetMouseButtonDown(SDL_BUTTON_RIGHT) == KEY_REPEAT)
