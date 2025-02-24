@@ -20,6 +20,7 @@ public:
 
 	void SetViewPort(const SDL_Rect& rect);
 	void ResetViewPort();
+	SDL_Rect* GetViewPort() const { return this->viewport; }
 
 	void SetCamera(const SDL_Rect& rect);
 	void MoveCamera(const SDL_Rect& rect);

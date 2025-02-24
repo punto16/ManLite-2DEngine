@@ -22,8 +22,8 @@ void PanelScene::Start()
 {
 	glGenTextures(1, &openglTextureID);
 	glBindTexture(GL_TEXTURE_2D, openglTextureID);
-	std::vector<uint8_t> emptyData(1700 * 900 * 4, 0); // RGBA: 0,0,0,0
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1700, 900, 0, GL_RGBA, GL_UNSIGNED_BYTE, emptyData.data());
+	std::vector<uint8_t> emptyData(engine->renderer_em->GetViewPort()->w * engine->renderer_em->GetViewPort()->h * 4, 0); // RGBA: 0,0,0,0
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, engine->renderer_em->GetViewPort()->w, engine->renderer_em->GetViewPort()->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, emptyData.data());
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
@@ -31,6 +31,8 @@ void PanelScene::Start()
 bool PanelScene::Update()
 {
 	bool ret = true;
+
+
 
 	SDL_Texture* sdlTexture = engine->renderer_em->GetRendererTexture();
 	void* pixels;
@@ -40,18 +42,39 @@ bool PanelScene::Update()
 		const char* error = SDL_GetError();
 		return false;
 	}
-
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, openglTextureID);
-	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 1700, 900, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
-
+	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, engine->renderer_em->GetViewPort()->w, engine->renderer_em->GetViewPort()->h, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
 	SDL_UnlockTexture(sdlTexture);
 
 	if (ImGui::Begin(name.c_str(), &enabled))
 	{
-		ImGui::Image(
+		ImVec2 window_size = ImGui::GetContentRegionAvail();
+
+		float image_width = engine->renderer_em->GetViewPort()->w;
+		float image_height = engine->renderer_em->GetViewPort()->h;
+
+		float image_aspect_ratio = image_width / image_height;
+		float window_aspect_ratio = window_size.x / window_size.y;
+
+		ImVec2 scaled_size;
+		if (window_aspect_ratio > image_aspect_ratio) {
+			scaled_size.y = window_size.y;
+			scaled_size.x = scaled_size.y * image_aspect_ratio;
+		}
+		else {
+			scaled_size.x = window_size.x;
+			scaled_size.y = scaled_size.x / image_aspect_ratio;
+		}
+
+		ImVec2 image_pos = ImGui::GetCursorScreenPos();
+		image_pos.x += (window_size.x - scaled_size.x) * 0.5f;
+		image_pos.y += (window_size.y - scaled_size.y) * 0.5f;
+
+		ImGui::GetWindowDrawList()->AddImage(
 			(ImTextureID)(intptr_t)openglTextureID,
-			ImVec2(1700, 900),
+			image_pos,
+			ImVec2(image_pos.x + scaled_size.x, image_pos.y + scaled_size.y),
 			ImVec2(0, 0),
 			ImVec2(1, 1)
 		);

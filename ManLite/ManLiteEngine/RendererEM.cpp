@@ -5,7 +5,7 @@
 
 RendererEM::RendererEM(EngineCore* parent) : EngineModule(parent)
 {
-	background_color = { 0,0,0,0 };
+	background_color = { 255,255,255,255 };
 	vsync = true;
 }
 
@@ -28,6 +28,7 @@ bool RendererEM::Awake()
 	if (renderer == NULL) return false;
 	else
 	{
+		viewport = new SDL_Rect();
 		camera = new SDL_Rect();
 		camera->w = 1700;//engine->window_em->GetSDLSurface()->w;
 		camera->h = 900;//engine->window_em->GetSDLSurface()->h;
@@ -87,6 +88,9 @@ bool RendererEM::Update(double dt)
 bool RendererEM::PostUpdate()
 {
 	bool ret = true;
+
+	SDL_Rect r = { 10,10,100,100 };
+	DrawRectangle(r, { 0,0,0,255 }, true);
 
 	SDL_Texture* prev_target = SDL_GetRenderTarget(renderer);
 	void* pixels;
