@@ -5,6 +5,9 @@
 #include "EngineModule.h"
 #include "SDL2/SDL.h"
 
+#define DEFAULT_CAM_WIDTH 1700
+#define DEFAULT_CAM_HEIGHT 900
+
 class RendererEM : public EngineModule
 {
 public:
@@ -23,8 +26,12 @@ public:
 	SDL_Rect* GetViewPort() const { return this->viewport; }
 
 	void SetCamera(const SDL_Rect& rect);
+	//DO not use for zoom, use CameraZoom() instead
 	void MoveCamera(const SDL_Rect& rect);
+	void CameraZoom(float zoom);
 	void ResetCamera();
+	void ResetCameraPos();
+	void ResetCameraZoom();
 	SDL_Rect* GetCamera() const { return camera; }
 
 	void SetBackgroundColor(SDL_Color c) { this->background_color = c; }
@@ -34,6 +41,7 @@ public:
 	bool DrawRectangle(const SDL_Rect& rect, SDL_Color c, bool filled = true, bool useCamera = true) const;
 	bool DrawLine(int x1, int y1, int x2, int y2, SDL_Color c, bool useCamera = true) const;
 	bool DrawCircle(int x, int y, int rad, SDL_Color c, bool useCamera = true) const;
+	void DrawGrid(int rows, int columns, SDL_Color c, bool useCamera = true) const;
 
 	SDL_Renderer* GetRenderer() const { return this->renderer; }
 	SDL_Texture* GetRendererTexture() const { return this->renderer_texture; }

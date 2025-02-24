@@ -5,7 +5,10 @@
 
 RendererEM::RendererEM(EngineCore* parent) : EngineModule(parent)
 {
-	background_color = { 255,255,255,255 };
+	background_color.r = 200;
+	background_color.g = 200;
+	background_color.b = 200;
+	background_color.a = 255;
 	vsync = true;
 }
 
@@ -30,18 +33,15 @@ bool RendererEM::Awake()
 	{
 		viewport = new SDL_Rect();
 		camera = new SDL_Rect();
-		camera->w = 1700;//engine->window_em->GetSDLSurface()->w;
-		camera->h = 900;//engine->window_em->GetSDLSurface()->h;
-		camera->x = 0;
-		camera->y = 0;
+		ResetCamera();
 	}
 
 	renderer_texture = SDL_CreateTexture(
 		renderer,
 		SDL_PIXELFORMAT_RGBA8888,
 		SDL_TEXTUREACCESS_STREAMING,
-		camera->w,
-		camera->h
+		DEFAULT_CAM_WIDTH,
+		DEFAULT_CAM_HEIGHT
 	);
 	if (renderer_texture == NULL) return false;
 
@@ -49,8 +49,8 @@ bool RendererEM::Awake()
 		renderer,
 		SDL_PIXELFORMAT_RGBA8888,
 		SDL_TEXTUREACCESS_TARGET,
-		camera->w,
-		camera->h
+		DEFAULT_CAM_WIDTH,
+		DEFAULT_CAM_HEIGHT
 	);
 	if (renderer_target == NULL) return false;
 
@@ -70,7 +70,6 @@ bool RendererEM::PreUpdate()
 {
 	bool ret = true;
 
-
 	SDL_SetRenderTarget(renderer, renderer_target);
 	SDL_SetRenderDrawColor(renderer, background_color.r, background_color.g, background_color.b, background_color.a);
 	SDL_RenderClear(renderer);
@@ -89,8 +88,9 @@ bool RendererEM::PostUpdate()
 {
 	bool ret = true;
 
-	SDL_Rect r = { 10,10,100,100 };
+	SDL_Rect r = { -5,-5,10,10 };
 	DrawRectangle(r, { 0,0,0,255 }, true);
+	DrawGrid(50,50, { 0,0,0,100 });
 
 	SDL_Texture* prev_target = SDL_GetRenderTarget(renderer);
 	void* pixels;
@@ -105,7 +105,7 @@ bool RendererEM::PostUpdate()
 	);
 	SDL_UnlockTexture(renderer_texture);
 	SDL_SetRenderTarget(renderer, prev_target);
-	SDL_UpdateTexture(renderer_texture, nullptr, pixels, camera->w * 4);
+	SDL_UpdateTexture(renderer_texture, nullptr, pixels, DEFAULT_CAM_WIDTH * 4);
 
 	SDL_SetRenderTarget(renderer, NULL);
 
@@ -148,12 +148,27 @@ void RendererEM::MoveCamera(const SDL_Rect& rect)
 	camera->y += rect.y;
 }
 
+void RendererEM::CameraZoom(float zoom)
+{
+
+}
+
 void RendererEM::ResetCamera()
 {
-	camera->w = 1700;//engine->window_em->GetSDLSurface()->w;
-	camera->h = 900;//engine->window_em->GetSDLSurface()->h;
-	camera->x = 0;
-	camera->y = 0;
+	ResetCameraPos();
+	ResetCameraZoom();
+}
+
+void RendererEM::ResetCameraPos()
+{
+	camera->x = (DEFAULT_CAM_WIDTH * 0.5);
+	camera->y = (DEFAULT_CAM_HEIGHT * 0.5);
+}
+
+void RendererEM::ResetCameraZoom()
+{
+	camera->w = DEFAULT_CAM_WIDTH;
+	camera->h = DEFAULT_CAM_HEIGHT;
 }
 
 bool RendererEM::DrawTexture(SDL_Texture* tex, int x, int y, const SDL_Rect* section, float speed, double angle, int pivotX, int pivotY)
@@ -215,8 +230,8 @@ bool RendererEM::DrawLine(int x1, int y1, int x2, int y2, SDL_Color c, bool useC
 
 	int result = -1;
 
-	if (useCamera) result = SDL_RenderDrawLine(renderer, camera->x + x1, camera->y + y1, camera->x + x1, camera->y + y1);
-	else result = SDL_RenderDrawLine(renderer, x1, y1, x1, y1);
+	if (useCamera) result = SDL_RenderDrawLine(renderer, camera->x + x1, camera->y + y1, camera->x + x2, camera->y + y2);
+	else result = SDL_RenderDrawLine(renderer, x1, y1, x2, y2);
 
 	if (result != 0) return false;
 
@@ -245,4 +260,21 @@ bool RendererEM::DrawCircle(int x, int y, int rad, SDL_Color c, bool useCamera) 
 	if (result != 0) return false;
 
 	return ret;
+}
+
+void RendererEM::DrawGrid(int rows, int columns, SDL_Color c, bool useCamera) const {
+	const int spacing = 100;
+
+	const int halfWidth = (columns * spacing) / 2;
+	const int halfHeight = (rows * spacing) / 2;
+
+	for (int i = 0; i <= rows; ++i) {
+		int y = i * spacing - halfHeight;
+		DrawLine(-halfWidth, y, halfWidth, y, c, useCamera);
+	}
+
+	for (int i = 0; i <= columns; ++i) {
+		int x = i * spacing - halfWidth;
+		DrawLine(x, -halfHeight, x, halfHeight, c, useCamera);
+	}
 }

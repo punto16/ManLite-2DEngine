@@ -3,6 +3,7 @@
 #include "GUI.h"
 #include "EngineCore.h"
 #include "RendererEM.h"
+#include "InputEM.h"
 
 #include <SDL2/SDL_opengl.h>
 #include <SDL2/SDL.h>
@@ -10,7 +11,7 @@
 #include <imgui.h>
 #include <vector>
 
-PanelScene::PanelScene(PanelType type, std::string name, bool enabled) : Panel(type, name, enabled)
+PanelScene::PanelScene(PanelType type, std::string name, bool enabled) : Panel(type, name, enabled), cam_speed(5.0f)
 {
 }
 
@@ -32,45 +33,59 @@ bool PanelScene::Update()
 {
 	bool ret = true;
 
-
-
-	SDL_Texture* sdlTexture = engine->renderer_em->GetRendererTexture();
-	void* pixels;
-	int pitch;
-	if (SDL_LockTexture(sdlTexture, nullptr, &pixels, &pitch))
-	{
-		const char* error = SDL_GetError();
-		return false;
-	}
-	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, openglTextureID);
-	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, engine->renderer_em->GetViewPort()->w, engine->renderer_em->GetViewPort()->h, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
-	SDL_UnlockTexture(sdlTexture);
-
 	if (ImGui::Begin(name.c_str(), &enabled))
 	{
-		ImVec2 window_size = ImGui::GetContentRegionAvail();
+		//movement of scene camera
+		cam_speed = 5.0f;
+		if (engine->input_em->GetMouseButtonDown(SDL_BUTTON_RIGHT) == KEY_REPEAT)
+		{
+			if (engine->input_em->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT) cam_speed *= 2;
+			if (engine->input_em->GetKey(SDL_SCANCODE_W) == KEY_REPEAT) engine->renderer_em->MoveCamera({ 0,(int)cam_speed,0,0 });
+			if (engine->input_em->GetKey(SDL_SCANCODE_S) == KEY_REPEAT) engine->renderer_em->MoveCamera({ 0,-(int)cam_speed,0,0 });
+			if (engine->input_em->GetKey(SDL_SCANCODE_A) == KEY_REPEAT) engine->renderer_em->MoveCamera({ (int)cam_speed,0,0,0 });
+			if (engine->input_em->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) engine->renderer_em->MoveCamera({ -(int)cam_speed,0,0,0 });
+		}
+		if (engine->input_em->GetKey(SDL_SCANCODE_1) == KEY_REPEAT)
+		{
+			engine->renderer_em->CameraZoom(0.1f);
+		}
 
+
+		//sdl_texture (type: streming) into opengl 2d image
+		SDL_Texture* sdlTexture = engine->renderer_em->GetRendererTexture();
+		void* pixels;
+		int pitch;
+		if (SDL_LockTexture(sdlTexture, nullptr, &pixels, &pitch))
+		{
+			const char* error = SDL_GetError();
+			return false;
+		}
+		glEnable(GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D, openglTextureID);
+		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, engine->renderer_em->GetViewPort()->w, engine->renderer_em->GetViewPort()->h, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+		SDL_UnlockTexture(sdlTexture);
+
+		ImVec2 window_size = ImGui::GetContentRegionAvail();
 		float image_width = engine->renderer_em->GetViewPort()->w;
 		float image_height = engine->renderer_em->GetViewPort()->h;
-
 		float image_aspect_ratio = image_width / image_height;
 		float window_aspect_ratio = window_size.x / window_size.y;
-
 		ImVec2 scaled_size;
-		if (window_aspect_ratio > image_aspect_ratio) {
+		if (window_aspect_ratio > image_aspect_ratio)
+		{
 			scaled_size.y = window_size.y;
 			scaled_size.x = scaled_size.y * image_aspect_ratio;
 		}
-		else {
+		else
+		{
 			scaled_size.x = window_size.x;
 			scaled_size.y = scaled_size.x / image_aspect_ratio;
 		}
-
 		ImVec2 image_pos = ImGui::GetCursorScreenPos();
 		image_pos.x += (window_size.x - scaled_size.x) * 0.5f;
 		image_pos.y += (window_size.y - scaled_size.y) * 0.5f;
 
+		//rendering in imgui panel
 		ImGui::GetWindowDrawList()->AddImage(
 			(ImTextureID)(intptr_t)openglTextureID,
 			image_pos,

@@ -18,9 +18,14 @@ public:
 	bool Update();
 	bool CleanUp();
 
+	void SetCamSpeed(float newspeed) { this->cam_speed = newspeed; }
+	float GetCamSpeed() const { return this->cam_speed; }
+
 private:
 
 	GLuint openglTextureID = 0;
+
+	float cam_speed;
 };
 
 #endif // !__PANEL_SCENE_H__
