@@ -2,7 +2,10 @@
 #define __ENGINE_CORE_H__
 #pragma once
 
+#include "Log.h"
+
 #include <list>
+#include <vector>
 
 //EM means Engine Module
 
@@ -28,6 +31,12 @@ public:
 
 	void CleanUp();
 
+	//Logs
+	std::vector<LogInfo> GetLogs();
+	void AddLog(LogType type, const char* entry);
+	void CleanLogs();
+
+
 private:
 
 
@@ -41,6 +50,7 @@ private:
 
 	std::list<EngineModule*> engine_modules;
 
+	std::vector<LogInfo> logs;
 };
 
 extern EngineCore* engine;

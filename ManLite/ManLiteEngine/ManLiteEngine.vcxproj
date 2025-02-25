@@ -167,13 +167,16 @@ popd
   <ItemGroup>
     <ClCompile Include="EngineCore.cpp" />
     <ClCompile Include="InputEM.cpp" />
+    <ClCompile Include="Log.cpp" />
     <ClCompile Include="RendererEM.cpp" />
     <ClCompile Include="WindowEM.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Defs.h" />
     <ClInclude Include="EngineCore.h" />
     <ClInclude Include="EngineModule.h" />
     <ClInclude Include="InputEM.h" />
+    <ClInclude Include="Log.h" />
     <ClInclude Include="RendererEM.h" />
     <ClInclude Include="WindowEM.h" />
   </ItemGroup>

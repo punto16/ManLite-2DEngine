@@ -1,5 +1,7 @@
 #include "App.h"
 
+#include "../ManLiteEngine/Log.h"
+
 enum MainState
 {
 	CREATE = 1,
@@ -15,7 +17,7 @@ App* app = NULL;
 
 int main(int argc, char* args[])
 {
-	//LOG(LogType::LOG_INFO, "Engine starting ...");
+	LOG(LogType::LOG_INFO, "Engine starting ...");
 
 	MainState state = CREATE;
 	int result = EXIT_FAILURE;
@@ -34,27 +36,27 @@ int main(int argc, char* args[])
 		}
 		case AWAKE:
 		{
-			//LOG(LogType::LOG_INFO, "AWAKE PHASE ===============================");
+			LOG(LogType::LOG_INFO, "AWAKE PHASE ===============================");
 			if (app->Awake()) state = START;
 			else
 			{
-				//LOG(LogType::LOG_ERROR, "Awake phase");
+				LOG(LogType::LOG_ERROR, "Awake phase");
 				state = FAIL;
 			}
 			break;
 		}
 		case START:
 		{
-			//LOG(LogType::LOG_INFO, "START PHASE ===============================");
+			LOG(LogType::LOG_INFO, "START PHASE ===============================");
 			if (app->Start())
 			{
 				state = LOOP;
-				//LOG(LogType::LOG_INFO, "UPDATE PHASE ===============================");
+				LOG(LogType::LOG_INFO, "UPDATE PHASE ===============================");
 			}
 			else
 			{
 				state = FAIL;
-				//LOG(LogType::LOG_ERROR, "Start phase");
+				LOG(LogType::LOG_ERROR, "Start phase");
 			}
 			break;
 		}
@@ -65,7 +67,7 @@ int main(int argc, char* args[])
 		}
 		case CLEAN:
 		{
-			//LOG(LogType::LOG_INFO, "CLEANUP PHASE ===============================");
+			LOG(LogType::LOG_INFO, "CLEANUP PHASE ===============================");
 			if (app->CleanUp())
 			{
 				if (app != nullptr)
@@ -82,7 +84,7 @@ int main(int argc, char* args[])
 		}
 		case FAIL:
 		{
-			//LOG(LogType::LOG_ERROR, "Exiting with errors :(");
+			LOG(LogType::LOG_ERROR, "Exiting with errors :(");
 			result = EXIT_FAILURE;
 			state = EXIT;
 			break;

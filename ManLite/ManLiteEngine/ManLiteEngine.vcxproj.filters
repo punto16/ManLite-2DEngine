@@ -7,6 +7,9 @@
     <Filter Include="EngineModules">
       <UniqueIdentifier>{e2fbea8a-8e98-46e1-ba9d-8a64500e21bc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Utils">
+      <UniqueIdentifier>{58fd716c-6bcd-4da7-a5c5-77abd187258e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EngineCore.cpp">
@@ -20,6 +23,9 @@
     </ClCompile>
     <ClCompile Include="RendererEM.cpp">
       <Filter>EngineModules</Filter>
+    </ClCompile>
+    <ClCompile Include="Log.cpp">
+      <Filter>Utils</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -37,6 +43,12 @@
     </ClInclude>
     <ClInclude Include="RendererEM.h">
       <Filter>EngineModules</Filter>
+    </ClInclude>
+    <ClInclude Include="Log.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Defs.h">
+      <Filter>Utils</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

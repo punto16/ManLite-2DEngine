@@ -4,6 +4,7 @@
 #include "WindowEM.h"
 #include "InputEM.h"
 #include "RendererEM.h"
+#include "Defs.h"
 
 EngineCore::EngineCore()
 {
@@ -101,4 +102,25 @@ void EngineCore::CleanUp()
 		delete module;
 	}
 	engine_modules.clear();
+}
+
+std::vector<LogInfo> EngineCore::GetLogs()
+{
+	return logs;
+}
+
+void EngineCore::AddLog(LogType type, const char* entry)
+{
+	if (logs.size() > MAX_LOGS_CONSOLE)
+		logs.erase(logs.begin());
+
+	std::string toAdd = entry;
+	LogInfo info = { type, toAdd };
+
+	logs.push_back(info);
+}
+
+void EngineCore::CleanLogs()
+{
+	logs.clear();
 }

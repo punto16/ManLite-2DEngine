@@ -3,6 +3,7 @@
 #include "GUI.h"
 
 #include "../ManLiteEngine/EngineCore.h"
+#include "../ManLiteEngine/Defs.h"
 
 EngineCore* engine = NULL;
 
@@ -42,8 +43,8 @@ bool App::Awake()
 	bool ret = true;
 
 	//targetFrameDuration = (std::chrono::duration<double>)1 / frameRate;
-	title = "ManLite 2D Engine";
-	organization = "punto16";
+	title = TITLE;
+	organization = ORGANIZATION;
 
 
 	engine->Awake();
