@@ -149,7 +149,10 @@ void RendererEM::MoveCamera(const SDL_Rect& rect)
 
 void RendererEM::CameraZoom(float zoom)
 {
-
+	camera->w += DEFAULT_CAM_WIDTH * zoom;
+	camera->h += DEFAULT_CAM_HEIGHT * zoom;
+	if (camera->w < 17) camera->w = 17;
+	if (camera->h < 9) camera->h = 9;
 }
 
 void RendererEM::ResetCamera()
@@ -209,13 +212,22 @@ bool RendererEM::DrawRectangle(const SDL_Rect& rect, SDL_Color c, bool filled, b
 
 	if (useCamera)
 	{
-		rec.x = (int)(camera->x + rect.x);
-		rec.y = (int)(camera->y + rect.y);
+		int screenWidth, screenHeight;
+		SDL_GetRendererOutputSize(renderer, &screenWidth, &screenHeight);
+		float scaleX = (float)screenWidth / camera->w;
+		float scaleY = (float)screenHeight / camera->h;
+		int camCenterX = camera->x + camera->w / 2;
+		int camCenterY = camera->y + camera->h / 2;
+
+		rec.x = (int)((rec.x + camCenterX) * scaleX + screenWidth / 2);
+		rec.y = (int)((rec.y + camCenterY) * scaleY + screenHeight / 2);
+		rec.w = (int)(rec.w * scaleX);
+		rec.h = (int)(rec.h * scaleY);
 	}
 
 	int result = filled ? SDL_RenderFillRect(renderer, &rec) : SDL_RenderDrawRect(renderer, &rec);
-
-	if (result != 0) return false;
+	if (result != 0)
+		ret = false;
 
 	return ret;
 }
@@ -227,12 +239,23 @@ bool RendererEM::DrawLine(int x1, int y1, int x2, int y2, SDL_Color c, bool useC
 	SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 	SDL_SetRenderDrawColor(renderer, c.r, c.g, c.b, c.a);
 
-	int result = -1;
+	if (useCamera)
+	{
+		int screenWidth, screenHeight;
+		SDL_GetRendererOutputSize(renderer, &screenWidth, &screenHeight);
+		float scaleX = (float)screenWidth / camera->w;
+		float scaleY = (float)screenHeight / camera->h;
+		int camCenterX = camera->x + camera->w / 2;
+		int camCenterY = camera->y + camera->h / 2;
 
-	if (useCamera) result = SDL_RenderDrawLine(renderer, camera->x + x1, camera->y + y1, camera->x + x2, camera->y + y2);
-	else result = SDL_RenderDrawLine(renderer, x1, y1, x2, y2);
+		x1 = (int)((x1 + camCenterX) * scaleX + screenWidth / 2);
+		y1 = (int)((y1 + camCenterY) * scaleY + screenHeight / 2);
+		x2 = (int)((x2 + camCenterX) * scaleX + screenWidth / 2);
+		y2 = (int)((y2 + camCenterY) * scaleY + screenHeight / 2);
+	}
 
-	if (result != 0) return false;
+	if (SDL_RenderDrawLine(renderer, x1, y1, x2, y2) != 0)
+		ret = false;
 
 	return ret;
 }

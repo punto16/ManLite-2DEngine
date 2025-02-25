@@ -28,6 +28,8 @@ public:
 	void SetCamera(const SDL_Rect& rect);
 	//DO not use for zoom, use CameraZoom() instead
 	void MoveCamera(const SDL_Rect& rect);
+	// input < 0.0f -> zoom in
+	// input > 0.0f -> zoom out
 	void CameraZoom(float zoom);
 	void ResetCamera();
 	void ResetCameraPos();

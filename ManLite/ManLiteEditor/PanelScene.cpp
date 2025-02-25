@@ -50,7 +50,11 @@ bool PanelScene::Update()
 		}
 		if (engine->input_em->GetKey(SDL_SCANCODE_1) == KEY_REPEAT)
 		{
-			engine->renderer_em->CameraZoom(0.1f);
+			engine->renderer_em->CameraZoom(0.01f);
+		}
+		if (engine->input_em->GetKey(SDL_SCANCODE_2) == KEY_REPEAT)
+		{
+			engine->renderer_em->CameraZoom(-0.01f);
 		}
 
 
