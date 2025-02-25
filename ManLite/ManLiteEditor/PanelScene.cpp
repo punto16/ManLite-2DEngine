@@ -1,4 +1,4 @@
-#include "PanelScene.h"
+﻿#include "PanelScene.h"
 
 #include "GUI.h"
 #include "EngineCore.h"
@@ -59,7 +59,7 @@ bool PanelScene::Update()
 		}
 
 		static bool middle_drag = false;
-		static int prev_mouse_x, prev_mouse_y;
+		static float prev_mouse_x, prev_mouse_y;
 		if (engine->input_em->GetMouseButtonDown(SDL_BUTTON_MIDDLE) == KEY_REPEAT)
 		{
 			int current_mouse_x, current_mouse_y;
@@ -73,13 +73,21 @@ bool PanelScene::Update()
 			}
 			else
 			{
-				int delta_x = current_mouse_x - prev_mouse_x;
-				int delta_y = current_mouse_y - prev_mouse_y;
+				float delta_x = current_mouse_x - prev_mouse_x;
+				float delta_y = current_mouse_y - prev_mouse_y;
+
+				int screenWidth, screenHeight;
+				SDL_GetRendererOutputSize(engine->renderer_em->GetRenderer(), &screenWidth, &screenHeight);
+				float scaleX = static_cast<float>(screenWidth) / engine->renderer_em->GetCamera()->w;
+				float scaleY = static_cast<float>(screenHeight) / engine->renderer_em->GetCamera()->h;
 
 				float drag_sensitivity = 1.75f;
+				int scaled_delta_x = static_cast<int>(-delta_x * drag_sensitivity / scaleX);
+				int scaled_delta_y = static_cast<int>(-delta_y * drag_sensitivity / scaleY);
+
 				engine->renderer_em->MoveCamera({
-					(int)(-delta_x * drag_sensitivity),
-					(int)(-delta_y * drag_sensitivity),
+					scaled_delta_x,
+					scaled_delta_y,
 					0,
 					0
 					});

@@ -154,8 +154,8 @@ void RendererEM::CameraZoom(float zoom)
 
 	camera->w += DEFAULT_CAM_WIDTH * -zoom;
 	camera->h += DEFAULT_CAM_HEIGHT * -zoom;
-	if (camera->w < 17) camera->w = 17;
-	if (camera->h < 9) camera->h = 9;
+	if (camera->w < 442) camera->w = 442;
+	if (camera->h < 234) camera->h = 234;
 
 	camera->x = originalCenterX - (camera->w / 2);
 	camera->y = originalCenterY - (camera->h / 2);
