@@ -149,10 +149,16 @@ void RendererEM::MoveCamera(const SDL_Rect& rect)
 
 void RendererEM::CameraZoom(float zoom)
 {
-	camera->w += DEFAULT_CAM_WIDTH * zoom;
-	camera->h += DEFAULT_CAM_HEIGHT * zoom;
+	int originalCenterX = camera->x + camera->w / 2;
+	int originalCenterY = camera->y + camera->h / 2;
+
+	camera->w += DEFAULT_CAM_WIDTH * -zoom;
+	camera->h += DEFAULT_CAM_HEIGHT * -zoom;
 	if (camera->w < 17) camera->w = 17;
 	if (camera->h < 9) camera->h = 9;
+
+	camera->x = originalCenterX - (camera->w / 2);
+	camera->y = originalCenterY - (camera->h / 2);
 }
 
 void RendererEM::ResetCamera()
@@ -169,34 +175,73 @@ void RendererEM::ResetCameraPos()
 
 void RendererEM::ResetCameraZoom()
 {
+	int originalCenterX = camera->x + camera->w / 2;
+	int originalCenterY = camera->y + camera->h / 2;
+
 	camera->w = DEFAULT_CAM_WIDTH;
 	camera->h = DEFAULT_CAM_HEIGHT;
+
+	camera->x = originalCenterX - (camera->w / 2);
+	camera->y = originalCenterY - (camera->h / 2);
 }
 
-bool RendererEM::DrawTexture(SDL_Texture* tex, int x, int y, const SDL_Rect* section, float speed, double angle, int pivotX, int pivotY)
+bool RendererEM::DrawTexture(SDL_Texture* tex, int x, int y, bool useCamera, const SDL_Rect* section, float speed, double angle, int pivotX, int pivotY)
 {
 	bool ret = true;
-
 	SDL_Rect rect;
-	rect.x = (int)(camera->x * speed) + x;
-	rect.y = (int)(camera->y * speed) + y;
+	int screenWidth, screenHeight;
 
-	if (section != NULL)
+	SDL_GetRendererOutputSize(renderer, &screenWidth, &screenHeight);
+
+	if (useCamera)
 	{
-		rect.w = section->w;
-		rect.h = section->h;
+		float scaleX = (float)screenWidth / camera->w;
+		float scaleY = (float)screenHeight / camera->h;
+		int camCenterX = camera->x + camera->w / 2;
+		int camCenterY = camera->y + camera->h / 2;
+
+		rect.x = static_cast<int>((x - camCenterX) * scaleX + screenWidth / 2);
+		rect.y = static_cast<int>((y - camCenterY) * scaleY + screenHeight / 2);
+
+		if (section != NULL)
+		{
+			rect.w = static_cast<int>(section->w * scaleX);
+			rect.h = static_cast<int>(section->h * scaleY);
+		}
+		else
+		{
+			int texW, texH;
+			SDL_QueryTexture(tex, NULL, NULL, &texW, &texH);
+			rect.w = static_cast<int>(texW * scaleX);
+			rect.h = static_cast<int>(texH * scaleY);
+		}
+
+		if (pivotX != INT_MAX && pivotY != INT_MAX)
+		{
+			pivotX = static_cast<int>(pivotX * scaleX);
+			pivotY = static_cast<int>(pivotY * scaleY);
+		}
 	}
-	else SDL_QueryTexture(tex, NULL, NULL, &rect.w, &rect.h);
-
-	SDL_Point* p = new SDL_Point();
-
-	if (pivotX != INT_MAX && pivotY != INT_MAX)
+	else
 	{
-		p->x = pivotX;
-		p->y = pivotY;
+		rect.x = x;
+		rect.y = y;
+		if (section != NULL) {
+			rect.w = section->w;
+			rect.h = section->h;
+		}
+		else
+		{
+			SDL_QueryTexture(tex, NULL, NULL, &rect.w, &rect.h);
+		}
 	}
 
-	if (SDL_RenderCopyEx(renderer, tex, section, &rect, angle, p, SDL_FLIP_NONE)) { return false; }
+	SDL_Point pivot = { pivotX, pivotY };
+	if (SDL_RenderCopyEx(renderer, tex, section, &rect, angle, &pivot, SDL_FLIP_NONE) != 0)
+	{
+		LOG(LogType::LOG_ERROR, "Error Rendering Texture: %s", SDL_GetError());
+		ret = false;
+	}
 
 	return ret;
 }
@@ -219,15 +264,18 @@ bool RendererEM::DrawRectangle(const SDL_Rect& rect, SDL_Color c, bool filled, b
 		int camCenterX = camera->x + camera->w / 2;
 		int camCenterY = camera->y + camera->h / 2;
 
-		rec.x = (int)((rec.x + camCenterX) * scaleX + screenWidth / 2);
-		rec.y = (int)((rec.y + camCenterY) * scaleY + screenHeight / 2);
+		rec.x = (int)((rec.x - camCenterX) * scaleX + screenWidth / 2);
+		rec.y = (int)((rec.y - camCenterY) * scaleY + screenHeight / 2);
 		rec.w = (int)(rec.w * scaleX);
 		rec.h = (int)(rec.h * scaleY);
 	}
 
 	int result = filled ? SDL_RenderFillRect(renderer, &rec) : SDL_RenderDrawRect(renderer, &rec);
 	if (result != 0)
+	{
+		LOG(LogType::LOG_ERROR, "Error Rendering Rectangle: %s", SDL_GetError());
 		ret = false;
+	}
 
 	return ret;
 }
@@ -248,14 +296,17 @@ bool RendererEM::DrawLine(int x1, int y1, int x2, int y2, SDL_Color c, bool useC
 		int camCenterX = camera->x + camera->w / 2;
 		int camCenterY = camera->y + camera->h / 2;
 
-		x1 = (int)((x1 + camCenterX) * scaleX + screenWidth / 2);
-		y1 = (int)((y1 + camCenterY) * scaleY + screenHeight / 2);
-		x2 = (int)((x2 + camCenterX) * scaleX + screenWidth / 2);
-		y2 = (int)((y2 + camCenterY) * scaleY + screenHeight / 2);
+		x1 = (int)((x1 - camCenterX) * scaleX + screenWidth / 2);
+		y1 = (int)((y1 - camCenterY) * scaleY + screenHeight / 2);
+		x2 = (int)((x2 - camCenterX) * scaleX + screenWidth / 2);
+		y2 = (int)((y2 - camCenterY) * scaleY + screenHeight / 2);
 	}
 
 	if (SDL_RenderDrawLine(renderer, x1, y1, x2, y2) != 0)
+	{
+		LOG(LogType::LOG_ERROR, "Error Rendering Line: %s", SDL_GetError());
 		ret = false;
+	}
 
 	return ret;
 }
@@ -263,50 +314,91 @@ bool RendererEM::DrawLine(int x1, int y1, int x2, int y2, SDL_Color c, bool useC
 bool RendererEM::DrawCircle(int x, int y, int rad, SDL_Color c, bool useCamera) const
 {
 	bool ret = true;
-
 	SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 	SDL_SetRenderDrawColor(renderer, c.r, c.g, c.b, c.a);
 
-	int result = -1;
+	int screenWidth, screenHeight;
+	SDL_GetRendererOutputSize(renderer, &screenWidth, &screenHeight);
+
 	const int numPoints = 20;
 	SDL_Point points[numPoints];
 
-	for (int i = 0; i < numPoints; ++i) {
+	for (int i = 0; i < numPoints; ++i)
+	{
 		double angle = 2 * M_PI * i / (numPoints - 1);
-		points[i].x = x + static_cast<int>(rad * cos(angle));
-		points[i].y = y + static_cast<int>(rad * sin(angle));
+		int pointX = x + static_cast<int>(rad * cos(angle));
+		int pointY = y + static_cast<int>(rad * sin(angle));
+
+		if (useCamera)
+		{
+			float scaleX = (float)screenWidth / camera->w;
+			float scaleY = (float)screenHeight / camera->h;
+			int camCenterX = camera->x + camera->w / 2;
+			int camCenterY = camera->y + camera->h / 2;
+
+			pointX = static_cast<int>((pointX - camCenterX) * scaleX + screenWidth / 2);
+			pointY = static_cast<int>((pointY - camCenterY) * scaleY + screenHeight / 2);
+		}
+
+		points[i].x = pointX;
+		points[i].y = pointY;
 	}
 
-	result = SDL_RenderDrawLines(renderer, points, numPoints);
-
-	if (result != 0) return false;
+	if (SDL_RenderDrawLines(renderer, points, numPoints) != 0)
+	{
+		LOG(LogType::LOG_ERROR, "Error Rendering Circle: %s", SDL_GetError());
+		ret = false;
+	}
 
 	return ret;
 }
 
-void RendererEM::DrawGrid(int spacing, SDL_Color c, bool useCamera) const {
+void RendererEM::DrawGrid(int spacing, SDL_Color c, bool useCamera) const
+{
 	int screenWidth, screenHeight;
 	SDL_GetRendererOutputSize(renderer, &screenWidth, &screenHeight);
 
-	int camX = -camera->x;
-	int camY = -camera->y;
+	if (useCamera)
+	{
+		float scaleX = (float)screenWidth / camera->w;
+		float scaleY = (float)screenHeight / camera->h;
+		int camCenterX = camera->x + camera->w / 2;
+		int camCenterY = camera->y + camera->h / 2;
 
-	int visibleLeft = camX - screenWidth;
-	int visibleRight = camX + 2 * screenWidth;
-	int visibleTop = camY - screenHeight;
-	int visibleBottom = camY + 2 * screenHeight;
+		int visibleLeft = camCenterX - (screenWidth / (2 * scaleX));
+		int visibleRight = camCenterX + (screenWidth / (2 * scaleX));
+		int visibleTop = camCenterY - (screenHeight / (2 * scaleY));
+		int visibleBottom = camCenterY + (screenHeight / (2 * scaleY));
 
-	int startX = (visibleLeft / spacing) * spacing;
-	int endX = (visibleRight / spacing) * spacing + spacing;
+		int startX = (visibleLeft / spacing) * spacing;
+		int endX = visibleRight + spacing;
+		for (int x = startX; x <= endX; x += spacing)
+		{
+			DrawLine(x, visibleTop, x, visibleBottom, c, true);
+		}
 
-	for (int x = startX; x <= endX; x += spacing) {
-		DrawLine(x, visibleTop, x, visibleBottom, c, useCamera);
+		int startY = (visibleTop / spacing) * spacing;
+		int endY = visibleBottom + spacing;
+		for (int y = startY; y <= endY; y += spacing)
+		{
+			DrawLine(visibleLeft, y, visibleRight, y, c, true);
+		}
 	}
+	else
+	{
+		int startX = 0;
+		int endX = screenWidth;
+		int startY = 0;
+		int endY = screenHeight;
 
-	int startY = (visibleTop / spacing) * spacing;
-	int endY = (visibleBottom / spacing) * spacing + spacing;
+		for (int x = startX; x <= endX; x += spacing)
+		{
+			DrawLine(x, startY, x, endY, c, false);
+		}
 
-	for (int y = startY; y <= endY; y += spacing) {
-		DrawLine(visibleLeft, y, visibleRight, y, c, useCamera);
+		for (int y = startY; y <= endY; y += spacing)
+		{
+			DrawLine(startX, y, endX, y, c, false);
+		}
 	}
 }

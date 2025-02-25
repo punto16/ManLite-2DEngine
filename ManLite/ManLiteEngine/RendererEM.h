@@ -39,7 +39,7 @@ public:
 	void SetBackgroundColor(SDL_Color c) { this->background_color = c; }
 	SDL_Color GetBackGroundColor() const { return this->background_color; }
 
-	bool DrawTexture(SDL_Texture* tex, int x, int y, const SDL_Rect* section = NULL, float speed = 1.0f, double angle = 0, int pivotX = INT_MAX, int pivotY = INT_MAX);
+	bool DrawTexture(SDL_Texture* tex, int x, int y, bool useCamera = true, const SDL_Rect* section = NULL, float speed = 1.0f, double angle = 0, int pivotX = INT_MAX, int pivotY = INT_MAX);
 	bool DrawRectangle(const SDL_Rect& rect, SDL_Color c, bool filled = true, bool useCamera = true) const;
 	bool DrawLine(int x1, int y1, int x2, int y2, SDL_Color c, bool useCamera = true) const;
 	bool DrawCircle(int x, int y, int rad, SDL_Color c, bool useCamera = true) const;

@@ -43,7 +43,8 @@ public:
 	bool GetWindowEvent(EventWindow ev) { return windowEvents[ev]; }
 	void GetMousePosition(int& x, int& y) { x = this->mouseX; y = this->mouseY; }
 	void GetMouseMotion(int& x, int& y) { x = this->mouse_motionX; y = this->mouse_motionY; }
-
+	//-1 scroll down | 0 nothing | 1 scroll up
+	int GetMouseWheelMotion() const { return mouse_wheelY; }
 	void CloseApp();
 
 	std::vector<SDL_Event> GetSDLEvents() { return events; }
@@ -55,7 +56,7 @@ private:
 	bool windowEvents[WindowEvent_Count];
 	KeyState* keyboard;
 	KeyState mouse_buttons[5];
-	int mouseX, mouseY, mouse_motionX, mouse_motionY;
+	int mouseX, mouseY, mouse_motionX, mouse_motionY, mouse_wheelY;
 
 	std::vector<SDL_Event> events;
 };

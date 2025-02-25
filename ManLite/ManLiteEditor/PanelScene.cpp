@@ -43,20 +43,20 @@ bool PanelScene::Update()
 		if (engine->input_em->GetMouseButtonDown(SDL_BUTTON_RIGHT) == KEY_REPEAT)
 		{
 			if (engine->input_em->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT) cam_speed *= 2;
-			if (engine->input_em->GetKey(SDL_SCANCODE_W) == KEY_REPEAT) engine->renderer_em->MoveCamera({ 0,(int)cam_speed,0,0 });
-			if (engine->input_em->GetKey(SDL_SCANCODE_S) == KEY_REPEAT) engine->renderer_em->MoveCamera({ 0,-(int)cam_speed,0,0 });
-			if (engine->input_em->GetKey(SDL_SCANCODE_A) == KEY_REPEAT) engine->renderer_em->MoveCamera({ (int)cam_speed,0,0,0 });
-			if (engine->input_em->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) engine->renderer_em->MoveCamera({ -(int)cam_speed,0,0,0 });
+			if (engine->input_em->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT) cam_speed *= 0.5;
+			if (engine->input_em->GetKey(SDL_SCANCODE_W) == KEY_REPEAT) engine->renderer_em->MoveCamera({ 0,-(int)cam_speed,0,0 });
+			if (engine->input_em->GetKey(SDL_SCANCODE_S) == KEY_REPEAT) engine->renderer_em->MoveCamera({ 0,(int)cam_speed,0,0 });
+			if (engine->input_em->GetKey(SDL_SCANCODE_A) == KEY_REPEAT) engine->renderer_em->MoveCamera({ -(int)cam_speed,0,0,0 });
+			if (engine->input_em->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) engine->renderer_em->MoveCamera({ (int)cam_speed,0,0,0 });
 		}
-		if (engine->input_em->GetKey(SDL_SCANCODE_1) == KEY_REPEAT)
+		float zoom_speed = 0.1f;
+		int mouse_wheel = engine->input_em->GetMouseWheelMotion();
+		if (mouse_wheel != 0)
 		{
-			engine->renderer_em->CameraZoom(0.01f);
+			if (engine->input_em->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT) zoom_speed *= 2;
+			if (engine->input_em->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT) zoom_speed *= 0.5;
+			engine->renderer_em->CameraZoom(mouse_wheel * zoom_speed);
 		}
-		if (engine->input_em->GetKey(SDL_SCANCODE_2) == KEY_REPEAT)
-		{
-			engine->renderer_em->CameraZoom(-0.01f);
-		}
-
 
 		static bool middle_drag = false;
 		static int prev_mouse_x, prev_mouse_y;
@@ -78,8 +78,8 @@ bool PanelScene::Update()
 
 				float drag_sensitivity = 1.75f;
 				engine->renderer_em->MoveCamera({
-					(int)(delta_x * drag_sensitivity),
-					(int)(delta_y * drag_sensitivity),
+					(int)(-delta_x * drag_sensitivity),
+					(int)(-delta_y * drag_sensitivity),
 					0,
 					0
 					});

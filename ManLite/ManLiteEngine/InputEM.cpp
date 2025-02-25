@@ -36,6 +36,7 @@ bool InputEM::Start()
 bool InputEM::PreUpdate()
 {
 	bool ret = true;
+	mouse_wheelY = 0;
 
 	static SDL_Event event;
 	const Uint8* keys = SDL_GetKeyboardState(NULL);
@@ -109,6 +110,11 @@ bool InputEM::PreUpdate()
 			this->mouseY = event.motion.y;
 			this->mouse_motionX = event.motion.xrel;
 			this->mouse_motionY = event.motion.yrel;
+			break;
+		}
+		case SDL_MOUSEWHEEL:
+		{
+			this->mouse_wheelY += event.wheel.y;
 			break;
 		}
 		default:
