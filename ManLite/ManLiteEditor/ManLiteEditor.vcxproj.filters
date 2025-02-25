@@ -92,5 +92,12 @@
     <ClInclude Include="PanelAbout.h">
       <Filter>Modules\GuiPanels</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="ManLiteEditor.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Config\Icons\icon.ico" />
   </ItemGroup>
 </Project>

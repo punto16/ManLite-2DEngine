@@ -182,12 +182,19 @@ popd
     <ClInclude Include="PanelInspector.h" />
     <ClInclude Include="PanelProject.h" />
     <ClInclude Include="PanelScene.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="Timer.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ManLiteEngine\ManLiteEngine.vcxproj">
       <Project>{56225d11-006d-47ca-9bd8-873dfbeefeb6}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="ManLiteEditor.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Config\Icons\icon.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
