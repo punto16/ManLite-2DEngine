@@ -54,6 +54,42 @@ bool PanelScene::Update()
 		}
 
 
+		static bool middle_drag = false;
+		static int prev_mouse_x, prev_mouse_y;
+		if (engine->input_em->GetMouseButtonDown(SDL_BUTTON_MIDDLE) == KEY_REPEAT)
+		{
+			int current_mouse_x, current_mouse_y;
+			engine->input_em->GetMousePosition(current_mouse_x, current_mouse_y);
+
+			if (!middle_drag)
+			{
+				prev_mouse_x = current_mouse_x;
+				prev_mouse_y = current_mouse_y;
+				middle_drag = true;
+			}
+			else
+			{
+				int delta_x = current_mouse_x - prev_mouse_x;
+				int delta_y = current_mouse_y - prev_mouse_y;
+
+				float drag_sensitivity = 1.75f;
+				engine->renderer_em->MoveCamera({
+					(int)(delta_x * drag_sensitivity),
+					(int)(delta_y * drag_sensitivity),
+					0,
+					0
+					});
+
+				prev_mouse_x = current_mouse_x;
+				prev_mouse_y = current_mouse_y;
+			}
+		}
+		else
+		{
+			middle_drag = false;
+		}
+
+
 		//sdl_texture (type: streming) into opengl 2d image
 		SDL_Texture* sdlTexture = engine->renderer_em->GetRendererTexture();
 		void* pixels;
