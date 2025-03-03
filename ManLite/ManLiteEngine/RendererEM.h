@@ -5,9 +5,6 @@
 #include "EngineModule.h"
 #include "SDL2/SDL.h"
 
-#define DEFAULT_CAM_WIDTH 1700
-#define DEFAULT_CAM_HEIGHT 900
-
 class RendererEM : public EngineModule
 {
 public:

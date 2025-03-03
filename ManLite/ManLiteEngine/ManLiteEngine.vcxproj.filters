@@ -27,6 +27,9 @@
     <ClCompile Include="Log.cpp">
       <Filter>Utils</Filter>
     </ClCompile>
+    <ClCompile Include="SceneManagerEM.cpp">
+      <Filter>EngineModules</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="EngineCore.h">
@@ -49,6 +52,9 @@
     </ClInclude>
     <ClInclude Include="Defs.h">
       <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneManagerEM.h">
+      <Filter>EngineModules</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

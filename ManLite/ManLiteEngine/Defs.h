@@ -88,6 +88,10 @@ typedef unsigned __int64 uint64;
 
 
 // OTHERS ------------------------------------------------------------------------
+
+#define DEFAULT_CAM_WIDTH 1700
+#define DEFAULT_CAM_HEIGHT 900
+
 /// Joins a path and file
 inline const char* const PATH(const char* folder, const char* file)
 {

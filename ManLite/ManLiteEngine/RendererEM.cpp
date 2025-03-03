@@ -2,6 +2,7 @@
 
 #include "EngineCore.h"
 #include "WindowEM.h"
+#include "Defs.h"
 
 RendererEM::RendererEM(EngineCore* parent) : EngineModule(parent)
 {

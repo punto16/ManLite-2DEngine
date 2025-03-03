@@ -1,8 +1,11 @@
 #pragma once
 #include "Module.h"
+#include "Timer.h"
 
 #include <string>
 #include <list>
+#include <chrono>
+#include <thread>
 
 class Module;
 class Gui;
@@ -28,8 +31,15 @@ public:
 
 	void AddModule(Module* module, bool activate);
 
+
 	int GetArgc() const;
 	const char* GetArgv(int index) const;
+
+
+	int GetFrameRate() const;
+	void SetFrameRate(int frameRate);
+	double GetDT() const;
+	void SetDT(double dt);
 
 	//int GetFrameRate() const;
 	//void SetFrameRate(int refreshRate);
@@ -47,11 +57,11 @@ public:
 	//void Stop();
 
 private:
-	//void PrepareUpdate();
+	void PrepareUpdate();
 	bool PreUpdate();
 	bool DoUpdate();
 	bool PostUpdate();
-	//void FinishUpdate();
+	void FinishUpdate();
 
 	//Timer* game_timer;
 	//Timer* start_timer;
@@ -68,8 +78,8 @@ public:
 
 	std::string title;
 	std::string organization;
-private:
 
+private:
 
 	int argc;
 	char** args;
@@ -77,14 +87,21 @@ private:
 	std::list<Module*> modules;
 
 	//fps control
-	//std::chrono::duration<double> targetFrameDuration;
-	//std::chrono::steady_clock::time_point frameStart, frameEnd;
+	std::chrono::duration<double> targetFrameDuration;
+	std::chrono::steady_clock::time_point frameStart, frameEnd;
 
-	//int frameRate = 240;
-	//double dt = 0;
-	//double dtCount = 0;
-	//int frameCount = 0;
-	//int fps = 0;
+	Timer* start_timer;
+	Timer* game_timer;
+
+	float time_since_start;
+	float game_time;
+	float scale_time;
+
+	int frameRate = 240;
+	double dt = 0;
+	double dtCount = 0;
+	int frameCount = 0;
+	int fps = 0;
 };
 
 extern App* app;

@@ -4,6 +4,7 @@
 
 #include "../ManLiteEngine/EngineCore.h"
 #include "../ManLiteEngine/Defs.h"
+#include "../ManLiteEngine/WindowEM.h"
 
 EngineCore* engine = NULL;
 
@@ -19,11 +20,11 @@ App::App(int argc, char* args[]) : argc(argc), args(args)
 	AddModule(gui, true);
 
 	//state = GameState::NONE;
-	//time_since_start = 0.0F;
-	//game_time = 0.0F;
-	//scale_time = 1.0F;
-	//start_timer = new Timer();
-	//game_timer = new Timer();
+	time_since_start = 0.0f;
+	game_time = 0.0f;
+	scale_time = 1.0f;
+	start_timer = new Timer();
+	game_timer = new Timer();
 }
 
 App::~App()
@@ -42,7 +43,7 @@ bool App::Awake()
 {
 	bool ret = true;
 
-	//targetFrameDuration = (std::chrono::duration<double>)1 / frameRate;
+	targetFrameDuration = (std::chrono::duration<double>)1 / frameRate;
 	title = TITLE;
 	organization = ORGANIZATION;
 
@@ -59,8 +60,8 @@ bool App::Awake()
 
 bool App::Start()
 {
-	//dt = 0;
-	//start_timer->Start();
+	dt = 0;
+	start_timer->Start();
 
 	engine->Start();
 
@@ -75,7 +76,7 @@ bool App::Start()
 bool App::Update()
 {
 	bool ret = true;
-	//PrepareUpdate();
+	PrepareUpdate();
 
 	if (ret) ret = PreUpdate();
 
@@ -83,9 +84,9 @@ bool App::Update()
 
 	if (ret) ret = PostUpdate();
 
-	//FinishUpdate();
+	FinishUpdate();
 
-	//time_since_start = start_timer->ReadSec();
+	time_since_start = start_timer->ReadSec();
 
 	//if (state == GameState::PLAY || state == GameState::PLAY_ONCE) {
 	//	game_time = game_timer->ReadSec(scale_time);
@@ -94,10 +95,10 @@ bool App::Update()
 	return ret;
 }
 
-//void App::PrepareUpdate()
-//{
-//	frameStart = std::chrono::steady_clock::now();
-//}
+void App::PrepareUpdate()
+{
+	frameStart = std::chrono::steady_clock::now();
+}
 
 bool App::PreUpdate()
 {
@@ -117,12 +118,12 @@ bool App::DoUpdate()
 {
 	bool ret = true;
 
-	if (!engine->Update(/*dt*/0.0166f)) return false;
+	if (!engine->Update(dt)) return false;
 
 	for (auto& item : modules)
 	{
 		if (!item->active) continue;
-		if (!item->Update(/*dt*/0.0166f)) return false;
+		if (!item->Update(dt)) return false;
 	}
 	
 	return true;
@@ -143,42 +144,39 @@ bool App::PostUpdate()
 	return true;
 }
 
-//bool App::FinishUpdate()
-//{
-//	frameEnd = std::chrono::steady_clock::now();
-//	auto frameDuration = std::chrono::duration_cast<std::chrono::duration<double>>(frameEnd - frameStart);
-//
-//	dt = frameDuration.count();
-//
-//	if (frameDuration < targetFrameDuration)
-//	{
-//		std::chrono::duration<double> sleepTime = targetFrameDuration - frameDuration;
-//		std::this_thread::sleep_for(sleepTime);
-//
-//		dt = targetFrameDuration.count();
-//	}
-//
-//	dtCount += dt;
-//	frameCount++;
-//
-//	if (dtCount >= 1)
-//	{
-//		fps = frameCount;
-//		frameCount = 0;
-//		dtCount = 0;
-//	}
-//
-//	app->gui->panelSettings->AddFpsValue(fps);
-//}
+void App::FinishUpdate()
+{
+	frameEnd = std::chrono::steady_clock::now();
+	auto frameDuration = std::chrono::duration_cast<std::chrono::duration<double>>(frameEnd - frameStart);
+
+	dt = frameDuration.count();
+
+	if (frameDuration < targetFrameDuration)
+	{
+		std::chrono::duration<double> sleepTime = targetFrameDuration - frameDuration;
+		std::this_thread::sleep_for(sleepTime);
+
+		dt = targetFrameDuration.count();
+	}
+
+	dtCount += dt;
+	frameCount++;
+
+	if (dtCount >= 1)
+	{
+		fps = frameCount;
+		frameCount = 0;
+		dtCount = 0;
+	}
+	engine->window_em->SetTitle(std::string(TITLE) + " | FPS: " + std::to_string(fps));
+	//app->gui->panelSettings->AddFpsValue(fps);
+}
 
 bool App::CleanUp()
 {
 	bool ret = true;
-
-	//if (start_timer != nullptr)
-	//	delete start_timer;
-	//if (game_timer != nullptr)
-	//	delete game_timer;
+	RELEASE(start_timer)
+	RELEASE(game_timer)
 
 	engine->CleanUp();
 	for (auto item = modules.rbegin(); item != modules.rend(); ++item)
@@ -205,26 +203,26 @@ const char* App::GetArgv(int index) const
 		return NULL;
 }
 
-//int App::GetFrameRate() const
-//{
-//	return frameRate;
-//}
+int App::GetFrameRate() const
+{
+	return frameRate;
+}
 
-//void App::SetFrameRate(int frameRate)
-//{
-//	this->frameRate = frameRate == 0 ? engine->window->GetDisplayRefreshRate() : frameRate;
-//	targetFrameDuration = (std::chrono::duration<double>)1 / this->frameRate;
-//}
+void App::SetFrameRate(int frameRate)
+{
+	this->frameRate = frameRate/* == 0 ? engine->window->GetDisplayRefreshRate() : frameRate*/;
+	targetFrameDuration = (std::chrono::duration<double>)1 / this->frameRate;
+}
 
-//double App::GetDT() const
-//{
-//	return dt;
-//}
+double App::GetDT() const
+{
+	return dt;
+}
 
-//void App::SetDT(double dt)
-//{
-//	this->dt = dt;
-//}
+void App::SetDT(double dt)
+{
+	this->dt = dt;
+}
 
 //void App::Play()
 //{

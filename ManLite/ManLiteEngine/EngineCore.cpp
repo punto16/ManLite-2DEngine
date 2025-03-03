@@ -70,6 +70,7 @@ bool EngineCore::PreUpdate()
 bool EngineCore::Update(double dt)
 {
 	bool ret = true;
+	this->dt = dt;
 
 	for (auto& item : engine_modules)
 	{

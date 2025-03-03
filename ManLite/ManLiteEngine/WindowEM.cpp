@@ -1,9 +1,11 @@
 #include "WindowEM.h"
 
 #include "EngineCore.h"
+#include "Defs.h"
+
 #include <SDL2/SDL_image.h>
 
-WindowEM::WindowEM(EngineCore* parent) : EngineModule(parent)
+WindowEM::WindowEM(EngineCore* parent) : EngineModule(parent), width(DEFAULT_CAM_WIDTH), height(DEFAULT_CAM_HEIGHT)
 {
 
 }

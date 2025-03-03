@@ -29,7 +29,7 @@ private:
 	SDL_Window* window;
 	SDL_Surface* screenSurface;
 
-	unsigned int width = 1700, height = 900;
+	unsigned int width, height;
 };
 
 #endif // !__EWINDOW_EM_H__

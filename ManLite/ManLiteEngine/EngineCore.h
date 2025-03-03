@@ -36,6 +36,8 @@ public:
 	void AddLog(LogType type, const char* entry);
 	void CleanLogs();
 
+	//getters // setters
+	double GetDT() const { return this->dt; }
 
 private:
 
@@ -47,6 +49,8 @@ public:
 	RendererEM* renderer_em = nullptr;
 
 private:
+
+	double dt;
 
 	std::list<EngineModule*> engine_modules;
 
