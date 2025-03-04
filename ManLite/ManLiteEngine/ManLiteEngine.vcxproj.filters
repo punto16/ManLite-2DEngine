@@ -16,6 +16,9 @@
     <Filter Include="Layer">
       <UniqueIdentifier>{781e6dd8-c471-4b1a-ac42-5c288964a6d4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="GameObject\Components">
+      <UniqueIdentifier>{663bbbaa-9669-4b3d-b1f7-50e2607a26ec}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EngineCore.cpp">
