@@ -6,6 +6,8 @@
 #include <vector>
 #include <string>
 
+class Layer;
+
 class GameObject : public std::enable_shared_from_this<GameObject>
 {
 public:
@@ -13,6 +15,10 @@ public:
 	GameObject(std::weak_ptr<GameObject> go_to_copy);
 	~GameObject();
 	
+	bool Update(double dt);
+
+	void Draw();
+
 	//DO NOT call this function to delete a game object
 	//instead, call current_scene->SafeDeleteGO(this);
 	void Delete();
@@ -35,7 +41,7 @@ public:
 	void SetName(std::string name) { this->gameobject_name = name; }
 	uint32_t GetID() const { return this->gameobject_id; }
 	std::weak_ptr<GameObject> GetParentGO() const { return this->parent_gameobject; }
-	//std::weak_ptr<Layer> GetParentLayer() const { return this->parent_layer; }
+	std::weak_ptr<Layer> GetParentLayer() const { return this->parent_layer; }
 	std::vector<std::shared_ptr<GameObject>>& GetChildren() { return children_gameobject; }
 
 	bool IsEnabled() const { return this->enabled; }
@@ -59,7 +65,7 @@ private:
 	uint32_t gameobject_id;
 
 	std::weak_ptr<GameObject> parent_gameobject;
-	//std::weak_ptr<Layer> parent_layer;
+	std::weak_ptr<Layer> parent_layer;
 	std::vector<std::shared_ptr<GameObject>> children_gameobject;
 
 	bool enabled;

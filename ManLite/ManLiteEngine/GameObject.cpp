@@ -1,5 +1,7 @@
 #include "GameObject.h"
 
+#include "Layer.h"
+
 #include <random>
 #include <ctime>
 
@@ -20,6 +22,23 @@ GameObject::GameObject(std::weak_ptr<GameObject> go_to_copy) :
 
 GameObject::~GameObject()
 {
+}
+
+bool GameObject::Update(double dt)
+{
+    bool ret = true;
+    
+    //update components
+
+    for (const auto& item : children_gameobject) item->Update(dt);
+
+    return ret;
+}
+
+void GameObject::Draw()
+{
+    //draw components
+    //layer system!! do not iterate children.draw()
 }
 
 void GameObject::Delete()

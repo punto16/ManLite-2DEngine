@@ -40,6 +40,10 @@ public:
 	//this function will delete layers in a safe way
 	void DeletePengindLayers();
 
+	//
+	void ReparentToLayer(std::shared_ptr<GameObject> game_object, std::shared_ptr<Layer> target_layer);
+	bool ContainsLayer(const std::shared_ptr<Layer>& layer) const;
+
 private:
 	std::string scene_name;
 	//scene_root because gameobjects are tree-like structure
