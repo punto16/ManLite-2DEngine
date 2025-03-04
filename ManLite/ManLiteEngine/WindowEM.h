@@ -32,4 +32,4 @@ private:
 	unsigned int width, height;
 };
 
-#endif // !__EWINDOW_EM_H__
+#endif // !__WINDOW_EM_H__

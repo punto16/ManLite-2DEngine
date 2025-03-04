@@ -10,6 +10,12 @@
     <Filter Include="Utils">
       <UniqueIdentifier>{58fd716c-6bcd-4da7-a5c5-77abd187258e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="GameObject">
+      <UniqueIdentifier>{895f43de-ab62-4920-976d-0711329beac1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Layer">
+      <UniqueIdentifier>{781e6dd8-c471-4b1a-ac42-5c288964a6d4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EngineCore.cpp">
@@ -29,6 +35,9 @@
     </ClCompile>
     <ClCompile Include="SceneManagerEM.cpp">
       <Filter>EngineModules</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject.cpp">
+      <Filter>GameObject</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -55,6 +64,9 @@
     </ClInclude>
     <ClInclude Include="SceneManagerEM.h">
       <Filter>EngineModules</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject.h">
+      <Filter>GameObject</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

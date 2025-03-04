@@ -13,6 +13,7 @@ class EngineModule;
 class WindowEM;
 class InputEM;
 class RendererEM;
+class SceneManagerEM;
 
 class EngineCore
 {
@@ -47,6 +48,7 @@ public:
 	WindowEM* window_em = nullptr;
 	InputEM* input_em = nullptr;
 	RendererEM* renderer_em = nullptr;
+	SceneManagerEM* scene_manager_em = nullptr;
 
 private:
 

@@ -166,6 +166,7 @@ popd
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="EngineCore.cpp" />
+    <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="InputEM.cpp" />
     <ClCompile Include="Log.cpp" />
     <ClCompile Include="RendererEM.cpp" />
@@ -176,6 +177,7 @@ popd
     <ClInclude Include="Defs.h" />
     <ClInclude Include="EngineCore.h" />
     <ClInclude Include="EngineModule.h" />
+    <ClInclude Include="GameObject.h" />
     <ClInclude Include="InputEM.h" />
     <ClInclude Include="Log.h" />
     <ClInclude Include="RendererEM.h" />

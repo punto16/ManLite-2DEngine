@@ -4,6 +4,7 @@
 #include "WindowEM.h"
 #include "InputEM.h"
 #include "RendererEM.h"
+#include "SceneManagerEM.h"
 #include "Defs.h"
 
 EngineCore::EngineCore()
@@ -11,6 +12,7 @@ EngineCore::EngineCore()
 	//create engine modules
 	window_em = new WindowEM(this);
 	input_em = new InputEM(this);
+	scene_manager_em = new SceneManagerEM(this);
 
 	//renderer last
 	renderer_em = new RendererEM(this);
@@ -19,6 +21,7 @@ EngineCore::EngineCore()
 	//add modules
 	AddEngineModule(window_em, true);
 	AddEngineModule(input_em, true);
+	AddEngineModule(scene_manager_em, true);
 
 	//renderer last
 	AddEngineModule(renderer_em, true);
