@@ -11,7 +11,7 @@ class GameObject;
 class Layer : std::enable_shared_from_this<Layer>
 {
 public:
-	Layer(uint32_t layer_id = -1, std::string layer_name = "Layer", bool visible);
+	Layer(uint32_t layer_id = -1, std::string layer_name = "Layer", bool visible = true);
 	~Layer();
 
 	bool Update(double dt);
