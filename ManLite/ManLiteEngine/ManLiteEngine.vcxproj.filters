@@ -45,6 +45,9 @@
     <ClCompile Include="Layer.cpp">
       <Filter>Layer</Filter>
     </ClCompile>
+    <ClCompile Include="Camera2D.cpp">
+      <Filter>GameObject\Components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="EngineCore.h">
@@ -76,6 +79,9 @@
     </ClInclude>
     <ClInclude Include="Layer.h">
       <Filter>Layer</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera2D.h">
+      <Filter>GameObject\Components</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

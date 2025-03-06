@@ -7,7 +7,7 @@
 #include <GL/glew.h>
 #include <SDL2/SDL_opengl.h>
 
-class SDL_Texture;
+class Grid;
 
 class PanelScene : public Panel
 {
@@ -25,7 +25,7 @@ public:
 private:
 
 	GLuint openglTextureID = 0;
-
+	Grid* grid = nullptr;
 	float cam_speed;
 };
 

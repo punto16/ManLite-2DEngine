@@ -4,10 +4,43 @@
 
 #include "EngineModule.h"
 
+#include "Camera2D.h"
+
 #include <GL/glew.h>
 #include "SDL2/SDL.h"
 
 #include "Defs.h"
+
+class Grid
+{
+public:
+	Grid(float size, int divisions);
+	void Draw(const glm::mat4& viewProjMatrix);
+
+private:
+	GLuint vao, vbo;
+	GLuint shaderProgram;
+	float gridSize;
+	int gridDivisions;
+
+	const char* gridVertexShader = R"glsl(
+    #version 330 core
+    layout (location = 0) in vec2 aPos;
+    uniform mat4 uViewProj;
+    void main() {
+        gl_Position = uViewProj * vec4(aPos, 0.0, 1.0);
+    }
+)glsl";
+
+	const char* gridFragmentShader = R"glsl(
+    #version 330 core
+    out vec4 FragColor;
+    uniform vec3 uColor;
+    void main() {
+        FragColor = vec4(uColor, 1.0);
+    }
+)glsl";
+};
 
 struct Vertex
 {
@@ -33,6 +66,9 @@ public:
 
 	void RenderBatch();
 	void ResizeFBO(int width, int height);
+
+	mat4f GetProjection() const { return this->projection; }
+	Camera2D& GetSceneCamera() { return scene_camera; }
 
 	//void SetViewPort(const SDL_Rect& rect);
 	//void ResetViewPort();
@@ -70,6 +106,8 @@ private:
 	GLuint VAO, VBO, EBO;
 	GLuint shaderProgram;
 	mat4f projection;
+	Camera2D scene_camera;
+
 public:
 	GLuint fbo;
 	GLuint renderTexture;

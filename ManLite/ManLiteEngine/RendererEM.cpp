@@ -8,7 +8,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include "Defs.h"
 
-RendererEM::RendererEM(EngineCore* parent) : EngineModule(parent)
+RendererEM::RendererEM(EngineCore* parent) : EngineModule(parent), scene_camera(DEFAULT_CAM_WIDTH, DEFAULT_CAM_HEIGHT)
 {
 	vsync = true;
 }
@@ -102,7 +102,7 @@ bool RendererEM::PreUpdate()
 	glViewport(0, 0, fbSize.x, fbSize.y);
 
 	// Limpiar buffers (existente)
-	glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
+	glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	return ret;
@@ -113,7 +113,13 @@ bool RendererEM::Update(double dt)
 	bool ret = true;
 
 	glUseProgram(shaderProgram);
-	glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+	glm::mat4 viewProj = scene_camera.GetViewProjMatrix();
+	glUniformMatrix4fv(
+		glGetUniformLocation(shaderProgram, "uViewProj"),
+		1,
+		GL_FALSE,
+		glm::value_ptr(viewProj)
+	);
 
 	RenderBatch();
 
@@ -128,9 +134,6 @@ bool RendererEM::PostUpdate()
 	int w, h;
 	SDL_GetWindowSize(engine->window_em->GetSDLWindow(), &w, &h);
 	glViewport(0, 0, w, h);
-
-	//esto de abajo comentado por que no me interesa ver el render de opengl en la window, sino en el panel de imgui
-	//SDL_GL_SwapWindow(engine->window_em->GetSDLWindow());
 
 	return ret;
 }
@@ -158,21 +161,13 @@ bool RendererEM::CompileShaders()
 {
 	bool ret = true;
 	const char* vertexShaderSource = R"glsl(
-            #version 330 core
-            layout (location = 0) in vec3 aPos;
-            layout (location = 1) in vec4 aColor;
-            layout (location = 2) in vec2 aTexCoords;
-            
-            out vec4 ourColor;
-            out vec2 TexCoords;
-            
-            uniform mat4 projection;
-            
-            void main() {
-                gl_Position = projection * vec4(aPos, 1.0);
-                ourColor = aColor;
-                TexCoords = aTexCoords;
-            }
+			#version 330 core
+			layout (location = 0) in vec2 aPos;
+			uniform mat4 uViewProj;
+			
+			void main() {
+			    gl_Position = uViewProj * vec4(aPos, 0.0, 1.0);
+			}
         )glsl";
 
 	const char* fragmentShaderSource = R"glsl(
@@ -269,6 +264,8 @@ void RendererEM::RenderBatch()
 
 void RendererEM::ResizeFBO(int width, int height) {
 	fbSize = { width, height };
+	
+	scene_camera.Resize(width, height);
 
 	// Actualizar textura
 	glBindTexture(GL_TEXTURE_2D, renderTexture);
@@ -277,9 +274,6 @@ void RendererEM::ResizeFBO(int width, int height) {
 	// Actualizar renderbuffer
 	glBindRenderbuffer(GL_RENDERBUFFER, rbo);
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
-
-	// Actualizar proyección
-	projection = glm::ortho(0.0f, (float)width, (float)height, 0.0f, -1.0f, 1.0f);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
@@ -566,3 +560,65 @@ void RendererEM::ResizeFBO(int width, int height) {
 //		}
 //	}
 //}
+
+Grid::Grid(float size, int divisions) : gridSize(size), gridDivisions(divisions)
+{
+	std::vector<float> vertices;
+	float step = gridSize / gridDivisions;
+
+	// Líneas horizontales y verticales
+	for (int i = -gridDivisions; i <= gridDivisions; ++i) {
+		// Líneas horizontales (X)
+		vertices.push_back(-gridSize); vertices.push_back(i * step);
+		vertices.push_back(gridSize);  vertices.push_back(i * step);
+
+		// Líneas verticales (Y)
+		vertices.push_back(i * step); vertices.push_back(-gridSize);
+		vertices.push_back(i * step); vertices.push_back(gridSize);
+	}
+
+	// VAO/VBO
+	glGenVertexArrays(1, &vao);
+	glGenBuffers(1, &vbo);
+
+	glBindVertexArray(vao);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_STATIC_DRAW);
+
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+
+	// Shaders
+	GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
+	glShaderSource(vertexShader, 1, &gridVertexShader, NULL);
+	glCompileShader(vertexShader);
+
+	GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+	glShaderSource(fragmentShader, 1, &gridFragmentShader, NULL);
+	glCompileShader(fragmentShader);
+
+	shaderProgram = glCreateProgram();
+	glAttachShader(shaderProgram, vertexShader);
+	glAttachShader(shaderProgram, fragmentShader);
+	glLinkProgram(shaderProgram);
+
+	glDeleteShader(vertexShader);
+	glDeleteShader(fragmentShader);
+}
+
+void Grid::Draw(const glm::mat4& viewProjMatrix)
+{
+	glUseProgram(shaderProgram);
+
+	// Uniforms
+	GLuint loc = glGetUniformLocation(shaderProgram, "uViewProj");
+	glUniformMatrix4fv(loc, 1, GL_FALSE, glm::value_ptr(viewProjMatrix));
+
+	loc = glGetUniformLocation(shaderProgram, "uColor");
+	glUniform3f(loc, 0.0f, 0.0f, 0.0f); // Color gris
+
+	// Dibujar
+	glBindVertexArray(vao);
+	glDrawArrays(GL_LINES, 0, (4 * (2 * gridDivisions + 1)));
+	glBindVertexArray(0);
+}

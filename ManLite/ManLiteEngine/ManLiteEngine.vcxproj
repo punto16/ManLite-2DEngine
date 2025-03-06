@@ -165,6 +165,7 @@ popd
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Camera2D.cpp" />
     <ClCompile Include="EngineCore.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="InputEM.cpp" />
@@ -175,6 +176,7 @@ popd
     <ClCompile Include="WindowEM.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Camera2D.h" />
     <ClInclude Include="Defs.h" />
     <ClInclude Include="EngineCore.h" />
     <ClInclude Include="EngineModule.h" />
