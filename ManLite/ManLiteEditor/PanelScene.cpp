@@ -68,29 +68,25 @@ bool PanelScene::Update()
 				middle_drag = true;
 			}
 			else {
-				// 1. Calcular deltas
 				float delta_x = current_mouse_x - prev_mouse_x;
 				float delta_y = current_mouse_y - prev_mouse_y;
 
-				ImVec2 panelSize = ImGui::GetContentRegionAvail(); // Tamaño del panel actual
+				ImVec2 panelSize = ImGui::GetContentRegionAvail();
 				float panelWidth = panelSize.x;
 				float panelHeight = panelSize.y;
 
-				// 3. Calcular factor de escala basado en el zoom
 				Camera2D& camera = engine->renderer_em->GetSceneCamera();
-				float scale_factor = 1.0f / camera.GetZoom(); // ¡Usamos el zoom!
+				float scale_factor = 1.0f / camera.GetZoom();
 
 				float aspect_ratio = panelWidth / panelHeight;
 
-				// 4. Convertir píxeles a unidades del mundo
 				float world_delta_x = -delta_x * scale_factor * (2.0f / panelWidth);
 				float world_delta_y = delta_y * scale_factor * (2.0f / panelHeight) * 1/aspect_ratio;
 
-				float drag_sensitivity = 850.0f; // Ajusta este valor
+				float drag_sensitivity = 850.0f;
 				world_delta_x *= drag_sensitivity;
 				world_delta_y *= drag_sensitivity;
 
-				// 5. Aplicar movimiento
 				camera.Move(glm::vec2(world_delta_x, world_delta_y));
 
 				prev_mouse_x = current_mouse_x;

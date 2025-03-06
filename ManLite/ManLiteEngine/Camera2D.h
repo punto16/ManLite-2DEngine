@@ -16,6 +16,9 @@ public:
     const glm::mat4& GetViewProjMatrix() const { return viewProjMatrix; }
     const glm::vec2& GetPosition() const { return position; }
     const float GetZoom() const { return zoom; }
+    const int GetWidth() const { return width; }
+    const int GetHeight() const { return height; }
+    glm::vec2 GetVisibleRange() const;
 
 private:
     void UpdateMatrix();

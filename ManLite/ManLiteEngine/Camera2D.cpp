@@ -37,8 +37,15 @@ void Camera2D::Resize(int newWidth, int newHeight) {
     UpdateMatrix();
 }
 
+glm::vec2 Camera2D::GetVisibleRange() const
+{
+    return glm::vec2(
+        (width * 0.5f) / zoom,
+        (height * 0.5f) / zoom
+    );
+}
+
 void Camera2D::UpdateMatrix() {
-    // Proyección ortográfica centrada
     glm::mat4 projection = glm::ortho(
         -width * 0.5f / zoom,
         width * 0.5f / zoom,
@@ -47,7 +54,6 @@ void Camera2D::UpdateMatrix() {
         -1.0f, 1.0f
     );
 
-    // Vista (traslación)
     glm::mat4 view = glm::translate(glm::mat4(1.0f),
         glm::vec3(-position, 0.0f));
 

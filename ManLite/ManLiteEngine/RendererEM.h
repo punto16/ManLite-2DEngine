@@ -25,20 +25,60 @@ private:
 
 	const char* gridVertexShader = R"glsl(
     #version 330 core
-    layout (location = 0) in vec2 aPos;
-    uniform mat4 uViewProj;
-    void main() {
-        gl_Position = uViewProj * vec4(aPos, 0.0, 1.0);
-    }
+	layout (location = 0) in vec2 aPos;
+	uniform mat4 uViewProj;
+	
+	out vec2 vWorldPos;
+	
+	void main() {
+	    gl_Position = uViewProj * vec4(aPos, 0.0, 1.0);
+	    vWorldPos = aPos;  // Pasamos las coordenadas del mundo al fragment shader
+	}
 )glsl";
 
 	const char* gridFragmentShader = R"glsl(
-    #version 330 core
-    out vec4 FragColor;
-    uniform vec3 uColor;
-    void main() {
-        FragColor = vec4(uColor, 1.0);
-    }
+	#version 330 core
+	in vec2 vWorldPos; // Coordenadas del mundo SIN la cámara
+	out vec4 FragColor;
+	
+	uniform vec3 uGridColor = vec3(0.5);
+	uniform vec3 uAxisColor = vec3(1.0, 0.0, 0.0);
+	uniform float uZoom;
+	uniform vec2 uCameraPos; 
+	uniform vec2 uVisibleRange;
+	
+	const float AXIS_THICKNESS = 2.0; 
+	const float DOT_RADIUS = 3.0;
+	
+	void main() {
+	    // 1. Posición real en el mundo (sin ajustar por la cámara)
+	    vec2 worldPos = vWorldPos;
+	    
+	    // 2. Distancia desde la posición de la cámara
+	    vec2 delta = worldPos - uCameraPos;
+	    
+	    // 3. Early exit (usando la posición real del mundo)
+	    if (abs(delta.x) > uVisibleRange.x || abs(delta.y) > uVisibleRange.y) discard;
+	    
+	    // 4. Ejes centrales (en el origen del mundo, no de la cámara)
+	    float axisX = smoothstep(AXIS_THICKNESS / uZoom, 0.0, abs(worldPos.y));
+	    float axisY = smoothstep(AXIS_THICKNESS / uZoom, 0.0, abs(worldPos.x));
+	    
+	    // 5. Punto central (en el origen del mundo)
+	    float dot = 1.0 - smoothstep(DOT_RADIUS - 0.5, DOT_RADIUS + 0.5, length(worldPos * uZoom));
+	    
+	    // 6. Grid (coherente con la cámara)
+	    vec2 gridPos = worldPos / pow(2.0, floor(log2(uZoom)));
+	    vec2 grid = abs(fract(gridPos - 0.5) - 0.5) / fwidth(gridPos);
+	    float line = min(grid.x, grid.y);
+	    
+	    // 7. Mezclar colores
+	    vec3 color = mix(uGridColor, uAxisColor, max(axisX, axisY));
+	    color = mix(color, vec3(0.0), dot);
+	    color = mix(color, uGridColor * 0.7, 1.0 - smoothstep(0.0, 1.0, line));
+	    
+	    FragColor = vec4(color, 1.0);
+	}
 )glsl";
 };
 
@@ -70,33 +110,6 @@ public:
 	mat4f GetProjection() const { return this->projection; }
 	Camera2D& GetSceneCamera() { return scene_camera; }
 
-	//void SetViewPort(const SDL_Rect& rect);
-	//void ResetViewPort();
-	//SDL_Rect* GetViewPort() const { return this->viewport; }
-
-	//void SetCamera(const SDL_Rect& rect);
-	////DO not use for zoom, use CameraZoom() instead
-	//void MoveCamera(const SDL_Rect& rect);
-	//// input < 0.0f -> zoom in
-	//// input > 0.0f -> zoom out
-	//void CameraZoom(float zoom);
-	//void ResetCamera();
-	//void ResetCameraPos();
-	//void ResetCameraZoom();
-	//SDL_Rect* GetCamera() const { return camera; }
-
-	//void SetBackgroundColor(SDL_Color c) { this->background_color = c; }
-	//SDL_Color GetBackGroundColor() const { return this->background_color; }
-
-	//bool DrawTexture(SDL_Texture* tex, int x, int y, bool useCamera = true, const SDL_Rect* section = NULL, float speed = 1.0f, double angle = 0, int pivotX = INT_MAX, int pivotY = INT_MAX);
-	//bool DrawRectangle(const SDL_Rect& rect, SDL_Color c, bool filled = true, bool useCamera = true) const;
-	//bool DrawLine(int x1, int y1, int x2, int y2, SDL_Color c, bool useCamera = true) const;
-	//bool DrawCircle(int x, int y, int rad, SDL_Color c, bool useCamera = true) const;
-	//void DrawGrid(int spacing, SDL_Color c, bool useCamera = true) const;
-
-	//SDL_Renderer* GetRenderer() const { return this->renderer; }
-	//SDL_Texture* GetRendererTexture() const { return this->renderer_texture; }
-
 private:
 
 	bool vsync;
@@ -113,14 +126,6 @@ public:
 	GLuint renderTexture;
 	GLuint rbo;
 	glm::ivec2 fbSize = { DEFAULT_CAM_WIDTH, DEFAULT_CAM_HEIGHT };
-
-	//SDL_Renderer* renderer;
-	//SDL_Texture* renderer_texture;
-	//SDL_Texture* renderer_target;
-	//SDL_Rect* camera;
-	//SDL_Rect* viewport;
-	//SDL_Color background_color;
-
 };
 
 #endif // !__EWINDOW_EM_H__

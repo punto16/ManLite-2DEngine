@@ -91,6 +91,8 @@ bool RendererEM::Start()
 		return false;
 	}
 
+	this->scene_camera.SetZoom(100.0f);
+
 	return ret;
 }
 
@@ -102,7 +104,7 @@ bool RendererEM::PreUpdate()
 	glViewport(0, 0, fbSize.x, fbSize.y);
 
 	// Limpiar buffers (existente)
-	glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
+	glClearColor(0.4f, 0.4f, 0.4f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	return ret;
@@ -113,14 +115,6 @@ bool RendererEM::Update(double dt)
 	bool ret = true;
 
 	glUseProgram(shaderProgram);
-	glm::mat4 viewProj = scene_camera.GetViewProjMatrix();
-	glUniformMatrix4fv(
-		glGetUniformLocation(shaderProgram, "uViewProj"),
-		1,
-		GL_FALSE,
-		glm::value_ptr(viewProj)
-	);
-
 	RenderBatch();
 
 	return ret;
@@ -256,10 +250,6 @@ void RendererEM::RenderBatch()
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
-	//glActiveTexture(GL_TEXTURE0);
-	//glBindTexture(GL_TEXTURE_2D, 1); // Asegúrate de bindear una textura válida
-	//glUniform1i(glGetUniformLocation(shaderProgram, "texture1"), 0);
 }
 
 void RendererEM::ResizeFBO(int width, int height) {
@@ -277,289 +267,6 @@ void RendererEM::ResizeFBO(int width, int height) {
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
-
-//
-//void RendererEM::SetViewPort(const SDL_Rect& rect)
-//{
-//	SDL_RenderSetViewport(renderer, &rect);
-//}
-//
-//void RendererEM::ResetViewPort()
-//{
-//	SDL_RenderSetViewport(renderer, viewport);
-//}
-//
-//void RendererEM::SetCamera(const SDL_Rect& rect)
-//{
-//	camera->w = rect.w;
-//	camera->h = rect.h;
-//	camera->x = rect.x;
-//	camera->y = rect.y;
-//}
-//
-//void RendererEM::MoveCamera(const SDL_Rect& rect)
-//{
-//	camera->w += rect.w;
-//	camera->h += rect.h;
-//	camera->x += rect.x;
-//	camera->y += rect.y;
-//}
-//
-//void RendererEM::CameraZoom(float zoom)
-//{
-//	int originalCenterX = camera->x + camera->w / 2;
-//	int originalCenterY = camera->y + camera->h / 2;
-//
-//	camera->w += DEFAULT_CAM_WIDTH * -zoom;
-//	camera->h += DEFAULT_CAM_HEIGHT * -zoom;
-//	if (camera->w < 442) camera->w = 442;
-//	if (camera->h < 234) camera->h = 234;
-//
-//	camera->x = originalCenterX - (camera->w / 2);
-//	camera->y = originalCenterY - (camera->h / 2);
-//}
-//
-//void RendererEM::ResetCamera()
-//{
-//	ResetCameraPos();
-//	ResetCameraZoom();
-//}
-//
-//void RendererEM::ResetCameraPos()
-//{
-//	camera->x = (DEFAULT_CAM_WIDTH * 0.5);
-//	camera->y = (DEFAULT_CAM_HEIGHT * 0.5);
-//}
-//
-//void RendererEM::ResetCameraZoom()
-//{
-//	int originalCenterX = camera->x + camera->w / 2;
-//	int originalCenterY = camera->y + camera->h / 2;
-//
-//	camera->w = DEFAULT_CAM_WIDTH;
-//	camera->h = DEFAULT_CAM_HEIGHT;
-//
-//	camera->x = originalCenterX - (camera->w / 2);
-//	camera->y = originalCenterY - (camera->h / 2);
-//}
-//
-//bool RendererEM::DrawTexture(SDL_Texture* tex, int x, int y, bool useCamera, const SDL_Rect* section, float speed, double angle, int pivotX, int pivotY)
-//{
-//	bool ret = true;
-//	SDL_Rect rect;
-//	int screenWidth, screenHeight;
-//
-//	SDL_GetRendererOutputSize(renderer, &screenWidth, &screenHeight);
-//
-//	if (useCamera)
-//	{
-//		float scaleX = (float)screenWidth / camera->w;
-//		float scaleY = (float)screenHeight / camera->h;
-//		int camCenterX = camera->x + camera->w / 2;
-//		int camCenterY = camera->y + camera->h / 2;
-//
-//		rect.x = static_cast<int>((x - camCenterX) * scaleX + screenWidth / 2);
-//		rect.y = static_cast<int>((y - camCenterY) * scaleY + screenHeight / 2);
-//
-//		if (section != NULL)
-//		{
-//			rect.w = static_cast<int>(section->w * scaleX);
-//			rect.h = static_cast<int>(section->h * scaleY);
-//		}
-//		else
-//		{
-//			int texW, texH;
-//			SDL_QueryTexture(tex, NULL, NULL, &texW, &texH);
-//			rect.w = static_cast<int>(texW * scaleX);
-//			rect.h = static_cast<int>(texH * scaleY);
-//		}
-//
-//		if (pivotX != INT_MAX && pivotY != INT_MAX)
-//		{
-//			pivotX = static_cast<int>(pivotX * scaleX);
-//			pivotY = static_cast<int>(pivotY * scaleY);
-//		}
-//	}
-//	else
-//	{
-//		rect.x = x;
-//		rect.y = y;
-//		if (section != NULL) {
-//			rect.w = section->w;
-//			rect.h = section->h;
-//		}
-//		else
-//		{
-//			SDL_QueryTexture(tex, NULL, NULL, &rect.w, &rect.h);
-//		}
-//	}
-//
-//	SDL_Point pivot = { pivotX, pivotY };
-//	if (SDL_RenderCopyEx(renderer, tex, section, &rect, angle, &pivot, SDL_FLIP_NONE) != 0)
-//	{
-//		LOG(LogType::LOG_ERROR, "Error Rendering Texture: %s", SDL_GetError());
-//		ret = false;
-//	}
-//
-//	return ret;
-//}
-//
-//bool RendererEM::DrawRectangle(const SDL_Rect& rect, SDL_Color c, bool filled, bool useCamera) const
-//{
-//	bool ret = true;
-//
-//	SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
-//	SDL_SetRenderDrawColor(renderer, c.r, c.g, c.b, c.a);
-//
-//	SDL_Rect rec(rect);
-//
-//	if (useCamera)
-//	{
-//		int screenWidth, screenHeight;
-//		SDL_GetRendererOutputSize(renderer, &screenWidth, &screenHeight);
-//		float scaleX = (float)screenWidth / camera->w;
-//		float scaleY = (float)screenHeight / camera->h;
-//		int camCenterX = camera->x + camera->w / 2;
-//		int camCenterY = camera->y + camera->h / 2;
-//
-//		rec.x = (int)((rec.x - camCenterX) * scaleX + screenWidth / 2);
-//		rec.y = (int)((rec.y - camCenterY) * scaleY + screenHeight / 2);
-//		rec.w = (int)(rec.w * scaleX);
-//		rec.h = (int)(rec.h * scaleY);
-//	}
-//
-//	int result = filled ? SDL_RenderFillRect(renderer, &rec) : SDL_RenderDrawRect(renderer, &rec);
-//	if (result != 0)
-//	{
-//		LOG(LogType::LOG_ERROR, "Error Rendering Rectangle: %s", SDL_GetError());
-//		ret = false;
-//	}
-//
-//	return ret;
-//}
-//
-//bool RendererEM::DrawLine(int x1, int y1, int x2, int y2, SDL_Color c, bool useCamera) const
-//{
-//	bool ret = true;
-//
-//	SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
-//	SDL_SetRenderDrawColor(renderer, c.r, c.g, c.b, c.a);
-//
-//	if (useCamera)
-//	{
-//		int screenWidth, screenHeight;
-//		SDL_GetRendererOutputSize(renderer, &screenWidth, &screenHeight);
-//		float scaleX = (float)screenWidth / camera->w;
-//		float scaleY = (float)screenHeight / camera->h;
-//		int camCenterX = camera->x + camera->w / 2;
-//		int camCenterY = camera->y + camera->h / 2;
-//
-//		x1 = (int)((x1 - camCenterX) * scaleX + screenWidth / 2);
-//		y1 = (int)((y1 - camCenterY) * scaleY + screenHeight / 2);
-//		x2 = (int)((x2 - camCenterX) * scaleX + screenWidth / 2);
-//		y2 = (int)((y2 - camCenterY) * scaleY + screenHeight / 2);
-//	}
-//
-//	if (SDL_RenderDrawLine(renderer, x1, y1, x2, y2) != 0)
-//	{
-//		LOG(LogType::LOG_ERROR, "Error Rendering Line: %s", SDL_GetError());
-//		ret = false;
-//	}
-//
-//	return ret;
-//}
-//
-//bool RendererEM::DrawCircle(int x, int y, int rad, SDL_Color c, bool useCamera) const
-//{
-//	bool ret = true;
-//	SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
-//	SDL_SetRenderDrawColor(renderer, c.r, c.g, c.b, c.a);
-//
-//	int screenWidth, screenHeight;
-//	SDL_GetRendererOutputSize(renderer, &screenWidth, &screenHeight);
-//
-//	const int numPoints = 20;
-//	SDL_Point points[numPoints];
-//
-//	for (int i = 0; i < numPoints; ++i)
-//	{
-//		double angle = 2 * M_PI * i / (numPoints - 1);
-//		int pointX = x + static_cast<int>(rad * cos(angle));
-//		int pointY = y + static_cast<int>(rad * sin(angle));
-//
-//		if (useCamera)
-//		{
-//			float scaleX = (float)screenWidth / camera->w;
-//			float scaleY = (float)screenHeight / camera->h;
-//			int camCenterX = camera->x + camera->w / 2;
-//			int camCenterY = camera->y + camera->h / 2;
-//
-//			pointX = static_cast<int>((pointX - camCenterX) * scaleX + screenWidth / 2);
-//			pointY = static_cast<int>((pointY - camCenterY) * scaleY + screenHeight / 2);
-//		}
-//
-//		points[i].x = pointX;
-//		points[i].y = pointY;
-//	}
-//
-//	if (SDL_RenderDrawLines(renderer, points, numPoints) != 0)
-//	{
-//		LOG(LogType::LOG_ERROR, "Error Rendering Circle: %s", SDL_GetError());
-//		ret = false;
-//	}
-//
-//	return ret;
-//}
-//
-//void RendererEM::DrawGrid(int spacing, SDL_Color c, bool useCamera) const
-//{
-//	int screenWidth, screenHeight;
-//	SDL_GetRendererOutputSize(renderer, &screenWidth, &screenHeight);
-//
-//	if (useCamera)
-//	{
-//		float scaleX = (float)screenWidth / camera->w;
-//		float scaleY = (float)screenHeight / camera->h;
-//		int camCenterX = camera->x + camera->w / 2;
-//		int camCenterY = camera->y + camera->h / 2;
-//
-//		int visibleLeft = camCenterX - (screenWidth / (2 * scaleX));
-//		int visibleRight = camCenterX + (screenWidth / (2 * scaleX));
-//		int visibleTop = camCenterY - (screenHeight / (2 * scaleY));
-//		int visibleBottom = camCenterY + (screenHeight / (2 * scaleY));
-//
-//		int startX = (visibleLeft / spacing) * spacing;
-//		int endX = visibleRight + spacing;
-//		for (int x = startX; x <= endX; x += spacing)
-//		{
-//			DrawLine(x, visibleTop, x, visibleBottom, c, true);
-//		}
-//
-//		int startY = (visibleTop / spacing) * spacing;
-//		int endY = visibleBottom + spacing;
-//		for (int y = startY; y <= endY; y += spacing)
-//		{
-//			DrawLine(visibleLeft, y, visibleRight, y, c, true);
-//		}
-//	}
-//	else
-//	{
-//		int startX = 0;
-//		int endX = screenWidth;
-//		int startY = 0;
-//		int endY = screenHeight;
-//
-//		for (int x = startX; x <= endX; x += spacing)
-//		{
-//			DrawLine(x, startY, x, endY, c, false);
-//		}
-//
-//		for (int y = startY; y <= endY; y += spacing)
-//		{
-//			DrawLine(startX, y, endX, y, c, false);
-//		}
-//	}
-//}
 
 Grid::Grid(float size, int divisions) : gridSize(size), gridDivisions(divisions)
 {
@@ -610,12 +317,27 @@ void Grid::Draw(const glm::mat4& viewProjMatrix)
 {
 	glUseProgram(shaderProgram);
 
-	// Uniforms
-	GLuint loc = glGetUniformLocation(shaderProgram, "uViewProj");
-	glUniformMatrix4fv(loc, 1, GL_FALSE, glm::value_ptr(viewProjMatrix));
+	Camera2D& camera = engine->renderer_em->GetSceneCamera();
 
-	loc = glGetUniformLocation(shaderProgram, "uColor");
-	glUniform3f(loc, 0.0f, 0.0f, 0.0f); // Color gris
+	glUniformMatrix4fv(
+		glGetUniformLocation(shaderProgram, "uViewProj"),
+		1,
+		GL_FALSE,
+		glm::value_ptr(viewProjMatrix)
+	);
+
+	GLuint loc = glGetUniformLocation(shaderProgram, "uColor");
+	glUniform3f(loc, 0.0f, 0.0f, 0.0f);
+
+	glUniform1f(glGetUniformLocation(shaderProgram, "uZoom"), camera.GetZoom());
+	glUniform2f(glGetUniformLocation(shaderProgram, "uCameraPos"),
+		camera.GetPosition().x,
+		camera.GetPosition().y);
+
+	glm::vec2 visibleRange = camera.GetVisibleRange();
+	glUniform2f(glGetUniformLocation(shaderProgram, "uVisibleRange"),
+		visibleRange.x,
+		visibleRange.y);
 
 	// Dibujar
 	glBindVertexArray(vao);
