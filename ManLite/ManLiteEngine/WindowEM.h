@@ -22,12 +22,12 @@ public:
 	void SetIcon(std::string path);
 	void GetWindowSize(unsigned int& w, unsigned int& h) const;
 	SDL_Window* GetSDLWindow() const { return this->window; }
-	SDL_Surface* GetSDLSurface() const { return this->screenSurface; }
-
+	SDL_GLContext GetGLContext() const { return this->gl_context; }
 
 private:
 	SDL_Window* window;
-	SDL_Surface* screenSurface;
+
+	SDL_GLContext gl_context;
 
 	unsigned int width, height;
 };

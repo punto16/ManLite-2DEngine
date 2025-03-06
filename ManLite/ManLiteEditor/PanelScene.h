@@ -4,6 +4,7 @@
 
 #include "GuiPanel.h"
 
+#include <GL/glew.h>
 #include <SDL2/SDL_opengl.h>
 
 class SDL_Texture;

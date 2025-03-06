@@ -15,6 +15,13 @@
 #include "PanelAnimation.h"
 #include "PanelAbout.h"
 
+#if defined(_WIN32)
+#   define WIN32_LEAN_AND_MEAN
+#   define NOMINMAX
+#   include <windows.h>
+#   include <GL/glew.h>
+#endif
+
 #include <SDL2/SDL_opengl.h>
 #include <gl/GL.h>
 #include <imgui.h>
@@ -96,9 +103,7 @@ bool Gui::Start()
 	if (!&io) return false;
 
 	SDL_Window* window = engine->window_em->GetSDLWindow();
-	SDL_GLContext gl_context = SDL_GL_CreateContext(window);
-	SDL_GL_MakeCurrent(window, gl_context);
-	ImGui_ImplSDL2_InitForOpenGL(window, gl_context);
+	ImGui_ImplSDL2_InitForOpenGL(window, engine->window_em->GetGLContext());
 	ImGui_ImplOpenGL3_Init("#version 330");
 
 #pragma region IMGUI_STYLE

@@ -4,13 +4,14 @@
 #include "App.h"
 
 #include <imgui.h>
+#include <GL/glew.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_opengl.h>
 #include <gl/GL.h>
 #include <SDL2/SDL_mixer.h>
 #include <SDL2/SDL_ttf.h>
 #include <box2d/box2d.h>
-#include <ImGuizmo.h> 
+#include <ImGuizmo.h>
 
 #define IMGUIZMO_VERSION "v 1.89 WIP"
 
@@ -75,7 +76,7 @@ bool PanelAbout::Update()
 					ttfVersion->major, ttfVersion->minor, ttfVersion->patch);
 
 				// OpenGL
-				ImGui::Bullet(); ImGui::Text("OpenGL %s", glGetString(GL_VERSION));
+				//ImGui::Bullet(); ImGui::Text("OpenGL %s", glGetString(GL_VERSION));
 
 				// Box2D
 				ImGui::Bullet(); ImGui::Text("Box2D %d.%d.%d",

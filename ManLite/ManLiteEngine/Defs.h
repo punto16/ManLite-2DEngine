@@ -2,6 +2,7 @@
 #define __DEFS_H__
 #pragma once
 
+#include <glm/glm.hpp>
 #include <stdio.h>
 #include <memory>
 
@@ -85,7 +86,18 @@ typedef unsigned __int16 uint16;
 typedef unsigned __int32 uint32;
 typedef unsigned __int64 uint64;
 
+using vec2 = glm::dvec2;
+using vec3 = glm::dvec3;
+using vec4 = glm::dvec4;
+using mat4 = glm::dmat4;
+using mat4f = glm::mat4;
 
+using vec2f = glm::vec2;
+using vec3f = glm::vec3;
+using vec4f = glm::vec4;
+
+using quat = glm::dquat;
+using quatf = glm::quat;
 
 // OTHERS ------------------------------------------------------------------------
 

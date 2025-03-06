@@ -3,7 +3,18 @@
 #pragma once
 
 #include "EngineModule.h"
+
+#include <GL/glew.h>
 #include "SDL2/SDL.h"
+
+#include "Defs.h"
+
+struct Vertex
+{
+	vec3f position;
+	vec4f color;
+	vec2f texCoords;
+};
 
 class RendererEM : public EngineModule
 {
@@ -18,43 +29,59 @@ public:
 	bool PostUpdate();
 	bool CleanUp();
 
-	void SetViewPort(const SDL_Rect& rect);
-	void ResetViewPort();
-	SDL_Rect* GetViewPort() const { return this->viewport; }
+	bool CompileShaders();
 
-	void SetCamera(const SDL_Rect& rect);
-	//DO not use for zoom, use CameraZoom() instead
-	void MoveCamera(const SDL_Rect& rect);
-	// input < 0.0f -> zoom in
-	// input > 0.0f -> zoom out
-	void CameraZoom(float zoom);
-	void ResetCamera();
-	void ResetCameraPos();
-	void ResetCameraZoom();
-	SDL_Rect* GetCamera() const { return camera; }
+	void RenderBatch();
+	void ResizeFBO(int width, int height);
 
-	void SetBackgroundColor(SDL_Color c) { this->background_color = c; }
-	SDL_Color GetBackGroundColor() const { return this->background_color; }
+	//void SetViewPort(const SDL_Rect& rect);
+	//void ResetViewPort();
+	//SDL_Rect* GetViewPort() const { return this->viewport; }
 
-	bool DrawTexture(SDL_Texture* tex, int x, int y, bool useCamera = true, const SDL_Rect* section = NULL, float speed = 1.0f, double angle = 0, int pivotX = INT_MAX, int pivotY = INT_MAX);
-	bool DrawRectangle(const SDL_Rect& rect, SDL_Color c, bool filled = true, bool useCamera = true) const;
-	bool DrawLine(int x1, int y1, int x2, int y2, SDL_Color c, bool useCamera = true) const;
-	bool DrawCircle(int x, int y, int rad, SDL_Color c, bool useCamera = true) const;
-	void DrawGrid(int spacing, SDL_Color c, bool useCamera = true) const;
+	//void SetCamera(const SDL_Rect& rect);
+	////DO not use for zoom, use CameraZoom() instead
+	//void MoveCamera(const SDL_Rect& rect);
+	//// input < 0.0f -> zoom in
+	//// input > 0.0f -> zoom out
+	//void CameraZoom(float zoom);
+	//void ResetCamera();
+	//void ResetCameraPos();
+	//void ResetCameraZoom();
+	//SDL_Rect* GetCamera() const { return camera; }
 
-	SDL_Renderer* GetRenderer() const { return this->renderer; }
-	SDL_Texture* GetRendererTexture() const { return this->renderer_texture; }
+	//void SetBackgroundColor(SDL_Color c) { this->background_color = c; }
+	//SDL_Color GetBackGroundColor() const { return this->background_color; }
+
+	//bool DrawTexture(SDL_Texture* tex, int x, int y, bool useCamera = true, const SDL_Rect* section = NULL, float speed = 1.0f, double angle = 0, int pivotX = INT_MAX, int pivotY = INT_MAX);
+	//bool DrawRectangle(const SDL_Rect& rect, SDL_Color c, bool filled = true, bool useCamera = true) const;
+	//bool DrawLine(int x1, int y1, int x2, int y2, SDL_Color c, bool useCamera = true) const;
+	//bool DrawCircle(int x, int y, int rad, SDL_Color c, bool useCamera = true) const;
+	//void DrawGrid(int spacing, SDL_Color c, bool useCamera = true) const;
+
+	//SDL_Renderer* GetRenderer() const { return this->renderer; }
+	//SDL_Texture* GetRendererTexture() const { return this->renderer_texture; }
 
 private:
 
 	bool vsync;
 
-	SDL_Renderer* renderer;
-	SDL_Texture* renderer_texture;
-	SDL_Texture* renderer_target;
-	SDL_Rect* camera;
-	SDL_Rect* viewport;
-	SDL_Color background_color;
+	SDL_GLContext glContext;
+
+	GLuint VAO, VBO, EBO;
+	GLuint shaderProgram;
+	mat4f projection;
+public:
+	GLuint fbo;
+	GLuint renderTexture;
+	GLuint rbo;
+	glm::ivec2 fbSize = { DEFAULT_CAM_WIDTH, DEFAULT_CAM_HEIGHT };
+
+	//SDL_Renderer* renderer;
+	//SDL_Texture* renderer_texture;
+	//SDL_Texture* renderer_target;
+	//SDL_Rect* camera;
+	//SDL_Rect* viewport;
+	//SDL_Color background_color;
 
 };
 

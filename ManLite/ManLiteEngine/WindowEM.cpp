@@ -26,7 +26,6 @@ bool WindowEM::Awake()
 
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 
 	SDL_WindowFlags windowFlags = (SDL_WindowFlags)(
 		SDL_WINDOW_OPENGL |
@@ -45,13 +44,13 @@ bool WindowEM::Awake()
 
 	if (!window)
 	{
+		LOG(LogType::LOG_ERROR, "WindowEM: Initialize Window failure");
 		SDL_Quit();
 		return false;
 	}
 	else
 	{
-		//screenSurface = SDL_GetWindowSurface(window);
-		SDL_GLContext gl_context = SDL_GL_CreateContext(window);
+		gl_context = SDL_GL_CreateContext(window);
 		SDL_GL_MakeCurrent(window, gl_context);
 		SDL_GL_SetSwapInterval(1);
 	}
