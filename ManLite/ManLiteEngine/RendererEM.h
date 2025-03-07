@@ -11,75 +11,65 @@
 
 #include "Defs.h"
 
-class Grid
-{
+class Grid {
 public:
-	Grid(float size, int divisions);
-	void Draw(const glm::mat4& viewProjMatrix);
+    Grid(float size, int divisions);
+    void Draw(const glm::mat4& viewProjMatrix);
 
 private:
-	GLuint vao, vbo;
-	GLuint shaderProgram;
-	float gridSize;
-	int gridDivisions;
+    GLuint vao, vbo;
+    GLuint shaderProgram;
+    float stepSize;  // Tamaño entre divisiones
 
-	const char* gridVertexShader = R"glsl(
+    // Shaders
+    const char* gridVertexShader = R"glsl(
     #version 330 core
-	layout (location = 0) in vec2 aPos;
-	uniform mat4 uViewProj;
-	
-	out vec2 vWorldPos;
-	
-	void main() {
-	    gl_Position = uViewProj * vec4(aPos, 0.0, 1.0);
-	    vWorldPos = aPos;  // Pasamos las coordenadas del mundo al fragment shader
-	}
-)glsl";
+    layout (location = 0) in vec2 aPos;
+    uniform mat4 uViewProjInv;
+    
+    out vec2 vWorldPos;
+    
+    void main() {
+        vec4 worldPos = uViewProjInv * vec4(aPos, 0.0, 1.0);
+        vWorldPos = worldPos.xy;
+        gl_Position = vec4(aPos, 0.0, 1.0);
+    }
+    )glsl";
 
-	const char* gridFragmentShader = R"glsl(
-	#version 330 core
-	in vec2 vWorldPos; // Coordenadas del mundo SIN la cámara
-	out vec4 FragColor;
-	
-	uniform vec3 uGridColor = vec3(0.5);
-	uniform vec3 uAxisColor = vec3(1.0, 0.0, 0.0);
-	uniform float uZoom;
-	uniform vec2 uCameraPos; 
-	uniform vec2 uVisibleRange;
-	
-	const float AXIS_THICKNESS = 2.0; 
-	const float DOT_RADIUS = 3.0;
-	
-	void main() {
-	    // 1. Posición real en el mundo (sin ajustar por la cámara)
-	    vec2 worldPos = vWorldPos;
-	    
-	    // 2. Distancia desde la posición de la cámara
-	    vec2 delta = worldPos - uCameraPos;
-	    
-	    // 3. Early exit (usando la posición real del mundo)
-	    if (abs(delta.x) > uVisibleRange.x || abs(delta.y) > uVisibleRange.y) discard;
-	    
-	    // 4. Ejes centrales (en el origen del mundo, no de la cámara)
-	    float axisX = smoothstep(AXIS_THICKNESS / uZoom, 0.0, abs(worldPos.y));
-	    float axisY = smoothstep(AXIS_THICKNESS / uZoom, 0.0, abs(worldPos.x));
-	    
-	    // 5. Punto central (en el origen del mundo)
-	    float dot = 1.0 - smoothstep(DOT_RADIUS - 0.5, DOT_RADIUS + 0.5, length(worldPos * uZoom));
-	    
-	    // 6. Grid (coherente con la cámara)
-	    vec2 gridPos = worldPos / pow(2.0, floor(log2(uZoom)));
-	    vec2 grid = abs(fract(gridPos - 0.5) - 0.5) / fwidth(gridPos);
-	    float line = min(grid.x, grid.y);
-	    
-	    // 7. Mezclar colores
-	    vec3 color = mix(uGridColor, uAxisColor, max(axisX, axisY));
-	    color = mix(color, vec3(0.0), dot);
-	    color = mix(color, uGridColor * 0.7, 1.0 - smoothstep(0.0, 1.0, line));
-	    
-	    FragColor = vec4(color, 1.0);
-	}
-)glsl";
+    const char* gridFragmentShader = R"glsl(
+    #version 330 core
+    in vec2 vWorldPos;
+    out vec4 FragColor;
+    
+    uniform vec3 uGridColor = vec3(0.5);
+    uniform vec3 uAxisColor = vec3(1.0, 0.0, 0.0);
+    uniform float uZoom;
+    uniform float uStepSize;
+    
+    const float AXIS_THICKNESS = 2.0;
+    const float DOT_RADIUS = 3.0;
+    
+    void main() {
+        // Ejes centrales
+        float axisX = smoothstep(AXIS_THICKNESS / uZoom, 0.0, abs(vWorldPos.y));
+        float axisY = smoothstep(AXIS_THICKNESS / uZoom, 0.0, abs(vWorldPos.x));
+        
+        // Punto central
+        float dot = 1.0 - smoothstep(DOT_RADIUS - 0.5, DOT_RADIUS + 0.5, length(vWorldPos * uZoom));
+        
+        // Grid basado en stepSize
+        vec2 gridPos = vWorldPos / uStepSize;
+        vec2 grid = abs(fract(gridPos - 0.5) - 0.5) / fwidth(gridPos);
+        float line = min(grid.x, grid.y);
+        
+        // Mezcla de colores
+        vec3 color = mix(uGridColor, uAxisColor, max(axisX, axisY));
+        color = mix(color, vec3(0.0), dot);
+        color = mix(color, uGridColor * 0.7, 1.0 - smoothstep(0.0, 1.0, line));
+        
+        FragColor = vec4(color, 1.0);
+    }
+    )glsl";
 };
 
 struct Vertex

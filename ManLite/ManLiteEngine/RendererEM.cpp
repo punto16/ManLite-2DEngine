@@ -268,23 +268,18 @@ void RendererEM::ResizeFBO(int width, int height) {
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-Grid::Grid(float size, int divisions) : gridSize(size), gridDivisions(divisions)
-{
-	std::vector<float> vertices;
-	float step = gridSize / gridDivisions;
+Grid::Grid(float size, int divisions) {
+	stepSize = size / divisions;  // Calculamos el tamaño entre divisiones
 
-	// Líneas horizontales y verticales
-	for (int i = -gridDivisions; i <= gridDivisions; ++i) {
-		// Líneas horizontales (X)
-		vertices.push_back(-gridSize); vertices.push_back(i * step);
-		vertices.push_back(gridSize);  vertices.push_back(i * step);
+	// Geometría del quad de pantalla completa
+	std::vector<float> vertices = {
+		-1.0f, -1.0f,  // Esquina inferior izquierda
+		 1.0f, -1.0f,  // Esquina inferior derecha
+		-1.0f,  1.0f,  // Esquina superior izquierda
+		 1.0f,  1.0f   // Esquina superior derecha
+	};
 
-		// Líneas verticales (Y)
-		vertices.push_back(i * step); vertices.push_back(-gridSize);
-		vertices.push_back(i * step); vertices.push_back(gridSize);
-	}
-
-	// VAO/VBO
+	// Configuración del VAO/VBO
 	glGenVertexArrays(1, &vao);
 	glGenBuffers(1, &vbo);
 
@@ -295,7 +290,7 @@ Grid::Grid(float size, int divisions) : gridSize(size), gridDivisions(divisions)
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 
-	// Shaders
+	// Compilación de shaders
 	GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
 	glShaderSource(vertexShader, 1, &gridVertexShader, NULL);
 	glCompileShader(vertexShader);
@@ -313,34 +308,25 @@ Grid::Grid(float size, int divisions) : gridSize(size), gridDivisions(divisions)
 	glDeleteShader(fragmentShader);
 }
 
-void Grid::Draw(const glm::mat4& viewProjMatrix)
-{
+void Grid::Draw(const glm::mat4& viewProjMatrix) {
 	glUseProgram(shaderProgram);
 
-	Camera2D& camera = engine->renderer_em->GetSceneCamera();
-
+	// Matriz inversa para obtener coordenadas del mundo
+	glm::mat4 viewProjInv = glm::inverse(viewProjMatrix);
 	glUniformMatrix4fv(
-		glGetUniformLocation(shaderProgram, "uViewProj"),
+		glGetUniformLocation(shaderProgram, "uViewProjInv"),
 		1,
 		GL_FALSE,
-		glm::value_ptr(viewProjMatrix)
+		glm::value_ptr(viewProjInv)
 	);
 
-	GLuint loc = glGetUniformLocation(shaderProgram, "uColor");
-	glUniform3f(loc, 0.0f, 0.0f, 0.0f);
+	// Obtener parámetros de la cámara (ajustar según tu implementación)
+	float zoom = engine->renderer_em->GetSceneCamera().GetZoom();  // Reemplazar con tu sistema de cámara
+	glUniform1f(glGetUniformLocation(shaderProgram, "uZoom"), zoom);
+	glUniform1f(glGetUniformLocation(shaderProgram, "uStepSize"), stepSize);
 
-	glUniform1f(glGetUniformLocation(shaderProgram, "uZoom"), camera.GetZoom());
-	glUniform2f(glGetUniformLocation(shaderProgram, "uCameraPos"),
-		camera.GetPosition().x,
-		camera.GetPosition().y);
-
-	glm::vec2 visibleRange = camera.GetVisibleRange();
-	glUniform2f(glGetUniformLocation(shaderProgram, "uVisibleRange"),
-		visibleRange.x,
-		visibleRange.y);
-
-	// Dibujar
+	// Dibujar el quad
 	glBindVertexArray(vao);
-	glDrawArrays(GL_LINES, 0, (4 * (2 * gridDivisions + 1)));
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	glBindVertexArray(0);
 }
