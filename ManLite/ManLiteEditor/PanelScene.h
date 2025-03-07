@@ -20,6 +20,7 @@ public:
 	bool CleanUp();
 
 	void InputToCamMovement();
+	bool MouseHasTPed(int& current_mouse_x, int& current_mouse_y, int& prev_mouse_x, int& prev_mouse_y);
 
 	void SetCamSpeed(float newspeed) { this->cam_speed = newspeed; }
 	float GetCamSpeed() const { return this->cam_speed; }
