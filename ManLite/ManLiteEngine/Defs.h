@@ -139,7 +139,7 @@ bool IsUninitialized(std::weak_ptr<T> const& weak)
 
 //Logs
 #define BUFFER_SIZE 4096
-#define MAX_LOGS_CONSOLE 1000
+#define MAX_LOGS_CONSOLE 250
 // -------------------------------------------------------------------------------
 
 #endif	// !__DEFS_H__

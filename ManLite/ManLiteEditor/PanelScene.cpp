@@ -102,10 +102,8 @@ void PanelScene::InputToCamMovement()
 		}
 		else
 		{
-			// 1. Manejar wrapping del ratón
 			bool wrapped = MouseHasTPed(current_mouse_x, current_mouse_y, prev_mouse_x, prev_mouse_y);
 
-			// 2. Calcular delta solo si no hubo wrapping
 			float delta_x = 0.0f;
 			float delta_y = 0.0f;
 			if (!wrapped)
@@ -114,14 +112,12 @@ void PanelScene::InputToCamMovement()
 				delta_y = static_cast<float>(current_mouse_y - prev_mouse_y);
 			}
 
-			// 3. Obtener parámetros actuales
 			ImVec2 panel_size = ImGui::GetContentRegionAvail();
 			Camera2D& camera = engine->renderer_em->GetSceneCamera();
 			ImVec2 panelSize = ImGui::GetContentRegionAvail();
 			float panelWidth = panelSize.x;
 			float panelHeight = panelSize.y;
 
-			// 4. Convertir delta a coordenadas del mundo
 			float scale_factor = 1.0f / camera.GetZoom();
 
 			float aspect_ratio = panelWidth / panelHeight;
@@ -133,10 +129,8 @@ void PanelScene::InputToCamMovement()
 			world_delta_x *= drag_sensitivity;
 			world_delta_y *= drag_sensitivity;
 
-			// 5. Mover cámara
 			camera.Move(glm::vec2(world_delta_x, world_delta_y));
 
-			// 6. Actualizar posiciones anteriores
 			prev_mouse_x = current_mouse_x;
 			prev_mouse_y = current_mouse_y;
 		}
@@ -182,7 +176,6 @@ bool PanelScene::MouseHasTPed(int& current_mouse_x, int& current_mouse_y, int& p
 	int new_x = current_mouse_x;
 	int new_y = current_mouse_y;
 
-	// Horizontal wrapping
 	if (current_mouse_x < 0)
 	{
 		new_x = window_width + current_mouse_x;
@@ -194,7 +187,6 @@ bool PanelScene::MouseHasTPed(int& current_mouse_x, int& current_mouse_y, int& p
 		wrapped = true;
 	}
 
-	// Vertical wrapping
 	if (current_mouse_y < 0)
 	{
 		new_y = window_height + current_mouse_y;
@@ -211,7 +203,7 @@ bool PanelScene::MouseHasTPed(int& current_mouse_x, int& current_mouse_y, int& p
 		SDL_WarpMouseInWindow(engine->window_em->GetSDLWindow(), new_x, new_y);
 		current_mouse_x = new_x;
 		current_mouse_y = new_y;
-		prev_mouse_x = new_x;  // ¡Clave para evitar saltos!
+		prev_mouse_x = new_x;
 		prev_mouse_y = new_y;
 	}
 

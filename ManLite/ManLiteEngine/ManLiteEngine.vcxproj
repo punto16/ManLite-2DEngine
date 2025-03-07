@@ -177,6 +177,7 @@ popd
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera2D.h" />
+    <ClInclude Include="Component.h" />
     <ClInclude Include="Defs.h" />
     <ClInclude Include="EngineCore.h" />
     <ClInclude Include="EngineModule.h" />

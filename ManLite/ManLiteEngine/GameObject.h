@@ -34,7 +34,7 @@ public:
 	bool HasChild(const std::shared_ptr<GameObject>& child) const;
 	bool HasChild(uint32_t id) const;
 
-	uint32_t GenerateGameObjectID();
+	static uint32_t GenerateGameObjectID();
 
 	//getters // setters
 	std::string GetName() const { return this->gameobject_name; }
