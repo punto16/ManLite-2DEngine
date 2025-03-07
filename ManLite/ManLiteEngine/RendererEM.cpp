@@ -38,7 +38,6 @@ bool RendererEM::Start()
 
 	if (!CompileShaders()) return false;
 
-	// 2. Configurar buffers de geometría (existente)
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
 	glGenBuffers(1, &EBO);
@@ -55,13 +54,9 @@ bool RendererEM::Start()
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
 	glEnableVertexAttribArray(2);
 
-	// 3. Crear FBO y textura (nuevo)
-	//-----------------------------------------
-	// Configurar framebuffer
 	glGenFramebuffers(1, &fbo);
 	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 
-	// Textura de color
 	glGenTextures(1, &renderTexture);
 	glBindTexture(GL_TEXTURE_2D, renderTexture);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, fbSize.x, fbSize.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
@@ -69,20 +64,19 @@ bool RendererEM::Start()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, renderTexture, 0);
 
-	// Renderbuffer para depth/stencil
 	glGenRenderbuffers(1, &rbo);
 	glBindRenderbuffer(GL_RENDERBUFFER, rbo);
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, fbSize.x, fbSize.y);
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
 
-	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-		// Manejar error
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) 
+	{
+		LOG(LogType::LOG_ERROR, "RendererEM: Frame Buffer failure");
 		return false;
 	}
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	//-----------------------------------------
 
-	// 4. Proyección (modificado para usar fbSize)
+
 	engine->renderer_em->ResizeFBO(DEFAULT_CAM_WIDTH, DEFAULT_CAM_HEIGHT);
 
 	GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
@@ -103,7 +97,6 @@ bool RendererEM::PreUpdate()
 	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 	glViewport(0, 0, fbSize.x, fbSize.y);
 
-	// Limpiar buffers (existente)
 	glClearColor(0.4f, 0.4f, 0.4f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -140,12 +133,10 @@ bool RendererEM::CleanUp()
 	glDeleteBuffers(1, &VBO);
 	glDeleteBuffers(1, &EBO);
 
-	// Limpiar FBO (nuevo)
 	glDeleteFramebuffers(1, &fbo);
 	glDeleteTextures(1, &renderTexture);
 	glDeleteRenderbuffers(1, &rbo);
 
-	// Limpiar shaders
 	glDeleteProgram(shaderProgram);
 
 	return ret;
@@ -188,7 +179,7 @@ bool RendererEM::CompileShaders()
 	if (!success) {
 		char infoLog[512];
 		glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-		LOG(LogType::LOG_ERROR, "Vertex shader compilation failed: {}", infoLog);
+		LOG(LogType::LOG_ERROR, "RendererEM: Vertex shader compilation failed: {}", infoLog);
 		return false;
 	}
 
@@ -202,7 +193,7 @@ bool RendererEM::CompileShaders()
 	if (!success) {
 		char infoLog[512];
 		glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
-		LOG(LogType::LOG_ERROR, "Fragment shader compilation failed: {}", infoLog);
+		LOG(LogType::LOG_ERROR, "RendererEM: Fragment shader compilation failed: {}", infoLog);
 		return false;
 	}
 
@@ -217,7 +208,7 @@ bool RendererEM::CompileShaders()
 	if (!success) {
 		char infoLog[512];
 		glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-		LOG(LogType::LOG_ERROR, "Shader program linking failed: {}", infoLog);
+		LOG(LogType::LOG_ERROR, "RendererEM: Shader program linking failed: {}", infoLog);
 		return false;
 	}
 
@@ -231,7 +222,7 @@ bool RendererEM::CompileShaders()
 void RendererEM::RenderBatch()
 {
 	float vertices[] = {
-		// posiciones      // colores       // coord. textura
+		// position	      // color	       // coord. tex
 		 0.5f,  0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,
 		 0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f,
 		-0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f,
@@ -257,11 +248,9 @@ void RendererEM::ResizeFBO(int width, int height) {
 	
 	scene_camera.Resize(width, height);
 
-	// Actualizar textura
 	glBindTexture(GL_TEXTURE_2D, renderTexture);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
 
-	// Actualizar renderbuffer
 	glBindRenderbuffer(GL_RENDERBUFFER, rbo);
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
 
@@ -269,17 +258,15 @@ void RendererEM::ResizeFBO(int width, int height) {
 }
 
 Grid::Grid(float size, int divisions) {
-	stepSize = size / divisions;  // Calculamos el tamaño entre divisiones
+	stepSize = size / divisions;
 
-	// Geometría del quad de pantalla completa
 	std::vector<float> vertices = {
-		-1.0f, -1.0f,  // Esquina inferior izquierda
-		 1.0f, -1.0f,  // Esquina inferior derecha
-		-1.0f,  1.0f,  // Esquina superior izquierda
-		 1.0f,  1.0f   // Esquina superior derecha
+		-1.0f, -1.0f,
+		 1.0f, -1.0f,
+		-1.0f,  1.0f,
+		 1.0f,  1.0f 
 	};
 
-	// Configuración del VAO/VBO
 	glGenVertexArrays(1, &vao);
 	glGenBuffers(1, &vbo);
 
@@ -290,7 +277,6 @@ Grid::Grid(float size, int divisions) {
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 
-	// Compilación de shaders
 	GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
 	glShaderSource(vertexShader, 1, &gridVertexShader, NULL);
 	glCompileShader(vertexShader);
@@ -311,7 +297,6 @@ Grid::Grid(float size, int divisions) {
 void Grid::Draw(const glm::mat4& viewProjMatrix) {
 	glUseProgram(shaderProgram);
 
-	// Matriz inversa para obtener coordenadas del mundo
 	glm::mat4 viewProjInv = glm::inverse(viewProjMatrix);
 	glUniformMatrix4fv(
 		glGetUniformLocation(shaderProgram, "uViewProjInv"),
@@ -320,12 +305,10 @@ void Grid::Draw(const glm::mat4& viewProjMatrix) {
 		glm::value_ptr(viewProjInv)
 	);
 
-	// Obtener parámetros de la cámara (ajustar según tu implementación)
-	float zoom = engine->renderer_em->GetSceneCamera().GetZoom();  // Reemplazar con tu sistema de cámara
+	float zoom = engine->renderer_em->GetSceneCamera().GetZoom();
 	glUniform1f(glGetUniformLocation(shaderProgram, "uZoom"), zoom);
 	glUniform1f(glGetUniformLocation(shaderProgram, "uStepSize"), stepSize);
 
-	// Dibujar el quad
 	glBindVertexArray(vao);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	glBindVertexArray(0);

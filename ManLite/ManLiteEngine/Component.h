@@ -2,10 +2,10 @@
 #define __COMPONENT_H__
 #pragma once
 
-#include "GameObject.h"
-
 #include <string>
 #include <memory>
+
+class GameObject;
 
 enum class ComponentType
 {
@@ -25,22 +25,8 @@ enum class ComponentType
 class Component
 {
 public:
-	Component(std::weak_ptr<GameObject> cointainer_go, ComponentType type = ComponentType::Unkown, std::string name = "Component", bool enable = true)
-	{
-		this->cointainer_go = cointainer_go;
-		this->type = type;
-		this->name = name;
-		this->enabled = enable;
-		this->component_id = GameObject::GenerateGameObjectID();
-	}
-	Component(std::shared_ptr<Component> component_to_copy)
-	{
-		this->cointainer_go = component_to_copy->GetContainerGO();
-		this->type = component_to_copy->GetType();
-		this->name = component_to_copy->GetName() + "_copy";
-		this->enabled = component_to_copy->IsEnabled();
-		this->component_id = GameObject::GenerateGameObjectID();
-	}
+	Component(std::weak_ptr<GameObject> cointainer_go, ComponentType type = ComponentType::Unkown, std::string name = "Component", bool enable = true);
+	Component(std::shared_ptr<Component> component_to_copy);
 	virtual ~Component() {}
 
 	virtual bool Update(float dt) { return true; }
@@ -50,26 +36,16 @@ public:
 	{
 		switch (type)
 		{
-		case ComponentType::Transform: return "Transform";
-			break;
-		case ComponentType::Camera:return "Camera";
-			break;
-		case ComponentType::Sprite:return "Sprite";
-			break;
-		case ComponentType::Script:return "Script";
-			break;
-		case ComponentType::Collider2D:return "Collider2D";
-			break;
-		case ComponentType::Canvas:return "Canvas";
-			break;
-		case ComponentType::AudioSource:return "AudioSource";
-			break;
-		case ComponentType::ParticleSystem:return "ParticleSystem";
-			break;
-		case ComponentType::Unkown: return "Unknown";
-			break;
-		default:
-			break;
+		case ComponentType::Transform:		return "Transform"; break;
+		case ComponentType::Camera:			return "Camera"; break;
+		case ComponentType::Sprite:			return "Sprite"; break;
+		case ComponentType::Script:			return "Script"; break;
+		case ComponentType::Collider2D:		return "Collider2D"; break;
+		case ComponentType::Canvas:			return "Canvas"; break;
+		case ComponentType::AudioSource:	return "AudioSource"; break;
+		case ComponentType::ParticleSystem:	return "ParticleSystem"; break;
+		case ComponentType::Unkown:			return "Unknown"; break;
+		default:							return "Unknown"; break;
 		}
 	}
 

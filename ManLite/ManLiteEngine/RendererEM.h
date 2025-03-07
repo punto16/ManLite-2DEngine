@@ -19,7 +19,7 @@ public:
 private:
     GLuint vao, vbo;
     GLuint shaderProgram;
-    float stepSize;  // Tamaño entre divisiones
+    float stepSize;
 
     // Shaders
     const char* gridVertexShader = R"glsl(

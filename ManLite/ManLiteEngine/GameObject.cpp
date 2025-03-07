@@ -29,6 +29,7 @@ bool GameObject::Update(double dt)
     bool ret = true;
     
     //update components
+    for (const auto& item : components_gameobject) item->Update(dt);
 
     for (const auto& item : children_gameobject) item->Update(dt);
 
@@ -38,6 +39,8 @@ bool GameObject::Update(double dt)
 void GameObject::Draw()
 {
     //draw components
+    for (const auto& item : components_gameobject) item->Draw();
+
     //layer system!! do not iterate children.draw()
 }
 

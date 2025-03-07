@@ -18,7 +18,7 @@ EngineCore::EngineCore()
 	renderer_em = new RendererEM(this);
 
 
-	//add modules
+	//------add modules------
 	AddEngineModule(window_em, true);
 	AddEngineModule(input_em, true);
 	AddEngineModule(scene_manager_em, true);
