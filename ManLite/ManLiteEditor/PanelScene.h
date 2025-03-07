@@ -19,6 +19,8 @@ public:
 	bool Update();
 	bool CleanUp();
 
+	void InputToCamMovement();
+
 	void SetCamSpeed(float newspeed) { this->cam_speed = newspeed; }
 	float GetCamSpeed() const { return this->cam_speed; }
 
