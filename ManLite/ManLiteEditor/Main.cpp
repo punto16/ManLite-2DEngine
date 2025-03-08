@@ -1,6 +1,9 @@
 #include "App.h"
 
+#include <SDL2/SDL_main.h>
+
 #include "../ManLiteEngine/Log.h"
+
 
 enum MainState
 {
@@ -15,7 +18,7 @@ enum MainState
 
 App* app = NULL;
 
-int main(int argc, char* args[])
+int SDL_main(int argc, char* args[])
 {
 	LOG(LogType::LOG_INFO, "Engine starting ...");
 

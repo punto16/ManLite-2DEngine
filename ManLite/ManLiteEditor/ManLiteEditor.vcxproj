@@ -112,10 +112,10 @@
       <AdditionalIncludeDirectories>$(SolutionDir)..\vcpkg\installed\x64-windows\include;$(SolutionDir);$(SolutionDir)ManLiteEditor\;$(SolutionDir)ManLiteEngine\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)..\vcpkg\installed\x64-windows\debug\lib\;$(SolutionDir)..\vcpkg\installed\x64-windows\debug\lib\manual-link\;$(SolutionDir)..\vcpkg\installed\x64-windows\lib\;$(SolutionDir)..\vcpkg\installed\x64-windows\lib\manual-link\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>OpenGL32.lib;imguizmo.lib;imguid.lib;SDL2.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>OpenGL32.lib;SDL2main.lib;imguizmo.lib;imguid.lib;SDL2.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
       <Command>pushd "$(SolutionDir).."
@@ -139,11 +139,11 @@ popd
       <AdditionalIncludeDirectories>$(SolutionDir)..\vcpkg\installed\x64-windows\include;$(SolutionDir);$(SolutionDir)ManLiteEditor\;$(SolutionDir)ManLiteEngine\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>OpenGL32.lib;imguizmo.lib;imgui.lib;SDL2.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>OpenGL32.lib;SDL2main.lib;imguizmo.lib;imgui.lib;SDL2.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)..\vcpkg\installed\x64-windows\lib\;$(SolutionDir)..\vcpkg\installed\x64-windows\lib\manual-link\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PreBuildEvent>
