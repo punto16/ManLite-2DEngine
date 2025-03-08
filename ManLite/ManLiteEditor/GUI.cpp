@@ -112,6 +112,8 @@ bool Gui::Start()
 	ImGui_ImplSDL2_InitForOpenGL(window, engine->window_em->GetGLContext());
 	ImGui_ImplOpenGL3_Init("#version 330");
 
+	SDL_StartTextInput();
+
 #pragma region IMGUI_STYLE
 
 	ImGui::StyleColorsDark();
@@ -199,8 +201,8 @@ bool Gui::PreUpdate()
 
 	HandleInput();
 
-	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplSDL2_NewFrame();
+	ImGui_ImplOpenGL3_NewFrame();
 	ImGui::NewFrame();
 
 	if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_DockingEnable) MainWindowDockspace();

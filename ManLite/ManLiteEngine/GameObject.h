@@ -27,7 +27,7 @@ public:
 	//instead, call current_scene->SafeDeleteGO(this);
 	void Delete();
 
-	bool Reparent(std::shared_ptr<GameObject> new_parent);
+	bool Reparent(std::shared_ptr<GameObject> new_parent, bool skip_descendant_search = false);
 	bool IsDescendant(const std::shared_ptr<GameObject>& potential_ancestor) const;
 
 	void CloneChildrenHierarchy(const std::shared_ptr<GameObject>& original);
@@ -138,7 +138,7 @@ public:
 
 	//getters // setters
 	std::string GetName() const { return this->gameobject_name; }
-	void SetName(std::string name) { this->gameobject_name = name; }
+	void SetName(std::string name) { this->gameobject_name = GenerateUniqueName(name, this); }
 	uint32_t GetID() const { return this->gameobject_id; }
 	std::weak_ptr<GameObject> GetParentGO() const { return this->parent_gameobject; }
 	std::weak_ptr<Layer> GetParentLayer() const { return this->parent_layer; }

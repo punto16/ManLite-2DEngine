@@ -20,8 +20,11 @@ public:
 
 	bool CleanUp();
 
+	//general functions for game objects
+	std::shared_ptr<GameObject> CreateEmptyGO(GameObject& parent);
+
 	//safely adds a game object to a pending to add list
-	//whenever it is safe place, they will be added to scene
+	//whenever it is safe place, they will be added to scene root go
 	void SafeAddGO(std::shared_ptr<GameObject> object_to_add);
 	//safely deletes a game object to a pending to add list
 	//whenever it is safe place, they will be deleted scene
@@ -45,6 +48,13 @@ public:
 	//
 	void ReparentToLayer(std::shared_ptr<GameObject> game_object, std::shared_ptr<Layer> target_layer);
 	bool ContainsLayer(const std::shared_ptr<Layer>& layer) const;
+
+	//getters // setters
+	GameObject& GetSceneRoot() const { return *scene_root; }
+	const std::vector<std::shared_ptr<Layer>>& GetSceneLayers() const { return scene_layers; }
+
+	std::string GetSceneName() const { return this->scene_name; }
+	void SetSceneName(std::string name);
 
 private:
 	std::string scene_name;
@@ -76,6 +86,8 @@ public:
 	bool PostUpdate();
 
 	bool CleanUp();
+
+	Scene& GetCurrentScene() const { return *current_scene; }
 
 private:
 	std::unique_ptr<Scene> current_scene;

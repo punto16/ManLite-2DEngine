@@ -4,6 +4,8 @@
 
 #include "GuiPanel.h"
 
+class GameObject;
+
 class PanelHierarchy : public Panel
 {
 public:
@@ -11,6 +13,10 @@ public:
 	~PanelHierarchy();
 
 	bool Update();
+
+	void IterateTree(GameObject& parent);
+	void BlankContext(GameObject& parent);
+	void Context(GameObject& parent);
 
 private:
 

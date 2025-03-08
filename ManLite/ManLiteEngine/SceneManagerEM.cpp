@@ -114,6 +114,14 @@ bool Scene::CleanUp()
 	return ret;
 }
 
+std::shared_ptr<GameObject> Scene::CreateEmptyGO(GameObject& parent)
+{
+	std::shared_ptr<GameObject> empty_go = std::make_shared<GameObject>(parent.shared_from_this(), "EmptyGameObject", true);
+	empty_go->Awake();
+	parent.AddChild(empty_go);
+	return empty_go;
+}
+
 void Scene::SafeAddGO(std::shared_ptr<GameObject> object_to_add)
 {
 	objects_to_add.push_back(object_to_add);
@@ -179,4 +187,10 @@ void Scene::ReparentToLayer(std::shared_ptr<GameObject> game_object, std::shared
 
 bool Scene::ContainsLayer(const std::shared_ptr<Layer>& layer) const {
 	return std::find(scene_layers.begin(), scene_layers.end(), layer) != scene_layers.end();
+}
+
+void Scene::SetSceneName(std::string name)
+{
+	this->scene_name = name;
+	scene_root->SetName(name);
 }

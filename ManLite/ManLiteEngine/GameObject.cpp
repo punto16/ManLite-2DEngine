@@ -87,20 +87,24 @@ void GameObject::Delete()
     parent_gameobject.reset();
 }
 
-bool GameObject::Reparent(std::shared_ptr<GameObject> new_parent)
+bool GameObject::Reparent(std::shared_ptr<GameObject> new_parent, bool skip_descendant_search)
 {
-    if (new_parent.get() == this) return false;
-    if (IsDescendant(new_parent)) return false;
+    auto self = shared_from_this();
+    bool cycle = false;
+    if (new_parent.get() == self.get()) return false;
+    if (!skip_descendant_search && IsDescendant(new_parent)) return false;
+    if (new_parent->GetParentGO().lock() == self) cycle = true;
 
-    if (auto old_parent = parent_gameobject.lock()) {
-        old_parent->RemoveChild(shared_from_this());
-    }
+    auto old_parent = parent_gameobject.lock();
+    if (old_parent)
+        old_parent->RemoveChild(self);
 
-    if (new_parent) {
-        new_parent->AddChild(shared_from_this());
-    }
+    if (new_parent)
+        new_parent->AddChild(self);
 
     parent_gameobject = new_parent;
+
+    if (cycle) new_parent->Reparent(old_parent, true);
 
     return true;
 }
