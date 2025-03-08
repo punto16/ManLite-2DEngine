@@ -19,25 +19,25 @@
     <Filter Include="GameObject\Components">
       <UniqueIdentifier>{663bbbaa-9669-4b3d-b1f7-50e2607a26ec}</UniqueIdentifier>
     </Filter>
+    <Filter Include="EngineModules\Renderer">
+      <UniqueIdentifier>{ce4447ee-edd4-4ca0-8f25-ed465149f7ce}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="EngineModules\Input">
+      <UniqueIdentifier>{7827bbde-d886-4f4b-bef6-5d15e5619b85}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="EngineModules\SceneManager">
+      <UniqueIdentifier>{942797f9-607d-4de9-9191-896b4840afba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="EngineModules\Window">
+      <UniqueIdentifier>{6cbbd406-91d8-4a79-bb1d-2229030b3a81}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EngineCore.cpp">
       <Filter>Core</Filter>
     </ClCompile>
-    <ClCompile Include="WindowEM.cpp">
-      <Filter>EngineModules</Filter>
-    </ClCompile>
-    <ClCompile Include="InputEM.cpp">
-      <Filter>EngineModules</Filter>
-    </ClCompile>
-    <ClCompile Include="RendererEM.cpp">
-      <Filter>EngineModules</Filter>
-    </ClCompile>
     <ClCompile Include="Log.cpp">
       <Filter>Utils</Filter>
-    </ClCompile>
-    <ClCompile Include="SceneManagerEM.cpp">
-      <Filter>EngineModules</Filter>
     </ClCompile>
     <ClCompile Include="GameObject.cpp">
       <Filter>GameObject</Filter>
@@ -45,10 +45,25 @@
     <ClCompile Include="Layer.cpp">
       <Filter>Layer</Filter>
     </ClCompile>
-    <ClCompile Include="Camera2D.cpp">
+    <ClCompile Include="Component.cpp">
       <Filter>GameObject\Components</Filter>
     </ClCompile>
-    <ClCompile Include="Component.cpp">
+    <ClCompile Include="RendererEM.cpp">
+      <Filter>EngineModules\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera2D.cpp">
+      <Filter>EngineModules\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="InputEM.cpp">
+      <Filter>EngineModules\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneManagerEM.cpp">
+      <Filter>EngineModules\SceneManager</Filter>
+    </ClCompile>
+    <ClCompile Include="WindowEM.cpp">
+      <Filter>EngineModules\Window</Filter>
+    </ClCompile>
+    <ClCompile Include="Transform.cpp">
       <Filter>GameObject\Components</Filter>
     </ClCompile>
   </ItemGroup>
@@ -59,23 +74,11 @@
     <ClInclude Include="EngineModule.h">
       <Filter>EngineModules</Filter>
     </ClInclude>
-    <ClInclude Include="WindowEM.h">
-      <Filter>EngineModules</Filter>
-    </ClInclude>
-    <ClInclude Include="InputEM.h">
-      <Filter>EngineModules</Filter>
-    </ClInclude>
-    <ClInclude Include="RendererEM.h">
-      <Filter>EngineModules</Filter>
-    </ClInclude>
     <ClInclude Include="Log.h">
       <Filter>Utils</Filter>
     </ClInclude>
     <ClInclude Include="Defs.h">
       <Filter>Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="SceneManagerEM.h">
-      <Filter>EngineModules</Filter>
     </ClInclude>
     <ClInclude Include="GameObject.h">
       <Filter>GameObject</Filter>
@@ -83,10 +86,25 @@
     <ClInclude Include="Layer.h">
       <Filter>Layer</Filter>
     </ClInclude>
-    <ClInclude Include="Camera2D.h">
+    <ClInclude Include="Component.h">
       <Filter>GameObject\Components</Filter>
     </ClInclude>
-    <ClInclude Include="Component.h">
+    <ClInclude Include="RendererEM.h">
+      <Filter>EngineModules\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera2D.h">
+      <Filter>EngineModules\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="InputEM.h">
+      <Filter>EngineModules\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneManagerEM.h">
+      <Filter>EngineModules\SceneManager</Filter>
+    </ClInclude>
+    <ClInclude Include="WindowEM.h">
+      <Filter>EngineModules\Window</Filter>
+    </ClInclude>
+    <ClInclude Include="Transform.h">
       <Filter>GameObject\Components</Filter>
     </ClInclude>
   </ItemGroup>

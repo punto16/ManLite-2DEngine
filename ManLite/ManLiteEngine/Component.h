@@ -26,7 +26,7 @@ class Component
 {
 public:
 	Component(std::weak_ptr<GameObject> cointainer_go, ComponentType type = ComponentType::Unkown, std::string name = "Component", bool enable = true);
-	Component(std::shared_ptr<Component> component_to_copy);
+	Component(std::shared_ptr<Component> component_to_copy, std::shared_ptr<GameObject> container_go);
 	virtual ~Component() {}
 
 	virtual bool Update(float dt) { return true; }

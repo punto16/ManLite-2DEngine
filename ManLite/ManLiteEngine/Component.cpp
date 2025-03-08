@@ -10,8 +10,8 @@ Component::Component(std::weak_ptr<GameObject> cointainer_go, ComponentType type
 {
 }
 
-Component::Component(std::shared_ptr<Component> component_to_copy) :
-	cointainer_go(component_to_copy->GetContainerGO()),
+Component::Component(std::shared_ptr<Component> component_to_copy, std::shared_ptr<GameObject> container_go) :
+	cointainer_go(container_go),
 	type(component_to_copy->GetType()),
 	name(component_to_copy->GetName()),
 	enabled(component_to_copy->IsEnabled()),

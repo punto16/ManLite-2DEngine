@@ -18,6 +18,7 @@ public:
 	GameObject(std::weak_ptr<GameObject> go_to_copy);
 	~GameObject();
 	
+	bool Awake();
 	bool Update(double dt);
 
 	void Draw();
@@ -30,6 +31,7 @@ public:
 	bool IsDescendant(const std::shared_ptr<GameObject>& potential_ancestor) const;
 
 	void CloneChildrenHierarchy(const std::shared_ptr<GameObject>& original);
+	void CloneComponents(const std::shared_ptr<GameObject>& original);
 
 	void AddChild(std::shared_ptr<GameObject> child);
 	bool RemoveChild(const std::shared_ptr<GameObject>& child);
@@ -39,6 +41,7 @@ public:
 
 	//util
 	static uint32_t GenerateGameObjectID();
+	static std::string GenerateUniqueName(const std::string& baseName, const GameObject* go);
 
 	//components
 	//get the component selected
@@ -82,6 +85,8 @@ public:
 		}
 		std::unique_ptr<Component> new_component = std::make_unique<TComponent>(shared_from_this(), std::forward<Args>(args)...);
 		components_gameobject.push_back(std::move(new_component));
+
+		return true;
 	}
 
 	template <typename TComponent>
@@ -90,7 +95,7 @@ public:
 		Component* component = this->GetComponent<TComponent>();
 
 		//check if already exists
-		if (component != nullptr)
+		if (component && component->GetType() != ComponentType::Script)
 		{
 			LOG(LogType::LOG_WARNING, "Component already applied");
 			LOG(LogType::LOG_INFO, "-GameObject [Name: %s] ", this->gameobject_name.c_str());
@@ -99,7 +104,7 @@ public:
 			return false;
 		}
 
-		std::unique_ptr<Component> newComponent = std::make_unique<TComponent>(shared_from_this(), ref);
+		std::unique_ptr<Component> newComponent = std::make_unique<TComponent>(ref, shared_from_this());
 		components_gameobject.push_back(std::move(newComponent));
 
 		return true;

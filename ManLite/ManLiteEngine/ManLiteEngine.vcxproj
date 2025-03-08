@@ -174,6 +174,7 @@ popd
     <ClCompile Include="Log.cpp" />
     <ClCompile Include="RendererEM.cpp" />
     <ClCompile Include="SceneManagerEM.cpp" />
+    <ClCompile Include="Transform.cpp" />
     <ClCompile Include="WindowEM.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -188,6 +189,7 @@ popd
     <ClInclude Include="Log.h" />
     <ClInclude Include="RendererEM.h" />
     <ClInclude Include="SceneManagerEM.h" />
+    <ClInclude Include="Transform.h" />
     <ClInclude Include="WindowEM.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

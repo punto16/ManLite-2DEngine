@@ -71,7 +71,9 @@ bool SceneManagerEM::CleanUp()
 Scene::Scene(std::string scene_name) : scene_name(scene_name)
 {
 	this->scene_root = std::make_shared<GameObject>(scene_root, scene_name, true);
+	this->scene_root->Awake();
 	this->scene_layers.push_back(std::make_shared<Layer>(scene_layers.size(), "Default_Layer_id:" + scene_layers.size(), true));
+	LOG(LogType::LOG_INFO, "Scene <%s> created", scene_name.c_str());
 }
 
 Scene::~Scene()
