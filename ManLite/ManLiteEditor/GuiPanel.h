@@ -18,6 +18,7 @@ enum class PanelType
 	RENDERER,
 	SETTINGS,
 	BUILD,
+	LAYER,
 
 	UNKNOWN
 };

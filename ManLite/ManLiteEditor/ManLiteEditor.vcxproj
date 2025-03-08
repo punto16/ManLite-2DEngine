@@ -165,6 +165,7 @@ popd
     <ClCompile Include="PanelGame.cpp" />
     <ClCompile Include="PanelHierarchy.cpp" />
     <ClCompile Include="PanelInspector.cpp" />
+    <ClCompile Include="PanelLayer.cpp" />
     <ClCompile Include="PanelProject.cpp" />
     <ClCompile Include="PanelScene.cpp" />
     <ClCompile Include="Timer.cpp" />
@@ -180,6 +181,7 @@ popd
     <ClInclude Include="PanelGame.h" />
     <ClInclude Include="PanelHierarchy.h" />
     <ClInclude Include="PanelInspector.h" />
+    <ClInclude Include="PanelLayer.h" />
     <ClInclude Include="PanelProject.h" />
     <ClInclude Include="PanelScene.h" />
     <ClInclude Include="resource.h" />

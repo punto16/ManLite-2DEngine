@@ -51,6 +51,9 @@
     <ClCompile Include="PanelAbout.cpp">
       <Filter>Modules\GuiPanels</Filter>
     </ClCompile>
+    <ClCompile Include="PanelLayer.cpp">
+      <Filter>Modules\GuiPanels</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.h">
@@ -93,6 +96,9 @@
       <Filter>Modules\GuiPanels</Filter>
     </ClInclude>
     <ClInclude Include="resource.h" />
+    <ClInclude Include="PanelLayer.h">
+      <Filter>Modules\GuiPanels</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="ManLiteEditor.rc" />
