@@ -72,6 +72,8 @@ void GameObject::Draw()
 
 void GameObject::Delete()
 {
+    components_gameobject.clear();
+
     auto children_copy = children_gameobject;
     children_gameobject.clear();
 

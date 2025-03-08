@@ -103,7 +103,7 @@ void EngineCore::CleanUp()
 	{
 		EngineModule* module = *item;
 		module->CleanUp();
-		delete module;
+		RELEASE(module)
 	}
 	engine_modules.clear();
 }

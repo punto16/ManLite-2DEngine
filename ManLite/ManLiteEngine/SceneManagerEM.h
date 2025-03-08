@@ -18,6 +18,8 @@ public:
 
 	bool Update(double dt);
 
+	bool CleanUp();
+
 	//safely adds a game object to a pending to add list
 	//whenever it is safe place, they will be added to scene
 	void SafeAddGO(std::shared_ptr<GameObject> object_to_add);

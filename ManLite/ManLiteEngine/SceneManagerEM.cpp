@@ -3,6 +3,8 @@
 #include "GameObject.h"
 #include "Layer.h"
 
+#include "Defs.h"
+
 //SCENE MANAGER
 SceneManagerEM::SceneManagerEM(EngineCore* parent) : EngineModule(parent)
 {
@@ -64,6 +66,8 @@ bool SceneManagerEM::CleanUp()
 {
 	bool ret = true;
 
+	if (!current_scene->CleanUp()) return false;
+
 	return ret;
 }
 
@@ -91,6 +95,21 @@ bool Scene::Update(double dt)
 	for (const auto& item : scene_layers) 
 		if (!item->Update(dt)) 
 			return false;
+
+	return ret;
+}
+
+bool Scene::CleanUp()
+{
+	bool ret = true;
+
+	objects_to_add.clear();
+	layers_to_add.clear();
+	objects_to_delete.clear();
+	layers_to_delete.clear();
+	scene_layers.clear();
+
+	scene_root->Delete();
 
 	return ret;
 }
