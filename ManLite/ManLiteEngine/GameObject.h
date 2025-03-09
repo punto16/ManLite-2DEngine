@@ -29,6 +29,7 @@ public:
 
 	bool Reparent(std::shared_ptr<GameObject> new_parent, bool skip_descendant_search = false);
 	bool IsDescendant(const std::shared_ptr<GameObject>& potential_ancestor) const;
+	bool MoveInVector(int new_position);
 
 	void CloneChildrenHierarchy(const std::shared_ptr<GameObject>& original);
 	void CloneComponents(const std::shared_ptr<GameObject>& original);
@@ -42,6 +43,7 @@ public:
 	//util
 	static uint32_t GenerateGameObjectID();
 	static std::string GenerateUniqueName(const std::string& baseName, const GameObject* go);
+	std::shared_ptr<GameObject> GetSharedPtr() { return shared_from_this(); }
 
 	//components
 	//get the component selected

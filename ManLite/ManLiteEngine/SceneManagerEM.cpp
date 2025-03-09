@@ -122,6 +122,14 @@ std::shared_ptr<GameObject> Scene::CreateEmptyGO(GameObject& parent)
 	return empty_go;
 }
 
+std::shared_ptr<GameObject> Scene::DuplicateGO(GameObject& go_to_copy)
+{
+	std::shared_ptr<GameObject> copy = std::make_shared<GameObject>(go_to_copy.GetSharedPtr());
+	copy->Awake();
+	go_to_copy.GetParentGO().lock()->AddChild(copy);
+	return copy;
+}
+
 void Scene::SafeAddGO(std::shared_ptr<GameObject> object_to_add)
 {
 	objects_to_add.push_back(object_to_add);

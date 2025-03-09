@@ -38,7 +38,7 @@ bool PanelHierarchy::Update()
 				if (ImGui::InputText("Change Scene Name", newNameBuffer, sizeof(newNameBuffer), ImGuiInputTextFlags_EnterReturnsTrue))
 				{
 					std::string newSceneName(newNameBuffer);
-					LOG(LogType::LOG_INFO, "Scene %s has been renamed to %s", engine->scene_manager_em->GetCurrentScene().GetSceneName().c_str(), newSceneName.c_str());
+					LOG(LogType::LOG_INFO, "Scene <%s> has been renamed to <%s>", engine->scene_manager_em->GetCurrentScene().GetSceneName().c_str(), newSceneName.c_str());
 					engine->scene_manager_em->GetCurrentScene().SetSceneName(newSceneName);
 					newNameBuffer[0] = '\0';
 				}
@@ -54,19 +54,29 @@ bool PanelHierarchy::Update()
 
 void PanelHierarchy::IterateTree(GameObject& parent)
 {
-	for (const auto& item : parent.GetChildren())
-	{
+	auto children = std::vector<std::shared_ptr<GameObject>>(parent.GetChildren());
+
+	DropZone(parent, 0);
+    for (size_t i = 0; i < children.size(); ++i) {
+        auto& item = children[i];
+
 		uint treeFlags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_DefaultOpen;
 		bool empty_children = item->GetChildren().empty();
 		if (empty_children) treeFlags |= ImGuiTreeNodeFlags_Leaf;
-		if (ImGui::TreeNodeEx(std::string(item->GetName() +
-		"##" +
-		std::to_string(item->GetID())).c_str(), treeFlags))
+
+		std::string nodeLabel = std::string(item->GetName() + "##" + std::to_string(item->GetID()));
+		bool nodeOpen = ImGui::TreeNodeEx(nodeLabel.c_str(), treeFlags);
+
+		DragAndDrop(*item);
+
+		if (nodeOpen)
 		{
 			Context(*item);
 			if (!empty_children) IterateTree(*item);
 			ImGui::TreePop();
 		}
+
+		DropZone(parent, i + 1);
 	}
 }
 
@@ -90,12 +100,66 @@ void PanelHierarchy::Context(GameObject& parent)
 		{
 			engine->scene_manager_em->GetCurrentScene().CreateEmptyGO(parent);
 		}
+		if (ImGui::MenuItem("Duplicate"))
+		{
+			engine->scene_manager_em->GetCurrentScene().DuplicateGO(parent);
+		}
 		if (ImGui::MenuItem("Create Empty Parent"))
 		{
 			std::shared_ptr<GameObject> new_parent = engine->scene_manager_em->GetCurrentScene().CreateEmptyGO(parent);
-			parent.Reparent(new_parent);
+			parent.Reparent(new_parent, true);
 			new_parent->SetName(GameObject::GenerateUniqueName(new_parent->GetName(), new_parent.get()));
+		}
+		if (ImGui::MenuItem("Delete"))
+		{
+			parent.Delete();
 		}
 		ImGui::EndPopup();
 	}
 }
+
+void PanelHierarchy::DragAndDrop(GameObject& parent)
+{
+	if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
+	{
+		ImGui::SetDragDropPayload("DND_NODE", &parent, sizeof(GameObject*));
+
+		ImGui::Text("Moving <%s>", parent.GetName().c_str());
+		ImGui::EndDragDropSource();
+	}
+
+	if (ImGui::BeginDragDropTarget())
+	{
+		if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_NODE"))
+		{
+			GameObject* draggedItem = *(GameObject**)payload->Data;
+			
+			draggedItem->Reparent(parent.GetSharedPtr());
+		}
+		ImGui::EndDragDropTarget();
+	}
+}
+
+void PanelHierarchy::DropZone(GameObject& parent, int position)
+{
+	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
+	std::string nodeLabel = std::string("##DropZone" + std::to_string(parent.GetID()) + std::to_string(position));
+	ImGui::InvisibleButton(nodeLabel.c_str(), ImVec2(-1, 4));
+	ImGui::PopStyleVar();
+
+	if (ImGui::BeginDragDropTarget()) {
+		if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_NODE")) {
+			std::shared_ptr<GameObject> draggedItem = *(std::shared_ptr<GameObject>*)payload->Data;
+			auto draggedParent = draggedItem->GetParentGO().lock();
+			auto newParent = parent.GetSharedPtr();
+
+			if (draggedItem)
+			{
+				draggedItem->Reparent(newParent);
+				draggedItem->MoveInVector(position);
+			}
+		}
+		ImGui::EndDragDropTarget();
+	}
+}
+

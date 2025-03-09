@@ -22,6 +22,7 @@ public:
 
 	//general functions for game objects
 	std::shared_ptr<GameObject> CreateEmptyGO(GameObject& parent);
+	std::shared_ptr<GameObject> DuplicateGO(GameObject& go_to_copy);
 
 	//safely adds a game object to a pending to add list
 	//whenever it is safe place, they will be added to scene root go

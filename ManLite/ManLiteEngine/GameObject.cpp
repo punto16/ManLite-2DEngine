@@ -4,6 +4,7 @@
 
 #include "Component.h"
 #include "Transform.h"
+#include "Log.h"
 
 #include <random>
 #include <ctime>
@@ -17,8 +18,8 @@ GameObject::GameObject(std::weak_ptr<GameObject> parent, std::string name, bool 
 {
     this->gameobject_name = GenerateUniqueName(name, this);
 
-    LOG(LogType::LOG_INFO, "GameObject <%s - id: %s> created", gameobject_name.c_str(), std::to_string(gameobject_id).c_str());
-    //NEVER call AddComponent or similar in constructor
+    LOG(LogType::LOG_INFO, "GameObject <%s - id: %u> created", gameobject_name.c_str(), gameobject_id);
+    //NEVER call AddComponent/AddChild or similar in constructor
     //WE CANT DO shared_from_this in a constructor!!
 }
 
@@ -32,7 +33,7 @@ GameObject::GameObject(std::weak_ptr<GameObject> go_to_copy) :
     CloneChildrenHierarchy(go_to_copy.lock());
     CloneComponents(go_to_copy.lock());
 
-    LOG(LogType::LOG_INFO, "GameObject <%s - id: %s> created from <%s>", gameobject_name.c_str(), std::to_string(gameobject_id).c_str(), go_to_copy.lock()->GetName().c_str());
+    LOG(LogType::LOG_INFO, "GameObject <%s - id: %u> created from <%s - id: %u>", gameobject_name.c_str(), gameobject_id, go_to_copy.lock()->GetName().c_str(), go_to_copy.lock()->GetID());
 }
 
 GameObject::~GameObject()
@@ -72,6 +73,8 @@ void GameObject::Draw()
 
 void GameObject::Delete()
 {
+    LOG(LogType::LOG_INFO, "GameObject <%s - id: %u> has been deleted", gameobject_name.c_str(), gameobject_id);
+
     components_gameobject.clear();
 
     auto children_copy = children_gameobject;
@@ -84,15 +87,14 @@ void GameObject::Delete()
             parent_sp->RemoveChild(shared_from_this());
         }
     }
-    parent_gameobject.reset();
 }
 
 bool GameObject::Reparent(std::shared_ptr<GameObject> new_parent, bool skip_descendant_search)
 {
     auto self = shared_from_this();
     bool cycle = false;
-    if (new_parent.get() == self.get()) return false;
-    if (!skip_descendant_search && IsDescendant(new_parent)) return false;
+    if (new_parent.get() == self.get() || new_parent == self->GetParentGO().lock()) return false;
+    if (!skip_descendant_search && new_parent->IsDescendant(self)) return false;
     if (new_parent->GetParentGO().lock() == self) cycle = true;
 
     auto old_parent = parent_gameobject.lock();
@@ -118,6 +120,28 @@ bool GameObject::IsDescendant(const std::shared_ptr<GameObject>& potential_ances
         current = current->parent_gameobject.lock();
     }
     return false;
+}
+
+bool GameObject::MoveInVector(int new_position)
+{
+    auto parent_sp = parent_gameobject.lock();
+    if (!parent_sp) return false;
+
+    auto& children = parent_sp->children_gameobject;
+    auto self = shared_from_this();
+
+    auto it = std::find(children.begin(), children.end(), self);
+    if (it == children.end()) return false;
+
+    const int original_index = std::distance(children.begin(), it);
+    children.erase(it);
+
+    if (new_position > original_index) new_position--;
+
+    new_position = std::clamp(new_position, 0, static_cast<int>(children.size()));
+    children.insert(children.begin() + new_position, self);
+
+    return true;
 }
 
 void GameObject::CloneChildrenHierarchy(const std::shared_ptr<GameObject>& original)
@@ -255,7 +279,7 @@ std::string GameObject::GenerateUniqueName(const std::string& baseName, const Ga
     children = go->GetParentGO().lock()->GetChildren();
 
     for (const auto& child : children)
-        existingNames.insert(child->GetName());
+        if (child.get() != go) existingNames.insert(child->GetName());
 
     if (existingNames.count(newName) > 0)
     {

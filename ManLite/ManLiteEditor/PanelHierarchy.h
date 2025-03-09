@@ -17,6 +17,8 @@ public:
 	void IterateTree(GameObject& parent);
 	void BlankContext(GameObject& parent);
 	void Context(GameObject& parent);
+	void DragAndDrop(GameObject& parent);
+	void DropZone(GameObject& parent, int position);
 
 private:
 
