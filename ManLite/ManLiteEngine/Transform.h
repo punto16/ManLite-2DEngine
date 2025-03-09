@@ -14,7 +14,7 @@ class Transform : public Component
 {
 public:
 	Transform(std::weak_ptr<GameObject> container_go, std::string name = "Transform", bool enable = true);
-	Transform(std::shared_ptr<Transform> component_to_copy, std::shared_ptr<GameObject> container_go);
+	Transform(const Transform& component_to_copy, std::shared_ptr<GameObject> container_go);
 	~Transform();
 
 	bool Update(float dt);

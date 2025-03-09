@@ -92,7 +92,7 @@ public:
 	}
 
 	template <typename TComponent>
-	bool AddCopiedComponent(TComponent* ref)
+	bool AddCopiedComponent(const TComponent& ref)
 	{
 		Component* component = this->GetComponent<TComponent>();
 

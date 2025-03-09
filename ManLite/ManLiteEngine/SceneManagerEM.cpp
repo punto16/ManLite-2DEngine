@@ -125,7 +125,8 @@ std::shared_ptr<GameObject> Scene::CreateEmptyGO(GameObject& parent)
 std::shared_ptr<GameObject> Scene::DuplicateGO(GameObject& go_to_copy)
 {
 	std::shared_ptr<GameObject> copy = std::make_shared<GameObject>(go_to_copy.GetSharedPtr());
-	copy->Awake();
+	copy->CloneChildrenHierarchy(go_to_copy.GetSharedPtr());
+	copy->CloneComponents(go_to_copy.GetSharedPtr());
 	go_to_copy.GetParentGO().lock()->AddChild(copy);
 	return copy;
 }

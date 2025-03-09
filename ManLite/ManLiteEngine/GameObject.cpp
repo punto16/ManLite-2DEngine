@@ -19,7 +19,7 @@ GameObject::GameObject(std::weak_ptr<GameObject> parent, std::string name, bool 
     this->gameobject_name = GenerateUniqueName(name, this);
 
     LOG(LogType::LOG_INFO, "GameObject <%s - id: %u> created", gameobject_name.c_str(), gameobject_id);
-    //NEVER call AddComponent/AddChild or similar in constructor
+    //NEVER call AddComponent/AddChild/CloneComponents/ClonHierarchy or similar in constructor
     //WE CANT DO shared_from_this in a constructor!!
 }
 
@@ -30,8 +30,6 @@ GameObject::GameObject(std::weak_ptr<GameObject> go_to_copy) :
     enabled(go_to_copy.lock()->IsEnabled())
 {
     this->gameobject_name = GenerateUniqueName(go_to_copy.lock()->GetName(), this);
-    CloneChildrenHierarchy(go_to_copy.lock());
-    CloneComponents(go_to_copy.lock());
 
     LOG(LogType::LOG_INFO, "GameObject <%s - id: %u> created from <%s - id: %u>", gameobject_name.c_str(), gameobject_id, go_to_copy.lock()->GetName().c_str(), go_to_copy.lock()->GetID());
 }
@@ -162,7 +160,7 @@ void GameObject::CloneComponents(const std::shared_ptr<GameObject>& original)
         {
         case ComponentType::Transform:
         {
-            //AddCopiedComponent<Transform>((Transform*)item.get());
+            AddCopiedComponent<Transform>(*dynamic_cast<const Transform*>(item.get()));
             break;
         }
         case ComponentType::Camera:
