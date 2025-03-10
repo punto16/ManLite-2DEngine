@@ -6,6 +6,7 @@
 #include "ManLiteEngine/GameObject.h"
 
 #include "Defs.h"
+#include "algorithm"
 
 #include <imgui.h>
 
@@ -26,6 +27,8 @@ bool PanelHierarchy::Update()
 	if (ImGui::Begin(name.c_str(), &enabled, settingsFlags))
 	{
 		BlankContext(engine->scene_manager_em->GetCurrentScene().GetSceneRoot());
+		if (ImGui::IsWindowHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Left) && !ImGui::IsAnyItemHovered())
+			engine->scene_manager_em->GetCurrentScene().SelectGameObject(nullptr, false, true);
 
 		if (ImGui::CollapsingHeader(std::string(engine->scene_manager_em->GetCurrentScene().GetSceneName() +
 			"##" +
@@ -64,9 +67,12 @@ void PanelHierarchy::IterateTree(GameObject& parent)
 		bool empty_children = item->GetChildren().empty();
 		if (empty_children) treeFlags |= ImGuiTreeNodeFlags_Leaf;
 
+		if (IsSelected(item)) treeFlags |= ImGuiTreeNodeFlags_Selected;
+
 		std::string nodeLabel = std::string(item->GetName() + "##" + std::to_string(item->GetID()));
 		bool nodeOpen = ImGui::TreeNodeEx(nodeLabel.c_str(), treeFlags);
 
+		GameObjectSelection(*item);
 		DragAndDrop(*item);
 
 		if (nodeOpen)
@@ -86,7 +92,7 @@ void PanelHierarchy::BlankContext(GameObject& parent)
 	{
 		if (ImGui::MenuItem("Create Empty"))
 		{
-			engine->scene_manager_em->GetCurrentScene().CreateEmptyGO(parent);
+			engine->scene_manager_em->GetCurrentScene().SelectGameObject(engine->scene_manager_em->GetCurrentScene().CreateEmptyGO(parent));
 		}
 		ImGui::EndPopup();
 	}
@@ -96,23 +102,68 @@ void PanelHierarchy::Context(GameObject& parent)
 {
 	if (ImGui::BeginPopupContextItem())
 	{
-		if (ImGui::MenuItem("Create Empty"))
+		auto& scene = engine->scene_manager_em->GetCurrentScene();
+		const auto& selected = scene.GetSelectedGOs();
+		int selectedCount = selected.size();
+
+		if (!IsSelected(parent.GetSharedPtr())) scene.SelectGameObject(parent.GetSharedPtr());
+		if (selectedCount > 1)
 		{
-			engine->scene_manager_em->GetCurrentScene().CreateEmptyGO(parent);
+			if (ImGui::MenuItem(("Duplicate (" + std::to_string(selectedCount) + ")").c_str()))
+			{
+				std::vector<std::shared_ptr<GameObject>> new_selected;
+				for (const auto& weakGo : selected)
+				{
+					if (auto go = weakGo.lock())
+					{
+						new_selected.push_back(scene.DuplicateGO(*go));
+					}
+				}
+				scene.SelectGameObject(nullptr, false, true);
+				for (const auto& go : new_selected)
+				{
+					scene.SelectGameObject(go, true);
+				}
+			}
+
+			if (ImGui::MenuItem(("Delete (" + std::to_string(selectedCount) + ")").c_str()))
+			{
+				for (const auto& weakGo : selected) {
+					if (auto go = weakGo.lock()) go->Delete();
+				}
+				scene.SelectGameObject(nullptr, false, true);
+			}
+
+			if (ImGui::MenuItem("Create Parent for Selected"))
+			{
+				auto new_parent = scene.CreateEmptyGO(parent);
+				new_parent->SetName("Group");
+				for (const auto& weakGo : selected)
+					if (auto go = weakGo.lock()) go->Reparent(new_parent, true);
+				scene.SelectGameObject(new_parent);
+			}
 		}
-		if (ImGui::MenuItem("Duplicate"))
+		else
 		{
-			engine->scene_manager_em->GetCurrentScene().DuplicateGO(parent);
-		}
-		if (ImGui::MenuItem("Create Empty Parent"))
-		{
-			std::shared_ptr<GameObject> new_parent = engine->scene_manager_em->GetCurrentScene().CreateEmptyGO(parent);
-			parent.Reparent(new_parent, true);
-			new_parent->SetName(GameObject::GenerateUniqueName(new_parent->GetName(), new_parent.get()));
-		}
-		if (ImGui::MenuItem("Delete"))
-		{
-			parent.Delete();
+			if (ImGui::MenuItem("Duplicate"))
+			{
+				scene.SelectGameObject(engine->scene_manager_em->GetCurrentScene().DuplicateGO(parent));
+			}
+			if (ImGui::MenuItem("Delete"))
+			{
+				parent.Delete();
+			}
+			if (ImGui::MenuItem("Create Empty"))
+			{
+				scene.SelectGameObject(engine->scene_manager_em->GetCurrentScene().CreateEmptyGO(parent));
+			}
+			if (ImGui::MenuItem("Create Empty Parent"))
+			{
+				std::shared_ptr<GameObject> new_parent = engine->scene_manager_em->GetCurrentScene().CreateEmptyGO(parent);
+				parent.Reparent(new_parent, true);
+				new_parent->SetName(GameObject::GenerateUniqueName(new_parent->GetName(), new_parent.get()));
+				scene.SelectGameObject(new_parent);
+			}
 		}
 		ImGui::EndPopup();
 	}
@@ -120,21 +171,33 @@ void PanelHierarchy::Context(GameObject& parent)
 
 void PanelHierarchy::DragAndDrop(GameObject& parent)
 {
+	auto& scene = engine->scene_manager_em->GetCurrentScene();
+
 	if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
 	{
-		ImGui::SetDragDropPayload("DND_NODE", &parent, sizeof(GameObject*));
+		const auto& selected = scene.GetSelectedGOs();
 
-		ImGui::Text("Moving <%s>", parent.GetName().c_str());
+		if (IsSelected(parent.GetSharedPtr()))
+		{
+			std::vector<std::shared_ptr<GameObject>> draggedItems;
+			for (const auto& weakGo : selected)
+				if (auto go = weakGo.lock()) draggedItems.push_back(go);
+
+			ImGui::SetDragDropPayload("DND_MULTI_NODE", draggedItems.data(), draggedItems.size() * sizeof(std::shared_ptr<GameObject>));
+			if (draggedItems.size() <= 1) ImGui::Text("Moving <%s>", parent.GetName().c_str());
+			else ImGui::Text("Moving %d Objects", draggedItems.size());
+		}
 		ImGui::EndDragDropSource();
 	}
 
 	if (ImGui::BeginDragDropTarget())
 	{
-		if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_NODE"))
-		{
-			GameObject* draggedItem = *(GameObject**)payload->Data;
-			
-			draggedItem->Reparent(parent.GetSharedPtr());
+		if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_MULTI_NODE")) {
+			auto draggedItems = reinterpret_cast<std::shared_ptr<GameObject>*>(payload->Data);
+			size_t count = payload->DataSize / sizeof(std::shared_ptr<GameObject>);
+
+			for (size_t i = 0; i < count; ++i)
+				draggedItems[i]->Reparent(parent.GetSharedPtr());
 		}
 		ImGui::EndDragDropTarget();
 	}
@@ -143,23 +206,67 @@ void PanelHierarchy::DragAndDrop(GameObject& parent)
 void PanelHierarchy::DropZone(GameObject& parent, int position)
 {
 	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
-	std::string nodeLabel = std::string("##DropZone" + std::to_string(parent.GetID()) + std::to_string(position));
+	std::string nodeLabel = "##DropZone" + std::to_string(parent.GetID()) + std::to_string(position);
 	ImGui::InvisibleButton(nodeLabel.c_str(), ImVec2(-1, 4));
 	ImGui::PopStyleVar();
 
-	if (ImGui::BeginDragDropTarget()) {
-		if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_NODE")) {
-			std::shared_ptr<GameObject> draggedItem = *(std::shared_ptr<GameObject>*)payload->Data;
-			auto draggedParent = draggedItem->GetParentGO().lock();
-			auto newParent = parent.GetSharedPtr();
+	if (ImGui::BeginDragDropTarget())
+	{
+		if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_MULTI_NODE"))
+		{
+			auto draggedItems = reinterpret_cast<std::shared_ptr<GameObject>*>(payload->Data);
+			size_t count = payload->DataSize / sizeof(std::shared_ptr<GameObject>);
 
-			if (draggedItem)
+			for (size_t i = 0; i < count; ++i)
 			{
-				draggedItem->Reparent(newParent);
-				draggedItem->MoveInVector(position);
+				draggedItems[i]->Reparent(parent.GetSharedPtr());
+				draggedItems[i]->MoveInVector(position);
 			}
+		}
+		else if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_NODE"))
+		{
+			GameObject* draggedItem = *(GameObject**)payload->Data;
+			draggedItem->Reparent(parent.GetSharedPtr());
+			draggedItem->MoveInVector(position);
 		}
 		ImGui::EndDragDropTarget();
 	}
+}
+
+void PanelHierarchy::GameObjectSelection(GameObject& go)
+{
+	if (ImGui::IsItemClicked(ImGuiMouseButton_Left) && !ImGui::IsMouseDragging(ImGuiMouseButton_Left))
+	{
+		auto& scene = engine->scene_manager_em->GetCurrentScene();
+		auto itemShared = go.GetSharedPtr();
+
+		if (ImGui::GetIO().KeyCtrl)
+		{
+			scene.SelectGameObject(itemShared, true);
+		}
+		else if (ImGui::GetIO().KeyShift)
+		{
+			scene.SelectRange(itemShared);
+		}
+		else
+		{
+			if (!IsSelected(itemShared)) scene.SelectGameObject(go.GetSharedPtr());
+		}
+	}
+	else if (ImGui::IsItemHovered() &&
+		ImGui::IsMouseReleased(ImGuiMouseButton_Left) &&
+		!ImGui::GetIO().KeyShift &&
+		!ImGui::GetIO().KeyCtrl)
+	{
+		auto& scene = engine->scene_manager_em->GetCurrentScene();
+		scene.SelectGameObject(go.GetSharedPtr());
+	}
+}
+
+bool PanelHierarchy::IsSelected(const std::shared_ptr<GameObject>& go)
+{
+	const auto& selected = engine->scene_manager_em->GetCurrentScene().GetSelectedGOs();
+	return std::find_if(selected.begin(), selected.end(),
+		[&](const auto& weakGo) { return weakGo.lock() == go; }) != selected.end();
 }
 

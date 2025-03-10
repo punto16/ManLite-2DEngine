@@ -3,6 +3,7 @@
 #pragma once
 
 #include "GuiPanel.h"
+#include "memory"
 
 class GameObject;
 
@@ -19,6 +20,9 @@ public:
 	void Context(GameObject& parent);
 	void DragAndDrop(GameObject& parent);
 	void DropZone(GameObject& parent, int position);
+	void GameObjectSelection(GameObject& go);
+
+	bool IsSelected(const std::shared_ptr<GameObject>& go);
 
 private:
 

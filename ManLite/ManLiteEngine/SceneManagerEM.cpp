@@ -198,6 +198,62 @@ bool Scene::ContainsLayer(const std::shared_ptr<Layer>& layer) const {
 	return std::find(scene_layers.begin(), scene_layers.end(), layer) != scene_layers.end();
 }
 
+void Scene::SelectGameObject(std::shared_ptr<GameObject> go, bool additive, bool unselect_all)
+{
+	if (unselect_all)
+	{
+		selected_gos.clear();
+		last_selected = nullptr;
+		return;
+	}
+	if (!additive) selected_gos.clear();
+
+	auto it = std::find_if(selected_gos.begin(), selected_gos.end(),
+		[&](const auto& weak_go) { return weak_go.lock() == go; });
+
+	if (it == selected_gos.end())
+	{
+		selected_gos.push_back(go);
+		last_selected = go;
+	}
+}
+
+void Scene::SelectRange(std::shared_ptr<GameObject> endGO)
+{
+	if (!last_selected)
+	{
+		SelectGameObject(endGO);
+		return;
+	}
+
+	std::vector<std::shared_ptr<GameObject>> flatHierarchy;
+	TraverseHierarchy([&](auto go) { flatHierarchy.push_back(go); });
+
+	auto startIt = std::find(flatHierarchy.begin(), flatHierarchy.end(), last_selected);
+	auto endIt = std::find(flatHierarchy.begin(), flatHierarchy.end(), endGO);
+
+	if (startIt == flatHierarchy.end() || endIt == flatHierarchy.end()) return;
+
+	if (startIt > endIt) std::swap(startIt, endIt);
+
+	selected_gos.clear();
+	for (auto it = startIt; it <= endIt; ++it)
+		selected_gos.push_back(*it);
+
+	last_selected = endGO;
+}
+
+void Scene::TraverseRecursive(std::shared_ptr<GameObject> go, const std::function<void(std::shared_ptr<GameObject>)>& func)
+{
+	if (!go) return;
+
+	func(go);
+
+	const auto& children = go->GetChildren();
+	for (auto it = children.rbegin(); it != children.rend(); ++it)
+		TraverseRecursive(*it, func);
+}
+
 void Scene::SetSceneName(std::string name)
 {
 	this->scene_name = name;
