@@ -128,7 +128,7 @@ void PanelInspector::TransformOptions(GameObject& go)
 	Transform* transform = go.GetComponent<Transform>();
 	if (transform == nullptr) return;
 	std::string transformLabel = std::string("Transform##" + std::to_string(go.GetID()));
-	if (ImGui::CollapsingHeader(transformLabel.c_str())/*, treeFlags*/)
+	if (ImGui::CollapsingHeader(transformLabel.c_str()))
 	{
 		std::string transformTableLabel = std::string("TransformTable##" + std::to_string(go.GetID()));
 		if (ImGui::BeginTable(transformTableLabel.c_str(), 3, tableFlags))
@@ -138,8 +138,69 @@ void PanelInspector::TransformOptions(GameObject& go)
 				ImGui::TableNextRow();
 				for (size_t column = 0; column < 3; column++)
 				{
+					float dummy_size = 2.9f;
 					ImGui::TableSetColumnIndex(column);
-					ImGui::Text("xd");
+					if (column == 0 && row == 0)
+					{
+						ImGui::Text("Position");
+						ImGui::Dummy(ImVec2(0, dummy_size));
+						ImGui::Separator();
+					}
+					else if (column == 0 && row == 1)
+					{
+						ImGui::Text("Angle");
+						ImGui::Dummy(ImVec2(0, dummy_size));
+						ImGui::Separator();
+					}
+					else if (column == 0 && row == 2)
+					{
+						ImGui::Text("Scale");
+						ImGui::Dummy(ImVec2(0, dummy_size));
+					}
+					else if (column == 1 && row == 0)
+					{
+						float pos_x = transform->GetPosition().x;
+						std::string pos_x_label = std::string("x##position_x" + std::to_string(go.GetID()));
+						ImGui::DragFloat(pos_x_label.c_str(), &pos_x, 0.05f);
+						transform->SetPosition(vec2f(pos_x, transform->GetPosition().y));
+						ImGui::Separator();
+					}
+					else if (column == 1 && row == 1)
+					{
+						float angle = transform->GetAngle();
+						std::string angle_label = std::string("##angle_degree" + std::to_string(go.GetID()));
+						ImGui::DragFloat(angle_label.c_str(), &angle, 0.05f);
+						transform->SetAngle(angle);
+						ImGui::Separator();
+					}
+					else if (column == 1 && row == 2)
+					{
+						float scale_x = transform->GetScale().x;
+						std::string scale_x_label = std::string("x##scale_x" + std::to_string(go.GetID()));
+						ImGui::DragFloat(scale_x_label.c_str(), &scale_x, 0.05f);
+						transform->SetScale(vec2f(scale_x, transform->GetScale().y));
+					}
+					else if (column == 2 && row == 0)
+					{
+						float pos_y = transform->GetPosition().y;
+						std::string pos_y_label = std::string("y##position_y" + std::to_string(go.GetID()));
+						ImGui::DragFloat(pos_y_label.c_str(), &pos_y, 0.05f);
+						transform->SetPosition(vec2f(transform->GetPosition().x, pos_y));
+						ImGui::Separator();
+					}
+					else if (column == 2 && row == 1)
+					{
+						ImGui::Text("Degree");
+						ImGui::Dummy(ImVec2(0, dummy_size));
+						ImGui::Separator();
+					}
+					else if (column == 2 && row == 2)
+					{
+						float scale_y = transform->GetScale().y;
+						std::string scale_y_label = std::string("y##scale_y" + std::to_string(go.GetID()));
+						ImGui::DragFloat(scale_y_label.c_str(), &scale_y, 0.05f);
+						transform->SetScale(vec2f(transform->GetScale().x, scale_y));
+					}
 				}
 			}
 			ImGui::EndTable();

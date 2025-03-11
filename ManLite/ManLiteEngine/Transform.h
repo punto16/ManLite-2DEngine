@@ -23,12 +23,18 @@ public:
 	//getters //setters
 
 	vec2f GetPosition() const { return this->position; }
+	void SetPosition(vec2f pos) { this->position = pos; }
 	float GetAngle() const { return this->angle_rotation; }
+	void SetAngle(float angle) { this->angle_rotation = angle; }
 	vec2f GetScale() const { return this->scale; }
+	void SetScale(vec2f scale) { this->scale = scale; }
 
 	vec2f GetWorldPosition();
+	void SetWorldPosition(vec2f pos);
 	float GetWorldAngle();
+	void SetWorldAngle(float angle);
 	vec2f GetWorldScale();
+	void SetWorldScale(vec2f scale);
 
 private:
 	vec2f position;
