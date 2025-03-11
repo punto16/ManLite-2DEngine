@@ -33,14 +33,26 @@ vec2f Transform::GetWorldPosition()
 	return position;
 }
 
+void Transform::SetWorldPosition(vec2f pos)
+{
+}
+
 float Transform::GetWorldAngle()
 {
 	//make it world
 	return angle_rotation;
 }
 
+void Transform::SetWorldAngle(float angle)
+{
+}
+
 vec2f Transform::GetWorldScale()
 {
 	//make it world
 	return scale;
+}
+
+void Transform::SetWorldScale(vec2f scale)
+{
 }
