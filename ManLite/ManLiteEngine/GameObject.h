@@ -141,22 +141,25 @@ public:
 	//getters // setters
 	std::string GetName() const { return this->gameobject_name; }
 	void SetName(std::string name) { this->gameobject_name = GenerateUniqueName(name, this); }
+	std::string GetTag() const { return this->gameobject_tag; }
+	void SetTag(std::string tag) { this->gameobject_tag = tag; }
 	uint32_t GetID() const { return this->gameobject_id; }
 	std::weak_ptr<GameObject> GetParentGO() const { return this->parent_gameobject; }
 	std::weak_ptr<Layer> GetParentLayer() const { return this->parent_layer; }
+	void SetParentLayer(std::shared_ptr<Layer> layer) { this->parent_layer = layer; }
 	std::vector<std::shared_ptr<GameObject>>& GetChildren() { return children_gameobject; }
 	std::vector<std::unique_ptr<Component>>& GetComponents() { return components_gameobject; }
 
 	bool IsEnabled() const { return this->enabled; }
 	void SetEnabled(bool enable)
 	{
-		if (this->enabled)
+		if (this->enabled && !enable)
 		{
 			//disable go, components BUT NOT THE children
 			this->enabled = false;
 			for (const auto& component : components_gameobject) component->SetEnabled(false);
 		}
-		else if (!this->enabled)
+		else if (!this->enabled && enable)
 		{
 			//enable go, components BUT NOT THE children
 			this->enabled = true;
@@ -167,6 +170,7 @@ public:
 
 private:
 	std::string gameobject_name;
+	std::string gameobject_tag;
 	uint32_t gameobject_id;
 
 	std::weak_ptr<GameObject> parent_gameobject;

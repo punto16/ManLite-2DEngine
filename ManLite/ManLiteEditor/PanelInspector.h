@@ -4,6 +4,8 @@
 
 #include "GuiPanel.h"
 
+class GameObject;
+
 class PanelInspector : public Panel
 {
 public:
@@ -11,6 +13,12 @@ public:
 	~PanelInspector();
 
 	bool Update();
+
+	void GeneralOptions(GameObject& go);
+	void PrefabOptions(GameObject& go);
+	//components inpsector
+	void TransformOptions(GameObject& go);
+
 
 private:
 

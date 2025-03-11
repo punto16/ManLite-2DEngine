@@ -26,6 +26,10 @@ public:
 	float GetAngle() const { return this->angle_rotation; }
 	vec2f GetScale() const { return this->scale; }
 
+	vec2f GetWorldPosition();
+	float GetWorldAngle();
+	vec2f GetWorldScale();
+
 private:
 	vec2f position;
 	//angle of rotation in degrees

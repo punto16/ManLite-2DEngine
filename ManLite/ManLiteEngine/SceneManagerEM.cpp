@@ -76,7 +76,7 @@ Scene::Scene(std::string scene_name) : scene_name(scene_name)
 {
 	this->scene_root = std::make_shared<GameObject>(scene_root, scene_name, true);
 	this->scene_root->Awake();
-	this->scene_layers.push_back(std::make_shared<Layer>(scene_layers.size(), "Default_Layer_id:" + scene_layers.size(), true));
+	this->scene_layers.push_back(std::make_shared<Layer>(scene_layers.size(), "DefaultLayer_" + std::to_string(scene_layers.size()), true));
 	LOG(LogType::LOG_INFO, "Scene <%s> created", scene_name.c_str());
 }
 
@@ -119,6 +119,7 @@ std::shared_ptr<GameObject> Scene::CreateEmptyGO(GameObject& parent)
 	std::shared_ptr<GameObject> empty_go = std::make_shared<GameObject>(parent.shared_from_this(), "EmptyGameObject", true);
 	empty_go->Awake();
 	parent.AddChild(empty_go);
+	if (scene_layers.size() > 0) ReparentToLayer(empty_go, scene_layers[0]);
 	return empty_go;
 }
 
@@ -128,6 +129,7 @@ std::shared_ptr<GameObject> Scene::DuplicateGO(GameObject& go_to_copy)
 	copy->CloneChildrenHierarchy(go_to_copy.GetSharedPtr());
 	copy->CloneComponents(go_to_copy.GetSharedPtr());
 	go_to_copy.GetParentGO().lock()->AddChild(copy);
+	if (go_to_copy.GetParentLayer().lock() != nullptr) ReparentToLayer(copy, go_to_copy.GetParentLayer().lock());
 	return copy;
 }
 
@@ -174,7 +176,6 @@ void Scene::DeletePengindLayers()
 void Scene::ReparentToLayer(std::shared_ptr<GameObject> game_object, std::shared_ptr<Layer> target_layer)
 {
 	if (!ContainsLayer(target_layer)) { return; }
-	bool was_in_any_layer = false;
 	for (auto& layer : scene_layers)
 	{
 		auto& objects = layer->GetChildren();
@@ -187,11 +188,14 @@ void Scene::ReparentToLayer(std::shared_ptr<GameObject> game_object, std::shared
 
 		if (objects.size() != initial_size)
 		{
-			was_in_any_layer = true;
 			break;
 		}
 	}
-	if (was_in_any_layer) {	target_layer->GetChildren().push_back(game_object);	}
+	if (target_layer)
+	{
+		game_object->SetParentLayer(target_layer);
+		target_layer->GetChildren().push_back(game_object);
+	}
 }
 
 bool Scene::ContainsLayer(const std::shared_ptr<Layer>& layer) const {

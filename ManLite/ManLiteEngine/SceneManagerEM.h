@@ -14,7 +14,7 @@ class Layer;
 class Scene
 {
 public:
-	Scene(std::string scene_name = "Untitled Scene");
+	Scene(std::string scene_name = "Untitled_Scene");
 	~Scene();
 
 	bool Update(double dt);

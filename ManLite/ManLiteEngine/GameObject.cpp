@@ -14,6 +14,7 @@ GameObject::GameObject(std::weak_ptr<GameObject> parent, std::string name, bool 
     gameobject_id(GenerateGameObjectID()),
     parent_gameobject(parent),
     gameobject_name(""),
+    gameobject_tag("Default"),
     enabled(enable)
 {
     this->gameobject_name = GenerateUniqueName(name, this);
@@ -27,6 +28,7 @@ GameObject::GameObject(std::weak_ptr<GameObject> go_to_copy) :
     gameobject_id(GenerateGameObjectID()),
     parent_gameobject(go_to_copy.lock()->GetParentGO()),
     gameobject_name(""),
+    gameobject_tag(go_to_copy.lock()->GetTag()),
     enabled(go_to_copy.lock()->IsEnabled())
 {
     this->gameobject_name = GenerateUniqueName(go_to_copy.lock()->GetName(), this);
@@ -288,11 +290,11 @@ std::string GameObject::GenerateUniqueName(const std::string& baseName, const Ga
             if (pos != std::string::npos && newName.back() == ')' && newName[pos] == '(' && pos > 0)
             {
                 int num = std::stoi(newName.substr(pos + 1, newName.size() - pos - 2));
-                newName = newName.substr(0, pos - 1) + " (" + std::to_string(++num) + ")";
+                newName = newName.substr(0, pos - 1) + "_(" + std::to_string(++num) + ")";
             }
             else
             {
-                newName = baseName + " (" + std::to_string(count++) + ")";
+                newName = baseName + "_(" + std::to_string(count++) + ")";
             }
         }
     }

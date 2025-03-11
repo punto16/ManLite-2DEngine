@@ -38,7 +38,8 @@ bool PanelHierarchy::Update()
 			{
 				static char newNameBuffer[32];
 				strcpy(newNameBuffer, engine->scene_manager_em->GetCurrentScene().GetSceneName().c_str());
-				if (ImGui::InputText("Change Scene Name", newNameBuffer, sizeof(newNameBuffer), ImGuiInputTextFlags_EnterReturnsTrue))
+				uint input_flags = ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_CharsNoBlank;
+				if (ImGui::InputText("Change Scene Name", newNameBuffer, sizeof(newNameBuffer), input_flags))
 				{
 					std::string newSceneName(newNameBuffer);
 					LOG(LogType::LOG_INFO, "Scene <%s> has been renamed to <%s>", engine->scene_manager_em->GetCurrentScene().GetSceneName().c_str(), newSceneName.c_str());

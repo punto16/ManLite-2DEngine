@@ -26,3 +26,21 @@ bool Transform::Update(float dt)
 
 	return ret;
 }
+
+vec2f Transform::GetWorldPosition()
+{
+	//make it world
+	return position;
+}
+
+float Transform::GetWorldAngle()
+{
+	//make it world
+	return angle_rotation;
+}
+
+vec2f Transform::GetWorldScale()
+{
+	//make it world
+	return scale;
+}

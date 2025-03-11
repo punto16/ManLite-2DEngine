@@ -22,7 +22,7 @@ public:
 	void DropZone(GameObject& parent, int position);
 	void GameObjectSelection(GameObject& go);
 
-	bool IsSelected(const std::shared_ptr<GameObject>& go);
+	static bool IsSelected(const std::shared_ptr<GameObject>& go);
 
 private:
 
