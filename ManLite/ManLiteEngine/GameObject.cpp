@@ -150,7 +150,9 @@ void GameObject::CloneChildrenHierarchy(const std::shared_ptr<GameObject>& origi
     {
         auto child_copy = std::make_shared<GameObject>(original_child);
         child_copy->parent_gameobject = shared_from_this();
-        children_gameobject.push_back(child_copy);
+        //children_gameobject.push_back(child_copy);
+        //child_copy->CloneChildrenHierarchy(original_child);
+        //child_copy->CloneComponents(original_child);
     }
 }
 

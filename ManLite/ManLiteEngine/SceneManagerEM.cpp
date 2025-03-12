@@ -126,10 +126,14 @@ std::shared_ptr<GameObject> Scene::CreateEmptyGO(GameObject& parent)
 std::shared_ptr<GameObject> Scene::DuplicateGO(GameObject& go_to_copy)
 {
 	std::shared_ptr<GameObject> copy = std::make_shared<GameObject>(go_to_copy.GetSharedPtr());
-	copy->CloneChildrenHierarchy(go_to_copy.GetSharedPtr());
 	copy->CloneComponents(go_to_copy.GetSharedPtr());
 	go_to_copy.GetParentGO().lock()->AddChild(copy);
 	if (go_to_copy.GetParentLayer().lock() != nullptr) ReparentToLayer(copy, go_to_copy.GetParentLayer().lock());
+
+	if (!go_to_copy.GetChildren().empty());
+	for (const auto& child_to_copy : go_to_copy.GetChildren())
+		DuplicateGO(*child_to_copy)->Reparent(copy);
+
 	return copy;
 }
 
