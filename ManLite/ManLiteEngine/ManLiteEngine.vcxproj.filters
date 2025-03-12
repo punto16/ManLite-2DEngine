@@ -66,6 +66,9 @@
     <ClCompile Include="Transform.cpp">
       <Filter>GameObject\Components</Filter>
     </ClCompile>
+    <ClCompile Include="mat3f.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="EngineCore.h">
@@ -106,6 +109,9 @@
     </ClInclude>
     <ClInclude Include="Transform.h">
       <Filter>GameObject\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="mat3f.h">
+      <Filter>Utils</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

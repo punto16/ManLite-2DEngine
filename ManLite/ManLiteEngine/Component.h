@@ -25,7 +25,7 @@ enum class ComponentType
 class Component
 {
 public:
-	Component(std::weak_ptr<GameObject> cointainer_go, ComponentType type = ComponentType::Unkown, std::string name = "Component", bool enable = true);
+	Component(std::weak_ptr<GameObject> container_go, ComponentType type = ComponentType::Unkown, std::string name = "Component", bool enable = true);
 	Component(const Component& component_to_copy, std::shared_ptr<GameObject> container_go);
 	virtual ~Component() {}
 
@@ -50,7 +50,7 @@ public:
 	}
 
 	//getters // setters
-	std::shared_ptr<GameObject> GetContainerGO() const { return cointainer_go.lock(); }
+	std::shared_ptr<GameObject> GetContainerGO() const { return container_go.lock(); }
 	std::string GetName() const { return this->name; }
 	void SetName(std::string name) { this->name = name; }
 	ComponentType GetType() const { return this->type; }
@@ -71,8 +71,8 @@ public:
 	}
 	void SwitchEnabled() { SetEnabled(!this->enabled); }
 
-private:
-	std::weak_ptr<GameObject> cointainer_go;
+protected:
+	std::weak_ptr<GameObject> container_go;
 	std::string name;
 	ComponentType type;
 

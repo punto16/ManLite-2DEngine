@@ -155,6 +155,8 @@ void PanelInspector::TransformOptions(GameObject& go)
 					else if (column == 0 && row == 2)
 					{
 						ImGui::Text("Scale");
+						ImGui::SameLine();
+						ImGui::Checkbox(std::string("##" + transformLabel + "keep_proportions_scale").c_str(), &keep_transform_scale_proportions);
 						ImGui::Dummy(ImVec2(0, dummy_size));
 					}
 					else if (column == 1 && row == 0)
@@ -169,7 +171,7 @@ void PanelInspector::TransformOptions(GameObject& go)
 					{
 						float angle = transform->GetAngle();
 						std::string angle_label = std::string("##angle_degree" + std::to_string(go.GetID()));
-						ImGui::DragFloat(angle_label.c_str(), &angle, 0.05f);
+						ImGui::DragFloat(angle_label.c_str(), &angle, 0.2f);
 						transform->SetAngle(angle);
 						ImGui::Separator();
 					}
@@ -179,6 +181,7 @@ void PanelInspector::TransformOptions(GameObject& go)
 						std::string scale_x_label = std::string("x##scale_x" + std::to_string(go.GetID()));
 						ImGui::DragFloat(scale_x_label.c_str(), &scale_x, 0.05f);
 						transform->SetScale(vec2f(scale_x, transform->GetScale().y));
+						if (keep_transform_scale_proportions) transform->SetScale(vec2f(transform->GetScale().x, scale_x));
 					}
 					else if (column == 2 && row == 0)
 					{
@@ -200,10 +203,17 @@ void PanelInspector::TransformOptions(GameObject& go)
 						std::string scale_y_label = std::string("y##scale_y" + std::to_string(go.GetID()));
 						ImGui::DragFloat(scale_y_label.c_str(), &scale_y, 0.05f);
 						transform->SetScale(vec2f(transform->GetScale().x, scale_y));
+						if (keep_transform_scale_proportions) transform->SetScale(vec2f(scale_y, transform->GetScale().y));
 					}
 				}
 			}
 			ImGui::EndTable();
+			if (ImGui::TreeNode(std::string("Log World Transform##" + std::to_string(go.GetID())).c_str()))
+			{
+				std::string world_transform_log = "World Position:   (%.2f,%.2f)\nWorld Angle:      (%.2f)\nWorld Scale:      (%.2f,%.2f)";
+				ImGui::Text(world_transform_log.c_str(), transform->GetWorldPosition().x, transform->GetWorldPosition().y, transform->GetWorldAngle(),transform->GetWorldScale().x, transform->GetWorldScale().y);
+				ImGui::TreePop();
+			}
 		}
 
 		ImGui::Dummy(ImVec2(0, 4));

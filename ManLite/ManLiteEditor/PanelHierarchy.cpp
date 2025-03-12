@@ -64,6 +64,9 @@ void PanelHierarchy::IterateTree(GameObject& parent)
     for (size_t i = 0; i < children.size(); ++i) {
         auto& item = children[i];
 
+		const bool is_disabled = !item->IsEnabled();
+		if (is_disabled) ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyle().Colors[ImGuiCol_TextDisabled]);
+
 		uint treeFlags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_DefaultOpen;
 		bool empty_children = item->GetChildren().empty();
 		if (empty_children) treeFlags |= ImGuiTreeNodeFlags_Leaf;
@@ -72,6 +75,7 @@ void PanelHierarchy::IterateTree(GameObject& parent)
 
 		std::string nodeLabel = std::string(item->GetName() + "##" + std::to_string(item->GetID()));
 		bool nodeOpen = ImGui::TreeNodeEx(nodeLabel.c_str(), treeFlags);
+		if (is_disabled) ImGui::PopStyleColor();
 
 		GameObjectSelection(*item);
 		DragAndDrop(*item);

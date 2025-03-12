@@ -172,6 +172,7 @@ popd
     <ClCompile Include="InputEM.cpp" />
     <ClCompile Include="Layer.cpp" />
     <ClCompile Include="Log.cpp" />
+    <ClCompile Include="mat3f.cpp" />
     <ClCompile Include="RendererEM.cpp" />
     <ClCompile Include="SceneManagerEM.cpp" />
     <ClCompile Include="Transform.cpp" />
@@ -187,6 +188,7 @@ popd
     <ClInclude Include="InputEM.h" />
     <ClInclude Include="Layer.h" />
     <ClInclude Include="Log.h" />
+    <ClInclude Include="mat3f.h" />
     <ClInclude Include="RendererEM.h" />
     <ClInclude Include="SceneManagerEM.h" />
     <ClInclude Include="Transform.h" />

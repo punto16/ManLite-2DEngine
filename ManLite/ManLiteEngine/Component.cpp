@@ -1,8 +1,8 @@
 #include "Component.h"
 #include "GameObject.h"
 
-Component::Component(std::weak_ptr<GameObject> cointainer_go, ComponentType type, std::string name, bool enable) :
-	cointainer_go(cointainer_go),
+Component::Component(std::weak_ptr<GameObject> container_go, ComponentType type, std::string name, bool enable) :
+	container_go(container_go),
 	type(type),
 	name(name),
 	enabled(enable),
@@ -11,7 +11,7 @@ Component::Component(std::weak_ptr<GameObject> cointainer_go, ComponentType type
 }
 
 Component::Component(const Component& component_to_copy, std::shared_ptr<GameObject> container_go)
-	: cointainer_go(container_go),
+	: container_go(container_go),
 	type(component_to_copy.type),
 	name(component_to_copy.name),
 	enabled(component_to_copy.enabled),
