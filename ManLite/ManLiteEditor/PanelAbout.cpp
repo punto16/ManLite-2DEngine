@@ -29,13 +29,12 @@ bool PanelAbout::Update()
 
 	ImGuiWindowFlags window_flags =
 		ImGuiWindowFlags_NoResize |
-		ImGuiWindowFlags_NoMove |
 		ImGuiWindowFlags_NoDocking |
 		ImGuiWindowFlags_NoCollapse;
 
 	ImVec2 center(ImGui::GetIO().DisplaySize.x * 0.5f, ImGui::GetIO().DisplaySize.y * 0.6f);
 	ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
-	ImGui::SetNextWindowSize(ImVec2(570, 660));
+	ImGui::SetNextWindowSize(ImVec2(570, 720));
 	if (ImGui::Begin("About", nullptr, window_flags)) {
 		{
 			// name engine + version

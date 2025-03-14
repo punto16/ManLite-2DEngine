@@ -4,6 +4,8 @@
 
 #include "GuiPanel.h"
 
+class Layer;
+
 class PanelLayer : public Panel
 {
 public:
@@ -11,6 +13,8 @@ public:
 	~PanelLayer();
 
 	bool Update();
+
+	void IterateChildren(Layer& go);
 
 private:
 
