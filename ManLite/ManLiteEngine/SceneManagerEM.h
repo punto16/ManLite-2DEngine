@@ -24,26 +24,34 @@ public:
 	//general functions for game objects
 	std::shared_ptr<GameObject> CreateEmptyGO(GameObject& parent);
 	std::shared_ptr<GameObject> DuplicateGO(GameObject& go_to_copy);
+	//general functions for layers
+	std::shared_ptr<Layer> CreateEmptyLayer();
 
 	//safely adds a game object to a pending to add list
 	//whenever it is safe place, they will be added to scene root go
 	void SafeAddGO(std::shared_ptr<GameObject> object_to_add);
+
 	//safely deletes a game object to a pending to add list
 	//whenever it is safe place, they will be deleted scene
 	void SafeDeleteGO(std::shared_ptr<GameObject> object_to_delete);
+
 	//safely adds a layer to a pending to add list
 	//whenever it is safe place, they will be added to scene
 	void SafeAddLayer(std::shared_ptr<Layer> layer_to_add);
+
 	//safely deletes a layer to a pending to add list
 	//whenever it is safe place, they will be deleted scene
 	void SafeDeleteLayer(std::shared_ptr<Layer> layer_to_delete);
 
 	//this function will create game objects in a safe way
 	void AddPengindGOs();
+
 	//this function will delete game objects in a safe way
 	void DeletePengindGOs();
+
 	//this function will create layers in a safe way
 	void AddPengindLayers();
+
 	//this function will delete layers in a safe way
 	void DeletePengindLayers();
 

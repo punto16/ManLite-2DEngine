@@ -142,6 +142,13 @@ std::shared_ptr<GameObject> Scene::DuplicateGO(GameObject& go_to_copy)
 	return copy;
 }
 
+std::shared_ptr<Layer> Scene::CreateEmptyLayer()
+{
+	std::shared_ptr<Layer> empty_layer = std::make_shared<Layer>(scene_layers.size(), std::string("Layer_" + std::to_string(scene_layers.size())));
+	scene_layers.push_back(empty_layer);
+	return empty_layer;
+}
+
 void Scene::SafeAddGO(std::shared_ptr<GameObject> object_to_add)
 {
 	objects_to_add.push_back(object_to_add);
