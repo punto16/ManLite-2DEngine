@@ -82,7 +82,7 @@ void GameObject::Delete()
     auto children_copy = children_gameobject;
     children_gameobject.clear();
 
-    if (this->parent_gameobject.lock() != nullptr)
+    if (this->parent_layer.lock() != nullptr)
         if (this->parent_layer.lock()->HasChild(shared_from_this()))
             this->parent_layer.lock()->RemoveChild(shared_from_this());
 
@@ -104,11 +104,8 @@ bool GameObject::Reparent(std::shared_ptr<GameObject> new_parent, bool skip_desc
     if (new_parent->GetParentGO().lock() == self) cycle = true;
 
     auto old_parent = parent_gameobject.lock();
-    if (old_parent)
-        old_parent->RemoveChild(self);
-
-    if (new_parent)
-        new_parent->AddChild(self);
+    if (old_parent) old_parent->RemoveChild(self);
+    if (new_parent) new_parent->AddChild(self);
 
     parent_gameobject = new_parent;
 

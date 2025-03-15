@@ -66,7 +66,6 @@ void PanelHierarchy::IterateTree(GameObject& parent, bool enabled)
 
 		const bool is_disabled = !item->IsEnabled();
 		if (!enabled || is_disabled) ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyle().Colors[ImGuiCol_TextDisabled]);
-
 		uint treeFlags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_DefaultOpen;
 		bool empty_children = item->GetChildren().empty();
 		if (empty_children) treeFlags |= ImGuiTreeNodeFlags_Leaf;

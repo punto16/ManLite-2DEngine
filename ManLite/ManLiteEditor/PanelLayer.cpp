@@ -52,16 +52,18 @@ void PanelLayer::IterateChildren(Layer& layer, bool visible)
 
 	for (const auto& go : children)
 	{
-		ImGui::Dummy(ImVec2(15,0));
-		ImGui::SameLine();
+		ImGui::Indent(23);
 		bool is_visible = go->IsVisible();
 		std::string checkbox_go_label = std::string("##is_visible_go_in_layer" + std::to_string(go->GetID()));
 		ImGui::Checkbox(checkbox_go_label.c_str(), &is_visible);
+		ImGui::Unindent(23);
 		go->SetVisible(is_visible);
 		ImGui::SameLine();
 		if (!visible || !is_visible) ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyle().Colors[ImGuiCol_TextDisabled]);
 		std::string tree_go_label = std::string(go->GetName() + "##in_layer" + std::to_string(go->GetID()));
+		ImGui::Indent(23);
 		ImGui::TreeNodeEx(tree_go_label.c_str(), treeFlags);
+		ImGui::Unindent(23);
 		ImGui::TreePop();
 		if (!visible || !is_visible) ImGui::PopStyleColor();
 	}
