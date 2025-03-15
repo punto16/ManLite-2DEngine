@@ -48,7 +48,9 @@ bool PanelLayer::Update()
 void PanelLayer::IterateChildren(Layer& layer)
 {
 	uint treeFlags = ImGuiTreeNodeFlags_Leaf;
-	for (const auto& go : layer.GetChildren())
+	auto children = std::vector<std::shared_ptr<GameObject>>(layer.GetChildren());
+
+	for (const auto& go : children)
 	{
 		const bool is_disabled = !go->IsEnabled();
 		if (is_disabled) ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyle().Colors[ImGuiCol_TextDisabled]);

@@ -16,6 +16,13 @@ public:
 
 	bool Update(double dt);
 
+	//utils
+	void AddChild(std::shared_ptr<GameObject> child);
+	bool RemoveChild(const std::shared_ptr<GameObject>& child);
+	bool RemoveChild(uint32_t id);
+	bool HasChild(const std::shared_ptr<GameObject>& child) const;
+	bool HasChild(uint32_t id) const;
+
 	//getters // setters
 	uint32_t GetLayerID() const { return this->layer_id; }
 	void SetLayerID(uint32_t id) { this->layer_id = id; }
