@@ -14,7 +14,7 @@ public:
 
 	bool Update();
 
-	void IterateChildren(Layer& go);
+	void IterateChildren(Layer& go, bool visible);
 
 private:
 

@@ -36,7 +36,7 @@ bool PanelLayer::Update()
 			if (!layer_visible) ImGui::PopStyleColor();
 			if (collapsing_header_layer)
 			{
-				IterateChildren(*layer);
+				IterateChildren(*layer, layer_visible);
 			}
 		}
 	}
@@ -45,19 +45,24 @@ bool PanelLayer::Update()
 	return ret;
 }
 
-void PanelLayer::IterateChildren(Layer& layer)
+void PanelLayer::IterateChildren(Layer& layer, bool visible)
 {
 	uint treeFlags = ImGuiTreeNodeFlags_Leaf;
 	auto children = std::vector<std::shared_ptr<GameObject>>(layer.GetChildren());
 
 	for (const auto& go : children)
 	{
-		const bool is_disabled = !go->IsEnabled();
-		if (is_disabled) ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyle().Colors[ImGuiCol_TextDisabled]);
+		ImGui::Dummy(ImVec2(15,0));
+		ImGui::SameLine();
+		bool is_visible = go->IsVisible();
+		std::string checkbox_go_label = std::string("##is_visible_go_in_layer" + std::to_string(go->GetID()));
+		ImGui::Checkbox(checkbox_go_label.c_str(), &is_visible);
+		go->SetVisible(is_visible);
+		ImGui::SameLine();
+		if (!visible || !is_visible) ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyle().Colors[ImGuiCol_TextDisabled]);
 		std::string tree_go_label = std::string(go->GetName() + "##in_layer" + std::to_string(go->GetID()));
 		ImGui::TreeNodeEx(tree_go_label.c_str(), treeFlags);
 		ImGui::TreePop();
-		if (is_disabled) ImGui::PopStyleColor();
-
+		if (!visible || !is_visible) ImGui::PopStyleColor();
 	}
 }

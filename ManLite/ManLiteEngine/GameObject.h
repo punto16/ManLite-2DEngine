@@ -149,7 +149,9 @@ public:
 	void SetParentLayer(std::shared_ptr<Layer> layer) { this->parent_layer = layer; }
 	std::vector<std::shared_ptr<GameObject>>& GetChildren() { return children_gameobject; }
 	std::vector<std::unique_ptr<Component>>& GetComponents() { return components_gameobject; }
-
+	bool IsVisible() const { return this->visible; }
+	void SetVisible(bool visible) { this->visible = visible; }
+	void SwitchVisible() { SetVisible(!visible); }
 	bool IsEnabled() const { return this->enabled; }
 	void SetEnabled(bool enable)
 	{
@@ -179,6 +181,7 @@ private:
 	std::vector<std::unique_ptr<Component>> components_gameobject;
 
 	bool enabled;
+	bool visible;
 };
 
 #endif // !__GAMEOBJECT_H__

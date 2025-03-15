@@ -15,7 +15,8 @@ GameObject::GameObject(std::weak_ptr<GameObject> parent, std::string name, bool 
     parent_gameobject(parent),
     gameobject_name(""),
     gameobject_tag("Default"),
-    enabled(enable)
+    enabled(enable),
+    visible(true)
 {
     this->gameobject_name = GenerateUniqueName(name, this);
 
@@ -29,7 +30,8 @@ GameObject::GameObject(std::weak_ptr<GameObject> go_to_copy) :
     parent_gameobject(go_to_copy.lock()->GetParentGO()),
     gameobject_name(""),
     gameobject_tag(go_to_copy.lock()->GetTag()),
-    enabled(go_to_copy.lock()->IsEnabled())
+    enabled(go_to_copy.lock()->IsEnabled()),
+    visible(go_to_copy.lock()->IsVisible())
 {
     this->gameobject_name = GenerateUniqueName(go_to_copy.lock()->GetName(), this);
 

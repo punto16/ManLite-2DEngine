@@ -48,7 +48,7 @@ bool PanelHierarchy::Update()
 				}
 				ImGui::EndPopup();
 			}
-			IterateTree(engine->scene_manager_em->GetCurrentScene().GetSceneRoot());
+			IterateTree(engine->scene_manager_em->GetCurrentScene().GetSceneRoot(), true);
 		}
 	}
 	ImGui::End();
@@ -56,7 +56,7 @@ bool PanelHierarchy::Update()
 	return ret;
 }
 
-void PanelHierarchy::IterateTree(GameObject& parent)
+void PanelHierarchy::IterateTree(GameObject& parent, bool enabled)
 {
 	auto children = std::vector<std::shared_ptr<GameObject>>(parent.GetChildren());
 
@@ -65,7 +65,7 @@ void PanelHierarchy::IterateTree(GameObject& parent)
         auto& item = children[i];
 
 		const bool is_disabled = !item->IsEnabled();
-		if (is_disabled) ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyle().Colors[ImGuiCol_TextDisabled]);
+		if (!enabled || is_disabled) ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyle().Colors[ImGuiCol_TextDisabled]);
 
 		uint treeFlags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_DefaultOpen;
 		bool empty_children = item->GetChildren().empty();
@@ -75,7 +75,7 @@ void PanelHierarchy::IterateTree(GameObject& parent)
 
 		std::string nodeLabel = std::string(item->GetName() + "##" + std::to_string(item->GetID()));
 		bool nodeOpen = ImGui::TreeNodeEx(nodeLabel.c_str(), treeFlags);
-		if (is_disabled) ImGui::PopStyleColor();
+		if (!enabled || is_disabled) ImGui::PopStyleColor();
 
 		GameObjectSelection(*item);
 		DragAndDrop(*item);
@@ -83,7 +83,7 @@ void PanelHierarchy::IterateTree(GameObject& parent)
 		if (nodeOpen)
 		{
 			Context(*item);
-			if (!empty_children) IterateTree(*item);
+			if (!empty_children) IterateTree(*item, !(!enabled || is_disabled));
 			ImGui::TreePop();
 		}
 

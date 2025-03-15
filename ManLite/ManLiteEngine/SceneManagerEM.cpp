@@ -89,12 +89,14 @@ bool Scene::Update(double dt)
 	bool ret = true;
 
 	for (const auto& item : scene_root.get()->GetChildren()) 
-		if (!item->Update(dt)) 
-			return false;
+		if (item->IsEnabled())
+			if (!item->Update(dt)) 
+				return false;
 
 	for (const auto& item : scene_layers) 
-		if (!item->Update(dt)) 
-			return false;
+		if (item->IsVisible())
+			if (!item->Update(dt)) 
+				return false;
 
 	return ret;
 }

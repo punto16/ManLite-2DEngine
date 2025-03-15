@@ -15,7 +15,7 @@ public:
 
 	bool Update();
 
-	void IterateTree(GameObject& parent);
+	void IterateTree(GameObject& parent, bool enabled);
 	void BlankContext(GameObject& parent);
 	void Context(GameObject& parent);
 	void DragAndDrop(GameObject& parent);
