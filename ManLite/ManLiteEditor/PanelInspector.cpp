@@ -128,7 +128,7 @@ void PanelInspector::TransformOptions(GameObject& go)
 	Transform* transform = go.GetComponent<Transform>();
 	if (transform == nullptr) return;
 	std::string transformLabel = std::string("Transform##" + std::to_string(go.GetID()));
-	if (ImGui::CollapsingHeader(transformLabel.c_str()))
+	if (ImGui::CollapsingHeader(transformLabel.c_str(), treeFlags))
 	{
 		std::string transformTableLabel = std::string("TransformTable##" + std::to_string(go.GetID()));
 		if (ImGui::BeginTable(transformTableLabel.c_str(), 3, tableFlags))
