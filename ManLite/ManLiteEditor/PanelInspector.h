@@ -21,7 +21,7 @@ public:
 
 
 private:
-	bool keep_transform_scale_proportions = true;
+
 };
 
 #endif // !__PANEL_INSPECTOR_H__

@@ -156,7 +156,11 @@ void PanelInspector::TransformOptions(GameObject& go)
 					{
 						ImGui::Text("Scale");
 						ImGui::SameLine();
-						ImGui::Checkbox(std::string("##" + transformLabel + "keep_proportions_scale").c_str(), &keep_transform_scale_proportions);
+						bool lock = transform->IsAspectRatioLocked();
+						if (ImGui::Checkbox(std::string("##" + transformLabel + "keep_proportions_scale").c_str(), &lock))
+						{
+							transform->SetAspectRatioLock(lock);
+						}
 						ImGui::Dummy(ImVec2(0, dummy_size));
 					}
 					else if (column == 1 && row == 0)
@@ -180,8 +184,9 @@ void PanelInspector::TransformOptions(GameObject& go)
 						float scale_x = transform->GetScale().x;
 						std::string scale_x_label = std::string("x##scale_x" + std::to_string(go.GetID()));
 						ImGui::DragFloat(scale_x_label.c_str(), &scale_x, 0.05f);
-						transform->SetScale(vec2f(scale_x, transform->GetScale().y));
-						if (keep_transform_scale_proportions) transform->SetScale(vec2f(transform->GetScale().x, scale_x));
+						vec2f new_scale = transform->GetScale();
+						new_scale.x = scale_x;
+						transform->SetScale(new_scale);
 					}
 					else if (column == 2 && row == 0)
 					{
@@ -202,8 +207,9 @@ void PanelInspector::TransformOptions(GameObject& go)
 						float scale_y = transform->GetScale().y;
 						std::string scale_y_label = std::string("y##scale_y" + std::to_string(go.GetID()));
 						ImGui::DragFloat(scale_y_label.c_str(), &scale_y, 0.05f);
-						transform->SetScale(vec2f(transform->GetScale().x, scale_y));
-						if (keep_transform_scale_proportions) transform->SetScale(vec2f(scale_y, transform->GetScale().y));
+						vec2f new_scale = transform->GetScale();
+						new_scale.y = scale_y;
+						transform->SetScale(new_scale);
 					}
 				}
 			}

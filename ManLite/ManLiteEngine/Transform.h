@@ -26,7 +26,14 @@ public:
     float GetAngle() const { return angle_rotation; }
     void SetAngle(float angle);
     vec2f GetScale() const { return scale; }
-    void SetScale(vec2f scale) { this->scale = scale; }
+    void SetScale(vec2f new_scale);
+    bool IsAspectRatioLocked() const { return lock_aspect_ratio; }
+    void SetAspectRatioLock(bool lock)
+    {
+        if (lock && !lock_aspect_ratio)
+            aspect_ratio = (scale.y != 0.0f) ? scale.x / scale.y : 1.0f;
+        lock_aspect_ratio = lock;
+    }
 
     vec2f GetWorldPosition();
     void SetWorldPosition(vec2f pos);
@@ -42,6 +49,9 @@ private:
     vec2f position;
     float angle_rotation;
     vec2f scale;
+
+    bool lock_aspect_ratio = false;
+    float aspect_ratio = 1.0f;
 };
 
 #endif // __TRANSFORM_H__

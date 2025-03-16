@@ -34,6 +34,27 @@ void Transform::SetAngle(float angle)
     if (angle_rotation < 0) angle_rotation += 360.0f;
 }
 
+void Transform::SetScale(vec2f new_scale)
+{
+    if (lock_aspect_ratio)
+    {
+        if (new_scale.x != scale.x)
+        {
+            scale.x = new_scale.x;
+            scale.y = new_scale.x / aspect_ratio;
+        }
+        else if (new_scale.y != scale.y)
+        {
+            scale.y = new_scale.y;
+            scale.x = new_scale.y * aspect_ratio;
+        }
+    }
+    else
+    {
+        scale = new_scale;
+    }
+}
+
 mat3f Transform::GetLocalMatrix() const
 {
     const float radians = angle_rotation * (PI / 180.0f);
@@ -106,11 +127,15 @@ void Transform::SetWorldScale(vec2f world_scale)
         if (auto parent = go->GetParentGO().lock()) {
             if (auto parent_transform = parent->GetComponent<Transform>()) {
                 vec2f parent_scale = parent_transform->GetWorldScale();
-                scale.x = world_scale.x / parent_scale.x;
-                scale.y = world_scale.y / parent_scale.y;
+                vec2f new_scale(
+                    world_scale.x / parent_scale.x,
+                    world_scale.y / parent_scale.y
+                );
+                SetScale(new_scale);
                 return;
             }
         }
     }
-    scale = world_scale;
+
+    SetScale(world_scale);
 }
