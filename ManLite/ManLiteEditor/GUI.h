@@ -69,8 +69,6 @@ public:
 	bool IsInitialized(Panel* panel);
 	std::list<Panel*> GetPanels() { return panels; }
 
-	void OpenURL(const char* url) const;
-
 private:
 
 

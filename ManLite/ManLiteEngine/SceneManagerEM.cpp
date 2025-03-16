@@ -4,6 +4,7 @@
 #include "Layer.h"
 
 #include "Defs.h"
+#include "algorithm"
 
 //SCENE MANAGER
 SceneManagerEM::SceneManagerEM(EngineCore* parent) : EngineModule(parent)
@@ -211,6 +212,65 @@ void Scene::ReparentToLayer(std::shared_ptr<GameObject> game_object, std::shared
 	{
 		game_object->SetParentLayer(target_layer);
 		target_layer->GetChildren().push_back(game_object);
+	}
+}
+
+void Scene::ReparentToLayer(std::shared_ptr<GameObject> game_object, uint32_t target_layer_id, int position)
+{
+	auto current_layer = game_object->GetParentLayer().lock();
+	uint32_t current_layer_id = current_layer ? current_layer->GetLayerID() : -1;
+	int original_index = -1;
+
+	if (current_layer && current_layer->GetLayerID() == target_layer_id)
+		original_index = current_layer->GetGameObjectIndex(game_object);
+
+	if (current_layer)
+		current_layer->RemoveChild(game_object);
+
+	if (auto target_layer = GetLayerByID(target_layer_id))
+	{
+		auto& children = target_layer->GetChildren();
+
+		if (original_index != -1 && position > original_index)
+			position--;
+
+		position = std::clamp(position, 0, static_cast<int>(children.size()));
+		children.insert(children.begin() + position, game_object);
+		game_object->SetParentLayer(target_layer);
+	}
+}
+
+int Scene::GetLayerIndex(uint32_t layer_id)
+{
+	const auto& layers = GetSceneLayers();
+	for (int i = 0; i < layers.size(); ++i)
+		if (layers[i]->GetLayerID() == layer_id)
+			return i;
+
+	return -1;
+}
+
+std::shared_ptr<Layer> Scene::GetLayerByID(uint32_t layer_id)
+{
+	auto& layers = GetSceneLayers();
+	auto it = std::find_if(layers.begin(), layers.end(),
+		[layer_id](const std::shared_ptr<Layer>& layer) {
+			return layer->GetLayerID() == layer_id;
+		});
+	return (it != layers.end()) ? *it : nullptr;
+}
+
+void Scene::ReorderLayer(int old_index, uint32_t target_layer_id)
+{
+	auto& layers = GetSceneLayers();
+	int new_index = GetLayerIndex(target_layer_id);
+
+	if (old_index >= 0 && old_index < layers.size() &&
+		new_index >= 0 && new_index < layers.size())
+	{
+		auto layer_to_move = layers[old_index];
+		layers.erase(layers.begin() + old_index);
+		layers.insert(layers.begin() + new_index, layer_to_move);
 	}
 }
 

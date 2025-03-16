@@ -57,7 +57,12 @@ public:
 
 	//
 	void ReparentToLayer(std::shared_ptr<GameObject> game_object, std::shared_ptr<Layer> target_layer);
+	void ReparentToLayer(std::shared_ptr<GameObject> game_object, uint32_t target_layer_id, int position);
+	int GetLayerIndex(uint32_t layer_id);
+	std::shared_ptr<Layer> GetLayerByID(uint32_t layer_id);
+	void ReorderLayer(int old_index, uint32_t target_layer_id);
 	bool ContainsLayer(const std::shared_ptr<Layer>& layer) const;
+	//
 	void SelectGameObject(std::shared_ptr<GameObject> go, bool additive = false, bool unselect_all = false);
 	void SelectRange(std::shared_ptr<GameObject> endGO);
 	void TraverseRecursive(std::shared_ptr<GameObject> go, const std::function<void(std::shared_ptr<GameObject>)>& func);
@@ -68,7 +73,7 @@ public:
 
 	//getters // setters
 	GameObject& GetSceneRoot() const { return *scene_root; }
-	const std::vector<std::shared_ptr<Layer>>& GetSceneLayers() const { return scene_layers; }
+	std::vector<std::shared_ptr<Layer>>& GetSceneLayers() { return scene_layers; }
 	const std::vector<std::weak_ptr<GameObject>>& GetSelectedGOs() const { return selected_gos; }
 
 	std::string GetSceneName() const { return this->scene_name; }

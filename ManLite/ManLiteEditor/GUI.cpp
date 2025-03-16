@@ -28,7 +28,6 @@
 #include <imgui.h>
 #include <imgui_impl_sdl2.h>
 #include <imgui_impl_opengl3.h>
-#include <shellapi.h>
 
 Gui::Gui(App* parent) : Module(parent),
 hierarchy_panel(nullptr),
@@ -548,10 +547,7 @@ void Gui::HelpMenu()
 
 	ImGui::Separator();
 
-	if (ImGui::MenuItem("Documentation"))
-	{
-		OpenURL("https://github.com/punto16/ManLite-2DEngine");
-	}
+	ImGui::TextLinkOpenURL("Documentation", "https://github.com/punto16/ManLite-2DEngine");
 }
 
 void Gui::HandleInput()
@@ -562,9 +558,4 @@ void Gui::HandleInput()
 
 void Gui::ProcessEvent()
 {
-}
-
-void Gui::OpenURL(const char* url) const
-{
-	ShellExecuteA(0, 0, url, 0, 0, SW_SHOW);
 }

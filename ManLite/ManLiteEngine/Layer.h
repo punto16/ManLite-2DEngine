@@ -23,6 +23,11 @@ public:
 	bool HasChild(const std::shared_ptr<GameObject>& child) const;
 	bool HasChild(uint32_t id) const;
 
+
+	int GetGameObjectIndex(const std::shared_ptr<GameObject>& go) const {
+		auto it = std::find(children_gameobject.begin(), children_gameobject.end(), go);
+		return (it != children_gameobject.end()) ? std::distance(children_gameobject.begin(), it) : -1;
+	}
 	//getters // setters
 	uint32_t GetLayerID() const { return this->layer_id; }
 	void SetLayerID(uint32_t id) { this->layer_id = id; }

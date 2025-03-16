@@ -34,7 +34,7 @@ bool PanelAbout::Update()
 
 	ImVec2 center(ImGui::GetIO().DisplaySize.x * 0.5f, ImGui::GetIO().DisplaySize.y * 0.6f);
 	ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
-	ImGui::SetNextWindowSize(ImVec2(570, 720));
+	ImGui::SetNextWindowSize(ImVec2(570, 730));
 	if (ImGui::Begin("About", nullptr, window_flags)) {
 		{
 			// name engine + version
@@ -44,15 +44,11 @@ bool PanelAbout::Update()
 			ImGui::Text("Made by: ");
 			ImGui::Text("   Luis Gonzalez (Github:");
 			ImGui::SameLine();
-			if (ImGui::SmallButton("punto16")) {
-				app->gui->OpenURL("https://github.com/punto16");
-			}
+			ImGui::TextLinkOpenURL("punto16", "https://github.com/punto16");
 			ImGui::SameLine();
 			ImGui::Text(")");
 
-			if (ImGui::SmallButton("Inspiration Project")) {
-				app->gui->OpenURL("https://github.com/Shadow-Wizard-Games/TheOneEngine");
-			}
+			ImGui::TextLinkOpenURL("Inspiration Project", "https://github.com/Shadow-Wizard-Games/TheOneEngine");
 
 
 			// external libraries
@@ -75,7 +71,7 @@ bool PanelAbout::Update()
 					ttfVersion->major, ttfVersion->minor, ttfVersion->patch);
 
 				// OpenGL
-				//ImGui::Bullet(); ImGui::Text("OpenGL %s", glGetString(GL_VERSION));
+				ImGui::Bullet(); ImGui::Text("OpenGL %s", glGetString(GL_VERSION));
 
 				// Box2D
 				ImGui::Bullet(); ImGui::Text("Box2D %d.%d.%d",

@@ -37,8 +37,9 @@ bool PanelLayer::Update()
             }
             request_collapse_all = request_uncollapse_all = false;
         }
+        auto layer_list = std::vector<std::shared_ptr<Layer>>(engine->scene_manager_em->GetCurrentScene().GetSceneLayers());
 
-        for (const auto& layer : engine->scene_manager_em->GetCurrentScene().GetSceneLayers())
+        for (const auto& layer : layer_list)
         {
             const uint32_t layer_id = layer->GetLayerID();
             bool& is_collapsed = collapsed_layers[layer_id];
@@ -55,7 +56,12 @@ bool PanelLayer::Update()
             std::string layer_header_label = std::string(layer->GetLayerName() + "  <id: " + std::to_string(layer_id) + ">");
             if (!layer_visible) ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyle().Colors[ImGuiCol_TextDisabled]);
 
+            ImGui::PushID(layer_id);
             bool collapsing_header_layer = ImGui::CollapsingHeader(layer_header_label.c_str(), treeFlags);
+            ImGui::PopID();
+            HandleLayerDragAndDrop(*layer);
+
+            HandleLayerHeaderDrop(*layer);
 
             if (!layer_visible) ImGui::PopStyleColor();
 
@@ -85,9 +91,14 @@ void PanelLayer::IterateChildren(Layer& layer, bool visible)
 {
 	uint treeFlags = ImGuiTreeNodeFlags_Leaf;
 	auto children = std::vector<std::shared_ptr<GameObject>>(layer.GetChildren());
+    if (children.empty()) return;
 
-	for (const auto& go : children)
-	{
+    bool is_collapsed = collapsed_layers[layer.GetLayerID()];
+    if (!is_collapsed) GameObjectDropZone(layer, 0);
+  
+    for (size_t i = 0; i < children.size(); ++i)
+    {
+        auto& go = children[i];
 		ImGui::Indent(23);
 		bool is_visible = go->IsVisible();
 		std::string checkbox_go_label = std::string("##is_visible_go_in_layer" + std::to_string(go->GetID()));
@@ -102,8 +113,14 @@ void PanelLayer::IterateChildren(Layer& layer, bool visible)
 		ImGui::Unindent(23);
 		if (!visible || !is_visible) ImGui::PopStyleColor();
 		ImGui::TreePop();
+
+        ImGui::PushID(go->GetID());
+        HandleGameObjectDragAndDrop(*go, layer);
+        ImGui::PopID();
+
+        if (!is_collapsed) GameObjectDropZone(layer, i + 1);
 	}
-	if (!children.empty()) ImGui::Separator();
+	if (!children.empty() && !is_collapsed) ImGui::Separator();
 }
 
 void PanelLayer::BlankContext()
@@ -116,4 +133,89 @@ void PanelLayer::BlankContext()
 		}
 		ImGui::EndPopup();
 	}
+}
+
+void PanelLayer::HandleLayerDragAndDrop(Layer& layer)
+{
+    if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
+    {
+        dragged_layer_index = engine->scene_manager_em->GetCurrentScene().GetLayerIndex(layer.GetLayerID());
+        ImGui::SetDragDropPayload("DND_LAYER", &dragged_layer_index, sizeof(int));
+
+        request_collapse_all = true;
+        dragging_layer = true;
+
+        ImGui::Text("Moving Layer: %s", layer.GetLayerName().c_str());
+        ImGui::EndDragDropSource();
+    }
+
+    if (ImGui::BeginDragDropTarget())
+    {
+        if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_LAYER"))
+        {
+            int payload_index = *(const int*)payload->Data;
+            engine->scene_manager_em->GetCurrentScene().ReorderLayer(payload_index, layer.GetLayerID());
+        }
+        ImGui::EndDragDropTarget();
+    }
+}
+
+void PanelLayer::HandleGameObjectDragAndDrop(GameObject& go, Layer& target_layer)
+{
+    if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
+    {
+        dragged_gameobject = go.GetSharedPtr();
+        ImGui::SetDragDropPayload("DND_GAMEOBJECT", &go, sizeof(GameObject*));
+
+        ImGui::Text("Moving %s", go.GetName().c_str());
+        ImGui::EndDragDropSource();
+    }
+}
+
+void PanelLayer::GameObjectDropZone(Layer& target_layer, int position)
+{
+    if (!collapsed_layers[target_layer.GetLayerID()]) {
+        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
+
+        std::string nodeLabel = "##DropZoneLayer" +
+            std::to_string(target_layer.GetLayerID()) +
+            std::to_string(position);
+
+        ImGui::InvisibleButton(nodeLabel.c_str(), ImVec2(-1, 6));
+
+        if (ImGui::BeginDragDropTarget())
+        {
+            if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_GAMEOBJECT"))
+            
+                if (GameObject* dragged_go = *(GameObject**)payload->Data)
+                    engine->scene_manager_em->GetCurrentScene().ReparentToLayer(
+                        dragged_go->GetSharedPtr(),
+                        target_layer.GetLayerID(),
+                        position
+                    );
+               
+            }
+            ImGui::EndDragDropTarget();
+        }
+
+        ImGui::PopStyleVar();
+    }
+}
+
+void PanelLayer::HandleLayerHeaderDrop(Layer& target_layer)
+{
+    if (ImGui::BeginDragDropTarget())
+    {
+        if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_GAMEOBJECT"))
+        
+            if (GameObject* dragged_go = *(GameObject**)payload->Data) 
+                engine->scene_manager_em->GetCurrentScene().ReparentToLayer(
+                    dragged_go->GetSharedPtr(),
+                    target_layer.GetLayerID(),
+                    target_layer.GetChildren().size()
+                );
+            
+        
+        ImGui::EndDragDropTarget();
+    }
 }
