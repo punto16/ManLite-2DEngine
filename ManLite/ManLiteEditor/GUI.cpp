@@ -82,13 +82,13 @@ bool Gui::Awake()
 	ret *= IsInitialized(layer_panel);
 
 	//"renders" last
-	scene_panel = new PanelScene(PanelType::SCENE, "Scene", true);
-	panels.push_back(scene_panel);
-	ret *= IsInitialized(scene_panel);
-
 	game_panel = new PanelGame(PanelType::GAME, "Game", true);
 	panels.push_back(game_panel);
 	ret *= IsInitialized(game_panel);
+
+	scene_panel = new PanelScene(PanelType::SCENE, "Scene", true);
+	panels.push_back(scene_panel);
+	ret *= IsInitialized(scene_panel);
 
 	return ret;
 }

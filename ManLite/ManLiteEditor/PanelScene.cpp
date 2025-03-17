@@ -32,7 +32,7 @@ PanelScene::~PanelScene()
 void PanelScene::Start()
 {
 	openglTextureID = engine->renderer_em->renderTexture;
-	grid = new Grid(METERS_TO_PIXELS(1), 20);
+	grid = new Grid(METERS_TO_PIXELS(1), 32);
 }
 
 bool PanelScene::Update()
@@ -41,6 +41,8 @@ bool PanelScene::Update()
 
 	if (ImGui::Begin(name.c_str(), &enabled))
 	{
+		DrawTopBarControls();
+
 		grid->Draw(engine->renderer_em->GetSceneCamera().GetViewProjMatrix());
 
 		//movement of scene camera
@@ -227,51 +229,100 @@ void PanelScene::ImGuizmoFunctionality(ImVec2 image_pos, ImVec2 scaled_size)
 		auto selected_go = selected_gos[0].lock();
 		if (selected_go) {
 			auto transform = selected_go->GetComponent<Transform>();
-			if (transform) {
-				// Convertir mat3f a matriz 4x4 para ImGuizmo
+			if (transform)
+			{
 				mat3f worldMat = transform->GetWorldMatrix();
 				float matrix[16];
 
-				// Construir matriz column-major
 				matrix[0] = worldMat.m[0]; matrix[1] = worldMat.m[3]; matrix[2] = 0; matrix[3] = 0;
 				matrix[4] = worldMat.m[1]; matrix[5] = worldMat.m[4]; matrix[6] = 0; matrix[7] = 0;
 				matrix[8] = 0; matrix[9] = 0; matrix[10] = 1; matrix[11] = 0;
 				matrix[12] = worldMat.m[6]; matrix[13] = worldMat.m[7]; matrix[14] = 0; matrix[15] = 1;
 
-				// Configurar ImGuizmo
 				Camera2D& camera = engine->renderer_em->GetSceneCamera();
 				ImGuizmo::SetOrthographic(true);
 				ImGuizmo::SetDrawlist();
 				ImGuizmo::SetRect(image_pos.x, image_pos.y, scaled_size.x, scaled_size.y);
 
-				// Operaciones y modo
-				static ImGuizmo::OPERATION op = ImGuizmo::TRANSLATE;
-				static ImGuizmo::MODE mode = ImGuizmo::WORLD;
-
-				// Manejar cambios de operación con teclado
 				if (ImGui::IsKeyPressed(ImGuiKey_Q)) op = (ImGuizmo::OPERATION)-1;
 				if (ImGui::IsKeyPressed(ImGuiKey_W)) op = ImGuizmo::TRANSLATE;
 				if (ImGui::IsKeyPressed(ImGuiKey_E)) op = ImGuizmo::ROTATE;
 				if (ImGui::IsKeyPressed(ImGuiKey_R)) op = ImGuizmo::SCALE;
 				if (op == -1) return;
 
-				// Manipular matriz
+				float snapValues[3] = { snapValue, snapValue, snapValue };
+
 				if (ImGuizmo::Manipulate(
 					glm::value_ptr(camera.GetViewMatrix()),
 					glm::value_ptr(camera.GetProjectionMatrix()),
-					op, mode, matrix))
+					(ImGuizmo::OPERATION)op,
+					(ImGuizmo::MODE)gizmoMode,
+					matrix,
+					nullptr,
+					snapEnabled ? snapValues : nullptr
+				))
 				{
-					// Actualizar Transform
 					mat3f newMat;
-					newMat.m[0] = matrix[0]; newMat.m[1] = matrix[4];
-					newMat.m[3] = matrix[1]; newMat.m[4] = matrix[5];
-					newMat.m[6] = matrix[12]; newMat.m[7] = matrix[13];
+					newMat.m[0] = matrix[0];
+					newMat.m[1] = matrix[4];
+					newMat.m[3] = matrix[1];
+					newMat.m[4] = matrix[5];
+					newMat.m[6] = matrix[12];
+					newMat.m[7] = matrix[13];
 
-					transform->SetWorldPosition(newMat.GetTranslation());
-					transform->SetWorldAngle(newMat.GetRotation() * (180.0f / PI)); // Convertir a grados
+					vec2f newPosition = newMat.GetTranslation();
+
+					if (snapEnabled)
+					{
+						newPosition.x = std::round(newPosition.x / snapValue) * snapValue;
+						newPosition.y = std::round(newPosition.y / snapValue) * snapValue;
+					}
+
+					transform->SetWorldPosition(newPosition);
+
+					transform->SetWorldAngle(newMat.GetRotation() * (180.0f / PI));
 					transform->SetWorldScale(newMat.GetScale());
 				}
 			}
 		}
 	}
+}
+
+void PanelScene::DrawTopBarControls()
+{
+	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(10, 5));
+	ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyle().Colors[ImGuiCol_FrameBg]);
+
+	const ImVec2 button_size_default = ImVec2(50, 0);
+	const float combo_width = button_size_default.x * 2.5;
+
+	// Botones de operación
+	if (ImGui::Button("None##ImGuizmoFunctionality", button_size_default)) op = (ImGuizmo::OPERATION)-1;
+	ImGui::SameLine();
+	if (ImGui::Button("Move##ImGuizmoFunctionality", button_size_default)) op = ImGuizmo::TRANSLATE;
+	ImGui::SameLine();
+	if (ImGui::Button("Rotate##ImGuizmoFunctionality", button_size_default)) op = ImGuizmo::ROTATE;
+	ImGui::SameLine();
+	if (ImGui::Button("Scale##ImGuizmoFunctionality", button_size_default)) op = ImGuizmo::SCALE;
+
+	ImGui::SameLine();
+	ImGui::SetNextItemWidth(combo_width);
+	if (ImGui::BeginCombo("##Settings##ImGuizmoFunctionality", "Snap Settings"))
+	{
+		ImGui::Text("Pivote Mode:");
+		if (ImGui::RadioButton("Global##ImGuizmoFunctionality", gizmoMode == ImGuizmo::WORLD))
+			gizmoMode = ImGuizmo::WORLD;
+		ImGui::SameLine();
+		if (ImGui::RadioButton("Local##ImGuizmoFunctionality", gizmoMode == ImGuizmo::LOCAL))
+			gizmoMode = ImGuizmo::LOCAL;
+
+		ImGui::Checkbox("Snap Grid##ImGuizmoFunctionality", &snapEnabled);
+		if (snapEnabled) {
+			ImGui::DragFloat("GridSize##ImGuizmoFunctionality", &snapValue, 0.1f, 0.1f, 10.0f, "%.2f m");
+		}
+		ImGui::EndCombo();
+	}
+
+	ImGui::PopStyleColor();
+	ImGui::PopStyleVar();
 }

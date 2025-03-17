@@ -27,12 +27,17 @@ public:
 	float GetCamSpeed() const { return this->cam_speed; }
 
 	void ImGuizmoFunctionality(ImVec2 position, ImVec2 scale);
-
+	void DrawTopBarControls();
 private:
 
 	GLuint openglTextureID = 0;
 	Grid* grid = nullptr;
 	float cam_speed;
+
+	bool gizmoMode = 1;
+	bool snapEnabled = true;
+	float snapValue = 1.0f;
+	int op;
 };
 
 #endif // !__PANEL_SCENE_H__
