@@ -26,6 +26,7 @@
 #include <SDL2/SDL_opengl.h>
 #include <gl/GL.h>
 #include <imgui.h>
+#include "ImGuizmo.h"
 #include <imgui_impl_sdl2.h>
 #include <imgui_impl_opengl3.h>
 
@@ -203,7 +204,7 @@ bool Gui::PreUpdate()
 	ImGui_ImplSDL2_NewFrame();
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui::NewFrame();
-
+	ImGuizmo::BeginFrame();
 	if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_DockingEnable) MainWindowDockspace();
 
 	return ret;

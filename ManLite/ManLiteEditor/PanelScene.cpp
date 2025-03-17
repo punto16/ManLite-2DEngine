@@ -6,6 +6,10 @@
 #include "InputEM.h"
 #include "Defs.h"
 #include "WindowEM.h"
+#include "SceneManagerEM.h"
+#include "GameObject.h"
+#include "Transform.h"
+#include "mat3f.h"
 
 #include <GL/glew.h>
 #include <SDL2/SDL_opengl.h>
@@ -13,6 +17,9 @@
 #include <gl/GL.h>
 #include <imgui.h>
 #include <vector>
+#include "ImGuizmo.h"
+#include "glm/glm.hpp"
+#include "glm/gtc/type_ptr.hpp"
 
 PanelScene::PanelScene(PanelType type, std::string name, bool enabled) : Panel(type, name, enabled), cam_speed(5.0f)
 {
@@ -67,6 +74,8 @@ bool PanelScene::Update()
 			ImVec2(0, 1),
 			ImVec2(1, 0)
 		);
+
+		ImGuizmoFunctionality(image_pos, scaled_size);
 	}
 	ImGui::End();
 
@@ -208,4 +217,61 @@ bool PanelScene::MouseHasTPed(int& current_mouse_x, int& current_mouse_y, int& p
 	}
 
 	return wrapped;
+}
+
+void PanelScene::ImGuizmoFunctionality(ImVec2 image_pos, ImVec2 scaled_size)
+{
+	auto& scene = engine->scene_manager_em->GetCurrentScene();
+	const auto& selected_gos = scene.GetSelectedGOs();
+	if (!selected_gos.empty()) {
+		auto selected_go = selected_gos[0].lock();
+		if (selected_go) {
+			auto transform = selected_go->GetComponent<Transform>();
+			if (transform) {
+				// Convertir mat3f a matriz 4x4 para ImGuizmo
+				mat3f worldMat = transform->GetWorldMatrix();
+				float matrix[16];
+
+				// Construir matriz column-major
+				matrix[0] = worldMat.m[0]; matrix[1] = worldMat.m[3]; matrix[2] = 0; matrix[3] = 0;
+				matrix[4] = worldMat.m[1]; matrix[5] = worldMat.m[4]; matrix[6] = 0; matrix[7] = 0;
+				matrix[8] = 0; matrix[9] = 0; matrix[10] = 1; matrix[11] = 0;
+				matrix[12] = worldMat.m[6]; matrix[13] = worldMat.m[7]; matrix[14] = 0; matrix[15] = 1;
+
+				// Configurar ImGuizmo
+				Camera2D& camera = engine->renderer_em->GetSceneCamera();
+				ImGuizmo::SetOrthographic(true);
+				ImGuizmo::SetDrawlist();
+				ImGuizmo::SetRect(image_pos.x, image_pos.y, scaled_size.x, scaled_size.y);
+
+				// Operaciones y modo
+				static ImGuizmo::OPERATION op = ImGuizmo::TRANSLATE;
+				static ImGuizmo::MODE mode = ImGuizmo::WORLD;
+
+				// Manejar cambios de operación con teclado
+				if (ImGui::IsKeyPressed(ImGuiKey_Q)) op = (ImGuizmo::OPERATION)-1;
+				if (ImGui::IsKeyPressed(ImGuiKey_W)) op = ImGuizmo::TRANSLATE;
+				if (ImGui::IsKeyPressed(ImGuiKey_E)) op = ImGuizmo::ROTATE;
+				if (ImGui::IsKeyPressed(ImGuiKey_R)) op = ImGuizmo::SCALE;
+				if (op == -1) return;
+
+				// Manipular matriz
+				if (ImGuizmo::Manipulate(
+					glm::value_ptr(camera.GetViewMatrix()),
+					glm::value_ptr(camera.GetProjectionMatrix()),
+					op, mode, matrix))
+				{
+					// Actualizar Transform
+					mat3f newMat;
+					newMat.m[0] = matrix[0]; newMat.m[1] = matrix[4];
+					newMat.m[3] = matrix[1]; newMat.m[4] = matrix[5];
+					newMat.m[6] = matrix[12]; newMat.m[7] = matrix[13];
+
+					transform->SetWorldPosition(newMat.GetTranslation());
+					transform->SetWorldAngle(newMat.GetRotation() * (180.0f / PI)); // Convertir a grados
+					transform->SetWorldScale(newMat.GetScale());
+				}
+			}
+		}
+	}
 }

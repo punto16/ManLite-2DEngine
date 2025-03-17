@@ -14,6 +14,8 @@ public:
     void Resize(int width, int height);
 
     const glm::mat4& GetViewProjMatrix() const { return viewProjMatrix; }
+    const glm::mat4& GetProjectionMatrix() const { return projection; }
+    const glm::mat4& GetViewMatrix() const { return view; }
     const glm::vec2& GetPosition() const { return position; }
     const float GetZoom() const { return zoom; }
     const int GetWidth() const { return width; }
@@ -27,4 +29,6 @@ private:
     float zoom = 1.0f;
     int width, height;
     glm::mat4 viewProjMatrix;
+    glm::mat4 projection;
+    glm::mat4 view;
 };

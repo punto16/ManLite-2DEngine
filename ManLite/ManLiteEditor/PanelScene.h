@@ -8,6 +8,7 @@
 #include <SDL2/SDL_opengl.h>
 
 class Grid;
+class ImVec2;
 
 class PanelScene : public Panel
 {
@@ -24,6 +25,8 @@ public:
 
 	void SetCamSpeed(float newspeed) { this->cam_speed = newspeed; }
 	float GetCamSpeed() const { return this->cam_speed; }
+
+	void ImGuizmoFunctionality(ImVec2 position, ImVec2 scale);
 
 private:
 
