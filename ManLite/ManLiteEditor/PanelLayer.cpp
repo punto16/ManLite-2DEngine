@@ -194,7 +194,7 @@ void PanelLayer::GameObjectDropZone(Layer& target_layer, int position)
                         position
                     );
                
-            }
+            
             ImGui::EndDragDropTarget();
         }
 
