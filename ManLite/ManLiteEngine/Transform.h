@@ -50,7 +50,7 @@ private:
     float angle_rotation;
     vec2f scale;
 
-    bool lock_aspect_ratio = false;
+    bool lock_aspect_ratio = true;
     float aspect_ratio = 1.0f;
 };
 
