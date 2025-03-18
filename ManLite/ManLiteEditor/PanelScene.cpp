@@ -234,27 +234,41 @@ void PanelScene::ImGuizmoFunctionality(ImVec2 image_pos, ImVec2 scaled_size)
 				mat3f worldMat = transform->GetWorldMatrix();
 				float matrix[16];
 
-				matrix[0] = worldMat.m[0]; matrix[1] = worldMat.m[3]; matrix[2] = 0; matrix[3] = 0;
-				matrix[4] = worldMat.m[1]; matrix[5] = worldMat.m[4]; matrix[6] = 0; matrix[7] = 0;
-				matrix[8] = 0; matrix[9] = 0; matrix[10] = 1; matrix[11] = 0;
-				matrix[12] = worldMat.m[6]; matrix[13] = worldMat.m[7]; matrix[14] = 0; matrix[15] = 1;
+				matrix[0] = worldMat.m[0];
+				matrix[1] = worldMat.m[1];
+				matrix[2] = 0;
+				matrix[3] = 0;
+				matrix[4] = worldMat.m[3];
+				matrix[5] = worldMat.m[4];
+				matrix[6] = 0;
+				matrix[7] = 0;
+				matrix[8] = 0;
+				matrix[9] = 0;
+				matrix[10] = 1;
+				matrix[11] = 0;
+				matrix[12] = worldMat.m[6];
+				matrix[13] = worldMat.m[7];
+				matrix[14] = 0;
+				matrix[15] = 1;
 
 				Camera2D& camera = engine->renderer_em->GetSceneCamera();
 				ImGuizmo::SetOrthographic(true);
 				ImGuizmo::SetDrawlist();
 				ImGuizmo::SetRect(image_pos.x, image_pos.y, scaled_size.x, scaled_size.y);
-
-				if (ImGui::IsKeyPressed(ImGuiKey_Q)) op = (ImGuizmo::OPERATION)-1;
-				if (ImGui::IsKeyPressed(ImGuiKey_W)) op = ImGuizmo::TRANSLATE;
-				if (ImGui::IsKeyPressed(ImGuiKey_E)) op = ImGuizmo::ROTATE;
-				if (ImGui::IsKeyPressed(ImGuiKey_R)) op = ImGuizmo::SCALE;
-				if (op == -1) return;
+				if (ImGui::IsWindowHovered() || ImGui::IsWindowFocused())
+				{
+					if (ImGui::IsKeyPressed(ImGuiKey_Q)) op = (ImGuizmo::OPERATION)-1;
+					if (ImGui::IsKeyPressed(ImGuiKey_W)) op = ImGuizmo::TRANSLATE;
+					if (ImGui::IsKeyPressed(ImGuiKey_E)) op = ImGuizmo::ROTATE;
+					if (ImGui::IsKeyPressed(ImGuiKey_R)) op = ImGuizmo::SCALE;
+					if (op == -1) return;
+				}
 
 				float snapValues[3] = { snapValue, snapValue, snapValue };
 
 				if (ImGuizmo::Manipulate(
-					glm::value_ptr(camera.GetViewMatrix()),
-					glm::value_ptr(camera.GetProjectionMatrix()),
+					glm::value_ptr(-camera.GetViewMatrix()),
+					glm::value_ptr(-camera.GetProjectionMatrix()),
 					(ImGuizmo::OPERATION)op,
 					(ImGuizmo::MODE)gizmoMode,
 					matrix,
@@ -271,16 +285,19 @@ void PanelScene::ImGuizmoFunctionality(ImVec2 image_pos, ImVec2 scaled_size)
 					newMat.m[7] = matrix[13];
 
 					vec2f newPosition = newMat.GetTranslation();
+					float rotation_deg = -newMat.GetRotation() * (180.0f / PI);
 
 					if (snapEnabled)
 					{
 						newPosition.x = std::round(newPosition.x / snapValue) * snapValue;
 						newPosition.y = std::round(newPosition.y / snapValue) * snapValue;
+
+						rotation_deg = std::round(rotation_deg / snapValue) * snapValue;
 					}
 
 					transform->SetWorldPosition(newPosition);
 
-					transform->SetWorldAngle(newMat.GetRotation() * (180.0f / PI));
+					transform->SetWorldAngle(rotation_deg);
 					transform->SetWorldScale(newMat.GetScale());
 				}
 			}
