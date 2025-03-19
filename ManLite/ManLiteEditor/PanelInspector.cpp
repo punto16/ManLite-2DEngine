@@ -221,17 +221,6 @@ void PanelInspector::TransformOptions(GameObject& go)
 					transform->GetWorldPosition().x, transform->GetWorldPosition().y,
 					transform->GetWorldAngle(),
 					transform->GetWorldScale().x, transform->GetWorldScale().y);
-
-				float pos_x = transform->GetWorldPosition().x;
-				std::string pos_x_label = std::string("x##position_x_world" + std::to_string(go.GetID()));
-				ImGui::DragFloat(pos_x_label.c_str(), &pos_x, 0.05f);
-				transform->SetWorldPosition(vec2f(pos_x, transform->GetWorldPosition().y));
-
-				float pos_y = transform->GetWorldPosition().y;
-				std::string pos_y_label = std::string("y##position_y_world" + std::to_string(go.GetID()));
-				ImGui::DragFloat(pos_y_label.c_str(), &pos_y, 0.05f);
-				transform->SetWorldPosition(vec2f(transform->GetWorldPosition().x, pos_y));
-
 				ImGui::TreePop();
 			}
 		}

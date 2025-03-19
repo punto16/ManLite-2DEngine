@@ -235,10 +235,10 @@ void PanelScene::ImGuizmoFunctionality(ImVec2 image_pos, ImVec2 scaled_size)
 				float matrix[16];
 
 				matrix[0] = worldMat.m[0];
-				matrix[1] = worldMat.m[3];
+				matrix[1] = worldMat.m[1];
 				matrix[2] = 0;
 				matrix[3] = 0;
-				matrix[4] = worldMat.m[1];
+				matrix[4] = worldMat.m[3];
 				matrix[5] = worldMat.m[4];
 				matrix[6] = 0;
 				matrix[7] = 0;
@@ -267,8 +267,8 @@ void PanelScene::ImGuizmoFunctionality(ImVec2 image_pos, ImVec2 scaled_size)
 				float snapValues[3] = { snapValue, snapValue, snapValue };
 
 				if (ImGuizmo::Manipulate(
-					glm::value_ptr(camera.GetViewMatrix()),
-					glm::value_ptr(camera.GetProjectionMatrix()),
+					glm::value_ptr(-camera.GetViewMatrix()),
+					glm::value_ptr(-camera.GetProjectionMatrix()),
 					(ImGuizmo::OPERATION)op,
 					(ImGuizmo::MODE)gizmoMode,
 					matrix,
@@ -278,8 +278,8 @@ void PanelScene::ImGuizmoFunctionality(ImVec2 image_pos, ImVec2 scaled_size)
 				{
 					mat3f newMat;
 					newMat.m[0] = matrix[0];
-					newMat.m[1] = matrix[4];
-					newMat.m[3] = matrix[1];
+					newMat.m[1] = matrix[1];
+					newMat.m[3] = matrix[4];
 					newMat.m[4] = matrix[5];
 					newMat.m[6] = matrix[12];
 					newMat.m[7] = matrix[13];
