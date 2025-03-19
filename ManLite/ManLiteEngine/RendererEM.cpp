@@ -7,6 +7,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include "Defs.h"
+#include "mat3f.h"
 
 RendererEM::RendererEM(EngineCore* parent) : EngineModule(parent), scene_camera(DEFAULT_CAM_WIDTH, DEFAULT_CAM_HEIGHT)
 {
@@ -86,6 +87,7 @@ bool RendererEM::Start()
 	}
 
 	this->scene_camera.SetZoom(100.0f);
+	SetupQuad();
 
 	return ret;
 }
@@ -133,6 +135,10 @@ bool RendererEM::CleanUp()
 	glDeleteBuffers(1, &VBO);
 	glDeleteBuffers(1, &EBO);
 
+	glDeleteVertexArrays(1, &quadVAO);
+	glDeleteBuffers(1, &quadVBO);
+	glDeleteBuffers(1, &quadEBO);
+
 	glDeleteFramebuffers(1, &fbo);
 	glDeleteTextures(1, &renderTexture);
 	glDeleteRenderbuffers(1, &rbo);
@@ -148,25 +154,32 @@ bool RendererEM::CompileShaders()
 	const char* vertexShaderSource = R"glsl(
 			#version 330 core
 			layout (location = 0) in vec2 aPos;
+			layout (location = 1) in vec2 aTexCoords;
+			
+			uniform mat4 uModel;
 			uniform mat4 uViewProj;
 			
+			out vec2 TexCoords;
+			
 			void main() {
-			    gl_Position = uViewProj * vec4(aPos, 0.0, 1.0);
+			    gl_Position = uViewProj * uModel * vec4(aPos, 0.0, 1.0);
+			    TexCoords = aTexCoords;
 			}
         )glsl";
 
 	const char* fragmentShaderSource = R"glsl(
-            #version 330 core
-            in vec4 ourColor;
-            in vec2 TexCoords;
-            
-            out vec4 FragColor;
-            
-            uniform sampler2D texture1;
-            
-            void main() {
-                FragColor = texture(texture1, TexCoords) * ourColor;
-            }
+			#version 330 core
+			in vec2 TexCoords;
+			out vec4 FragColor;
+			
+			uniform sampler2D uTexture;
+			
+			void main() {
+			    FragColor = texture(uTexture, TexCoords);
+			    
+			    if (FragColor.a < 0.1)
+			        discard;
+			}
         )glsl";
 
 	GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
@@ -221,29 +234,32 @@ bool RendererEM::CompileShaders()
 
 void RendererEM::RenderBatch()
 {
-	float vertices[] = {
-		// position	      // color	       // coord. tex
-		 0.5f,  0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,
-		 0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f,
-		-0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f,
-		-0.5f,  0.5f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f
-	};
+	glUseProgram(shaderProgram);
+	glBindVertexArray(quadVAO);
 
-	unsigned int indices[] = {
-		0, 1, 3,
-		1, 2, 3
-	};
+	// Obtener matriz ViewProj de la cámara
+	glm::mat4 viewProj = scene_camera.GetViewProjMatrix();
+	GLuint uViewProjLoc = glGetUniformLocation(shaderProgram, "uViewProj");
+	GLuint uModelLoc = glGetUniformLocation(shaderProgram, "uModel");
+	GLuint uTextureLoc = glGetUniformLocation(shaderProgram, "uTexture");
 
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	glUniformMatrix4fv(uViewProjLoc, 1, GL_FALSE, glm::value_ptr(viewProj));
+	glUniform1i(uTextureLoc, 0); // Usamos texture unit 0
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+	for (const auto& sprite : spritesToRender) {
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, sprite.textureID);
 
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		glUniformMatrix4fv(uModelLoc, 1, GL_FALSE, glm::value_ptr(sprite.modelMatrix));
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+	}
+
+	spritesToRender.clear();
+	glBindVertexArray(0);
 }
 
-void RendererEM::ResizeFBO(int width, int height) {
+void RendererEM::ResizeFBO(int width, int height)
+{
 	fbSize = { width, height };
 	
 	scene_camera.Resize(width, height);
@@ -257,7 +273,66 @@ void RendererEM::ResizeFBO(int width, int height) {
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-Grid::Grid(float size, int divisions) {
+void RendererEM::SetupQuad()
+{
+	float vertices[] = {
+		// Position	     // UVs
+		-0.5f,  0.5f,     0.0f, 1.0f,
+		 0.5f,  0.5f,     1.0f, 1.0f,
+		 0.5f, -0.5f,     1.0f, 0.0f,
+		-0.5f, -0.5f,     0.0f, 0.0f
+	};
+
+	unsigned int indices[] = {
+		0, 1, 2,
+		2, 3, 0
+	};
+
+	glGenVertexArrays(1, &quadVAO);
+	glGenBuffers(1, &quadVBO);
+	glGenBuffers(1, &quadEBO);
+
+	glBindVertexArray(quadVAO);
+
+	glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, quadEBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+	// Posición
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+
+	// UVs
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
+	glEnableVertexAttribArray(1);
+
+	glBindVertexArray(0);
+}
+
+glm::mat4 RendererEM::ConvertMat3fToGlmMat4(const mat3f& mat)
+{
+	glm::mat4 result(1.0f);
+
+	// Columns 0 & 1
+	result[0][0] = mat.m[0]; result[1][0] = mat.m[1];
+	result[0][1] = mat.m[3]; result[1][1] = mat.m[4];
+
+	// Traslation (column 2 in mat3f)
+	result[3][0] = mat.m[6];
+	result[3][1] = mat.m[7];
+
+	return result;
+}
+
+void RendererEM::SubmitSprite(GLuint textureID, const mat3f& modelMatrix)
+{
+	spritesToRender.push_back({ textureID, ConvertMat3fToGlmMat4(modelMatrix) });
+}
+
+Grid::Grid(float size, int divisions)
+{
 	stepSize = size / divisions;
 
 	std::vector<float> vertices = {
@@ -294,7 +369,8 @@ Grid::Grid(float size, int divisions) {
 	glDeleteShader(fragmentShader);
 }
 
-void Grid::Draw(const glm::mat4& viewProjMatrix) {
+void Grid::Draw(const glm::mat4& viewProjMatrix)
+{
 	glUseProgram(shaderProgram);
 
 	glm::mat4 viewProjInv = glm::inverse(viewProjMatrix);

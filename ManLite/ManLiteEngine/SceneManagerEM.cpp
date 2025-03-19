@@ -2,6 +2,7 @@
 
 #include "GameObject.h"
 #include "Layer.h"
+#include "Sprite2D.h"
 
 #include "Defs.h"
 #include "algorithm"
@@ -121,6 +122,7 @@ std::shared_ptr<GameObject> Scene::CreateEmptyGO(GameObject& parent)
 {
 	std::shared_ptr<GameObject> empty_go = std::make_shared<GameObject>(parent.shared_from_this(), "EmptyGameObject", true);
 	empty_go->Awake();
+	empty_go->AddComponent<Sprite2D>("Assets/Textures/image.png");
 	parent.AddChild(empty_go);
 	if (scene_layers.size() > 0) ReparentToLayer(empty_go, scene_layers[0]);
 	return empty_go;

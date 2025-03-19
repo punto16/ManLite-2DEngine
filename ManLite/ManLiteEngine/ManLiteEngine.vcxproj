@@ -125,7 +125,7 @@
     <PreBuildEvent>
       <Command>pushd "$(SolutionDir).."
 call vcpkg\bootstrap-vcpkg.bat
-vcpkg\vcpkg.exe install glm glew sdl2 sdl2-image sdl2-mixer sdl2-ttf box2d --recurse --overlay-triplets="custom-triplets"
+vcpkg\vcpkg.exe install glm glew stb sdl2 sdl2-image sdl2-mixer sdl2-ttf box2d --recurse --overlay-triplets="custom-triplets"
 copy "vcpkg\installed\x64-windows\bin\*.*" "$(OutDir)"
 popd
 </Command>
@@ -158,7 +158,7 @@ popd
     <PreBuildEvent>
       <Command>pushd "$(SolutionDir).."
 call vcpkg\bootstrap-vcpkg.bat
-vcpkg\vcpkg.exe install glm glew sdl2 sdl2-image sdl2-mixer sdl2-ttf box2d --recurse --overlay-triplets="custom-triplets"
+vcpkg\vcpkg.exe install glm glew stb sdl2 sdl2-image sdl2-mixer sdl2-ttf box2d --recurse --overlay-triplets="custom-triplets"
 copy "vcpkg\installed\x64-windows\bin\*.*" "$(OutDir)"
 popd
 </Command>
@@ -174,7 +174,9 @@ popd
     <ClCompile Include="Log.cpp" />
     <ClCompile Include="mat3f.cpp" />
     <ClCompile Include="RendererEM.cpp" />
+    <ClCompile Include="ResourceManagerEM.cpp" />
     <ClCompile Include="SceneManagerEM.cpp" />
+    <ClCompile Include="Sprite2D.cpp" />
     <ClCompile Include="Transform.cpp" />
     <ClCompile Include="WindowEM.cpp" />
   </ItemGroup>
@@ -190,7 +192,9 @@ popd
     <ClInclude Include="Log.h" />
     <ClInclude Include="mat3f.h" />
     <ClInclude Include="RendererEM.h" />
+    <ClInclude Include="ResourceManagerEM.h" />
     <ClInclude Include="SceneManagerEM.h" />
+    <ClInclude Include="Sprite2D.h" />
     <ClInclude Include="Transform.h" />
     <ClInclude Include="WindowEM.h" />
   </ItemGroup>

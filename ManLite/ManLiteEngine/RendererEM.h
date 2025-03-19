@@ -8,8 +8,17 @@
 
 #include <GL/glew.h>
 #include "SDL2/SDL.h"
+#include "glm/glm.hpp"
 
 #include "Defs.h"
+#include "vector"
+
+class mat3f;
+
+struct SpriteRenderData {
+    GLuint textureID;
+    glm::mat4 modelMatrix;
+};
 
 class Grid {
 public:
@@ -100,6 +109,8 @@ public:
 	mat4f GetProjection() const { return this->projection; }
 	Camera2D& GetSceneCamera() { return scene_camera; }
 
+    void SubmitSprite(GLuint textureID, const mat3f& modelMatrix);
+
 private:
 
 	bool vsync;
@@ -111,6 +122,12 @@ private:
 	mat4f projection;
 	Camera2D scene_camera;
 
+
+    std::vector<SpriteRenderData> spritesToRender;
+    GLuint quadVAO, quadVBO, quadEBO;
+
+    void SetupQuad();
+    glm::mat4 ConvertMat3fToGlmMat4(const mat3f& mat);
 public:
 	GLuint fbo;
 	GLuint renderTexture;
@@ -118,4 +135,4 @@ public:
 	glm::ivec2 fbSize = { DEFAULT_CAM_WIDTH, DEFAULT_CAM_HEIGHT };
 };
 
-#endif // !__EWINDOW_EM_H__
+#endif // !__RENDERER_EM_H__
