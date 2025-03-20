@@ -42,8 +42,11 @@ bool PanelScene::Update()
 	if (ImGui::Begin(name.c_str(), &enabled))
 	{
 		DrawTopBarControls();
-
-		//grid->Draw(engine->renderer_em->GetSceneCamera().GetViewProjMatrix());
+		
+		if (ImGui::IsWindowHovered())
+		{
+			grid->Draw(engine->renderer_em->GetSceneCamera().GetViewProjMatrix());
+		}
 
 		//movement of scene camera
 		InputToCamMovement();
@@ -261,8 +264,8 @@ void PanelScene::ImGuizmoFunctionality(ImVec2 image_pos, ImVec2 scaled_size)
 					if (ImGui::IsKeyPressed(ImGuiKey_W)) op = ImGuizmo::TRANSLATE;
 					if (ImGui::IsKeyPressed(ImGuiKey_E)) op = ImGuizmo::ROTATE;
 					if (ImGui::IsKeyPressed(ImGuiKey_R)) op = ImGuizmo::SCALE;
-					if (op == -1) return;
 				}
+				if (op == -1) return;
 
 				float snapValues[3] = { snapValue, snapValue, snapValue };
 
