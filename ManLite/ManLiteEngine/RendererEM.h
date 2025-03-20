@@ -55,37 +55,23 @@ private:
     uniform float uZoom;
     uniform float uStepSize;
     
-    const float AXIS_THICKNESS = 2.0;   // Grosor ejes en píxeles
-    const float DOT_RADIUS = 3.0;       // Radio del punto en píxeles
-    const float BASE_GRID_THICKNESS = 1.0; // Grosor base en píxeles
-    const float MAX_GRID_THICKNESS = 0.6; // Grosor máximo en unidades del mundo
+    const float AXIS_THICKNESS = 2.0;
+    const float DOT_RADIUS = 3.0;
+    const float BASE_GRID_THICKNESS = 1.0;
+    const float MAX_GRID_THICKNESS = 0.6;
     
     void main() {
-        //-------------------------------------------
-        // 1. Calcular ejes centrales (líneas sólidas)
-        //-------------------------------------------
         float axisWidth = (AXIS_THICKNESS / uZoom) * 0.5;
         float axisX = step(abs(vWorldPos.y), axisWidth);
         float axisY = step(abs(vWorldPos.x), axisWidth);
         
-        //-------------------------------------------
-        // 2. Calcular punto central (círculo sólido)
-        //-------------------------------------------
         float dotRadius = DOT_RADIUS / uZoom;
         float distToCenter = length(vWorldPos);
         float dot = step(distToCenter, dotRadius);
         
-        //-------------------------------------------
-        // 3. Grosor dinámico del grid según el zoom
-        //-------------------------------------------
-        // Grosor base en unidades del mundo (ajustado por zoom)
         float baseThickness = BASE_GRID_THICKNESS / uZoom;
-        // Limitar grosor máximo para evitar "bloques" al hacer zoom out
         float lineThickness = min(baseThickness, MAX_GRID_THICKNESS);
         
-        //-------------------------------------------
-        // 4. Calcular grid (alineado a 0,0)
-        //-------------------------------------------
         vec2 gridPos = vWorldPos / uStepSize;
         vec2 gridFract = fract(gridPos);
         vec2 distToLine = min(gridFract, 1.0 - gridFract) * uStepSize;
@@ -94,9 +80,6 @@ private:
         float gridLineY = step(distToLine.y, lineThickness);
         float gridLine = max(gridLineX, gridLineY);
         
-        //-------------------------------------------
-        // 5. Mezclar colores y aplicar alpha 80%
-        //-------------------------------------------
         vec3 color = uGridColor * gridLine;
         color = mix(color, uAxisColor, max(axisX, axisY));
         color = mix(color, vec3(0.0), dot);

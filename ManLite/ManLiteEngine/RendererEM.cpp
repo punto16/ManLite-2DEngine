@@ -316,8 +316,10 @@ glm::mat4 RendererEM::ConvertMat3fToGlmMat4(const mat3f& mat)
 	glm::mat4 result(1.0f);
 
 	// Columns 0 & 1
-	result[0][0] = mat.m[0]; result[1][0] = mat.m[1];
-	result[0][1] = mat.m[3]; result[1][1] = mat.m[4];
+	result[0][0] = mat.m[0];
+	result[0][1] = mat.m[1];
+	result[1][0] = mat.m[3];
+	result[1][1] = mat.m[4];
 
 	// Traslation (column 2 in mat3f)
 	result[3][0] = mat.m[6];
