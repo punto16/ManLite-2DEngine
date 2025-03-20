@@ -43,11 +43,8 @@ bool PanelScene::Update()
 	{
 		DrawTopBarControls();
 		
-		if (ImGui::IsWindowHovered())
-		{
-			grid->Draw(engine->renderer_em->GetSceneCamera().GetViewProjMatrix());
-		}
-
+		grid->Draw(engine->renderer_em->GetSceneCamera().GetViewProjMatrix());
+		
 		//movement of scene camera
 		InputToCamMovement();
 
