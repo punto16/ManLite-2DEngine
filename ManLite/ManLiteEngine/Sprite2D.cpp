@@ -22,7 +22,7 @@ Sprite2D::Sprite2D(const Sprite2D& component_to_copy, std::shared_ptr<GameObject
 Sprite2D::~Sprite2D()
 {
     if (texturePath.empty()) return;
-    engine->resource_manager_em->ReleaseTexture(texturePath);
+    ResourceManagerEM::GetInstance().ReleaseTexture(texturePath);
 }
 
 void Sprite2D::Draw() {
