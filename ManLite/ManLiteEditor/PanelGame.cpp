@@ -27,6 +27,8 @@ bool PanelGame::Update()
 	{
 		DrawTopBarControls();
 
+		engine->renderer_em->UseGameViewCam();
+
 		ImVec2 window_size = ImGui::GetContentRegionAvail();
 		float image_width = DEFAULT_CAM_WIDTH;
 		float image_height = DEFAULT_CAM_HEIGHT;
@@ -81,7 +83,7 @@ void PanelGame::DrawTopBarControls()
         Scene& current_scene = engine->scene_manager_em->GetCurrentScene();
 
         current_scene.TraverseHierarchy([&cameras](std::shared_ptr<GameObject> go) {
-            if (go->GetComponent<Camera>())
+            if (go->GetComponent<Camera>() && go->IsEnabled())
                 cameras.push_back(go);
             });
 
@@ -89,7 +91,7 @@ void PanelGame::DrawTopBarControls()
             bool is_selected = (selected_camera_go == camera_go);
             if (ImGui::Selectable(camera_go->GetName().c_str(), is_selected)) {
                 selected_camera_go = camera_go;
-				//change in rendeer to render this camera instead of render's one
+				engine->scene_manager_em->GetCurrentScene().SetCurrentCameraGO(selected_camera_go);
             }
 
             if (is_selected) {

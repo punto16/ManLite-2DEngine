@@ -18,6 +18,7 @@ public:
 	void PrefabOptions(GameObject& go);
 	//components inpsector
 	void TransformOptions(GameObject& go);
+	void CameraOptions(GameObject& go);
 	void AddComponent(GameObject& go);
 
 private:

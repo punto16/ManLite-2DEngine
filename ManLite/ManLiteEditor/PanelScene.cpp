@@ -43,6 +43,8 @@ bool PanelScene::Update()
 	{
 		DrawTopBarControls();
 		
+		engine->renderer_em->UseSceneViewCam();
+
 		grid->Draw(engine->renderer_em->GetSceneCamera().GetViewProjMatrix());
 		
 		//movement of scene camera

@@ -118,8 +118,12 @@ public:
 	mat4f GetProjection() const { return this->projection; }
 	Camera2D& GetSceneCamera() { return scene_camera; }
 
+    void UseSceneViewCam();
+    void UseGameViewCam();
+
     void SubmitSprite(GLuint textureID, const mat3f& modelMatrix);
 
+    glm::mat4 ConvertMat3fToGlmMat4(const mat3f& mat);
 private:
 
 	bool vsync;
@@ -131,12 +135,12 @@ private:
 	mat4f projection;
 	Camera2D scene_camera;
 
+    bool use_scene_cam = true;
 
     std::vector<SpriteRenderData> spritesToRender;
     GLuint quadVAO, quadVBO, quadEBO;
 
     void SetupQuad();
-    glm::mat4 ConvertMat3fToGlmMat4(const mat3f& mat);
 public:
 	GLuint fbo;
 	GLuint renderTexture;

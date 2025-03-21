@@ -40,6 +40,9 @@ bool PanelInspector::Update()
 			GameObject& go = *(engine->scene_manager_em->GetCurrentScene().GetSelectedGOs()[0].lock());
 			GeneralOptions(go);
 			TransformOptions(go);
+			CameraOptions(go);
+
+			//last
 			AddComponent(go);
 		}
 	}
@@ -236,6 +239,34 @@ void PanelInspector::TransformOptions(GameObject& go)
 				ImGui::TreePop();
 			}
 		}
+
+		ImGui::Dummy(ImVec2(0, 4));
+		ImGui::Separator();
+	}
+}
+
+void PanelInspector::CameraOptions(GameObject& go)
+{
+	uint treeFlags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_DefaultOpen;
+	Camera* cam = go.GetComponent<Camera>();
+	if (cam == nullptr) return;
+	std::string camLabel = std::string("Camera##" + std::to_string(go.GetID()));
+	if (ImGui::CollapsingHeader(camLabel.c_str(), treeFlags))
+	{
+		int cam_width, cam_height;
+		cam->GetViewportSize(cam_width, cam_height);
+		std::string cam_width_label = std::string("Viewport Width##" + std::to_string(go.GetID()));
+		ImGui::DragInt(cam_width_label.c_str(), &cam_width, 1.0f);
+
+		std::string cam_height_label = std::string("Viewport Height##" + std::to_string(go.GetID()));
+		ImGui::DragInt(cam_height_label.c_str(), &cam_height, 1.0f);
+		cam->SetViewportSize(cam_width, cam_height);
+
+		int cam_zoom = (int)cam->GetZoom();
+		std::string cam_zoom_label = std::string("Camera Zoom##" + std::to_string(go.GetID()));
+		ImGui::DragInt(cam_zoom_label.c_str(), &cam_zoom, 1.0f, 10, 200);
+		cam->SetZoom((float)cam_zoom);
+
 
 		ImGui::Dummy(ImVec2(0, 4));
 		ImGui::Separator();

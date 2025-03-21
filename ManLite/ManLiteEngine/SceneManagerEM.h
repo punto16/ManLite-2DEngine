@@ -79,6 +79,8 @@ public:
 	std::string GetSceneName() const { return this->scene_name; }
 	void SetSceneName(std::string name);
 
+	GameObject& GetCurrentCameraGO() const { return *current_camera_go; }
+	void SetCurrentCameraGO(std::shared_ptr<GameObject> new_cam_go) { this->current_camera_go = new_cam_go; }
 	uint16_t GetCamerasInSceneAmount() const { return this->cameras_in_scene_amount; }
 	void SetCamerasInSceneAmount(const uint16_t c) { this->cameras_in_scene_amount = c; }
 
@@ -99,6 +101,7 @@ private:
 	std::vector<std::shared_ptr<Layer>> layers_to_add;
 	std::vector<std::shared_ptr<Layer>> layers_to_delete;
 
+	std::shared_ptr<GameObject> current_camera_go = nullptr;
 	uint16_t cameras_in_scene_amount = 0;
 };
 

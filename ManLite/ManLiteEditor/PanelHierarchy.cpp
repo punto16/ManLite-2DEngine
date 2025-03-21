@@ -129,7 +129,7 @@ void PanelHierarchy::Context(GameObject& parent)
 					scene.SelectGameObject(go, true);
 				}
 			}
-
+	
 			if (ImGui::MenuItem(("Delete (" + std::to_string(selectedCount) + ")").c_str()))
 			{
 				for (const auto& weakGo : selected) {

@@ -2,6 +2,9 @@
 
 #include "EngineCore.h"
 #include "WindowEM.h"
+#include "Camera.h"
+#include "GameObject.h"
+#include "SceneManagerEM.h"
 
 #include <GL/glew.h>
 #include <glm/gtc/matrix_transform.hpp>
@@ -237,11 +240,26 @@ void RendererEM::RenderBatch()
 	glUseProgram(shaderProgram);
 	glBindVertexArray(quadVAO);
 
-	// Obtener matriz ViewProj de la cámara
-	glm::mat4 viewProj = scene_camera.GetViewProjMatrix();
+	glm::mat4 viewProj;
 	GLuint uViewProjLoc = glGetUniformLocation(shaderProgram, "uViewProj");
 	GLuint uModelLoc = glGetUniformLocation(shaderProgram, "uModel");
 	GLuint uTextureLoc = glGetUniformLocation(shaderProgram, "uTexture");
+
+	if (use_scene_cam) {
+		viewProj = scene_camera.GetViewProjMatrix();
+	}
+	else {
+		GameObject* cam_go = &engine->scene_manager_em->GetCurrentScene().GetCurrentCameraGO();
+		if (cam_go && cam_go->GetComponent<Camera>())
+		{
+			auto camera = cam_go->GetComponent<Camera>();
+			viewProj = camera->GetProjectionMatrix() * camera->GetViewMatrix();
+		}
+		else
+		{
+			viewProj = scene_camera.GetViewProjMatrix();
+		}
+	}
 
 	glUniformMatrix4fv(uViewProjLoc, 1, GL_FALSE, glm::value_ptr(viewProj));
 	glUniform1i(uTextureLoc, 0); // Usamos texture unit 0
@@ -271,6 +289,16 @@ void RendererEM::ResizeFBO(int width, int height)
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void RendererEM::UseSceneViewCam()
+{
+	this->use_scene_cam = true;
+}
+
+void RendererEM::UseGameViewCam()
+{
+	this->use_scene_cam = false;
 }
 
 void RendererEM::SetupQuad()

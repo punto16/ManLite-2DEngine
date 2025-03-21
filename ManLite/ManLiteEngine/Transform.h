@@ -36,6 +36,10 @@ public:
     }
 
     vec2f GetWorldPosition();
+    glm::vec3 GetWorldPositionGLM() {
+        vec2f pos = GetWorldPosition();
+        return glm::vec3(pos.x, pos.y, 0.0f);
+    }
     void SetWorldPosition(vec2f pos);
     float GetWorldAngle();
     void SetWorldAngle(float angle);
