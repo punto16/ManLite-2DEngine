@@ -11,6 +11,7 @@
 struct TextureData {
     GLuint id;
     int refCount = 0;
+    int w, h;
 };
 
 class ResourceManagerEM : public EngineModule {

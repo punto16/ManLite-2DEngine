@@ -28,6 +28,8 @@ GLuint ResourceManagerEM::LoadTexture(const std::string& path, int& tex_width, i
     if (it != textures.end())
     {
         it->second.refCount++;
+        tex_width = it->second.w;
+        tex_height = it->second.h;
         return it->second.id;
     }
 
@@ -58,6 +60,8 @@ GLuint ResourceManagerEM::LoadTexture(const std::string& path, int& tex_width, i
     TextureData newData;
     newData.id = textureID;
     newData.refCount = 1;
+    newData.w = tex_width;
+    newData.h = tex_height;
     textures[path] = newData;
 
     return textureID;
