@@ -284,21 +284,37 @@ void PanelScene::ImGuizmoFunctionality(ImVec2 image_pos, ImVec2 scaled_size)
 					newMat.m[6] = matrix[12];
 					newMat.m[7] = matrix[13];
 
-					vec2f newPosition = newMat.GetTranslation();
-					float rotation_deg = newMat.GetRotation() * (180.0f / PI);
-
-					if (snapEnabled)
+					switch (op)
 					{
-						newPosition.x = std::round(newPosition.x / snapValue) * snapValue;
-						newPosition.y = std::round(newPosition.y / snapValue) * snapValue;
-
-						rotation_deg = std::round(rotation_deg / snapValue) * snapValue;
+					case ImGuizmo::TRANSLATE:
+					{
+						vec2f newPosition = newMat.GetTranslation();
+						if (snapEnabled)
+						{
+							newPosition.x = std::round(newPosition.x / snapValue) * snapValue;
+							newPosition.y = std::round(newPosition.y / snapValue) * snapValue;
+						}
+						transform->SetWorldPosition(newPosition);
+						break;
 					}
-
-					transform->SetWorldPosition(newPosition);
-
-					transform->SetWorldAngle(rotation_deg);
-					transform->SetWorldScale(newMat.GetScale());
+					case ImGuizmo::ROTATE:
+					{
+						float rotation_deg = newMat.GetRotation() * (180.0f / PI);
+						if (snapEnabled)
+						{
+							rotation_deg = std::round(rotation_deg / snapValue) * snapValue;
+						}
+						transform->SetWorldAngle(rotation_deg);
+						break;
+					}
+					case ImGuizmo::SCALE:
+					{
+						transform->SetWorldScale(newMat.GetScale());
+						break;
+					}
+					default:
+						break;
+					}
 				}
 			}
 		}

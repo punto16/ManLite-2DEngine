@@ -102,18 +102,8 @@ float Transform::GetWorldAngle()
 
 void Transform::SetWorldAngle(float world_angle)
 {
-    if (auto go = container_go.lock()) {
-        if (auto parent = go->GetParentGO().lock()) {
-            if (auto parent_transform = parent->GetComponent<Transform>()) {
-                float parent_angle = parent_transform->GetWorldAngle();
-                angle_rotation = world_angle - parent_angle;
-                angle_rotation = fmod(angle_rotation, 360.0f);
-                if (angle_rotation < 0) angle_rotation += 360.0f;
-                return;
-            }
-        }
-    }
-    SetAngle(world_angle);
+    auto parent_transform = container_go.lock()->GetParentGO().lock()->GetComponent<Transform>();
+    SetAngle(world_angle - parent_transform->GetWorldAngle());
 }
 
 vec2f Transform::GetWorldScale()
