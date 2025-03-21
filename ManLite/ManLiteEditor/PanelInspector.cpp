@@ -7,8 +7,19 @@
 #include "Layer.h"
 #include "Component.h"
 #include "Transform.h"
+#include "Camera.h"
+#include "Sprite2D.h"
+
+#include "FileDialog.h"
+
+#if defined(_MSC_VER) && !defined(__clang__)
+#pragma warning(disable : 4996)
+#endif
 
 #include <imgui.h>
+#include <filesystem>
+#include <exception>
+
 
 PanelInspector::PanelInspector(PanelType type, std::string name, bool enabled) : Panel(type, name, enabled)
 {
@@ -29,6 +40,7 @@ bool PanelInspector::Update()
 			GameObject& go = *(engine->scene_manager_em->GetCurrentScene().GetSelectedGOs()[0].lock());
 			GeneralOptions(go);
 			TransformOptions(go);
+			AddComponent(go);
 		}
 	}
 	ImGui::End();
@@ -229,3 +241,62 @@ void PanelInspector::TransformOptions(GameObject& go)
 		ImGui::Separator();
 	}
 }
+
+void PanelInspector::AddComponent(GameObject& go)
+{
+	const ImVec2 button_size_default = ImVec2(150, 0);
+	ImGui::Dummy(ImVec2(0, 10));
+	ImGui::Dummy(ImVec2((ImGui::GetWindowWidth() - button_size_default.x - 30) * 0.5, 0));
+	ImGui::SameLine();
+	static bool show_component_window = false;
+	static ImVec2 window_pos;
+
+	std::string button_id = "AddComponent_" + std::to_string(go.GetID());
+
+	if (ImGui::Button("Add Component", button_size_default))
+	{
+		window_pos = ImGui::GetMousePos();
+		show_component_window = true;
+		ImGui::SetNextWindowPos(window_pos);
+	}
+
+	if (show_component_window)
+	{
+		ImGui::SetNextWindowSize(ImVec2(200, 0), ImGuiCond_Always);
+		ImGui::Begin(
+			"Add Component###ComponentSelector",
+			&show_component_window,
+			ImGuiWindowFlags_NoCollapse |
+			ImGuiWindowFlags_NoResize |
+			ImGuiWindowFlags_NoMove
+		);
+
+		if (ImGui::Selectable("Camera"))
+		{
+			go.AddComponent<Camera>();
+			show_component_window = false;
+		}
+
+		if (ImGui::Selectable("Sprite"))
+		{
+			std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Open Sprite file (*.png)\0*.png\0")).string();
+			if (!filePath.empty() && filePath.ends_with(".png"))
+			{
+				go.AddComponent<Sprite2D>(filePath);
+			}
+			show_component_window = false;
+		}
+
+		if (!ImGui::IsWindowFocused())
+		{
+			show_component_window = false;
+		}
+
+		ImGui::End();
+	}
+}
+	//std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Open Font file (*.ttf)\0*.ttf\0")).string();
+	//if (!filePath.empty() && filePath.ends_with(".ttf"))
+	//{
+	//	tempTextUI->SetFont(filePath.c_str());
+	//}

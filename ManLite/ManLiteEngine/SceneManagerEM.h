@@ -79,6 +79,9 @@ public:
 	std::string GetSceneName() const { return this->scene_name; }
 	void SetSceneName(std::string name);
 
+	uint16_t GetCamerasInSceneAmount() const { return this->cameras_in_scene_amount; }
+	void SetCamerasInSceneAmount(const uint16_t c) { this->cameras_in_scene_amount = c; }
+
 private:
 	std::string scene_name;
 	//scene_root because gameobjects are tree-like structure
@@ -95,6 +98,8 @@ private:
 	std::vector<std::shared_ptr<GameObject>> objects_to_delete;
 	std::vector<std::shared_ptr<Layer>> layers_to_add;
 	std::vector<std::shared_ptr<Layer>> layers_to_delete;
+
+	uint16_t cameras_in_scene_amount = 0;
 };
 
 class SceneManagerEM : public EngineModule

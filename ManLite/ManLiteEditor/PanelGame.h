@@ -12,6 +12,8 @@ public:
 
 	bool Update();
 
+	void DrawTopBarControls();
+
 private:
 
 };

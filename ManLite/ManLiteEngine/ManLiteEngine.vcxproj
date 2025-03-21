@@ -165,9 +165,11 @@ popd
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Camera2D.cpp" />
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="EngineCore.cpp" />
+    <ClCompile Include="FileDialog.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="InputEM.cpp" />
     <ClCompile Include="Layer.cpp" />
@@ -181,11 +183,13 @@ popd
     <ClCompile Include="WindowEM.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Camera.h" />
     <ClInclude Include="Camera2D.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="Defs.h" />
     <ClInclude Include="EngineCore.h" />
     <ClInclude Include="EngineModule.h" />
+    <ClInclude Include="FileDialog.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="InputEM.h" />
     <ClInclude Include="Layer.h" />

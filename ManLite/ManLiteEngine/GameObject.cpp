@@ -4,6 +4,8 @@
 
 #include "Component.h"
 #include "Transform.h"
+#include "Sprite2D.h"
+#include "Camera.h"
 #include "Log.h"
 
 #include <random>
@@ -91,8 +93,6 @@ void GameObject::Delete()
     if (auto parent_sp = parent_gameobject.lock())
         if (parent_sp->HasChild(gameobject_id))
             parent_sp->RemoveChild(shared_from_this());
-        
-    
 }
 
 bool GameObject::Reparent(std::shared_ptr<GameObject> new_parent, bool skip_descendant_search)
@@ -153,9 +153,6 @@ void GameObject::CloneChildrenHierarchy(const std::shared_ptr<GameObject>& origi
     {
         auto child_copy = std::make_shared<GameObject>(original_child);
         child_copy->parent_gameobject = shared_from_this();
-        //children_gameobject.push_back(child_copy);
-        //child_copy->CloneChildrenHierarchy(original_child);
-        //child_copy->CloneComponents(original_child);
     }
 }
 
@@ -172,10 +169,12 @@ void GameObject::CloneComponents(const std::shared_ptr<GameObject>& original)
         }
         case ComponentType::Camera:
         {
+            AddCopiedComponent<Camera>(*dynamic_cast<const Camera*>(item.get()));
             break;
         }
         case ComponentType::Sprite:
         {
+            AddCopiedComponent<Sprite2D>(*dynamic_cast<const Sprite2D*>(item.get()));
             break;
         }
         case ComponentType::Script:
