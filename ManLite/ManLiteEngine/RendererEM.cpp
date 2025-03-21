@@ -161,12 +161,17 @@ bool RendererEM::CompileShaders()
 			
 			uniform mat4 uModel;
 			uniform mat4 uViewProj;
+			uniform vec4 uUVRect; // x = u1, y = v1, z = u2, w = v2
 			
 			out vec2 TexCoords;
 			
 			void main() {
 			    gl_Position = uViewProj * uModel * vec4(aPos, 0.0, 1.0);
-			    TexCoords = aTexCoords;
+			    
+			    // Calcula las coordenadas UV aplicando el recorte
+			    vec2 uvOffset = vec2(uUVRect.x, uUVRect.y);
+			    vec2 uvScale = vec2(uUVRect.z - uUVRect.x, uUVRect.w - uUVRect.y);
+			    TexCoords = uvOffset + aTexCoords * uvScale;
 			}
         )glsl";
 
@@ -264,11 +269,15 @@ void RendererEM::RenderBatch()
 	glUniformMatrix4fv(uViewProjLoc, 1, GL_FALSE, glm::value_ptr(viewProj));
 	glUniform1i(uTextureLoc, 0); // Usamos texture unit 0
 
+	GLuint uUVRectLoc = glGetUniformLocation(shaderProgram, "uUVRect");
+
 	for (const auto& sprite : spritesToRender) {
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, sprite.textureID);
 
 		glUniformMatrix4fv(uModelLoc, 1, GL_FALSE, glm::value_ptr(sprite.modelMatrix));
+		glUniform4f(uUVRectLoc, sprite.u1, sprite.v1, sprite.u2, sprite.v2);
+
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 	}
 
@@ -356,9 +365,13 @@ glm::mat4 RendererEM::ConvertMat3fToGlmMat4(const mat3f& mat)
 	return result;
 }
 
-void RendererEM::SubmitSprite(GLuint textureID, const mat3f& modelMatrix)
+void RendererEM::SubmitSprite(GLuint textureID, const mat3f& modelMatrix, float u1, float v1, float u2, float v2)
 {
-	spritesToRender.push_back({ textureID, ConvertMat3fToGlmMat4(modelMatrix) });
+	spritesToRender.push_back({
+	textureID,
+	ConvertMat3fToGlmMat4(modelMatrix),
+	u1, v1, u2, v2
+		});
 }
 
 Grid::Grid(float size, int divisions)

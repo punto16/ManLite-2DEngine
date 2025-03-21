@@ -1,5 +1,5 @@
-#ifndef __RESOURCE_MANAGER_H__
-#define __RESOURCE_MANAGER_H__
+#ifndef __RESOURCE_MANAGER_EM_H__
+#define __RESOURCE_MANAGER_EM_H__
 #pragma once
 
 #include "EngineModule.h"
@@ -35,4 +35,4 @@ private:
     void CleanUnusedResources();
 };
 
-#endif // !__RESOURCE_MANAGER_H__
+#endif // !__RESOURCE_MANAGER_EM_H__

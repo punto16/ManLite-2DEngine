@@ -24,10 +24,17 @@ public:
         tex_height = this->tex_height;
     }
 
+    void SetTextureSection(int x, int y, int w, int h);
+    vec4 GetTextureSection() const { return vec4(sectionX, sectionY, sectionW, sectionH); }
+
 private:
     std::string texturePath;
     GLuint textureID = 0;
     int tex_width, tex_height;
+
+    int sectionX = 0, sectionY = 0, sectionW = 0, sectionH = 0;
+
+    float u1 = 0.0f, v1 = 0.0f, u2 = 1.0f, v2 = 1.0f;
 };
 
 #endif // !__SPRITE2D_H__

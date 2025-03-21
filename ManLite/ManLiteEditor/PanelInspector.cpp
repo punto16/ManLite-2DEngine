@@ -302,9 +302,25 @@ void PanelInspector::SpriteOptions(GameObject& go)
 				sprite->SwapTexture(filePath);
 			}
 		}
-
 		ImGui::Text(sprite->GetTexturePath().c_str());
+		ImGui::Dummy(ImVec2(0, 4));
 
+		vec4 section = sprite->GetTextureSection();
+		int section_x = section.x;
+		int section_y = section.y;
+		int section_w = section.z;
+		int section_h = section.w;
+
+		std::string sprite_section_label = std::string("X Section##" + std::to_string(go.GetID()));
+		ImGui::DragInt(sprite_section_label.c_str(), &section_x, 1.0f);
+		sprite_section_label = std::string("Y Section##" + std::to_string(go.GetID()));
+		ImGui::DragInt(sprite_section_label.c_str(), &section_y, 1.0f);
+		sprite_section_label = std::string("Width Section##" + std::to_string(go.GetID()));
+		ImGui::DragInt(sprite_section_label.c_str(), &section_w, 1.0f);
+		sprite_section_label = std::string("Height Section##" + std::to_string(go.GetID()));
+		ImGui::DragInt(sprite_section_label.c_str(), &section_h, 1.0f);
+		sprite->SetTextureSection(section_x, section_y, section_w, section_h);
+		
 		ImGui::Dummy(ImVec2(0, 4));
 		ImGui::Separator();
 	}
