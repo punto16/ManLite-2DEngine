@@ -275,7 +275,7 @@ void PanelScene::ImGuizmoFunctionality(ImVec2 image_pos, ImVec2 scaled_size)
 					(ImGuizmo::MODE)gizmoMode,
 					matrix,
 					nullptr,
-					snapEnabled ? snapValues : nullptr
+					snapEnabled && op != ImGuizmo::SCALE ? snapValues : nullptr
 				))
 				{
 					mat3f newMat;

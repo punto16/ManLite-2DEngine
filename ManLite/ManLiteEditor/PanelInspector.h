@@ -19,6 +19,9 @@ public:
 	//components inpsector
 	void TransformOptions(GameObject& go);
 	void CameraOptions(GameObject& go);
+	void SpriteOptions(GameObject& go);
+
+	//add components last
 	void AddComponent(GameObject& go);
 
 private:

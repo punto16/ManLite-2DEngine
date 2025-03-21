@@ -41,6 +41,7 @@ bool PanelInspector::Update()
 			GeneralOptions(go);
 			TransformOptions(go);
 			CameraOptions(go);
+			SpriteOptions(go);
 
 			//last
 			AddComponent(go);
@@ -273,6 +274,42 @@ void PanelInspector::CameraOptions(GameObject& go)
 	}
 }
 
+void PanelInspector::SpriteOptions(GameObject& go)
+{
+	uint treeFlags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_DefaultOpen;
+	Sprite2D* sprite = go.GetComponent<Sprite2D>();
+	if (sprite == nullptr) return;
+	std::string spriteLabel = std::string("Sprite2D##" + std::to_string(go.GetID()));
+	if (ImGui::CollapsingHeader(spriteLabel.c_str(), treeFlags))
+	{
+		int w, h;
+		sprite->GetTextureSize(w, h);
+		if (w == 0) w = 1;
+
+		ImGui::Image(sprite->GetTextureID(),
+			ImVec2(100, 100 * h / w),
+			ImVec2(0, 1),
+			ImVec2(1, 0)
+			);
+
+		ImGui::SameLine();
+		spriteLabel = "Change Image##" + spriteLabel;
+		if (ImGui::Button(spriteLabel.c_str()))
+		{
+			std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Open Sprite file (*.png)\0*.png\0")).string();
+			if (!filePath.empty() && filePath.ends_with(".png") && filePath != sprite->GetTexturePath())
+			{
+				sprite->SwapTexture(filePath);
+			}
+		}
+
+		ImGui::Text(sprite->GetTexturePath().c_str());
+
+		ImGui::Dummy(ImVec2(0, 4));
+		ImGui::Separator();
+	}
+}
+
 void PanelInspector::AddComponent(GameObject& go)
 {
 	const ImVec2 button_size_default = ImVec2(150, 0);
@@ -326,8 +363,3 @@ void PanelInspector::AddComponent(GameObject& go)
 		ImGui::End();
 	}
 }
-	//std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Open Font file (*.ttf)\0*.ttf\0")).string();
-	//if (!filePath.empty() && filePath.ends_with(".ttf"))
-	//{
-	//	tempTextUI->SetFont(filePath.c_str());
-	//}

@@ -14,12 +14,20 @@ public:
 
     void Draw() override;
 
+    void SwapTexture(std::string new_path);
+
     GLuint GetTextureID() const { return textureID; }
     const std::string& GetTexturePath() const { return texturePath; }
+    void GetTextureSize(int& tex_width, int& tex_height)
+    {
+        tex_width = this->tex_width;
+        tex_height = this->tex_height;
+    }
 
 private:
     std::string texturePath;
     GLuint textureID = 0;
+    int tex_width, tex_height;
 };
 
 #endif // !__SPRITE2D_H__

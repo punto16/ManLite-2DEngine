@@ -21,7 +21,7 @@ ResourceManagerEM& ResourceManagerEM::GetInstance() {
     return instance;
 }
 
-GLuint ResourceManagerEM::LoadTexture(const std::string& path)
+GLuint ResourceManagerEM::LoadTexture(const std::string& path, int& tex_width, int& tex_height)
 {
     auto it = textures.find(path);
 
@@ -31,9 +31,9 @@ GLuint ResourceManagerEM::LoadTexture(const std::string& path)
         return it->second.id;
     }
 
-    int width, height, channels;
+    int channels;
     stbi_set_flip_vertically_on_load(true);
-    unsigned char* data = stbi_load(path.c_str(), &width, &height, &channels, 0);
+    unsigned char* data = stbi_load(path.c_str(), &tex_width, &tex_height, &channels, 0);
 
     if (!data) {
         LOG(LogType::LOG_ERROR, "Failed to load texture: {}", path);
@@ -45,7 +45,7 @@ GLuint ResourceManagerEM::LoadTexture(const std::string& path)
     glBindTexture(GL_TEXTURE_2D, textureID);
 
     GLenum format = (channels == 4) ? GL_RGBA : GL_RGB;
-    glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+    glTexImage2D(GL_TEXTURE_2D, 0, format, tex_width, tex_height, 0, format, GL_UNSIGNED_BYTE, data);
     glGenerateMipmap(GL_TEXTURE_2D);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
