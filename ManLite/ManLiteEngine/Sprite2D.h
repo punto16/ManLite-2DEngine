@@ -25,7 +25,7 @@ public:
     }
 
     void SetTextureSection(int x, int y, int w, int h);
-    vec4 GetTextureSection() const { return vec4(sectionX, sectionY, sectionW, sectionH); }
+    ML_Rect GetTextureSection() const { return ML_Rect(sectionX, sectionY, sectionW, sectionH); }
 
 private:
     std::string texturePath;

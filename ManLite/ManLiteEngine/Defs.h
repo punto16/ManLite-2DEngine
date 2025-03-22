@@ -99,6 +99,38 @@ using vec4f = glm::vec4;
 using quat = glm::dquat;
 using quatf = glm::quat;
 
+
+// manlite selfdones classes
+class ML_Rect
+{
+public:
+	ML_Rect(int x, int y, int w, int h)
+	{
+		this->x = (float)x;
+		this->y = (float)y;
+		this->w = (float)w;
+		this->h = (float)h;
+	}
+	ML_Rect(float x, float y, float w, float h)
+	{
+		this->x = x;
+		this->y = y;
+		this->w = w;
+		this->h = h;
+	}
+	ML_Rect()
+	{
+		this->x = 0;
+		this->y = 0;
+		this->w = 0;
+		this->h = 0;
+	}
+	~ML_Rect()
+	{}
+
+	float x, y, w, h;
+};
+
 // OTHERS ------------------------------------------------------------------------
 
 #define DEFAULT_CAM_WIDTH 1700

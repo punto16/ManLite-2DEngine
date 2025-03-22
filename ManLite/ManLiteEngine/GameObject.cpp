@@ -6,6 +6,8 @@
 #include "Transform.h"
 #include "Sprite2D.h"
 #include "Camera.h"
+#include "Animator.h"
+
 #include "Log.h"
 
 #include <random>
@@ -175,6 +177,11 @@ void GameObject::CloneComponents(const std::shared_ptr<GameObject>& original)
         case ComponentType::Sprite:
         {
             AddCopiedComponent<Sprite2D>(*dynamic_cast<const Sprite2D*>(item.get()));
+            break;
+        }
+        case ComponentType::Animator:
+        {
+            AddCopiedComponent<Animator>(*dynamic_cast<const Animator*>(item.get()));
             break;
         }
         case ComponentType::Script:

@@ -12,11 +12,12 @@ enum class ComponentType
 	Transform				= 0,
 	Camera					= 1,
 	Sprite					= 2,
-	Script					= 3,
-	Collider2D				= 4,
-	Canvas					= 5,
-	AudioSource				= 6,
-	ParticleSystem			= 7,
+	Animator				= 3,
+	Script					= 4,
+	Collider2D				= 5,
+	Canvas					= 6,
+	AudioSource				= 7,
+	ParticleSystem			= 8,
 
 
 	Unkown
