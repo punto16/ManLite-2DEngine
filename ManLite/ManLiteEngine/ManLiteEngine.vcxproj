@@ -176,7 +176,7 @@ popd
     <ClCompile Include="Log.cpp" />
     <ClCompile Include="mat3f.cpp" />
     <ClCompile Include="RendererEM.cpp" />
-    <ClCompile Include="ResourceManagerEM.cpp" />
+    <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="SceneManagerEM.cpp" />
     <ClCompile Include="Sprite2D.cpp" />
     <ClCompile Include="Transform.cpp" />
@@ -196,7 +196,7 @@ popd
     <ClInclude Include="Log.h" />
     <ClInclude Include="mat3f.h" />
     <ClInclude Include="RendererEM.h" />
-    <ClInclude Include="ResourceManagerEM.h" />
+    <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="SceneManagerEM.h" />
     <ClInclude Include="Sprite2D.h" />
     <ClInclude Include="Transform.h" />

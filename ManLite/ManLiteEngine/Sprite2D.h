@@ -3,7 +3,7 @@
 #pragma once
 
 #include "Component.h"
-#include "ResourceManagerEM.h"
+#include "ResourceManager.h"
 #include "Transform.h"
 
 class Sprite2D : public Component {

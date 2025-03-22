@@ -1,27 +1,14 @@
-#include "ResourceManagerEM.h"
+#include "ResourceManager.h"
 #include "Log.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
-ResourceManagerEM::ResourceManagerEM(EngineCore* parent) : EngineModule(parent)
-{
-}
-
-bool ResourceManagerEM::PostUpdate()
-{
-    bool ret = true;
-
-    CleanUnusedResources();
-
-    return ret;
-}
-
-ResourceManagerEM& ResourceManagerEM::GetInstance() {
-    static ResourceManagerEM instance;
+ResourceManager& ResourceManager::GetInstance() {
+    static ResourceManager instance;
     return instance;
 }
 
-GLuint ResourceManagerEM::LoadTexture(const std::string& path, int& tex_width, int& tex_height)
+GLuint ResourceManager::LoadTexture(const std::string& path, int& tex_width, int& tex_height)
 {
     auto it = textures.find(path);
 
@@ -67,13 +54,13 @@ GLuint ResourceManagerEM::LoadTexture(const std::string& path, int& tex_width, i
     return textureID;
 }
 
-GLuint ResourceManagerEM::GetTexture(const std::string& path) const
+GLuint ResourceManager::GetTexture(const std::string& path) const
 {
     auto it = textures.find(path);
     return (it != textures.end()) ? it->second.id : 0;
 }
 
-void ResourceManagerEM::ReleaseTexture(const std::string& path)
+void ResourceManager::ReleaseTexture(const std::string& path)
 {
     auto it = textures.find(path);
     if (it != textures.end() && --it->second.refCount <= 0) {
@@ -82,7 +69,7 @@ void ResourceManagerEM::ReleaseTexture(const std::string& path)
     }
 }
 
-void ResourceManagerEM::CleanUnusedResources()
+void ResourceManager::CleanUnusedResources()
 {
     for (auto it = textures.begin(); it != textures.end();) {
         if (it->second.refCount <= 0) {

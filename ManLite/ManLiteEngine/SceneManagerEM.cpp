@@ -61,6 +61,8 @@ bool SceneManagerEM::PostUpdate()
 {
 	bool ret = true;
 
+	ResourceManager::GetInstance().CleanUnusedResources();
+
 	return ret;
 }
 

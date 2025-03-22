@@ -31,7 +31,7 @@
     <Filter Include="EngineModules\Window">
       <UniqueIdentifier>{6cbbd406-91d8-4a79-bb1d-2229030b3a81}</UniqueIdentifier>
     </Filter>
-    <Filter Include="EngineModules\ResourceManager">
+    <Filter Include="Utils\ResourceManager">
       <UniqueIdentifier>{c20d70b3-5716-4950-a012-58f5e64acb3e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -72,8 +72,8 @@
     <ClCompile Include="mat3f.cpp">
       <Filter>Utils</Filter>
     </ClCompile>
-    <ClCompile Include="ResourceManagerEM.cpp">
-      <Filter>EngineModules\ResourceManager</Filter>
+    <ClCompile Include="ResourceManager.cpp">
+      <Filter>Utils\ResourceManager</Filter>
     </ClCompile>
     <ClCompile Include="Sprite2D.cpp">
       <Filter>GameObject\Components</Filter>
@@ -128,8 +128,8 @@
     <ClInclude Include="mat3f.h">
       <Filter>Utils</Filter>
     </ClInclude>
-    <ClInclude Include="ResourceManagerEM.h">
-      <Filter>EngineModules\ResourceManager</Filter>
+    <ClInclude Include="ResourceManager.h">
+      <Filter>Utils\ResourceManager</Filter>
     </ClInclude>
     <ClInclude Include="Sprite2D.h">
       <Filter>GameObject\Components</Filter>

@@ -1,6 +1,6 @@
 #include "Sprite2D.h"
 
-#include "ResourceManagerEM.h"
+#include "ResourceManager.h"
 #include "RendererEM.h"
 #include "EngineCore.h"
 #include "GameObject.h"
@@ -12,7 +12,7 @@ Sprite2D::Sprite2D(std::weak_ptr<GameObject> container_go, const std::string& te
     : Component(container_go, ComponentType::Sprite, name, enable),
     texturePath(texture_path)
 {
-    textureID = ResourceManagerEM::GetInstance().LoadTexture(texturePath, tex_width, tex_height);
+    textureID = ResourceManager::GetInstance().LoadTexture(texturePath, tex_width, tex_height);
     SetTextureSection(0, 0, tex_width, tex_height);
 }
 
@@ -20,7 +20,7 @@ Sprite2D::Sprite2D(const Sprite2D& component_to_copy, std::shared_ptr<GameObject
     : Component(component_to_copy, container_go),
     texturePath(component_to_copy.texturePath)
 {
-    textureID = ResourceManagerEM::GetInstance().LoadTexture(texturePath, tex_width, tex_height);
+    textureID = ResourceManager::GetInstance().LoadTexture(texturePath, tex_width, tex_height);
     this->tex_width = component_to_copy.tex_width;
     this->tex_height = component_to_copy.tex_height;
     SetTextureSection(component_to_copy.sectionX, component_to_copy.sectionY, component_to_copy.sectionW, component_to_copy.sectionH);
@@ -29,7 +29,7 @@ Sprite2D::Sprite2D(const Sprite2D& component_to_copy, std::shared_ptr<GameObject
 Sprite2D::~Sprite2D()
 {
     if (texturePath.empty()) return;
-    ResourceManagerEM::GetInstance().ReleaseTexture(texturePath);
+    ResourceManager::GetInstance().ReleaseTexture(texturePath);
 }
 
 void Sprite2D::Draw()
@@ -47,9 +47,9 @@ void Sprite2D::Draw()
 
 void Sprite2D::SwapTexture(std::string new_path)
 {
-    if (!texturePath.empty()) ResourceManagerEM::GetInstance().ReleaseTexture(texturePath);
+    if (!texturePath.empty()) ResourceManager::GetInstance().ReleaseTexture(texturePath);
     texturePath = new_path;
-    textureID = ResourceManagerEM::GetInstance().LoadTexture(texturePath, tex_width, tex_height);
+    textureID = ResourceManager::GetInstance().LoadTexture(texturePath, tex_width, tex_height);
     SetTextureSection(sectionX, sectionY, sectionW, sectionH);
 }
 

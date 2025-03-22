@@ -14,25 +14,21 @@ struct TextureData {
     int w, h;
 };
 
-class ResourceManagerEM : public EngineModule {
+class ResourceManager {
 public:
-    ResourceManagerEM(EngineCore* parent);
 
-    bool PostUpdate();
-
-
-    static ResourceManagerEM& GetInstance();
+    static ResourceManager& GetInstance();
 
     GLuint LoadTexture(const std::string& path, int& tex_width, int& tex_height);
     GLuint GetTexture(const std::string& path) const;
     void ReleaseTexture(const std::string& path);
 
+    void CleanUnusedResources();
 
 private:
-    ResourceManagerEM() = default;
+    ResourceManager() = default;
     std::unordered_map<std::string, TextureData> textures;
 
-    void CleanUnusedResources();
 };
 
 #endif // !__RESOURCE_MANAGER_EM_H__
