@@ -20,6 +20,7 @@ public:
 	void TransformOptions(GameObject& go);
 	void CameraOptions(GameObject& go);
 	void SpriteOptions(GameObject& go);
+	void AnimatorOptions(GameObject& go);
 
 	//add components last
 	void AddComponent(GameObject& go);

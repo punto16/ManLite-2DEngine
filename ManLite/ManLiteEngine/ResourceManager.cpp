@@ -10,6 +10,7 @@ ResourceManager& ResourceManager::GetInstance() {
 
 GLuint ResourceManager::LoadTexture(const std::string& path, int& tex_width, int& tex_height)
 {
+    if (path == "") return 0;
     auto it = textures.find(path);
 
     if (it != textures.end())
@@ -56,17 +57,53 @@ GLuint ResourceManager::LoadTexture(const std::string& path, int& tex_width, int
 
 GLuint ResourceManager::GetTexture(const std::string& path) const
 {
+    if (path == "") return 0;
     auto it = textures.find(path);
     return (it != textures.end()) ? it->second.id : 0;
 }
 
 void ResourceManager::ReleaseTexture(const std::string& path)
 {
+    if (path == "") return;
     auto it = textures.find(path);
-    if (it != textures.end() && --it->second.refCount <= 0) {
+    if (it != textures.end() && --it->second.refCount <= 0)
+    {
         glDeleteTextures(1, &it->second.id);
         textures.erase(it);
     }
+}
+
+Animation* ResourceManager::LoadAnimation(const std::string& key, const Animation& animation)
+{
+    if (key == "") return nullptr;
+    auto it = animations.find(key);
+    if (it != animations.end()) {
+        it->second.refCount++;
+        return &it->second.animation;
+    }
+
+    AnimationData newData;
+    newData.animation = animation;
+    newData.refCount = 1;
+    animations[key] = newData;
+
+    return &animations[key].animation;
+}
+
+Animation* ResourceManager::GetAnimation(const std::string& key)
+{
+    if (key == "") return nullptr;
+    auto it = animations.find(key);
+    return (it != animations.end()) ? &it->second.animation : nullptr;
+}
+
+void ResourceManager::ReleaseAnimation(const std::string& key)
+{
+    if (key == "") return;
+    auto it = animations.find(key);
+    if (it != animations.end())
+        if (--it->second.refCount <= 0)
+            animations.erase(it);
 }
 
 void ResourceManager::CleanUnusedResources()
@@ -75,6 +112,15 @@ void ResourceManager::CleanUnusedResources()
         if (it->second.refCount <= 0) {
             glDeleteTextures(1, &it->second.id);
             it = textures.erase(it);
+        }
+        else {
+            ++it;
+        }
+    }
+    
+    for (auto it = animations.begin(); it != animations.end();) {
+        if (it->second.refCount <= 0) {
+            it = animations.erase(it);
         }
         else {
             ++it;

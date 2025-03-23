@@ -50,7 +50,7 @@ void Sprite2D::SwapTexture(std::string new_path)
     if (!texturePath.empty()) ResourceManager::GetInstance().ReleaseTexture(texturePath);
     texturePath = new_path;
     textureID = ResourceManager::GetInstance().LoadTexture(texturePath, tex_width, tex_height);
-    SetTextureSection(sectionX, sectionY, sectionW, sectionH);
+    SetTextureSection(0, 0, tex_width, tex_height);
 }
 
 void Sprite2D::SetTextureSection(int x, int y, int w, int h) {

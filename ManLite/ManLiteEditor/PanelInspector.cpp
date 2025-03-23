@@ -9,6 +9,7 @@
 #include "Transform.h"
 #include "Camera.h"
 #include "Sprite2D.h"
+#include "Animator.h"
 
 #include "FileDialog.h"
 
@@ -42,6 +43,7 @@ bool PanelInspector::Update()
 			TransformOptions(go);
 			CameraOptions(go);
 			SpriteOptions(go);
+			AnimatorOptions(go);
 
 			//last
 			AddComponent(go);
@@ -126,11 +128,6 @@ void PanelInspector::GeneralOptions(GameObject& go)
 	}
 	ImGui::Separator();
 	ImGui::Dummy(ImVec2(0,4));
-	//prefab options
-	//if (go.IsPrefab())
-	//{
-	//	Prefab(go);
-	//}
 }
 
 void PanelInspector::PrefabOptions(GameObject& go)
@@ -305,11 +302,11 @@ void PanelInspector::SpriteOptions(GameObject& go)
 		ImGui::Text(sprite->GetTexturePath().c_str());
 		ImGui::Dummy(ImVec2(0, 4));
 
-		vec4 section = sprite->GetTextureSection();
+		ML_Rect section = sprite->GetTextureSection();
 		int section_x = section.x;
 		int section_y = section.y;
-		int section_w = section.z;
-		int section_h = section.w;
+		int section_w = section.w;
+		int section_h = section.h;
 
 		std::string sprite_section_label = std::string("X Section##" + std::to_string(go.GetID()));
 		ImGui::DragInt(sprite_section_label.c_str(), &section_x, 1.0f);
@@ -321,6 +318,40 @@ void PanelInspector::SpriteOptions(GameObject& go)
 		ImGui::DragInt(sprite_section_label.c_str(), &section_h, 1.0f);
 		sprite->SetTextureSection(section_x, section_y, section_w, section_h);
 		
+		ImGui::Dummy(ImVec2(0, 4));
+		ImGui::Separator();
+	}
+}
+
+void PanelInspector::AnimatorOptions(GameObject& go)
+{
+	uint treeFlags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_DefaultOpen;
+	Animator* animator = go.GetComponent<Animator>();
+	if (animator == nullptr) return;
+	std::string animatorLabel = std::string("Animator##" + std::to_string(go.GetID()));
+	if (ImGui::CollapsingHeader(animatorLabel.c_str(), treeFlags))
+	{
+		
+		//add animation
+		const ImVec2 button_size_default = ImVec2(150, 0);
+		ImGui::Dummy(ImVec2(0, 10));
+		ImGui::Dummy(ImVec2((ImGui::GetWindowWidth() - button_size_default.x - 30) * 0.5, 0));
+		ImGui::SameLine();
+	
+		std::string add_animation_label = "Add Animation##" + std::to_string(go.GetID());
+	
+		if (ImGui::Button(add_animation_label.c_str(), button_size_default))
+		{
+			std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Open Animation file (*.animation)\0*.animation\0")).string();
+			if (!filePath.empty() && filePath.ends_with(".animation"))
+			{
+				Animation* a = new Animation;
+				//implement load json animation
+				animator->AddAnimation(filePath, *a);
+			}
+		}
+
+
 		ImGui::Dummy(ImVec2(0, 4));
 		ImGui::Separator();
 	}
@@ -367,6 +398,19 @@ void PanelInspector::AddComponent(GameObject& go)
 			if (!filePath.empty() && filePath.ends_with(".png"))
 			{
 				go.AddComponent<Sprite2D>(filePath);
+			}
+			show_component_window = false;
+		}
+
+		if (ImGui::Selectable("Animation"))
+		{
+			if (go.GetComponent<Sprite2D>())
+			{
+				go.AddComponent<Animator>();
+			}
+			else
+			{
+				LOG(LogType::LOG_WARNING, "Can NOT add Animator Component if GameObject does NOT have Sprite2D Component");
 			}
 			show_component_window = false;
 		}

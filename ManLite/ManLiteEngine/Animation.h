@@ -11,10 +11,10 @@ public:
     ML_Rect frames[MAX_FRAMES];
     bool loop = true;
     bool pingpong = false;
+    int totalFrames = 0;
 
 private:
     float currentFrame = 0.0f;
-    int totalFrames = 0;
     int pingpongDirection = 1;
 
 public:

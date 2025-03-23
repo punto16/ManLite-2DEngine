@@ -18,25 +18,17 @@ public:
 
     bool Update(float deltaTime) override;
 
-    void AddAnimation(const std::string& name, const Animation& animation) {
-        animations[name] = animation;
-    }
+    void AddAnimation(const std::string& name, const Animation& animation);
 
-    void Play(const std::string& name) {
-        auto it = animations.find(name);
-        if (it != animations.end()) {
-            currentAnimation = &it->second;
-            currentAnimation->Reset();
-        }
-    }
+    void Play(const std::string& name);
 
     bool IsPlaying(const std::string& name) const {
-        return currentAnimation == &animations.at(name);
+        return currentAnimation == animations.at(name);
     }
 
 private:
     Sprite2D* sprite = nullptr;
-    std::unordered_map<std::string, Animation> animations;
+    std::unordered_map<std::string, Animation*> animations;
     Animation* currentAnimation = nullptr;
 };
 #endif // !__ANIMATOR_H__
