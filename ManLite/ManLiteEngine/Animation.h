@@ -52,6 +52,40 @@ public:
         }
     }
 
+    //serialization
+    json Save() const {
+        json animationJSON;
+        animationJSON["speed"] = speed;
+        animationJSON["loop"] = loop;
+        animationJSON["pingpong"] = pingpong;
+        animationJSON["totalFrames"] = totalFrames;
+
+        for (int i = 0; i < totalFrames; ++i) {
+            animationJSON["frames"][i]["x"] = frames[i].x;
+            animationJSON["frames"][i]["y"] = frames[i].y;
+            animationJSON["frames"][i]["w"] = frames[i].w;
+            animationJSON["frames"][i]["h"] = frames[i].h;
+        }
+
+        return animationJSON;
+    }
+
+    void Load(const json& animationJSON) {
+        speed = animationJSON["speed"];
+        loop = animationJSON["loop"];
+        pingpong = animationJSON["pingpong"];
+        totalFrames = animationJSON["totalFrames"];
+
+        for (int i = 0; i < totalFrames; ++i) {
+            frames[i].x = animationJSON["frames"][i]["x"];
+            frames[i].y = animationJSON["frames"][i]["y"];
+            frames[i].w = animationJSON["frames"][i]["w"];
+            frames[i].h = animationJSON["frames"][i]["h"];
+        }
+    }
+
+
+    //getters // setters
     ML_Rect GetCurrentFrame() const {
         int frameIndex = static_cast<int>(currentFrame);
 

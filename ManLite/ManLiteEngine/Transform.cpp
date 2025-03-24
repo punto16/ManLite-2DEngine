@@ -1,6 +1,8 @@
 #include "Transform.h"
 #include "GameObject.h"
 #include "mat3f.h"
+#include "Defs.h"
+
 #include <cmath>
 
 Transform::Transform(std::weak_ptr<GameObject> container_go, std::string name, bool enable) :
@@ -26,6 +28,40 @@ Transform::~Transform()
 bool Transform::Update(float dt)
 {
     return true;
+}
+
+json Transform::SaveComponent()
+{
+    json componentJSON;
+    //component generic
+    componentJSON["ContainerGOID"] = this->container_go.lock()->GetID();
+    componentJSON["ComponentID"] = component_id;
+    componentJSON["ComponentName"] = name;
+    componentJSON["ComponentType"] = (int)type;
+    componentJSON["Enabled"] = enabled;
+
+    //component spcecific
+    componentJSON["Position"] = { position.x, position.y };
+    componentJSON["Rotation"] = angle_rotation;
+    componentJSON["Scale"] = { scale.x, scale.y };
+    componentJSON["LockAspect"] = lock_aspect_ratio;
+    componentJSON["AspectRatio"] = aspect_ratio;
+
+    return componentJSON;
+}
+
+void Transform::LoadComponent(const json& componentJSON)
+{
+    if (componentJSON.contains("ComponentID")) component_id = componentJSON["ComponentID"];
+    if (componentJSON.contains("ComponentName")) name = componentJSON["ComponentName"];
+    if (componentJSON.contains("ComponentType")) type = (ComponentType)componentJSON["ComponentType"];
+    if (componentJSON.contains("Enabled")) enabled = componentJSON["Enabled"];
+
+    if (componentJSON.contains("Position")) position = vec2f(componentJSON["Position"][0], componentJSON["Position"][1]);
+    if (componentJSON.contains("Rotation")) angle_rotation = componentJSON["Rotation"];
+    if (componentJSON.contains("Scale")) scale = vec2f(componentJSON["Scale"][0], componentJSON["Scale"][1]);
+    if (componentJSON.contains("LockAspect")) lock_aspect_ratio = componentJSON["LockAspect"];
+    if (componentJSON.contains("AspectRatio")) aspect_ratio = componentJSON["AspectRatio"];
 }
 
 void Transform::SetAngle(float angle)

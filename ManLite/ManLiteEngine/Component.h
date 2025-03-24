@@ -6,6 +6,7 @@
 #include <memory>
 
 class GameObject;
+class json;
 
 enum class ComponentType
 {
@@ -49,6 +50,10 @@ public:
 		default:							return "Unknown"; break;
 		}
 	}
+
+	//serialization
+	virtual json SaveComponent() = 0;
+	virtual void LoadComponent(const json& componentJSON) = 0;
 
 	//getters // setters
 	std::shared_ptr<GameObject> GetContainerGO() const { return container_go.lock(); }

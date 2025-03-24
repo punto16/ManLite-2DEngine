@@ -21,6 +21,11 @@ public:
 
     bool Update(float dt) override;
 
+    //serialization
+    json SaveComponent() override;
+    void LoadComponent(const json& componentJSON) override;
+
+    //getters // setters
     vec2f GetPosition() const { return position; }
     void SetPosition(vec2f pos) { position = pos; }
     float GetAngle() const { return angle_rotation; }

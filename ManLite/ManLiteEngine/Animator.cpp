@@ -48,6 +48,58 @@ void Animator::Play(const std::string& name)
     if (anim)
     {
         currentAnimation = anim;
+        currentAnimationName = name;
         currentAnimation->Reset();
+    }
+}
+
+json Animator::SaveComponent()
+{
+    json componentJSON;
+    //component generic
+    componentJSON["ContainerGOID"] = this->container_go.lock()->GetID();
+    componentJSON["ComponentID"] = component_id;
+    componentJSON["ComponentName"] = name;
+    componentJSON["ComponentType"] = (int)type;
+    componentJSON["Enabled"] = enabled;
+
+    //component spcecific
+    json animationsJSON;
+    for (auto& pair : animations) {
+        json animJSON;
+        animJSON["name"] = pair.first;
+        animJSON["data"] = pair.second->Save();
+
+        animationsJSON.push_back(animJSON);
+    }
+    componentJSON["CustomAnimations"] = animationsJSON;
+
+    if (currentAnimation) componentJSON["CurrentAnimation"] = currentAnimationName;
+
+    return componentJSON;
+}
+
+void Animator::LoadComponent(const json& componentJSON)
+{
+    if (componentJSON.contains("ComponentID")) component_id = componentJSON["ComponentID"];
+    if (componentJSON.contains("ComponentName")) name = componentJSON["ComponentName"];
+    if (componentJSON.contains("ComponentType")) type = (ComponentType)componentJSON["ComponentType"];
+    if (componentJSON.contains("Enabled")) enabled = componentJSON["Enabled"];
+    
+    if (componentJSON.contains("CustomAnimations")) {
+        for (auto& animJSON : componentJSON["CustomAnimations"]) {
+            std::string animName = animJSON["name"];
+    
+            Animation newAnim;
+            newAnim.Load(animJSON["data"]);
+    
+            AddAnimation(animName, newAnim);
+        }
+    }
+    
+    if (componentJSON.contains("CurrentAnimation"))
+    {
+        std::string currentAnimName = componentJSON["CurrentAnimation"];
+        Play(currentAnimName);
     }
 }

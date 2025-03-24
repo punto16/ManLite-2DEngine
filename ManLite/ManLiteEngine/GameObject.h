@@ -9,6 +9,7 @@
 #include <vector>
 #include <string>
 
+class json;
 class Layer;
 
 class GameObject : public std::enable_shared_from_this<GameObject>
@@ -137,6 +138,10 @@ public:
 		if (it != components_gameobject.end())
 			components_gameobject.erase(it);
 	}
+
+	//serialization
+	json SaveGameObject();
+	void LoadGameObject(const json& goJSON);
 
 	//getters // setters
 	std::string GetName() const { return this->gameobject_name; }

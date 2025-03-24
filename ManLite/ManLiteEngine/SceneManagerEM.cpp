@@ -5,7 +5,12 @@
 #include "Sprite2D.h"
 
 #include "Defs.h"
+#include "Log.h"
 #include "algorithm"
+#include "filesystem"
+#include "fstream"
+
+namespace fs = std::filesystem;
 
 //SCENE MANAGER
 SceneManagerEM::SceneManagerEM(EngineCore* parent) : EngineModule(parent)
@@ -73,6 +78,98 @@ bool SceneManagerEM::CleanUp()
 	if (!current_scene->CleanUp()) return false;
 
 	return ret;
+}
+
+void SceneManagerEM::SaveScene(std::string directory, std::string scene_name)
+{
+	std::string file_name_ext = scene_name + "mlscene";
+	fs::path file_name = fs::path(directory) / file_name_ext;
+	fs::path folder_name = fs::path(directory);
+	fs::create_directories(folder_name);
+
+	json sceneJSON;
+
+	sceneJSON["scene_name"] = current_scene->GetSceneName();
+	sceneJSON["scene_path"] = file_name;
+
+	json game_objectsJSON;
+	for (const auto& go : current_scene->GetSceneRoot().GetChildren())
+	{
+		game_objectsJSON.push_back(go->SaveGameObject());
+	}
+	sceneJSON["game_objects"] = game_objectsJSON;
+
+	json layersJSON;
+	for (const auto& layer : current_scene->GetSceneLayers())
+	{
+		layersJSON.push_back(layer->SaveLayer());
+	}
+	sceneJSON["layers"] = layersJSON;
+
+	std::ofstream(file_name) << sceneJSON.dump(2);
+
+	LOG(LogType::LOG_OK, "Succesfully Saved Scene at %s", file_name.c_str());
+}
+
+void SceneManagerEM::LoadSceneFromJson(const std::string& file_name)
+{
+	if (!fs::exists(file_name))
+	{
+		LOG(LogType::LOG_ERROR, "Scene file does not exist: %s", file_name.c_str());
+		return;
+	}
+
+	std::ifstream file(file_name);
+	if (!file.is_open())
+	{
+		LOG(LogType::LOG_ERROR, "Failed Opening file: %s", file_name.c_str());
+		return;
+	}
+
+	json sceneJSON;
+	try
+	{
+		file >> sceneJSON;
+	}
+	catch (const json::parse_error& e)
+	{
+		LOG(LogType::LOG_ERROR, "Failed to parse scene JSON: %s", e.what());
+		return;
+	}
+	file.close();
+
+	if (sceneJSON.contains("scene_name"))
+	{
+		current_scene->SetSceneName(sceneJSON["scene_name"]);
+		current_scene->GetSceneRoot().SetName(sceneJSON["scene_name"]);
+	}
+
+	current_scene->GetSceneRoot().GetChildren().clear();
+
+	if (sceneJSON.contains("game_objects"))
+	{
+		const json& gameObjectsJSON = sceneJSON["game_objects"];
+
+		for (const auto& gameObjectJSON : gameObjectsJSON)
+		{
+			std::shared_ptr<GameObject> go = current_scene->CreateEmptyGO(current_scene->GetSceneRoot());
+			go->LoadGameObject(gameObjectJSON);
+		}
+	}
+	current_scene->GetSceneLayers().clear();
+
+	if (sceneJSON.contains("layers"))
+	{
+		const json& layersJSON = sceneJSON["layers"];
+
+		for (const auto& layerJSON : layersJSON)
+		{
+			std::shared_ptr<Layer> layer = current_scene->CreateEmptyLayer();
+			layer->LoadLayer(layerJSON);
+		}
+	}
+
+	LOG(LogType::LOG_OK, "Succesfully Loaded Scene %s", file_name.c_str());
 }
 
 //SCENE

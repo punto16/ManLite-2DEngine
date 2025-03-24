@@ -31,6 +31,34 @@ Camera::~Camera()
     engine->scene_manager_em->GetCurrentScene().SetCamerasInSceneAmount(engine->scene_manager_em->GetCurrentScene().GetCamerasInSceneAmount() - 1);
 }
 
+json Camera::SaveComponent()
+{
+    json componentJSON;
+    //component generic
+    componentJSON["ContainerGOID"] = this->container_go.lock()->GetID();
+    componentJSON["ComponentID"] = component_id;
+    componentJSON["ComponentName"] = name;
+    componentJSON["ComponentType"] = (int)type;
+    componentJSON["Enabled"] = enabled;
+
+    //component spcecific
+    componentJSON["ViewportSize"] = { viewport_width, viewport_height };
+    componentJSON["CameraZoom"] = zoom;
+
+    return componentJSON;
+}
+
+void Camera::LoadComponent(const json& componentJSON)
+{
+    if (componentJSON.contains("ComponentID")) component_id = componentJSON["ComponentID"];
+    if (componentJSON.contains("ComponentName")) name = componentJSON["ComponentName"];
+    if (componentJSON.contains("ComponentType")) type = (ComponentType)componentJSON["ComponentType"];
+    if (componentJSON.contains("Enabled")) enabled = componentJSON["Enabled"];
+
+    if (componentJSON.contains("ViewportSize")) SetViewportSize(componentJSON["ViewportSize"][0], componentJSON["ViewportSize"][1]);
+    if (componentJSON.contains("CameraZoom")) SetZoom(componentJSON["CameraZoom"]);
+}
+
 void Camera::SetViewportSize(int width, int height)
 {
     viewport_width = width;

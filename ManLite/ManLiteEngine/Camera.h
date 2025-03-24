@@ -13,6 +13,11 @@ public:
     Camera(const Camera& component_to_copy, std::shared_ptr<GameObject> container_go);
     ~Camera();
 
+    //serialization
+    json SaveComponent() override;
+    void LoadComponent(const json& componentJSON) override;
+
+    //getters // setters
     void SetViewportSize(int width, int height);
     void GetViewportSize(int &width, int &height);
     void SetZoom(float zoom);

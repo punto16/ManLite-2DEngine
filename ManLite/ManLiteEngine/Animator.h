@@ -26,9 +26,14 @@ public:
         return currentAnimation == animations.at(name);
     }
 
+    //serialization
+    json SaveComponent() override;
+    void LoadComponent(const json& componentJSON) override;
+
 private:
     Sprite2D* sprite = nullptr;
     std::unordered_map<std::string, Animation*> animations;
     Animation* currentAnimation = nullptr;
+    std::string currentAnimationName;
 };
 #endif // !__ANIMATOR_H__

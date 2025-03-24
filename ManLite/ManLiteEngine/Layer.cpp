@@ -1,6 +1,7 @@
 #include "Layer.h"
 
 #include "GameObject.h"
+#include "Defs.h"
 #include "algorithm"
 
 Layer::Layer(uint32_t layer_id, std::string layer_name, bool visible) :
@@ -74,4 +75,26 @@ bool Layer::HasChild(uint32_t id) const
 		[id](const std::shared_ptr<GameObject>& c) {
 			return c->GetID() == id;
 		});
+}
+
+json Layer::SaveLayer()
+{
+	json layerJSON;
+
+	layerJSON["layer_id"] = layer_id;
+	layerJSON["layer_name"] = layer_name;
+	layerJSON["visible"] = visible;
+
+	int i = 0;
+	for (const auto& child : children_gameobject)
+	{
+		layerJSON["Layer_children_go_id"][i] = child->GetID();
+		i++;
+	}
+
+	return layerJSON;
+}
+
+void Layer::LoadLayer(const json& layerJSON)
+{
 }

@@ -9,6 +9,7 @@
 #include "Animator.h"
 
 #include "Log.h"
+#include "Defs.h"
 
 #include <random>
 #include <ctime>
@@ -61,10 +62,10 @@ bool GameObject::Update(double dt)
     bool ret = true;
     
     //update components
-    for (const auto& item : components_gameobject) item->Update(dt);
+    for (const auto& item : components_gameobject) if (item->IsEnabled()) item->Update(dt);
 
     //then, update children game objects
-    for (const auto& item : children_gameobject) item->Update(dt);
+    for (const auto& item : children_gameobject) if (item->IsEnabled()) item->Update(dt);
 
     return ret;
 }
@@ -72,7 +73,7 @@ bool GameObject::Update(double dt)
 void GameObject::Draw()
 {
     //draw components
-    for (const auto& item : components_gameobject) item->Draw();
+    for (const auto& item : components_gameobject) if (item->IsEnabled()) item->Draw();
 
     //layer system!! do not iterate children.draw()
 }
@@ -311,4 +312,123 @@ std::string GameObject::GenerateUniqueName(const std::string& baseName, const Ga
     }
 
     return newName;
+}
+
+json GameObject::SaveGameObject()
+{
+    json goJSON;
+
+    if (this->parent_gameobject.lock())
+    {
+        goJSON["ParentID"] = this->parent_gameobject.lock()->GetID();
+    }
+    if (this->parent_layer.lock())
+    {
+        goJSON["ParentLayerID"] = this->parent_layer.lock()->GetLayerID();
+    }
+
+    goJSON["ID"] = this->gameobject_id;
+    goJSON["Name"] = this->gameobject_name;
+    goJSON["Tag"] = this->gameobject_tag;
+    goJSON["Enabled"] = this->enabled;
+    goJSON["Visible"] = this->visible;
+
+    if (!this->components_gameobject.empty())
+    {
+        json componentsJSON;
+        for (const auto& component : this->components_gameobject)
+        {
+            componentsJSON.push_back(component->SaveComponent());
+        }
+        goJSON["Components"] = componentsJSON;
+    }
+
+    if (!this->children_gameobject.empty())
+    {
+        json childrenJSON;
+        for (const auto& child : this->children_gameobject)
+        {
+            childrenJSON.push_back(child->SaveGameObject());
+        }
+        goJSON["GameObjects"] = childrenJSON;
+    }
+    
+    return goJSON;
+}
+
+void GameObject::LoadGameObject(const json& goJSON)
+{
+    if (goJSON.contains("ID")) this->gameobject_id = goJSON["ID"];
+    if (goJSON.contains("Name")) this->gameobject_name = goJSON["Name"];
+    if (goJSON.contains("Tag")) this->gameobject_tag = goJSON["Tag"];
+    if (goJSON.contains("Enabled")) this->enabled = goJSON["Enabled"];
+    if (goJSON.contains("Visible")) this->visible = goJSON["Visible"];
+
+    //components
+    if (goJSON.contains("Components"))
+    {
+        const json& componentsJSON = goJSON["Components"];
+
+        for (const auto& componentJSON : componentsJSON)
+        {
+            if (!componentJSON.contains("ComponentType")) break;
+            if (componentJSON["ComponentType"] == (int)ComponentType::Transform)
+            {
+                this->AddComponent<Transform>();
+                this->GetComponent<Transform>()->LoadComponent(componentJSON);
+            }
+            else if (componentJSON["ComponentType"] == (int)ComponentType::Camera)
+            {
+                this->AddComponent<Camera>();
+                this->GetComponent<Camera>()->LoadComponent(componentJSON);
+            }
+            else if (componentJSON["ComponentType"] == (int)ComponentType::Sprite)
+            {
+                this->AddComponent<Sprite2D>();
+                this->GetComponent<Sprite2D>()->LoadComponent(componentJSON);
+            }
+            else if (componentJSON["ComponentType"] == (int)ComponentType::Animator)
+            {
+                this->AddComponent<Animator>();
+                this->GetComponent<Animator>()->LoadComponent(componentJSON);
+            }
+            else if (componentJSON["ComponentType"] == (int)ComponentType::Script)
+            {
+                //this->AddComponent<Script>(componentJSON["ScriptName"]);
+                //this->GetComponent<Script>()->LoadComponent(componentJSON);
+            }
+            else if (componentJSON["ComponentType"] == (int)ComponentType::Collider2D)
+            {
+                //this->AddComponent<Collider2D>();
+                //this->GetComponent<Collider2D>()->LoadComponent(componentJSON);
+            }
+            else if (componentJSON["ComponentType"] == (int)ComponentType::Canvas)
+            {
+                //this->AddComponent<Canvas>();
+                //this->GetComponent<Canvas>()->LoadComponent(componentJSON);
+            }
+            else if (componentJSON["ComponentType"] == (int)ComponentType::AudioSource)
+            {
+                //this->AddComponent<AudioSource>();
+                //this->GetComponent<AudioSource>()->LoadComponent(componentJSON);
+            }
+            else if (componentJSON["ComponentType"] == (int)ComponentType::ParticleSystem)
+            {
+                //this->AddComponent<ParticleSystem>();
+                //this->GetComponent<ParticleSystem>()->LoadComponent(componentJSON);
+            }
+        }
+    }
+
+    //children
+    if (goJSON.contains("GameObjects"))
+    {
+        const json& childrenJSON = goJSON["GameObjects"];
+        for (const auto& childJSON : childrenJSON)
+        {
+            std::shared_ptr<GameObject> child_go = std::make_shared<GameObject>(shared_from_this(), "EmptyGameObject", true);
+            child_go->GetParentGO().lock()->AddChild(child_go);
+            child_go->LoadGameObject(childJSON);
+        }
+    }
 }

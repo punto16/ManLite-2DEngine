@@ -16,6 +16,11 @@ public:
 
     void SwapTexture(std::string new_path);
 
+    //serialization
+    json SaveComponent() override;
+    void LoadComponent(const json& componentJSON) override;
+
+    //getters // setters
     GLuint GetTextureID() const { return textureID; }
     const std::string& GetTexturePath() const { return texturePath; }
     void GetTextureSize(int& tex_width, int& tex_height)

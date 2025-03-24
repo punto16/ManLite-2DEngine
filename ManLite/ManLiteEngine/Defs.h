@@ -5,6 +5,7 @@
 #include <glm/glm.hpp>
 #include <stdio.h>
 #include <memory>
+#include "nlohmann/json.hpp"
 
 //  NULL just in case ----------------------
 
@@ -99,6 +100,7 @@ using vec4f = glm::vec4;
 using quat = glm::dquat;
 using quatf = glm::quat;
 
+using json = nlohmann::json;
 
 // manlite selfdones classes
 class ML_Rect

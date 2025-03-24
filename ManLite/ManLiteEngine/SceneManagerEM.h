@@ -120,6 +120,11 @@ public:
 
 	bool CleanUp();
 
+	//scene serialization
+	void SaveScene(std::string directory, std::string scene_name);
+	void LoadSceneFromJson(const std::string& file_name);
+
+	//getters // setters
 	Scene& GetCurrentScene() const { return *current_scene; }
 
 private:
