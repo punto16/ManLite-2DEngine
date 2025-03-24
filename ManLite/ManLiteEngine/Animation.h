@@ -1,6 +1,9 @@
 // Animation.h
 #pragma once
 #include "Defs.h"
+#include "filesystem"
+#include "fstream"
+#include "nlohmann/json.hpp"
 
 #define MAX_FRAMES 32
 
@@ -53,8 +56,8 @@ public:
     }
 
     //serialization
-    json Save() const {
-        json animationJSON;
+    nlohmann::json Save() const {
+        nlohmann::json animationJSON;
         animationJSON["speed"] = speed;
         animationJSON["loop"] = loop;
         animationJSON["pingpong"] = pingpong;
@@ -69,8 +72,7 @@ public:
 
         return animationJSON;
     }
-
-    void Load(const json& animationJSON) {
+    void Load(const nlohmann::json& animationJSON) {
         speed = animationJSON["speed"];
         loop = animationJSON["loop"];
         pingpong = animationJSON["pingpong"];
@@ -84,10 +86,33 @@ public:
         }
     }
 
+    bool SaveToFile(const std::string& path) const {
+        std::ofstream file(path);
+        if (!file.is_open()) return false;
+        file << Save().dump(2);
+        return true;
+    }
+    bool LoadFromFile(const std::string& path) {
+        std::ifstream file(path);
+        if (!file.is_open()) return false;
+
+        nlohmann::json animationJSON;
+        try {
+            file >> animationJSON;
+        }
+        catch (const nlohmann::json::parse_error& e) {
+            return false;
+        }
+
+        Load(animationJSON);
+        return true;
+    }
+
 
     //getters // setters
     ML_Rect GetCurrentFrame() const {
         int frameIndex = static_cast<int>(currentFrame);
+        if (frameIndex < 0 || frameIndex > MAX_FRAMES) return ML_Rect(0, 0, 0, 0);
 
         if (pingpong && pingpongDirection == -1) {
             frameIndex = totalFrames - frameIndex - 1;

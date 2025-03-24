@@ -8,8 +8,8 @@
 #include <memory>
 #include <vector>
 #include <string>
+#include "nlohmann/json.hpp"
 
-class json;
 class Layer;
 
 class GameObject : public std::enable_shared_from_this<GameObject>
@@ -140,8 +140,8 @@ public:
 	}
 
 	//serialization
-	json SaveGameObject();
-	void LoadGameObject(const json& goJSON);
+	nlohmann::json SaveGameObject();
+	void LoadGameObject(const nlohmann::json& goJSON);
 
 	//getters // setters
 	std::string GetName() const { return this->gameobject_name; }

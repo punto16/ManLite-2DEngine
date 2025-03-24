@@ -32,7 +32,7 @@ public:
     void ReleaseTexture(const std::string& path);
 
     //animations
-    Animation* LoadAnimation(const std::string& key, const Animation& animation);
+    Animation* LoadAnimation(const std::string& path);
     Animation* GetAnimation(const std::string& key);
     void ReleaseAnimation(const std::string& key);
 

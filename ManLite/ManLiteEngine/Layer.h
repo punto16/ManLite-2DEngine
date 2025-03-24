@@ -5,6 +5,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include "nlohmann/json.hpp"
 
 class GameObject;
 class json;
@@ -25,8 +26,8 @@ public:
 	bool HasChild(uint32_t id) const;
 
 	//serialization
-	json SaveLayer();
-	void LoadLayer(const json& layerJSON);
+	nlohmann::json SaveLayer();
+	void LoadLayer(const nlohmann::json& layerJSON);
 
 	//getters // setters
 	int GetGameObjectIndex(const std::shared_ptr<GameObject>& go) const {

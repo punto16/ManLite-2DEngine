@@ -4,9 +4,10 @@
 
 #include <string>
 #include <memory>
+#include "nlohmann/json.hpp"
 
 class GameObject;
-class json;
+//class json;
 
 enum class ComponentType
 {
@@ -52,8 +53,8 @@ public:
 	}
 
 	//serialization
-	virtual json SaveComponent() = 0;
-	virtual void LoadComponent(const json& componentJSON) = 0;
+	virtual nlohmann::json SaveComponent() = 0;
+	virtual void LoadComponent(const nlohmann::json& componentJSON) = 0;
 
 	//getters // setters
 	std::shared_ptr<GameObject> GetContainerGO() const { return container_go.lock(); }

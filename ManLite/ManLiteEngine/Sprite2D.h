@@ -5,6 +5,7 @@
 #include "Component.h"
 #include "ResourceManager.h"
 #include "Transform.h"
+#include "memory"
 
 class Sprite2D : public Component {
 public:
@@ -17,8 +18,8 @@ public:
     void SwapTexture(std::string new_path);
 
     //serialization
-    json SaveComponent() override;
-    void LoadComponent(const json& componentJSON) override;
+    nlohmann::json SaveComponent() override;
+    void LoadComponent(const nlohmann::json& componentJSON) override;
 
     //getters // setters
     GLuint GetTextureID() const { return textureID; }

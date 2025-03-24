@@ -6,6 +6,7 @@
 #include "FileDialog.h"
 #include "ResourceManager.h"
 #include "Sprite2D.h"
+#include "Animation.h"
 
 #if defined(_MSC_VER) && !defined(__clang__)
 #pragma warning(disable : 4996)
@@ -53,8 +54,7 @@ void PanelAnimation::DrawTopBarControls()
 		if (!filePath.empty() && filePath.ends_with(".animation"))
 		{
 			if (animation != nullptr) ResourceManager::GetInstance().ReleaseAnimation(animation_path);
-			//pseudocode here
-			// animation = animator::load(loadjson.load(filepath));
+			animation = ResourceManager::GetInstance().LoadAnimation(filePath);
 			animation_path = filePath;
 		}
 	}
@@ -63,9 +63,13 @@ void PanelAnimation::DrawTopBarControls()
 	if (ImGui::Button("Save Animation File", button_size_default))
 	{
 		std::string filePath = std::filesystem::relative(FileDialog::SaveFile("Save Animation file (*.animation)\0*.animation\0")).string();
-		if (!filePath.empty() && filePath.ends_with(".animation"))
+		if (!filePath.empty())
 		{
-			LOG(LogType::LOG_OK, "Animation file saved to: %s", filePath.c_str());
+			if (this->animation->SaveToFile(filePath.ends_with(".animation") ? filePath : filePath + ".animation"))
+				LOG(LogType::LOG_OK, "Animation file saved to: %s", (filePath.ends_with(".animation") ? filePath : filePath + ".animation").c_str());
+			else
+				LOG(LogType::LOG_ERROR, "ERROR on Animation file save to: %s", (filePath.ends_with(".animation") ? filePath : filePath + ".animation").c_str());
+
 		}
 	}
 
@@ -131,6 +135,16 @@ void PanelAnimation::DrawAnimatorControls()
 	ImGuiTreeNodeFlags treeFlags = ImGuiTreeNodeFlags_Leaf;
 	if (ImGui::Begin("Animator Panel##Panel", &animator_panel))
 	{
+		std::string speed_animation_label = std::string("Animation Speed##Animation_Config");
+		ImGui::SetNextItemWidth(ImGui::CalcItemWidth() * 0.8);
+		ImGui::DragFloat(speed_animation_label.c_str(), &animation->speed, 0.05f, 0.0f, 100.0f);
+		speed_animation_label = std::string("Animation Loop##Animation_Config");
+		ImGui::Checkbox(speed_animation_label.c_str(), &animation->loop);
+		speed_animation_label = std::string("Animation PingPong##Animation_Config");
+		ImGui::Checkbox(speed_animation_label.c_str(), &animation->pingpong);
+
+		ImGui::Separator();
+
 		for (size_t i = 0; i < animation->totalFrames; i++)
 		{
 			if (i == selected_frame) treeFlags |= ImGuiTreeNodeFlags_Selected;
@@ -138,7 +152,7 @@ void PanelAnimation::DrawAnimatorControls()
 			std::string frame_label = "Frame_" + std::to_string(i);
 			if (ImGui::CollapsingHeader(frame_label.c_str(), treeFlags))
 			{
-				//context aka right click
+				//context (aka right click)
 			}
 			if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
 			{

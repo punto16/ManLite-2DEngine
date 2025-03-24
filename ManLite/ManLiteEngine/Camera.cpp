@@ -31,9 +31,9 @@ Camera::~Camera()
     engine->scene_manager_em->GetCurrentScene().SetCamerasInSceneAmount(engine->scene_manager_em->GetCurrentScene().GetCamerasInSceneAmount() - 1);
 }
 
-json Camera::SaveComponent()
+nlohmann::json Camera::SaveComponent()
 {
-    json componentJSON;
+    nlohmann::json componentJSON;
     //component generic
     componentJSON["ContainerGOID"] = this->container_go.lock()->GetID();
     componentJSON["ComponentID"] = component_id;
@@ -48,7 +48,7 @@ json Camera::SaveComponent()
     return componentJSON;
 }
 
-void Camera::LoadComponent(const json& componentJSON)
+void Camera::LoadComponent(const nlohmann::json& componentJSON)
 {
     if (componentJSON.contains("ComponentID")) component_id = componentJSON["ComponentID"];
     if (componentJSON.contains("ComponentName")) name = componentJSON["ComponentName"];

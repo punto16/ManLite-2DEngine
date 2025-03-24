@@ -8,6 +8,12 @@
 
 class Sprite2D;
 
+struct AnimationRef
+{
+    Animation* animation;
+    std::string filePath;
+};
+
 class Animator : public Component
 {
 public:
@@ -18,21 +24,28 @@ public:
 
     bool Update(float deltaTime) override;
 
-    void AddAnimation(const std::string& name, const Animation& animation);
+    void AddAnimation(const std::string& name, const std::string& filePath);
+    bool HasAnimation(const std::string& name);
 
     void Play(const std::string& name);
+    void Stop() { currentAnimation = nullptr; currentAnimationName.clear(); }
 
     bool IsPlaying(const std::string& name) const {
-        return currentAnimation == animations.at(name);
+        return currentAnimation == animations.at(name).animation;
     }
 
     //serialization
-    json SaveComponent() override;
-    void LoadComponent(const json& componentJSON) override;
+    nlohmann::json SaveComponent() override;
+    void LoadComponent(const nlohmann::json& componentJSON) override;
+
+    //getters // setters
+    std::unordered_map<std::string, AnimationRef>& GetAnimations() { return animations; }
+    Animation* GetCurrentAnimation() { return currentAnimation; }
+    std::string GetCurrentAnimationName() { return currentAnimationName; }
 
 private:
     Sprite2D* sprite = nullptr;
-    std::unordered_map<std::string, Animation*> animations;
+    std::unordered_map<std::string, AnimationRef> animations;
     Animation* currentAnimation = nullptr;
     std::string currentAnimationName;
 };

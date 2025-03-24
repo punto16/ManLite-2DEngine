@@ -314,9 +314,9 @@ std::string GameObject::GenerateUniqueName(const std::string& baseName, const Ga
     return newName;
 }
 
-json GameObject::SaveGameObject()
+nlohmann::json GameObject::SaveGameObject()
 {
-    json goJSON;
+    nlohmann::json goJSON;
 
     if (this->parent_gameobject.lock())
     {
@@ -335,7 +335,7 @@ json GameObject::SaveGameObject()
 
     if (!this->components_gameobject.empty())
     {
-        json componentsJSON;
+        nlohmann::json componentsJSON;
         for (const auto& component : this->components_gameobject)
         {
             componentsJSON.push_back(component->SaveComponent());
@@ -345,7 +345,7 @@ json GameObject::SaveGameObject()
 
     if (!this->children_gameobject.empty())
     {
-        json childrenJSON;
+        nlohmann::json childrenJSON;
         for (const auto& child : this->children_gameobject)
         {
             childrenJSON.push_back(child->SaveGameObject());
@@ -356,7 +356,7 @@ json GameObject::SaveGameObject()
     return goJSON;
 }
 
-void GameObject::LoadGameObject(const json& goJSON)
+void GameObject::LoadGameObject(const nlohmann::json& goJSON)
 {
     if (goJSON.contains("ID")) this->gameobject_id = goJSON["ID"];
     if (goJSON.contains("Name")) this->gameobject_name = goJSON["Name"];
@@ -367,7 +367,7 @@ void GameObject::LoadGameObject(const json& goJSON)
     //components
     if (goJSON.contains("Components"))
     {
-        const json& componentsJSON = goJSON["Components"];
+        const nlohmann::json& componentsJSON = goJSON["Components"];
 
         for (const auto& componentJSON : componentsJSON)
         {
@@ -384,7 +384,7 @@ void GameObject::LoadGameObject(const json& goJSON)
             }
             else if (componentJSON["ComponentType"] == (int)ComponentType::Sprite)
             {
-                this->AddComponent<Sprite2D>();
+                this->AddComponent<Sprite2D>("");
                 this->GetComponent<Sprite2D>()->LoadComponent(componentJSON);
             }
             else if (componentJSON["ComponentType"] == (int)ComponentType::Animator)
@@ -423,7 +423,7 @@ void GameObject::LoadGameObject(const json& goJSON)
     //children
     if (goJSON.contains("GameObjects"))
     {
-        const json& childrenJSON = goJSON["GameObjects"];
+        const nlohmann::json& childrenJSON = goJSON["GameObjects"];
         for (const auto& childJSON : childrenJSON)
         {
             std::shared_ptr<GameObject> child_go = std::make_shared<GameObject>(shared_from_this(), "EmptyGameObject", true);

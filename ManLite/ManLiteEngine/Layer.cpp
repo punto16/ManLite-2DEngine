@@ -77,9 +77,9 @@ bool Layer::HasChild(uint32_t id) const
 		});
 }
 
-json Layer::SaveLayer()
+nlohmann::json Layer::SaveLayer()
 {
-	json layerJSON;
+	nlohmann::json layerJSON;
 
 	layerJSON["layer_id"] = layer_id;
 	layerJSON["layer_name"] = layer_name;
@@ -95,6 +95,6 @@ json Layer::SaveLayer()
 	return layerJSON;
 }
 
-void Layer::LoadLayer(const json& layerJSON)
+void Layer::LoadLayer(const nlohmann::json& layerJSON)
 {
 }

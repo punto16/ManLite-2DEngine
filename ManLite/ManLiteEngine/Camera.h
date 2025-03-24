@@ -14,8 +14,8 @@ public:
     ~Camera();
 
     //serialization
-    json SaveComponent() override;
-    void LoadComponent(const json& componentJSON) override;
+    nlohmann::json SaveComponent() override;
+    void LoadComponent(const nlohmann::json& componentJSON) override;
 
     //getters // setters
     void SetViewportSize(int width, int height);

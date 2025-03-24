@@ -82,24 +82,24 @@ bool SceneManagerEM::CleanUp()
 
 void SceneManagerEM::SaveScene(std::string directory, std::string scene_name)
 {
-	std::string file_name_ext = scene_name + "mlscene";
+	std::string file_name_ext = scene_name + ".mlscene";
 	fs::path file_name = fs::path(directory) / file_name_ext;
 	fs::path folder_name = fs::path(directory);
 	fs::create_directories(folder_name);
 
-	json sceneJSON;
+	nlohmann::json sceneJSON;
 
 	sceneJSON["scene_name"] = current_scene->GetSceneName();
 	sceneJSON["scene_path"] = file_name;
 
-	json game_objectsJSON;
+	nlohmann::json game_objectsJSON;
 	for (const auto& go : current_scene->GetSceneRoot().GetChildren())
 	{
 		game_objectsJSON.push_back(go->SaveGameObject());
 	}
 	sceneJSON["game_objects"] = game_objectsJSON;
 
-	json layersJSON;
+	nlohmann::json layersJSON;
 	for (const auto& layer : current_scene->GetSceneLayers())
 	{
 		layersJSON.push_back(layer->SaveLayer());
@@ -126,12 +126,12 @@ void SceneManagerEM::LoadSceneFromJson(const std::string& file_name)
 		return;
 	}
 
-	json sceneJSON;
+	nlohmann::json sceneJSON;
 	try
 	{
 		file >> sceneJSON;
 	}
-	catch (const json::parse_error& e)
+	catch (const nlohmann::json::parse_error& e)
 	{
 		LOG(LogType::LOG_ERROR, "Failed to parse scene JSON: %s", e.what());
 		return;
@@ -148,7 +148,7 @@ void SceneManagerEM::LoadSceneFromJson(const std::string& file_name)
 
 	if (sceneJSON.contains("game_objects"))
 	{
-		const json& gameObjectsJSON = sceneJSON["game_objects"];
+		const nlohmann::json& gameObjectsJSON = sceneJSON["game_objects"];
 
 		for (const auto& gameObjectJSON : gameObjectsJSON)
 		{
@@ -160,7 +160,7 @@ void SceneManagerEM::LoadSceneFromJson(const std::string& file_name)
 
 	if (sceneJSON.contains("layers"))
 	{
-		const json& layersJSON = sceneJSON["layers"];
+		const nlohmann::json& layersJSON = sceneJSON["layers"];
 
 		for (const auto& layerJSON : layersJSON)
 		{

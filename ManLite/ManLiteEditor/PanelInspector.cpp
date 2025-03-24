@@ -10,6 +10,8 @@
 #include "Camera.h"
 #include "Sprite2D.h"
 #include "Animator.h"
+#include "Animation.h"
+#include "ResourceManager.h"
 
 #include "FileDialog.h"
 
@@ -20,6 +22,8 @@
 #include <imgui.h>
 #include <filesystem>
 #include <exception>
+
+namespace fs = std::filesystem;
 
 
 PanelInspector::PanelInspector(PanelType type, std::string name, bool enabled) : Panel(type, name, enabled)
@@ -331,7 +335,24 @@ void PanelInspector::AnimatorOptions(GameObject& go)
 	std::string animatorLabel = std::string("Animator##" + std::to_string(go.GetID()));
 	if (ImGui::CollapsingHeader(animatorLabel.c_str(), treeFlags))
 	{
+		//display animations
+
 		
+		//seek animation
+		ImGui::Dummy(ImVec2(0, 10));
+		ImGui::Separator();
+		ImGui::Dummy(ImVec2(0, 5));
+
+		if (ImGui::Button("Play", ImVec2(60, 0)))
+		{
+			if (animator->GetCurrentAnimation()) animator->Play(animator->GetCurrentAnimationName());
+		}
+
+		ImGui::SameLine();
+		if (ImGui::Button("Stop", ImVec2(60, 0))) {
+			animator->Stop();
+		}
+
 		//add animation
 		const ImVec2 button_size_default = ImVec2(150, 0);
 		ImGui::Dummy(ImVec2(0, 10));
@@ -345,9 +366,21 @@ void PanelInspector::AnimatorOptions(GameObject& go)
 			std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Open Animation file (*.animation)\0*.animation\0")).string();
 			if (!filePath.empty() && filePath.ends_with(".animation"))
 			{
-				Animation* a = new Animation;
-				//implement load json animation
-				animator->AddAnimation(filePath, *a);
+				std::string animName = fs::path(filePath).stem().string();
+
+				if (!animator->HasAnimation(animName))
+				{
+					animator->AddAnimation(animName, filePath);
+
+					if (animator->GetAnimations().size() == 1)
+					{
+						animator->Play(filePath);
+					}
+				}
+				else
+				{
+					LOG(LogType::LOG_WARNING, "Animation %s already exists!", animName.c_str());
+				}
 			}
 		}
 

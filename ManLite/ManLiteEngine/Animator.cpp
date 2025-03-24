@@ -12,7 +12,7 @@ Animator::Animator(const Animator& component_to_copy, std::shared_ptr<GameObject
     Component(component_to_copy)
 {
     for (auto& pair : component_to_copy.animations)
-        this->AddAnimation(pair.first, *pair.second);
+        this->AddAnimation(pair.first, pair.second.filePath);
 }
 
 Animator::~Animator()
@@ -36,15 +36,32 @@ bool Animator::Update(float deltaTime)
     return true;
 }
 
-void Animator::AddAnimation(const std::string& name, const Animation& animation)
+void Animator::AddAnimation(const std::string& name, const std::string& filePath)
 {
-    Animation* anim = ResourceManager::GetInstance().LoadAnimation(name, animation);
-    animations[name] = anim;
+    Animation* anim = ResourceManager::GetInstance().LoadAnimation(filePath);
+    if (anim) animations[name] = { anim, filePath };
+}
+
+bool Animator::HasAnimation(const std::string& name)
+{
+    return animations.find(name) != animations.end();
 }
 
 void Animator::Play(const std::string& name)
 {
-    Animation* anim = ResourceManager::GetInstance().GetAnimation(name);
+    Animation* anim = nullptr;
+
+    auto it = animations.find(name);
+    if (it != animations.end()) anim = it->second.animation;
+
+    if (!anim) anim = ResourceManager::GetInstance().GetAnimation(name);
+    if (!anim) 
+    {
+        std::string anim_name = std::filesystem::path(name).stem().string();
+        auto it2 = animations.find(anim_name);
+        if (it2 != animations.end())
+            anim = ResourceManager::GetInstance().GetAnimation(it2->second.filePath);
+    }
     if (anim)
     {
         currentAnimation = anim;
@@ -53,9 +70,9 @@ void Animator::Play(const std::string& name)
     }
 }
 
-json Animator::SaveComponent()
+nlohmann::json Animator::SaveComponent()
 {
-    json componentJSON;
+    nlohmann::json componentJSON;
     //component generic
     componentJSON["ContainerGOID"] = this->container_go.lock()->GetID();
     componentJSON["ComponentID"] = component_id;
@@ -64,22 +81,22 @@ json Animator::SaveComponent()
     componentJSON["Enabled"] = enabled;
 
     //component spcecific
-    json animationsJSON;
+    nlohmann::json animationsJSON;
     for (auto& pair : animations) {
-        json animJSON;
+        nlohmann::json animJSON;
         animJSON["name"] = pair.first;
-        animJSON["data"] = pair.second->Save();
+        animJSON["path"] = pair.second.filePath;
 
         animationsJSON.push_back(animJSON);
     }
-    componentJSON["CustomAnimations"] = animationsJSON;
+    componentJSON["Animations"] = animationsJSON;
 
     if (currentAnimation) componentJSON["CurrentAnimation"] = currentAnimationName;
 
     return componentJSON;
 }
 
-void Animator::LoadComponent(const json& componentJSON)
+void Animator::LoadComponent(const nlohmann::json& componentJSON)
 {
     if (componentJSON.contains("ComponentID")) component_id = componentJSON["ComponentID"];
     if (componentJSON.contains("ComponentName")) name = componentJSON["ComponentName"];
@@ -87,13 +104,11 @@ void Animator::LoadComponent(const json& componentJSON)
     if (componentJSON.contains("Enabled")) enabled = componentJSON["Enabled"];
     
     if (componentJSON.contains("CustomAnimations")) {
-        for (auto& animJSON : componentJSON["CustomAnimations"]) {
+        for (auto& animJSON : componentJSON["Animations"]) {
             std::string animName = animJSON["name"];
+            std::string animPath = animJSON["path"];
     
-            Animation newAnim;
-            newAnim.Load(animJSON["data"]);
-    
-            AddAnimation(animName, newAnim);
+            AddAnimation(animName, animPath);
         }
     }
     

@@ -73,21 +73,23 @@ void ResourceManager::ReleaseTexture(const std::string& path)
     }
 }
 
-Animation* ResourceManager::LoadAnimation(const std::string& key, const Animation& animation)
+Animation* ResourceManager::LoadAnimation(const std::string& path)
 {
-    if (key == "") return nullptr;
-    auto it = animations.find(key);
+    if (path == "") return nullptr;
+    auto it = animations.find(path);
     if (it != animations.end()) {
         it->second.refCount++;
         return &it->second.animation;
     }
 
-    AnimationData newData;
-    newData.animation = animation;
-    newData.refCount = 1;
-    animations[key] = newData;
+    Animation newAnim;
+    if (!newAnim.LoadFromFile(path)) {
+        LOG(LogType::LOG_ERROR, "Failed to load animation: %s", path);
+        return nullptr;
+    }
 
-    return &animations[key].animation;
+    animations[path] = { newAnim, 1 };
+    return &animations[path].animation;
 }
 
 Animation* ResourceManager::GetAnimation(const std::string& key)

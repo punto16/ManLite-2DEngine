@@ -16,6 +16,9 @@
 #include "PanelAbout.h"
 #include "PanelLayer.h"
 
+#include "FileDialog.h"
+#include "SceneManagerEM.h"
+
 #if defined(_WIN32)
 #   define WIN32_LEAN_AND_MEAN
 #   define NOMINMAX
@@ -29,6 +32,7 @@
 #include "ImGuizmo.h"
 #include <imgui_impl_sdl2.h>
 #include <imgui_impl_opengl3.h>
+#include "filesystem"
 
 Gui::Gui(App* parent) : Module(parent),
 hierarchy_panel(nullptr),
@@ -370,9 +374,14 @@ void Gui::FileMenu()
 	{
 
 	}
-	if (ImGui::MenuItem("Open Scene", "Ctrl+O", false, false))
+	if (ImGui::MenuItem("Open Scene", "Ctrl+O"))
 	{
-
+		std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Open ManLite Scene file (*.mlscene)\0*.mlscene\0")).string();
+		if (!filePath.empty() && filePath.ends_with(".mlscene"))
+		{
+			std::string sceneName = std::filesystem::path(filePath).stem().string();
+			engine->scene_manager_em->LoadSceneFromJson(filePath);
+		}
 	}
 
 	ImGui::Separator();
@@ -381,9 +390,20 @@ void Gui::FileMenu()
 	{
 
 	}
-	if (ImGui::MenuItem("Save As...", 0, false, false))
+	if (ImGui::MenuItem("Save As...", 0))
 	{
+		std::string filePath = std::filesystem::relative(FileDialog::SaveFile("Save ManLite Scene file (*.mlscene)\0*.mlscene\0")).string();
+		if (!filePath.empty())
+		{
+			std::filesystem::path fullPath(filePath);
+			std::string sceneName = fullPath.stem().string();
+			std::string directory = fullPath.parent_path().string();
 
+			if (!directory.empty() && directory.back() != std::filesystem::path::preferred_separator)
+				directory += std::filesystem::path::preferred_separator;
+
+			engine->scene_manager_em->SaveScene(directory, sceneName);
+		}
 	}
 
 	ImGui::Separator();

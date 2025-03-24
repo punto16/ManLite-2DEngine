@@ -30,9 +30,9 @@ bool Transform::Update(float dt)
     return true;
 }
 
-json Transform::SaveComponent()
+nlohmann::json Transform::SaveComponent()
 {
-    json componentJSON;
+    nlohmann::json componentJSON;
     //component generic
     componentJSON["ContainerGOID"] = this->container_go.lock()->GetID();
     componentJSON["ComponentID"] = component_id;
@@ -50,7 +50,7 @@ json Transform::SaveComponent()
     return componentJSON;
 }
 
-void Transform::LoadComponent(const json& componentJSON)
+void Transform::LoadComponent(const nlohmann::json& componentJSON)
 {
     if (componentJSON.contains("ComponentID")) component_id = componentJSON["ComponentID"];
     if (componentJSON.contains("ComponentName")) name = componentJSON["ComponentName"];

@@ -22,8 +22,8 @@ public:
     bool Update(float dt) override;
 
     //serialization
-    json SaveComponent() override;
-    void LoadComponent(const json& componentJSON) override;
+    nlohmann::json SaveComponent() override;
+    void LoadComponent(const nlohmann::json& componentJSON) override;
 
     //getters // setters
     vec2f GetPosition() const { return position; }

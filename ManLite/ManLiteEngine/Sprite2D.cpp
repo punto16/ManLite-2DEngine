@@ -7,6 +7,7 @@
 
 #include "Transform.h"
 #include "mat3f.h"
+#include "string"
 
 Sprite2D::Sprite2D(std::weak_ptr<GameObject> container_go, const std::string& texture_path, std::string name, bool enable)
     : Component(container_go, ComponentType::Sprite, name, enable),
@@ -53,9 +54,9 @@ void Sprite2D::SwapTexture(std::string new_path)
     SetTextureSection(0, 0, tex_width, tex_height);
 }
 
-json Sprite2D::SaveComponent()
+nlohmann::json Sprite2D::SaveComponent()
 {
-    json componentJSON;
+    nlohmann::json componentJSON;
     //component generic
     componentJSON["ContainerGOID"] = this->container_go.lock()->GetID();
     componentJSON["ComponentID"] = component_id;
@@ -73,7 +74,7 @@ json Sprite2D::SaveComponent()
     return componentJSON;
 }
 
-void Sprite2D::LoadComponent(const json& componentJSON)
+void Sprite2D::LoadComponent(const nlohmann::json& componentJSON)
 {
     if (componentJSON.contains("ComponentID")) component_id = componentJSON["ComponentID"];
     if (componentJSON.contains("ComponentName")) name = componentJSON["ComponentName"];
