@@ -19,6 +19,7 @@ public:
 private:
     float currentFrame = 0.0f;
     int pingpongDirection = 1;
+    bool hasReversedOnce = false;
 
 public:
     void PushBack(const ML_Rect& rect) {
@@ -30,22 +31,47 @@ public:
     void Reset() {
         currentFrame = 0.0f;
         pingpongDirection = 1;
+        hasReversedOnce = false;
     }
 
     void Update(float deltaTime) {
-        currentFrame += speed * deltaTime * 60.0f;
-
         if (pingpong) {
+            currentFrame += speed * deltaTime * 60.0f * pingpongDirection;
+
             if (currentFrame >= totalFrames) {
-                pingpongDirection = -1;
-                currentFrame = totalFrames - 1;
+                if (loop) {
+                    float excess = currentFrame - (totalFrames - 1);
+                    currentFrame = (totalFrames - 1) - excess;
+                    pingpongDirection = -1;
+                }
+                else if (!hasReversedOnce) {
+                    pingpongDirection = -1;
+                    currentFrame = totalFrames - 1;
+                    hasReversedOnce = true;
+                }
+                else {
+                    currentFrame = totalFrames - 1;
+                }
             }
             else if (currentFrame < 0) {
-                pingpongDirection = 1;
-                currentFrame = 0;
+                if (loop) {
+                    float excess = -currentFrame;
+                    currentFrame = excess;
+                    pingpongDirection = 1;
+                }
+                else if (!hasReversedOnce) {
+                    pingpongDirection = 1;
+                    currentFrame = 0;
+                    hasReversedOnce = true;
+                }
+                else {
+                    currentFrame = 0;
+                }
             }
         }
         else {
+            currentFrame += speed * deltaTime * 60.0f;
+
             if (loop) {
                 currentFrame = fmod(currentFrame, totalFrames);
             }
@@ -112,16 +138,14 @@ public:
     //getters // setters
     ML_Rect GetCurrentFrame() const {
         int frameIndex = static_cast<int>(currentFrame);
-        if (frameIndex < 0 || frameIndex > MAX_FRAMES) return ML_Rect(0, 0, 0, 0);
-
-        if (pingpong && pingpongDirection == -1) {
-            frameIndex = totalFrames - frameIndex - 1;
-        }
-
+        if (frameIndex < 0 || frameIndex >= totalFrames) return ML_Rect(0, 0, 0, 0);
         return frames[frameIndex];
     }
 
     bool HasFinished() const {
+        if (pingpong && !loop) {
+            return hasReversedOnce && (currentFrame == 0 || currentFrame == totalFrames - 1);
+        }
         return !loop && !pingpong && (currentFrame >= totalFrames);
     }
 };

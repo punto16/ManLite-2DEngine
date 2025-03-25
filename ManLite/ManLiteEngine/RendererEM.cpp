@@ -89,6 +89,21 @@ bool RendererEM::Start()
 		return false;
 	}
 
+	glGenSamplers(1, &samplerLinear);
+	glGenSamplers(1, &samplerNearest);
+
+	// Configurar sampler para modo lineal (suavizado)
+	glSamplerParameteri(samplerLinear, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glSamplerParameteri(samplerLinear, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glSamplerParameteri(samplerLinear, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glSamplerParameteri(samplerLinear, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+	// Configurar sampler para pixel art (sin suavizado)
+	glSamplerParameteri(samplerNearest, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glSamplerParameteri(samplerNearest, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glSamplerParameteri(samplerNearest, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glSamplerParameteri(samplerNearest, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
 	this->scene_camera.SetZoom(100.0f);
 	SetupQuad();
 
@@ -275,6 +290,13 @@ void RendererEM::RenderBatch()
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, sprite.textureID);
 
+		if (sprite.pixel_art) {
+			glBindSampler(0, samplerNearest);
+		}
+		else {
+			glBindSampler(0, samplerLinear);
+		}
+
 		glUniformMatrix4fv(uModelLoc, 1, GL_FALSE, glm::value_ptr(sprite.modelMatrix));
 		glUniform4f(uUVRectLoc, sprite.u1, sprite.v1, sprite.u2, sprite.v2);
 
@@ -365,12 +387,13 @@ glm::mat4 RendererEM::ConvertMat3fToGlmMat4(const mat3f& mat)
 	return result;
 }
 
-void RendererEM::SubmitSprite(GLuint textureID, const mat3f& modelMatrix, float u1, float v1, float u2, float v2)
+void RendererEM::SubmitSprite(GLuint textureID, const mat3f& modelMatrix, float u1, float v1, float u2, float v2, bool pixel_art)
 {
 	spritesToRender.push_back({
 	textureID,
 	ConvertMat3fToGlmMat4(modelMatrix),
-	u1, v1, u2, v2
+	u1, v1, u2, v2,
+	pixel_art
 		});
 }
 

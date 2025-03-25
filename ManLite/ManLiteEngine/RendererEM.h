@@ -19,6 +19,7 @@ struct SpriteRenderData {
     GLuint textureID;
     glm::mat4 modelMatrix;
     float u1, v1, u2, v2;
+    bool pixel_art;
 };
 
 class Grid {
@@ -122,7 +123,7 @@ public:
     void UseSceneViewCam();
     void UseGameViewCam();
 
-    void SubmitSprite(GLuint textureID, const mat3f& modelMatrix, float u1, float v1, float u2, float v2);
+    void SubmitSprite(GLuint textureID, const mat3f& modelMatrix, float u1, float v1, float u2, float v2, bool pixel_art);
 
     glm::mat4 ConvertMat3fToGlmMat4(const mat3f& mat);
 private:
@@ -130,6 +131,9 @@ private:
 	bool vsync;
 
 	SDL_GLContext glContext;
+
+    GLuint samplerLinear;
+    GLuint samplerNearest;
 
 	GLuint VAO, VBO, EBO;
 	GLuint shaderProgram;

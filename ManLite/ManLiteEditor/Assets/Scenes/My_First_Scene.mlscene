@@ -12,7 +12,7 @@
           "LockAspect": true,
           "Position": [
             0.0,
-            0.0
+            1.7000000476837158
           ],
           "Rotation": 0.0,
           "Scale": [
@@ -21,7 +21,7 @@
           ]
         },
         {
-          "CameraZoom": 200.0,
+          "CameraZoom": 91.0,
           "ComponentID": 3137240958,
           "ComponentName": "Camera",
           "ComponentType": 1,
@@ -36,7 +36,7 @@
       "Enabled": true,
       "ID": 1100071130,
       "Name": "Camera",
-      "ParentID": 2534697948,
+      "ParentID": 2366376589,
       "Tag": "Camera",
       "Visible": true
     },
@@ -52,12 +52,12 @@
           "LockAspect": true,
           "Position": [
             0.0,
-            0.0
+            0.949999988079071
           ],
           "Rotation": 0.0,
           "Scale": [
-            1.0,
-            1.0
+            2.0,
+            2.0
           ]
         },
         {
@@ -66,9 +66,10 @@
           "ComponentType": 2,
           "ContainerGOID": 2355176325,
           "Enabled": true,
+          "PixelArtRender": true,
           "TexturePath": "Assets\\Textures\\IDLE.png",
           "TextureSection": [
-            419,
+            131,
             43,
             26,
             39
@@ -78,9 +79,9 @@
             96
           ],
           "TextureUVs": [
-            0.4364583194255829,
+            0.13645833730697632,
             0.1458333283662796,
-            0.4635416567325592,
+            0.16354165971279144,
             0.5520833134651184
           ]
         },
@@ -102,7 +103,7 @@
       "Enabled": true,
       "ID": 2355176325,
       "Name": "Samurai",
-      "ParentID": 2534697948,
+      "ParentID": 2366376589,
       "Tag": "Player",
       "Visible": true
     }

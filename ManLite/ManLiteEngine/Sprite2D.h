@@ -32,11 +32,14 @@ public:
 
     void SetTextureSection(int x, int y, int w, int h);
     ML_Rect GetTextureSection() const { return ML_Rect(sectionX, sectionY, sectionW, sectionH); }
+    void SetPixelArtRender(bool pixel_art) { this->pixel_art = pixel_art; }
+    bool IsPixelArt() { return pixel_art; }
 
 private:
     std::string texturePath;
     GLuint textureID = 0;
     int tex_width, tex_height;
+    bool pixel_art;
 
     int sectionX = 0, sectionY = 0, sectionW = 0, sectionH = 0;
 

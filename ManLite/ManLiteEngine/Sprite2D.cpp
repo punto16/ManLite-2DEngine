@@ -11,7 +11,7 @@
 
 Sprite2D::Sprite2D(std::weak_ptr<GameObject> container_go, const std::string& texture_path, std::string name, bool enable)
     : Component(container_go, ComponentType::Sprite, name, enable),
-    texturePath(texture_path)
+    texturePath(texture_path), pixel_art(false)
 {
     textureID = ResourceManager::GetInstance().LoadTexture(texturePath, tex_width, tex_height);
     SetTextureSection(0, 0, tex_width, tex_height);
@@ -19,7 +19,8 @@ Sprite2D::Sprite2D(std::weak_ptr<GameObject> container_go, const std::string& te
 
 Sprite2D::Sprite2D(const Sprite2D& component_to_copy, std::shared_ptr<GameObject> container_go)
     : Component(component_to_copy, container_go),
-    texturePath(component_to_copy.texturePath)
+    texturePath(component_to_copy.texturePath),
+    pixel_art(component_to_copy.pixel_art)
 {
     textureID = ResourceManager::GetInstance().LoadTexture(texturePath, tex_width, tex_height);
     this->tex_width = component_to_copy.tex_width;
@@ -41,7 +42,8 @@ void Sprite2D::Draw()
         engine->renderer_em->SubmitSprite(
             textureID,
             transform->GetWorldMatrix(),
-            u1, v1, u2, v2
+            u1, v1, u2, v2,
+            pixel_art
         );
     }
 }
@@ -65,8 +67,8 @@ nlohmann::json Sprite2D::SaveComponent()
     componentJSON["Enabled"] = enabled;
     
     //component spcecific
-    
     componentJSON["TexturePath"] = texturePath;
+    componentJSON["PixelArtRender"] = pixel_art;
     componentJSON["TextureSize"] = { tex_width, tex_height };
     componentJSON["TextureSection"] = { sectionX, sectionY,sectionW, sectionH };
     componentJSON["TextureUVs"] = { u1, v1, u2, v2 };
@@ -83,6 +85,7 @@ void Sprite2D::LoadComponent(const nlohmann::json& componentJSON)
     
     if (componentJSON.contains("TexturePath")) texturePath = componentJSON["TexturePath"];
     SwapTexture(texturePath);
+    if (componentJSON.contains("PixelArtRender")) pixel_art = componentJSON["PixelArtRender"];
     if (componentJSON.contains("TextureSize")) tex_width = componentJSON["TextureSize"][0];
     if (componentJSON.contains("TextureSize")) tex_height = componentJSON["TextureSize"][1];
     if (componentJSON.contains("TextureSection")) sectionX = componentJSON["TextureSection"][0];
@@ -93,8 +96,6 @@ void Sprite2D::LoadComponent(const nlohmann::json& componentJSON)
     if (componentJSON.contains("TextureUVs")) v1 = componentJSON["TextureUVs"][1];
     if (componentJSON.contains("TextureUVs")) u2 = componentJSON["TextureUVs"][2];
     if (componentJSON.contains("TextureUVs")) v2 = componentJSON["TextureUVs"][3];
-
-
 }
 
 void Sprite2D::SetTextureSection(int x, int y, int w, int h) {
