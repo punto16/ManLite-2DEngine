@@ -20,6 +20,9 @@ public:
 	void DrawImportedSprite();
 	void DrawAnimatorControls();
 
+
+	bool IsAnimationEmpty();
+	void SetAnimation(std::string new_animation_PATH);
 private:
 	std::string sprite_path = "";
 	unsigned int sprite = 0;

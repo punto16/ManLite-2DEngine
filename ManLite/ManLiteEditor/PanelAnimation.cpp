@@ -53,14 +53,12 @@ void PanelAnimation::DrawTopBarControls()
 		std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Open Animation file (*.animation)\0*.animation\0")).string();
 		if (!filePath.empty() && filePath.ends_with(".animation"))
 		{
-			if (animation != nullptr) ResourceManager::GetInstance().ReleaseAnimation(animation_path);
-			animation = ResourceManager::GetInstance().LoadAnimation(filePath);
-			animation_path = filePath;
+			SetAnimation(filePath);
 		}
 	}
 
 	ImGui::SameLine();
-	if (ImGui::Button("Save Animation File", button_size_default))
+	if (ImGui::Button("Save Animation As...", button_size_default))
 	{
 		std::string filePath = std::filesystem::relative(FileDialog::SaveFile("Save Animation file (*.animation)\0*.animation\0")).string();
 		if (!filePath.empty())
@@ -70,6 +68,18 @@ void PanelAnimation::DrawTopBarControls()
 			else
 				LOG(LogType::LOG_ERROR, "ERROR on Animation file save to: %s", (filePath.ends_with(".animation") ? filePath : filePath + ".animation").c_str());
 
+		}
+	}
+
+	if (animation_path != "" && !animation_path.empty())
+	{
+		ImGui::SameLine();
+		if (ImGui::Button("Save Animation", button_size_default))
+		{
+			if (this->animation->SaveToFile(animation_path.ends_with(".animation") ? animation_path : animation_path + ".animation"))
+				LOG(LogType::LOG_OK, "Animation file saved to: %s", (animation_path.ends_with(".animation") ? animation_path : animation_path + ".animation").c_str());
+			else
+				LOG(LogType::LOG_ERROR, "ERROR on Animation file save to: %s", (animation_path.ends_with(".animation") ? animation_path : animation_path + ".animation").c_str());
 		}
 	}
 
@@ -98,7 +108,6 @@ void PanelAnimation::DrawTopBarControls()
 		animation_path = "";
 		selected_frame = -1;
 		animation_frame_panel = false;
-		RELEASE(animation);
 		animation = new Animation();
 	}
 
@@ -137,7 +146,7 @@ void PanelAnimation::DrawAnimatorControls()
 	{
 		std::string speed_animation_label = std::string("Animation Speed##Animation_Config");
 		ImGui::SetNextItemWidth(ImGui::CalcItemWidth() * 0.8);
-		ImGui::DragFloat(speed_animation_label.c_str(), &animation->speed, 0.05f, 0.0f, 100.0f);
+		ImGui::DragFloat(speed_animation_label.c_str(), &animation->speed, 0.005f, 0.0f, 100.0f);
 		speed_animation_label = std::string("Animation Loop##Animation_Config");
 		ImGui::Checkbox(speed_animation_label.c_str(), &animation->loop);
 		speed_animation_label = std::string("Animation PingPong##Animation_Config");
@@ -208,4 +217,18 @@ void PanelAnimation::DrawAnimatorControls()
 	}
 	
 	ImGui::End();
+}
+
+bool PanelAnimation::IsAnimationEmpty()
+{
+	if (animation == nullptr) return true;
+	if (animation->totalFrames == 0) return true;
+	return false;
+}
+
+void PanelAnimation::SetAnimation(std::string new_animation_PATH)
+{
+	if (animation != nullptr) ResourceManager::GetInstance().ReleaseAnimation(animation_path);
+	animation = ResourceManager::GetInstance().LoadAnimation(new_animation_PATH);
+	animation_path = new_animation_PATH;
 }

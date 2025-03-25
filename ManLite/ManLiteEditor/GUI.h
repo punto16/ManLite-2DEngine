@@ -63,6 +63,10 @@ public:
 	void WindowMenu();
 	void HelpMenu();
 
+	//shortcut handler
+	void HandleShortcut();
+
+	//input control
 	void HandleInput();
 	void ProcessEvent();
 

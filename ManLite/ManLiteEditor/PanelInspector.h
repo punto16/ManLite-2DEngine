@@ -3,6 +3,7 @@
 #pragma once
 
 #include "GuiPanel.h"
+#include "string"
 
 class GameObject;
 
@@ -26,7 +27,7 @@ public:
 	void AddComponent(GameObject& go);
 
 private:
-
+	std::string selected_animation;
 };
 
 #endif // !__PANEL_INSPECTOR_H__

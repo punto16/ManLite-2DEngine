@@ -1,6 +1,9 @@
 #include "PanelInspector.h"
 
+#include "App.h"
+
 #include "GUI.h"
+#include "PanelAnimation.h"
 #include "EngineCore.h"
 #include "SceneManagerEM.h"
 #include "GameObject.h"
@@ -43,14 +46,17 @@ bool PanelInspector::Update()
 		if (engine->scene_manager_em->GetCurrentScene().GetSelectedGOs().size() > 0)
 		{
 			GameObject& go = *(engine->scene_manager_em->GetCurrentScene().GetSelectedGOs()[0].lock());
-			GeneralOptions(go);
-			TransformOptions(go);
-			CameraOptions(go);
-			SpriteOptions(go);
-			AnimatorOptions(go);
+			if (engine->scene_manager_em->GetCurrentScene().GetSelectedGOs()[0].lock() != nullptr)
+			{
+				GeneralOptions(go);
+				TransformOptions(go);
+				CameraOptions(go);
+				SpriteOptions(go);
+				AnimatorOptions(go);
 
-			//last
-			AddComponent(go);
+				//last
+				AddComponent(go);
+			}
 		}
 	}
 	ImGui::End();
@@ -336,16 +342,32 @@ void PanelInspector::AnimatorOptions(GameObject& go)
 	if (ImGui::CollapsingHeader(animatorLabel.c_str(), treeFlags))
 	{
 		//display animations
-
+		for (const auto& animation_map : animator->GetAnimations())
+		{
+			std::string animation_name = animation_map.first;
+			std::string animation_path = animation_map.second.filePath;
+			Animation* animation = animation_map.second.animation;
+			animatorLabel = animation_name + "##" + animatorLabel;
+			ImGui::CollapsingHeader(animatorLabel.c_str(), ImGuiTreeNodeFlags_Leaf);
+			if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+			{
+				selected_animation = animation_name;
+				if (app->gui->animation_panel->IsAnimationEmpty())
+				{
+					app->gui->animation_panel->SetAnimation(animation_path);
+				}
+			}
+		}
 		
 		//seek animation
+		if (selected_animation.empty()) selected_animation = animator->GetCurrentAnimationName();
 		ImGui::Dummy(ImVec2(0, 10));
 		ImGui::Separator();
 		ImGui::Dummy(ImVec2(0, 5));
 
 		if (ImGui::Button("Play", ImVec2(60, 0)))
 		{
-			if (animator->GetCurrentAnimation()) animator->Play(animator->GetCurrentAnimationName());
+			animator->Play(selected_animation);
 		}
 
 		ImGui::SameLine();
@@ -371,7 +393,7 @@ void PanelInspector::AnimatorOptions(GameObject& go)
 				if (!animator->HasAnimation(animName))
 				{
 					animator->AddAnimation(animName, filePath);
-
+					selected_animation = animName;
 					if (animator->GetAnimations().size() == 1)
 					{
 						animator->Play(filePath);

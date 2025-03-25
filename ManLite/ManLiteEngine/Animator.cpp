@@ -103,7 +103,7 @@ void Animator::LoadComponent(const nlohmann::json& componentJSON)
     if (componentJSON.contains("ComponentType")) type = (ComponentType)componentJSON["ComponentType"];
     if (componentJSON.contains("Enabled")) enabled = componentJSON["Enabled"];
     
-    if (componentJSON.contains("CustomAnimations")) {
+    if (componentJSON.contains("Animations")) {
         for (auto& animJSON : componentJSON["Animations"]) {
             std::string animName = animJSON["name"];
             std::string animPath = animJSON["path"];

@@ -74,10 +74,16 @@ bool SceneManagerEM::PostUpdate()
 bool SceneManagerEM::CleanUp()
 {
 	bool ret = true;
-
+	
 	if (!current_scene->CleanUp()) return false;
 
 	return ret;
+}
+
+void SceneManagerEM::CreateEmptyScene()
+{
+	CleanUp();
+	Awake();
 }
 
 void SceneManagerEM::SaveScene(std::string directory, std::string scene_name)
@@ -138,6 +144,7 @@ void SceneManagerEM::LoadSceneFromJson(const std::string& file_name)
 	}
 	file.close();
 
+	current_scene->SetScenePath(file_name);
 	if (sceneJSON.contains("scene_name"))
 	{
 		current_scene->SetSceneName(sceneJSON["scene_name"]);
@@ -166,6 +173,26 @@ void SceneManagerEM::LoadSceneFromJson(const std::string& file_name)
 		{
 			std::shared_ptr<Layer> layer = current_scene->CreateEmptyLayer();
 			layer->LoadLayer(layerJSON);
+
+			if (layerJSON.contains("Layer_children_go_id"))
+			{
+				int children_count = 0;
+				if (layerJSON.contains("children_count")) children_count = layerJSON["children_count"];
+				std::vector<uint32_t> childIDs;
+
+				for (size_t i = 0; i < children_count; i++)
+				{
+					childIDs.push_back(layerJSON["Layer_children_go_id"][i]);
+				}
+
+				for (auto& id : childIDs)
+				{
+					if (auto child = current_scene->FindGameObjectByID(id))
+						layer->AddChild(child);
+					else
+						LOG(LogType::LOG_WARNING, "GameObject <id: %u> not found for layer", id);
+				}
+			}
 		}
 	}
 
@@ -432,6 +459,17 @@ void Scene::TraverseRecursive(std::shared_ptr<GameObject> go, const std::functio
 	const auto& children = go->GetChildren();
 	for (auto it = children.rbegin(); it != children.rend(); ++it)
 		TraverseRecursive(*it, func);
+}
+
+std::shared_ptr<GameObject> Scene::FindGameObjectByID(uint32_t id)
+{
+	std::shared_ptr<GameObject> found = nullptr;
+
+	TraverseHierarchy([&](std::shared_ptr<GameObject> go) {
+		if (go->GetID() == id) { found = go; }
+		});
+
+	return found;
 }
 
 void Scene::SetSceneName(std::string name)

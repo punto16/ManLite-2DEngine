@@ -218,6 +218,8 @@ bool Gui::Update(double dt)
 {
 	bool ret = true;
 
+	HandleShortcut();
+
 	MainMenuBar();
 
 	//test window
@@ -370,9 +372,9 @@ void Gui::MainMenuBar()
 
 void Gui::FileMenu()
 {
-	if (ImGui::MenuItem("New Scene", "Ctrl+N", false, false))
+	if (ImGui::MenuItem("New Scene", "Ctrl+N"))
 	{
-
+		engine->scene_manager_em->CreateEmptyScene();
 	}
 	if (ImGui::MenuItem("Open Scene", "Ctrl+O"))
 	{
@@ -386,9 +388,20 @@ void Gui::FileMenu()
 
 	ImGui::Separator();
 
-	if (ImGui::MenuItem("Save Scene", "Ctrl+S", false, false))
+	if (ImGui::MenuItem("Save Scene", "Ctrl+S"))
 	{
+		std::string filePath = engine->scene_manager_em->GetCurrentScene().GetScenePath();
+		if (!filePath.empty() && filePath != "")
+		{
+			std::filesystem::path fullPath(filePath);
+			std::string sceneName = fullPath.stem().string();
+			std::string directory = fullPath.parent_path().string();
 
+			if (!directory.empty() && directory.back() != std::filesystem::path::preferred_separator)
+				directory += std::filesystem::path::preferred_separator;
+
+			engine->scene_manager_em->SaveScene(directory, sceneName);
+		}
 	}
 	if (ImGui::MenuItem("Save As...", 0))
 	{
@@ -453,9 +466,24 @@ void Gui::EditMenu()
 	{
 
 	}
-	if (ImGui::MenuItem("Duplicate", "Ctrl+D", false, false))
+	if (ImGui::MenuItem("Duplicate", "Ctrl+D"))
 	{
+		auto& scene = engine->scene_manager_em->GetCurrentScene();
+		const auto& selected = scene.GetSelectedGOs();
 
+		std::vector<std::shared_ptr<GameObject>> new_selected;
+		for (const auto& weakGo : selected)
+		{
+			if (auto go = weakGo.lock())
+			{
+				new_selected.push_back(scene.DuplicateGO(*go));
+			}
+		}
+		scene.SelectGameObject(nullptr, false, true);
+		for (const auto& go : new_selected)
+		{
+			scene.SelectGameObject(go, true);
+		}
 	}
 }
 
@@ -485,9 +513,17 @@ void Gui::AssetsMenu()
 
 void Gui::GameObjectMenu()
 {
-	if (ImGui::MenuItem("Create Empty", "Ctrl+Shift+N", false, false))
+	if (ImGui::MenuItem("Create Empty", "Ctrl+Shift+N"))
 	{
-
+		if (engine->scene_manager_em->GetCurrentScene().GetSelectedGOs().empty())
+		{
+			engine->scene_manager_em->GetCurrentScene().CreateEmptyGO(engine->scene_manager_em->GetCurrentScene().GetSceneRoot());
+		}
+		else
+		{
+			for (const auto& go : engine->scene_manager_em->GetCurrentScene().GetSelectedGOs())
+				engine->scene_manager_em->GetCurrentScene().CreateEmptyGO(*go.lock());
+		}
 	}
 	if (ImGui::MenuItem("Camera", 0, false, false))
 	{
@@ -569,6 +605,75 @@ void Gui::HelpMenu()
 	ImGui::Separator();
 
 	ImGui::TextLinkOpenURL("Documentation", "https://github.com/punto16/ManLite-2DEngine");
+}
+
+void Gui::HandleShortcut()
+{
+	if (engine->input_em->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT &&
+		engine->input_em->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT &&
+		engine->input_em->GetKey(SDL_SCANCODE_N) == KEY_DOWN)
+	{
+		if (engine->scene_manager_em->GetCurrentScene().GetSelectedGOs().empty())
+		{
+			engine->scene_manager_em->GetCurrentScene().CreateEmptyGO(engine->scene_manager_em->GetCurrentScene().GetSceneRoot());
+		}
+		else
+		{
+			for (const auto& go : engine->scene_manager_em->GetCurrentScene().GetSelectedGOs())
+				engine->scene_manager_em->GetCurrentScene().CreateEmptyGO(*go.lock());
+		}
+	}
+	else if (engine->input_em->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT &&
+		engine->input_em->GetKey(SDL_SCANCODE_N) == KEY_DOWN)
+	{
+		engine->scene_manager_em->CreateEmptyScene();
+	}
+	else if (engine->input_em->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT &&
+		engine->input_em->GetKey(SDL_SCANCODE_O) == KEY_DOWN)
+	{
+		std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Open ManLite Scene file (*.mlscene)\0*.mlscene\0")).string();
+		if (!filePath.empty() && filePath.ends_with(".mlscene"))
+		{
+			std::string sceneName = std::filesystem::path(filePath).stem().string();
+			engine->scene_manager_em->LoadSceneFromJson(filePath);
+		}
+	}
+	else if (engine->input_em->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT &&
+		engine->input_em->GetKey(SDL_SCANCODE_S) == KEY_DOWN)
+	{
+		std::string filePath = engine->scene_manager_em->GetCurrentScene().GetScenePath();
+		if (!filePath.empty() && filePath != "")
+		{
+			std::filesystem::path fullPath(filePath);
+			std::string sceneName = fullPath.stem().string();
+			std::string directory = fullPath.parent_path().string();
+
+			if (!directory.empty() && directory.back() != std::filesystem::path::preferred_separator)
+				directory += std::filesystem::path::preferred_separator;
+
+			engine->scene_manager_em->SaveScene(directory, sceneName);
+		}
+	}
+	else if (engine->input_em->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT &&
+		engine->input_em->GetKey(SDL_SCANCODE_D) == KEY_DOWN)
+	{
+		auto& scene = engine->scene_manager_em->GetCurrentScene();
+		const auto& selected = scene.GetSelectedGOs();
+
+		std::vector<std::shared_ptr<GameObject>> new_selected;
+		for (const auto& weakGo : selected)
+		{
+			if (auto go = weakGo.lock())
+			{
+				new_selected.push_back(scene.DuplicateGO(*go));
+			}
+		}
+		scene.SelectGameObject(nullptr, false, true);
+		for (const auto& go : new_selected)
+		{
+			scene.SelectGameObject(go, true);
+		}
+	}
 }
 
 void Gui::HandleInput()

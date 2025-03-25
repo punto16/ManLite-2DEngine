@@ -427,7 +427,7 @@ void GameObject::LoadGameObject(const nlohmann::json& goJSON)
         for (const auto& childJSON : childrenJSON)
         {
             std::shared_ptr<GameObject> child_go = std::make_shared<GameObject>(shared_from_this(), "EmptyGameObject", true);
-            child_go->GetParentGO().lock()->AddChild(child_go);
+            AddChild(child_go);
             child_go->LoadGameObject(childJSON);
         }
     }

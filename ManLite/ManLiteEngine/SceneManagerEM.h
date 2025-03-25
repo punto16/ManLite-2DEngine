@@ -70,6 +70,8 @@ public:
 	{
 		TraverseRecursive(scene_root, func);
 	}
+	std::shared_ptr<GameObject> FindGameObjectByID(uint32_t id);
+
 
 	//getters // setters
 	GameObject& GetSceneRoot() const { return *scene_root; }
@@ -78,6 +80,8 @@ public:
 
 	std::string GetSceneName() const { return this->scene_name; }
 	void SetSceneName(std::string name);
+	std::string GetScenePath() const { return this->scene_path; }
+	void SetScenePath(std::string scene_path) { this->scene_path = scene_path; }
 
 	GameObject& GetCurrentCameraGO() const { return *current_camera_go; }
 	void SetCurrentCameraGO(std::shared_ptr<GameObject> new_cam_go) { this->current_camera_go = new_cam_go; }
@@ -86,6 +90,7 @@ public:
 
 private:
 	std::string scene_name;
+	std::string scene_path;
 	//scene_root because gameobjects are tree-like structure
 	std::shared_ptr<GameObject> scene_root;
 	//vector of Layer because they dont work as a tree
@@ -119,6 +124,8 @@ public:
 	bool PostUpdate();
 
 	bool CleanUp();
+
+	void CreateEmptyScene();
 
 	//scene serialization
 	void SaveScene(std::string directory, std::string scene_name);

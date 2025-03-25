@@ -85,6 +85,7 @@ nlohmann::json Layer::SaveLayer()
 	layerJSON["layer_name"] = layer_name;
 	layerJSON["visible"] = visible;
 
+	layerJSON["children_count"] = children_gameobject.size();
 	int i = 0;
 	for (const auto& child : children_gameobject)
 	{
@@ -97,4 +98,7 @@ nlohmann::json Layer::SaveLayer()
 
 void Layer::LoadLayer(const nlohmann::json& layerJSON)
 {
+	if (layerJSON.contains("layer_id")) layer_id = layerJSON["layer_id"];
+	if (layerJSON.contains("layer_name")) layer_name = layerJSON["layer_name"];
+	if (layerJSON.contains("visible")) visible = layerJSON["visible"];
 }
