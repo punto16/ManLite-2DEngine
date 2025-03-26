@@ -2,6 +2,7 @@
 
 #include "GUI.h"
 #include "Log.h"
+#include "App.h"
 
 #include "FileDialog.h"
 #include "ResourceManager.h"
@@ -128,12 +129,20 @@ void PanelAnimation::DrawTopBarControls()
 void PanelAnimation::DrawImportedSprite()
 {
 	if (sprite == 0) return;
-	ImGui::DragFloat("Sprite Size##AnimationPanel", &image_size, 3.0f, 100.0f, 2000.0f);
+	ImGui::DragFloat("Sprite Size##AnimationPanel", &image_size, 3.0f, 10.0f, 2000.0f);
+	animation->Update(app->GetDT(), this->currentFrame);
+	ML_Rect section = animation->GetCurrentFrame(this->currentFrame);
+	if (animation->totalFrames <= 0)
+	{
+		section.w = this->w;
+		section.h = this->h;
+	}
+	ML_Rect uvs = GetUVs(section, w, h);
 
 	ImGui::Image(sprite,
-		ImVec2(image_size, image_size * h / w),
-		ImVec2(0, 1),
-		ImVec2(1, 0)
+		ImVec2(image_size, image_size * section.h / section.w),
+		ImVec2(uvs.x, uvs.y),
+		ImVec2(uvs.w, uvs.h)
 	);
 }
 
@@ -198,20 +207,37 @@ void PanelAnimation::DrawAnimatorControls()
 
 			ML_Rect frame_rect = animation->frames[selected_frame];
 
-			frame_panel_label = std::string("X Section##Animation_frame");
-			ImGui::SetNextItemWidth(ImGui::CalcItemWidth() * 0.8);
+			frame_panel_label = std::string("X##Section_Animation_frame");
+			ImGui::SetNextItemWidth(ImGui::CalcItemWidth() * 0.4);
 			ImGui::DragFloat(frame_panel_label.c_str(), &frame_rect.x, 1.0f);
-			frame_panel_label = std::string("Y Section##Animation_frame");
-			ImGui::SetNextItemWidth(ImGui::CalcItemWidth() * 0.8);
-			ImGui::DragFloat(frame_panel_label.c_str(), &frame_rect.y, 1.0f);
-			frame_panel_label = std::string("Width Section##Animation_frame");
-			ImGui::SetNextItemWidth(ImGui::CalcItemWidth() * 0.8);
+
+			ImGui::SameLine();
+			frame_panel_label = std::string("Width##Section_Animation_frame");
+			ImGui::SetNextItemWidth(ImGui::CalcItemWidth() * 0.4);
 			ImGui::DragFloat(frame_panel_label.c_str(), &frame_rect.w, 1.0f);
-			frame_panel_label = std::string("Height Section##Animation_frame");
-			ImGui::SetNextItemWidth(ImGui::CalcItemWidth() * 0.8);
+
+			frame_panel_label = std::string("Y##Section_Animation_frame");
+			ImGui::SetNextItemWidth(ImGui::CalcItemWidth() * 0.4);
+			ImGui::DragFloat(frame_panel_label.c_str(), &frame_rect.y, 1.0f);
+
+			ImGui::SameLine();
+			frame_panel_label = std::string("Height##Section_Animation_frame");
+			ImGui::SetNextItemWidth(ImGui::CalcItemWidth() * 0.4);
 			ImGui::DragFloat(frame_panel_label.c_str(), &frame_rect.h, 1.0f);
 
 			animation->frames[selected_frame] = frame_rect;
+
+			ImGui::Separator();
+			if (sprite != 0)
+			{
+				ML_Rect uvs = GetUVs(frame_rect, this->w, this->h);
+
+				ImGui::Image(sprite,
+					ImVec2(ImGui::CalcItemWidth() * 0.8, ImGui::CalcItemWidth() * 0.8 * frame_rect.h / frame_rect.w),
+					ImVec2(uvs.x, uvs.y),
+					ImVec2(uvs.w, uvs.h)
+				);
+			}
 		}
 		ImGui::End();
 	}
@@ -231,4 +257,20 @@ void PanelAnimation::SetAnimation(std::string new_animation_PATH)
 	if (animation != nullptr) ResourceManager::GetInstance().ReleaseAnimation(animation_path);
 	animation = ResourceManager::GetInstance().LoadAnimation(new_animation_PATH);
 	animation_path = new_animation_PATH;
+}
+
+ML_Rect PanelAnimation::GetUVs(ML_Rect section, int w, int h)
+{
+	if (w > 0 && h > 0)
+	{
+		float u1 = static_cast<float>(section.x) / w;
+		float u2 = static_cast<float>(section.x + section.w) / w;
+		float v1 = static_cast<float>(h - (section.y + section.h)) / h;
+		float v2 = static_cast<float>(h - section.y) / h;
+		return ML_Rect(u1, v2, u2, v1);
+	}
+	else
+	{
+		return ML_Rect(0, 1, 1, 0);
+	}
 }

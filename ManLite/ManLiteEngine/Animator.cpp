@@ -4,21 +4,24 @@
 #include "Sprite2D.h"
 
 Animator::Animator(std::weak_ptr<GameObject> container_go, std::string name, bool enable) :
-    Component(container_go, ComponentType::Animator, name, enable)
+    Component(container_go, ComponentType::Animator, name, enable),
+    currentFrame(0.0f)
 {
 }
 
 Animator::Animator(const Animator& component_to_copy, std::shared_ptr<GameObject> container_go) :
-    Component(component_to_copy)
+    Component(component_to_copy, container_go)
 {
     for (auto& pair : component_to_copy.animations)
         this->AddAnimation(pair.first, pair.second.filePath);
+
+    Play(component_to_copy.currentAnimationName);
 }
 
 Animator::~Animator()
 {
     for (auto& pair : animations)
-        ResourceManager::GetInstance().ReleaseAnimation(pair.first);
+        ResourceManager::GetInstance().ReleaseAnimation(pair.second.filePath);
 }
 
 bool Animator::Update(float deltaTime)
@@ -29,10 +32,11 @@ bool Animator::Update(float deltaTime)
     }
     if (currentAnimation != nullptr && sprite != nullptr)
     {
-        currentAnimation->Update(deltaTime);
-        ML_Rect r = currentAnimation->GetCurrentFrame();
+        currentAnimation->Update(deltaTime, currentFrame);
+        ML_Rect r = currentAnimation->GetCurrentFrame(currentFrame);
         sprite->SetTextureSection(r.x, r.y, r.w, r.h);
     }
+
     return true;
 }
 
@@ -66,7 +70,7 @@ void Animator::Play(const std::string& name)
     {
         currentAnimation = anim;
         currentAnimationName = name;
-        currentAnimation->Reset();
+        currentAnimation->Reset(currentFrame);
     }
 }
 

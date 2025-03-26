@@ -3,7 +3,7 @@
 #pragma once
 
 #include "GuiPanel.h"
-
+#include "Defs.h"
 #include "string"
 
 class Animation;
@@ -23,6 +23,9 @@ public:
 
 	bool IsAnimationEmpty();
 	void SetAnimation(std::string new_animation_PATH);
+
+	static ML_Rect GetUVs(ML_Rect section, int w, int h);
+
 private:
 	std::string sprite_path = "";
 	unsigned int sprite = 0;
@@ -31,6 +34,7 @@ private:
 
 	std::string animation_path = "";
 	Animation* animation = nullptr;
+	float currentFrame;
 
 	bool animator_panel = false;
 	bool animation_frame_panel = false;

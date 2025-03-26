@@ -36,7 +36,7 @@
       "Enabled": true,
       "ID": 1100071130,
       "Name": "Camera",
-      "ParentID": 2366376589,
+      "ParentID": 2817425629,
       "Tag": "Camera",
       "Visible": true
     },
@@ -69,7 +69,7 @@
           "PixelArtRender": true,
           "TexturePath": "Assets\\Textures\\IDLE.png",
           "TextureSection": [
-            131,
+            803,
             43,
             26,
             39
@@ -79,9 +79,9 @@
             96
           ],
           "TextureUVs": [
-            0.13645833730697632,
+            0.8364583253860474,
             0.1458333283662796,
-            0.16354165971279144,
+            0.8635416626930237,
             0.5520833134651184
           ]
         },
@@ -103,7 +103,7 @@
       "Enabled": true,
       "ID": 2355176325,
       "Name": "Samurai",
-      "ParentID": 2366376589,
+      "ParentID": 2817425629,
       "Tag": "Player",
       "Visible": true
     }
@@ -120,6 +120,6 @@
       "visible": true
     }
   ],
-  "scene_name": "Untitled_Scene",
+  "scene_name": "Test_Scene",
   "scene_path": "Assets\\Scenes\\My_First_Scene.mlscene"
 }

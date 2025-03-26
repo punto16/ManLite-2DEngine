@@ -17,7 +17,6 @@ public:
     int totalFrames = 0;
 
 private:
-    float currentFrame = 0.0f;
     int pingpongDirection = 1;
     bool hasReversedOnce = false;
 
@@ -28,14 +27,20 @@ public:
         }
     }
 
-    void Reset() {
+    void Reset(float& currentFrame) {
         currentFrame = 0.0f;
         pingpongDirection = 1;
         hasReversedOnce = false;
     }
 
-    void Update(float deltaTime) {
-        if (pingpong) {
+    void Update(float deltaTime, float &currentFrame) {
+        if (totalFrames == 0)
+        {
+            currentFrame = 0;
+            return;
+        }
+        else if (pingpong)
+        {
             currentFrame += speed * deltaTime * 60.0f * pingpongDirection;
 
             if (currentFrame >= totalFrames) {
@@ -69,7 +74,8 @@ public:
                 }
             }
         }
-        else {
+        else
+        {
             currentFrame += speed * deltaTime * 60.0f;
 
             if (loop) {
@@ -136,13 +142,13 @@ public:
 
 
     //getters // setters
-    ML_Rect GetCurrentFrame() const {
+    ML_Rect GetCurrentFrame(float& currentFrame) const {
         int frameIndex = static_cast<int>(currentFrame);
         if (frameIndex < 0 || frameIndex >= totalFrames) return ML_Rect(0, 0, 0, 0);
         return frames[frameIndex];
     }
 
-    bool HasFinished() const {
+    bool HasFinished(float& currentFrame) const {
         if (pingpong && !loop) {
             return hasReversedOnce && (currentFrame == 0 || currentFrame == totalFrames - 1);
         }

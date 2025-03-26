@@ -42,11 +42,14 @@ public:
     std::unordered_map<std::string, AnimationRef>& GetAnimations() { return animations; }
     Animation* GetCurrentAnimation() { return currentAnimation; }
     std::string GetCurrentAnimationName() { return currentAnimationName; }
+    float& GetCurrentFrame() { return currentFrame; }
 
 private:
     Sprite2D* sprite = nullptr;
     std::unordered_map<std::string, AnimationRef> animations;
     Animation* currentAnimation = nullptr;
     std::string currentAnimationName;
+
+    float currentFrame;
 };
 #endif // !__ANIMATOR_H__

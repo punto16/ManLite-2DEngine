@@ -188,7 +188,10 @@ void SceneManagerEM::LoadSceneFromJson(const std::string& file_name)
 				for (auto& id : childIDs)
 				{
 					if (auto child = current_scene->FindGameObjectByID(id))
+					{
 						layer->AddChild(child);
+						child->SetParentLayer(layer);
+					}
 					else
 						LOG(LogType::LOG_WARNING, "GameObject <id: %u> not found for layer", id);
 				}
@@ -258,7 +261,10 @@ std::shared_ptr<GameObject> Scene::DuplicateGO(GameObject& go_to_copy)
 	std::shared_ptr<GameObject> copy = std::make_shared<GameObject>(go_to_copy.GetSharedPtr());
 	copy->CloneComponents(go_to_copy.GetSharedPtr());
 	go_to_copy.GetParentGO().lock()->AddChild(copy);
-	if (go_to_copy.GetParentLayer().lock() != nullptr) ReparentToLayer(copy, go_to_copy.GetParentLayer().lock());
+	if (go_to_copy.GetParentLayer().lock() != nullptr)
+	{
+		ReparentToLayer(copy, go_to_copy.GetParentLayer().lock());
+	}
 
 	if (!go_to_copy.GetChildren().empty())
 	{

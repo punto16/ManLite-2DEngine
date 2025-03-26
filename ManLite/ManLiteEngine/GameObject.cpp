@@ -80,7 +80,8 @@ void GameObject::Draw()
 
 void GameObject::Delete()
 {
-    LOG(LogType::LOG_INFO, "GameObject <%s - id: %u> has been deleted", gameobject_name.c_str(), gameobject_id);
+    std::string obj_to_delete_name = gameobject_name;
+    uint32_t id = gameobject_id;
 
     components_gameobject.clear();
 
@@ -96,6 +97,8 @@ void GameObject::Delete()
     if (auto parent_sp = parent_gameobject.lock())
         if (parent_sp->HasChild(gameobject_id))
             parent_sp->RemoveChild(shared_from_this());
+
+    LOG(LogType::LOG_INFO, "GameObject <%s - id: %u> has been deleted", obj_to_delete_name.c_str(), id);
 }
 
 bool GameObject::Reparent(std::shared_ptr<GameObject> new_parent, bool skip_descendant_search)
