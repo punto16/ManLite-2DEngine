@@ -112,9 +112,9 @@ void SceneManagerEM::SaveScene(std::string directory, std::string scene_name)
 	}
 	sceneJSON["layers"] = layersJSON;
 
-	std::ofstream(file_name) << sceneJSON.dump(2);
+	LOG(LogType::LOG_OK, "Succesfully Saved Scene at %s", (directory + file_name_ext).c_str());
 
-	LOG(LogType::LOG_OK, "Succesfully Saved Scene at %s", file_name.c_str());
+	std::ofstream(file_name) << sceneJSON.dump(2);
 }
 
 void SceneManagerEM::LoadSceneFromJson(const std::string& file_name)

@@ -28,6 +28,9 @@ public:
 
 private:
 	std::string selected_animation;
+	float image_animation_size = 100.0f;
+	float currentFrame;
+
 };
 
 #endif // !__PANEL_INSPECTOR_H__

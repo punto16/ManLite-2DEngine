@@ -84,15 +84,12 @@ void PanelAnimation::DrawTopBarControls()
 		}
 	}
 
-	ImGui::SameLine();
 	if (ImGui::Button("Choose Sprite", button_size_default))
 	{
 		std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Open Sprite file (*.png)\0*.png\0")).string();
 		if (!filePath.empty() && filePath.ends_with(".png"))
 		{
-			if (sprite != 0) ResourceManager::GetInstance().ReleaseTexture(sprite_path);
-			sprite = ResourceManager::GetInstance().LoadTexture(filePath, w, h);
-			this->sprite_path = filePath;
+			SetSprite(filePath);
 		}
 	}
 
@@ -170,7 +167,25 @@ void PanelAnimation::DrawAnimatorControls()
 			std::string frame_label = "Frame_" + std::to_string(i);
 			if (ImGui::CollapsingHeader(frame_label.c_str(), treeFlags))
 			{
-				//context (aka right click)
+				if (ImGui::BeginPopupContextItem())
+				{
+					frame_label = "Duplicate Frame##" + frame_label;
+					if (ImGui::MenuItem(frame_label.c_str()))
+					{
+						animation->PushBack(animation->frames[i]);
+						selected_frame = animation->totalFrames - 1;
+						animation_frame_panel = true;
+					}
+
+					frame_label = "Delete Frame##" + frame_label;
+					if (ImGui::MenuItem(frame_label.c_str()))
+					{
+						animation->PopFrame(i);
+						selected_frame = 0;
+						animation_frame_panel = true;
+					}
+					ImGui::EndPopup();
+				}
 			}
 			if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
 			{
@@ -187,7 +202,7 @@ void PanelAnimation::DrawAnimatorControls()
 
 		if (ImGui::Button("Add Frame##Animator_Panel", button_size_default))
 		{
-			animation->PushBack(ML_Rect(0, 0, 0, 0));
+			animation->PushBack(ML_Rect(0, 0, w, h));
 			selected_frame = animation->totalFrames - 1;
 			animation_frame_panel = true;
 		}
@@ -205,20 +220,21 @@ void PanelAnimation::DrawAnimatorControls()
 			ImGui::Text(std::string("Animation Frame " + std::to_string(selected_frame)).c_str());
 			ImGui::Separator();
 
+
 			ML_Rect frame_rect = animation->frames[selected_frame];
 
-			frame_panel_label = std::string("X##Section_Animation_frame");
+			frame_panel_label = std::string("X    ##Section_Animation_frame");
 			ImGui::SetNextItemWidth(ImGui::CalcItemWidth() * 0.4);
 			ImGui::DragFloat(frame_panel_label.c_str(), &frame_rect.x, 1.0f);
 
 			ImGui::SameLine();
-			frame_panel_label = std::string("Width##Section_Animation_frame");
-			ImGui::SetNextItemWidth(ImGui::CalcItemWidth() * 0.4);
-			ImGui::DragFloat(frame_panel_label.c_str(), &frame_rect.w, 1.0f);
-
 			frame_panel_label = std::string("Y##Section_Animation_frame");
 			ImGui::SetNextItemWidth(ImGui::CalcItemWidth() * 0.4);
 			ImGui::DragFloat(frame_panel_label.c_str(), &frame_rect.y, 1.0f);
+
+			frame_panel_label = std::string("Width##Section_Animation_frame");
+			ImGui::SetNextItemWidth(ImGui::CalcItemWidth() * 0.4);
+			ImGui::DragFloat(frame_panel_label.c_str(), &frame_rect.w, 1.0f);
 
 			ImGui::SameLine();
 			frame_panel_label = std::string("Height##Section_Animation_frame");
@@ -228,12 +244,14 @@ void PanelAnimation::DrawAnimatorControls()
 			animation->frames[selected_frame] = frame_rect;
 
 			ImGui::Separator();
+			ImGui::DragFloat("Sprite Size##AnimationPanelFrame", &image_frame_size, 3.0f, 10.0f, 2000.0f);
+
 			if (sprite != 0)
 			{
 				ML_Rect uvs = GetUVs(frame_rect, this->w, this->h);
 
 				ImGui::Image(sprite,
-					ImVec2(ImGui::CalcItemWidth() * 0.8, ImGui::CalcItemWidth() * 0.8 * frame_rect.h / frame_rect.w),
+					ImVec2(image_frame_size, image_frame_size * frame_rect.h / frame_rect.w),
 					ImVec2(uvs.x, uvs.y),
 					ImVec2(uvs.w, uvs.h)
 				);
@@ -273,4 +291,11 @@ ML_Rect PanelAnimation::GetUVs(ML_Rect section, int w, int h)
 	{
 		return ML_Rect(0, 1, 1, 0);
 	}
+}
+
+void PanelAnimation::SetSprite(std::string filePath)
+{
+	if (sprite != 0) ResourceManager::GetInstance().ReleaseTexture(sprite_path);
+	sprite = ResourceManager::GetInstance().LoadTexture(filePath, w, h);
+	this->sprite_path = filePath;
 }

@@ -25,6 +25,7 @@ public:
     bool Update(float deltaTime) override;
 
     void AddAnimation(const std::string& name, const std::string& filePath);
+    void RemoveAnimation(const std::string& name);
     bool HasAnimation(const std::string& name);
 
     void Play(const std::string& name);

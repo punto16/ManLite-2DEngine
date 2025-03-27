@@ -25,6 +25,7 @@ public:
 	void SetAnimation(std::string new_animation_PATH);
 
 	static ML_Rect GetUVs(ML_Rect section, int w, int h);
+	void SetSprite(std::string filePath);
 
 private:
 	std::string sprite_path = "";
@@ -39,6 +40,7 @@ private:
 	bool animator_panel = false;
 	bool animation_frame_panel = false;
 	int selected_frame = -1;
+	float image_frame_size = 200.0f;
 };
 
 #endif // !__PANEL_ANIMATION_H__

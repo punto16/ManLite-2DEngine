@@ -46,6 +46,16 @@ void Animator::AddAnimation(const std::string& name, const std::string& filePath
     if (anim) animations[name] = { anim, filePath };
 }
 
+void Animator::RemoveAnimation(const std::string& name)
+{
+    if (IsPlaying(name)) Stop();
+    auto it = animations.find(name);
+    if (it != animations.end()) {
+        ResourceManager::GetInstance().ReleaseAnimation(it->second.filePath);
+        animations.erase(it);
+    }
+}
+
 bool Animator::HasAnimation(const std::string& name)
 {
     return animations.find(name) != animations.end();

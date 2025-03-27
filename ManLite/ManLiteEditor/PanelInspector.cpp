@@ -343,6 +343,7 @@ void PanelInspector::AnimatorOptions(GameObject& go)
 	uint treeFlags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_DefaultOpen;
 	Animator* animator = go.GetComponent<Animator>();
 	if (animator == nullptr) return;
+	Sprite2D* sprite = animator->GetContainerGO()->GetComponent<Sprite2D>();
 	std::string animatorLabel = std::string("Animator##" + std::to_string(go.GetID()));
 	if (ImGui::CollapsingHeader(animatorLabel.c_str(), treeFlags))
 	{
@@ -354,13 +355,52 @@ void PanelInspector::AnimatorOptions(GameObject& go)
 			Animation* animation = animation_map.second.animation;
 			animatorLabel = animation_name + "##" + animatorLabel;
 			ImGui::CollapsingHeader(animatorLabel.c_str(), ImGuiTreeNodeFlags_Leaf);
+			if (ImGui::BeginPopupContextItem())
+			{
+				std::string context_label = "Remove Animation##" + animatorLabel;
+				if (ImGui::MenuItem(context_label.c_str()))
+				{
+					animator->RemoveAnimation(animation_name);
+					ImGui::EndPopup();
+					break;
+				}
+				ImGui::EndPopup();
+			}
 			if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
 			{
 				selected_animation = animation_name;
 				if (app->gui->animation_panel->IsAnimationEmpty())
 				{
 					app->gui->animation_panel->SetAnimation(animation_path);
+					app->gui->animation_panel->SetSprite(sprite->GetTexturePath());
 				}
+			}
+			if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
+			{
+				selected_animation = animation_name;
+				app->gui->animation_panel->SetAnimation(animation_path);
+				app->gui->animation_panel->SetSprite(sprite->GetTexturePath());
+
+			}
+			if (selected_animation == animation_name)
+			{
+				int w, h;
+				sprite->GetTextureSize(w, h);
+				ImGui::DragFloat("Sprite Size##AnimationInspectorPanel", &image_animation_size, 3.0f, 10.0f, 2000.0f);
+				animation->Update(app->GetDT(), this->currentFrame);
+				ML_Rect section = animation->GetCurrentFrame(this->currentFrame);
+				if (animation->totalFrames <= 0)
+				{
+					section.w = w;
+					section.h = h;
+				}
+				ML_Rect uvs = PanelAnimation::GetUVs(section, w, h);
+
+				ImGui::Image(sprite->GetTextureID(),
+					ImVec2(image_animation_size, image_animation_size * section.h / section.w),
+					ImVec2(uvs.x, uvs.y),
+					ImVec2(uvs.w, uvs.h)
+				);
 			}
 		}
 		

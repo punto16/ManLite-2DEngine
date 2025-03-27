@@ -27,6 +27,19 @@ public:
         }
     }
 
+    void PopFrame(int index) {
+        if (index < 0 || index >= totalFrames) {
+            return;
+        }
+
+        for (int i = index; i < totalFrames - 1; ++i) {
+            frames[i] = frames[i + 1];
+        }
+
+        frames[totalFrames - 1] = ML_Rect{ 0, 0, 0, 0 };
+        totalFrames--;
+    }
+
     void Reset(float& currentFrame) {
         currentFrame = 0.0f;
         pingpongDirection = 1;

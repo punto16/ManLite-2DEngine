@@ -36,7 +36,8 @@
       "Enabled": true,
       "ID": 1100071130,
       "Name": "Camera",
-      "ParentID": 2817425629,
+      "ParentID": 3546561130,
+      "ParentLayerID": 0,
       "Tag": "Camera",
       "Visible": true
     },
@@ -69,7 +70,7 @@
           "PixelArtRender": true,
           "TexturePath": "Assets\\Textures\\IDLE.png",
           "TextureSection": [
-            803,
+            419,
             43,
             26,
             39
@@ -79,9 +80,9 @@
             96
           ],
           "TextureUVs": [
-            0.8364583253860474,
+            0.4364583194255829,
             0.1458333283662796,
-            0.8635416626930237,
+            0.4635416567325592,
             0.5520833134651184
           ]
         },
@@ -90,6 +91,10 @@
             {
               "name": "samurai_idle_animation_test1",
               "path": "Assets\\Animations\\samurai_idle_animation_test1.animation"
+            },
+            {
+              "name": "samurai_idle_animation_test2",
+              "path": "Assets\\Animations\\samurai_idle_animation_test2.animation"
             }
           ],
           "ComponentID": 1711000210,
@@ -103,7 +108,8 @@
       "Enabled": true,
       "ID": 2355176325,
       "Name": "Samurai",
-      "ParentID": 2817425629,
+      "ParentID": 3546561130,
+      "ParentLayerID": 0,
       "Tag": "Player",
       "Visible": true
     }

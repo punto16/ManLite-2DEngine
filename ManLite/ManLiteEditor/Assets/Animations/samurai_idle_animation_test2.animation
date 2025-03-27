@@ -1,0 +1,14 @@
+{
+  "frames": [
+    {
+      "h": 39.0,
+      "w": 26.0,
+      "x": 35.0,
+      "y": 43.0
+    }
+  ],
+  "loop": true,
+  "pingpong": false,
+  "speed": 1.0,
+  "totalFrames": 1
+}
