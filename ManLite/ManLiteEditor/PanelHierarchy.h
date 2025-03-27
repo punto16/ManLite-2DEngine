@@ -4,6 +4,7 @@
 
 #include "GuiPanel.h"
 #include "memory"
+#include "vector"
 
 class GameObject;
 
@@ -26,6 +27,9 @@ public:
 
 private:
 
+	void CollectAllGameObjects(GameObject& parent, std::vector<std::shared_ptr<GameObject>>& list);
+
+	char searchTextBuffer[256] = "";
 };
 
 #endif // !__PANEL_HIERARCHY_H__

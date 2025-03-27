@@ -26,29 +26,65 @@ bool PanelHierarchy::Update()
 
 	if (ImGui::Begin(name.c_str(), &enabled, settingsFlags))
 	{
-		BlankContext(engine->scene_manager_em->GetCurrentScene().GetSceneRoot());
-		if (ImGui::IsWindowHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Left) && !ImGui::IsAnyItemHovered())
-			engine->scene_manager_em->GetCurrentScene().SelectGameObject(nullptr, false, true);
+		ImGui::InputText("##Search", searchTextBuffer, IM_ARRAYSIZE(searchTextBuffer), ImGuiInputTextFlags_None);
+		ImGui::SameLine();
+		ImGui::Text("Search");
 
-		if (ImGui::CollapsingHeader(std::string(engine->scene_manager_em->GetCurrentScene().GetSceneName() +
-			"##" +
-			std::to_string(engine->scene_manager_em->GetCurrentScene().GetSceneRoot().GetID())).c_str(), treeFlags | ImGuiTreeNodeFlags_Leaf))
+		std::string searchText = std::string(searchTextBuffer);
+		std::transform(searchText.begin(), searchText.end(), searchText.begin(), ::tolower);
+
+		if (!searchText.empty())
 		{
-			if (ImGui::BeginPopupContextItem())
-			{
-				static char newNameBuffer[32];
-				strcpy(newNameBuffer, engine->scene_manager_em->GetCurrentScene().GetSceneName().c_str());
-				uint input_flags = ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_CharsNoBlank;
-				if (ImGui::InputText("Change Scene Name", newNameBuffer, sizeof(newNameBuffer), input_flags))
-				{
-					std::string newSceneName(newNameBuffer);
-					LOG(LogType::LOG_INFO, "Scene <%s> has been renamed to <%s>", engine->scene_manager_em->GetCurrentScene().GetSceneName().c_str(), newSceneName.c_str());
-					engine->scene_manager_em->GetCurrentScene().SetSceneName(newSceneName);
-					newNameBuffer[0] = '\0';
-				}
-				ImGui::EndPopup();
+			auto& scene = engine->scene_manager_em->GetCurrentScene();
+			auto& sceneRoot = scene.GetSceneRoot();
+			std::vector<std::shared_ptr<GameObject>> allGameObjects;
+			for (auto& child : sceneRoot.GetChildren()) {
+				CollectAllGameObjects(*child, allGameObjects);
 			}
-			IterateTree(engine->scene_manager_em->GetCurrentScene().GetSceneRoot(), true);
+
+			for (auto& go : allGameObjects) {
+				std::string goNameLower = go->GetName();
+				std::transform(goNameLower.begin(), goNameLower.end(), goNameLower.begin(), ::tolower);
+				if (goNameLower.find(searchText) != std::string::npos) {
+					std::string nodeLabel = go->GetName() + "##" + std::to_string(go->GetID());
+					uint nodeFlags = ImGuiTreeNodeFlags_Leaf;
+					if (IsSelected(go)) nodeFlags |= ImGuiTreeNodeFlags_Selected;
+
+					bool nodeOpen = ImGui::TreeNodeEx(nodeLabel.c_str(), nodeFlags);
+					GameObjectSelection(*go);
+					DragAndDrop(*go);
+					Context(*go);
+
+					if (nodeOpen) ImGui::TreePop();
+				}
+			}
+		}
+		else
+		{
+			BlankContext(engine->scene_manager_em->GetCurrentScene().GetSceneRoot());
+			if (ImGui::IsWindowHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Left) && !ImGui::IsAnyItemHovered())
+				engine->scene_manager_em->GetCurrentScene().SelectGameObject(nullptr, false, true);
+
+			if (ImGui::CollapsingHeader(std::string(engine->scene_manager_em->GetCurrentScene().GetSceneName() +
+				"##" +
+				std::to_string(engine->scene_manager_em->GetCurrentScene().GetSceneRoot().GetID())).c_str(), treeFlags | ImGuiTreeNodeFlags_Leaf))
+			{
+				if (ImGui::BeginPopupContextItem())
+				{
+					static char newNameBuffer[32];
+					strcpy(newNameBuffer, engine->scene_manager_em->GetCurrentScene().GetSceneName().c_str());
+					uint input_flags = ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_CharsNoBlank;
+					if (ImGui::InputText("Change Scene Name", newNameBuffer, sizeof(newNameBuffer), input_flags))
+					{
+						std::string newSceneName(newNameBuffer);
+						LOG(LogType::LOG_INFO, "Scene <%s> has been renamed to <%s>", engine->scene_manager_em->GetCurrentScene().GetSceneName().c_str(), newSceneName.c_str());
+						engine->scene_manager_em->GetCurrentScene().SetSceneName(newSceneName);
+						newNameBuffer[0] = '\0';
+					}
+					ImGui::EndPopup();
+				}
+				IterateTree(engine->scene_manager_em->GetCurrentScene().GetSceneRoot(), true);
+			}
 		}
 	}
 	ImGui::End();
@@ -272,5 +308,13 @@ bool PanelHierarchy::IsSelected(const std::shared_ptr<GameObject>& go)
 	const auto& selected = engine->scene_manager_em->GetCurrentScene().GetSelectedGOs();
 	return std::find_if(selected.begin(), selected.end(),
 		[&](const auto& weakGo) { return weakGo.lock() == go; }) != selected.end();
+}
+
+void PanelHierarchy::CollectAllGameObjects(GameObject& parent, std::vector<std::shared_ptr<GameObject>>& list)
+{
+	list.push_back(parent.GetSharedPtr());
+	for (auto& child : parent.GetChildren()) {
+		CollectAllGameObjects(*child, list);
+	}
 }
 
