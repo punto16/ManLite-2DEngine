@@ -56,6 +56,14 @@ void Animator::RemoveAnimation(const std::string& name)
     }
 }
 
+void Animator::RemoveAllAnimations()
+{
+    for (auto& pair : animations)
+    {
+        RemoveAnimation(pair.first);
+    }
+}
+
 bool Animator::HasAnimation(const std::string& name)
 {
     return animations.find(name) != animations.end();
@@ -116,7 +124,7 @@ void Animator::LoadComponent(const nlohmann::json& componentJSON)
     if (componentJSON.contains("ComponentName")) name = componentJSON["ComponentName"];
     if (componentJSON.contains("ComponentType")) type = (ComponentType)componentJSON["ComponentType"];
     if (componentJSON.contains("Enabled")) enabled = componentJSON["Enabled"];
-    
+    RemoveAllAnimations();
     if (componentJSON.contains("Animations")) {
         for (auto& animJSON : componentJSON["Animations"]) {
             std::string animName = animJSON["name"];

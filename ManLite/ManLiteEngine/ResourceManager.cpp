@@ -103,6 +103,70 @@ void ResourceManager::ReleaseAnimation(const std::string& key)
             animations.erase(it);
 }
 
+Mix_Chunk* ResourceManager::LoadSound(const std::string& path)
+{
+    if (path.empty()) return nullptr;
+    auto it = sounds.find(path);
+    if (it != sounds.end())
+    {
+        it->second.refCount++;
+        return it->second.chunk;
+    }
+
+    Mix_Chunk* chunk = Mix_LoadWAV(path.c_str());
+    if (!chunk)
+    {
+        LOG(LogType::LOG_ERROR, "Failed to load sound: %s", path);
+        return nullptr;
+    }
+
+    sounds[path] = { chunk, 1 };
+    return chunk;
+}
+
+void ResourceManager::ReleaseSound(const std::string& path)
+{
+    if (path.empty()) return;
+    auto it = sounds.find(path);
+    if (it != sounds.end() && --it->second.refCount <= 0)
+    {
+        Mix_FreeChunk(it->second.chunk);
+        sounds.erase(it);
+    }
+}
+
+// Audio: Music
+Mix_Music* ResourceManager::LoadMusic(const std::string& path)
+{
+    if (path.empty()) return nullptr;
+    auto it = musics.find(path);
+    if (it != musics.end())
+    {
+        it->second.refCount++;
+        return it->second.music;
+    }
+
+    Mix_Music* music = Mix_LoadMUS(path.c_str());
+    if (!music)
+    {
+        LOG(LogType::LOG_ERROR, "Failed to load music: %s", path);
+        return nullptr;
+    }
+
+    musics[path] = { music, 1 };
+    return music;
+}
+
+void ResourceManager::ReleaseMusic(const std::string& path)
+{
+    if (path.empty()) return;
+    auto it = musics.find(path);
+    if (it != musics.end() && --it->second.refCount <= 0) {
+        Mix_FreeMusic(it->second.music);
+        musics.erase(it);
+    }
+}
+
 void ResourceManager::CleanUnusedResources()
 {
     for (auto it = textures.begin(); it != textures.end();) {
@@ -118,6 +182,24 @@ void ResourceManager::CleanUnusedResources()
     for (auto it = animations.begin(); it != animations.end();) {
         if (it->second.refCount <= 0) {
             it = animations.erase(it);
+        }
+        else {
+            ++it;
+        }
+    }
+
+    for (auto it = sounds.begin(); it != sounds.end();) {
+        if (it->second.refCount <= 0) {
+            it = sounds.erase(it);
+        }
+        else {
+            ++it;
+        }
+    }
+
+    for (auto it = musics.begin(); it != musics.end();) {
+        if (it->second.refCount <= 0) {
+            it = musics.erase(it);
         }
         else {
             ++it;

@@ -7,7 +7,6 @@
 #include "nlohmann/json.hpp"
 
 class GameObject;
-//class json;
 
 enum class ComponentType
 {

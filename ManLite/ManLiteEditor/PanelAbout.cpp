@@ -25,6 +25,12 @@ PanelAbout::~PanelAbout()
 
 bool PanelAbout::Update()
 {
+	if (bringToFront)
+	{
+		ImGui::SetNextWindowFocus();
+		bringToFront = false;
+	}
+
 	bool ret = true;
 
 	ImGuiWindowFlags window_flags =

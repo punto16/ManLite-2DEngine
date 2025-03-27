@@ -20,6 +20,12 @@ PanelHierarchy::~PanelHierarchy()
 
 bool PanelHierarchy::Update()
 {
+	if (bringToFront)
+	{
+		ImGui::SetNextWindowFocus();
+		bringToFront = false;
+	}
+
 	bool ret = true;
 	ImGuiWindowFlags settingsFlags = ImGuiWindowFlags_NoFocusOnAppearing;
 	uint treeFlags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_DefaultOpen;

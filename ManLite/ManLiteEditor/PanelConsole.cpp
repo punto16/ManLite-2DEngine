@@ -17,6 +17,12 @@ PanelConsole::~PanelConsole()
 
 bool PanelConsole::Update()
 {
+	if (bringToFront)
+	{
+		ImGui::SetNextWindowFocus();
+		bringToFront = false;
+	}
+
 	bool ret = true;
 
 	ImGuiWindowFlags consoleFlags = 0;

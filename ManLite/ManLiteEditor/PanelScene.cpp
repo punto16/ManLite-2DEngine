@@ -37,6 +37,12 @@ void PanelScene::Start()
 
 bool PanelScene::Update()
 {
+	if (bringToFront)
+	{
+		ImGui::SetNextWindowFocus();
+		bringToFront = false;
+	}
+
 	bool ret = true;
 
 	if (ImGui::Begin(name.c_str(), &enabled))

@@ -39,6 +39,12 @@ PanelInspector::~PanelInspector()
 
 bool PanelInspector::Update()
 {
+	if (bringToFront)
+	{
+		ImGui::SetNextWindowFocus();
+		bringToFront = false;
+	}
+
 	bool ret = true;
 
 	if (ImGui::Begin(name.c_str(), &enabled))
@@ -384,10 +390,22 @@ void PanelInspector::AnimatorOptions(GameObject& go)
 			}
 			if (selected_animation == animation_name)
 			{
+				ImGui::SetNextItemWidth(ImGui::CalcItemWidth() * 0.4);
+				if (ImGui::Button("Edit Animation"))
+				{
+					app->gui->animation_panel->RequestFocus();
+					selected_animation = animation_name;
+					app->gui->animation_panel->SetAnimation(animation_path);
+					app->gui->animation_panel->SetSprite(sprite->GetTexturePath());
+				}
+				ImGui::SetNextItemWidth(ImGui::CalcItemWidth() * 0.4);
+
 				int w, h;
 				sprite->GetTextureSize(w, h);
+				ImGui::SameLine();
 				ImGui::DragFloat("Sprite Size##AnimationInspectorPanel", &image_animation_size, 3.0f, 10.0f, 2000.0f);
 				animation->Update(app->GetDT(), this->currentFrame);
+
 				ML_Rect section = animation->GetCurrentFrame(this->currentFrame);
 				if (animation->totalFrames <= 0)
 				{
@@ -460,6 +478,7 @@ void PanelInspector::AnimatorOptions(GameObject& go)
 void PanelInspector::AddComponent(GameObject& go)
 {
 	const ImVec2 button_size_default = ImVec2(150, 0);
+	const ImVec2 panel_size_default = ImVec2(200, 150);
 	ImGui::Dummy(ImVec2(0, 10));
 	ImGui::Dummy(ImVec2((ImGui::GetWindowWidth() - button_size_default.x - 30) * 0.5, 0));
 	ImGui::SameLine();
@@ -470,14 +489,28 @@ void PanelInspector::AddComponent(GameObject& go)
 
 	if (ImGui::Button("Add Component", button_size_default))
 	{
-		window_pos = ImGui::GetMousePos();
+		const float margin = 10.0f; // Margen de seguridad
+		ImVec2 mouse_pos = ImGui::GetMousePos();
+		ImVec2 panel_pos = ImGui::GetWindowPos();
+		float panel_height = ImGui::GetWindowHeight();
+
+		const float y_threshold = panel_pos.y + (panel_height * 0.75f);
+		float target_y = mouse_pos.y;
+
+		window_pos = ImVec2(mouse_pos.x, target_y);
+
+		if (mouse_pos.y > y_threshold)
+		{
+			window_pos.y -= panel_size_default.y * 0.95;
+		}
+
 		show_component_window = true;
 		ImGui::SetNextWindowPos(window_pos);
 	}
 
 	if (show_component_window)
 	{
-		ImGui::SetNextWindowSize(ImVec2(200, 0), ImGuiCond_Always);
+		ImGui::SetNextWindowSize(panel_size_default, ImGuiCond_Always);
 		ImGui::Begin(
 			"Add Component###ComponentSelector",
 			&show_component_window,

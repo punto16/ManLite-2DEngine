@@ -42,11 +42,14 @@ public:
 	virtual void SetState(bool state) { this->enabled = state; }
 	virtual void SwitchState() { enabled = !enabled; }
 
+	void RequestFocus() { bringToFront = true; enabled = true; }
 protected:
 
 	PanelType type = PanelType::UNKNOWN;
 	std::string name;
 	bool enabled = false;
+
+	bool bringToFront = false;
 };
 
 #endif // !__PANEL_H__

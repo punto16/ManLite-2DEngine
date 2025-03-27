@@ -90,6 +90,9 @@
     <ClCompile Include="Animator.cpp">
       <Filter>GameObject\Components</Filter>
     </ClCompile>
+    <ClCompile Include="AudioSource.cpp">
+      <Filter>GameObject\Components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="EngineCore.h">
@@ -148,6 +151,9 @@
     </ClInclude>
     <ClInclude Include="Animation.h">
       <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="AudioSource.h">
+      <Filter>GameObject\Components</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

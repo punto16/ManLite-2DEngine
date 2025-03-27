@@ -167,6 +167,7 @@ popd
   <ItemGroup>
     <ClCompile Include="Animator.cpp" />
     <ClCompile Include="Animator.h" />
+    <ClCompile Include="AudioSource.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Camera2D.cpp" />
     <ClCompile Include="Component.cpp" />
@@ -186,6 +187,7 @@ popd
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Animation.h" />
+    <ClInclude Include="AudioSource.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Camera2D.h" />
     <ClInclude Include="Component.h" />

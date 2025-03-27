@@ -8,6 +8,7 @@
 #include <unordered_map>
 #include <string>
 #include <GL/glew.h>
+#include "SDL2/SDL_mixer.h"
 
 struct TextureData {
     GLuint id;
@@ -17,6 +18,16 @@ struct TextureData {
 
 struct AnimationData {
     Animation animation;
+    int refCount = 0;
+};
+
+struct SoundData {
+    Mix_Chunk* chunk = nullptr;
+    int refCount = 0;
+};
+
+struct MusicData {
+    Mix_Music* music = nullptr;
     int refCount = 0;
 };
 
@@ -36,10 +47,18 @@ public:
     Animation* GetAnimation(const std::string& key);
     void ReleaseAnimation(const std::string& key);
 
+    // Audio
+    Mix_Chunk* LoadSound(const std::string& path);
+    void ReleaseSound(const std::string& path);
+    Mix_Music* LoadMusic(const std::string& path);
+    void ReleaseMusic(const std::string& path);
+
 private:
     ResourceManager() = default;
     std::unordered_map<std::string, TextureData> textures;
     std::unordered_map<std::string, AnimationData> animations;
+    std::unordered_map<std::string, SoundData> sounds;
+    std::unordered_map<std::string, MusicData> musics;
 };
 
 #endif // !__RESOURCE_MANAGER_EM_H__

@@ -26,6 +26,7 @@ public:
 
     void AddAnimation(const std::string& name, const std::string& filePath);
     void RemoveAnimation(const std::string& name);
+    void RemoveAllAnimations();
     bool HasAnimation(const std::string& name);
 
     void Play(const std::string& name);

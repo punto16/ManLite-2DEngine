@@ -14,6 +14,12 @@ PanelProject::~PanelProject()
 
 bool PanelProject::Update()
 {
+	if (bringToFront)
+	{
+		ImGui::SetNextWindowFocus();
+		bringToFront = false;
+	}
+
 	bool ret = true;
 
 	if (ImGui::Begin(name.c_str(), &enabled))
