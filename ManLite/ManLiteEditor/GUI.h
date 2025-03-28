@@ -6,7 +6,7 @@
 #pragma warning(disable:4996)
 
 #include "Module.h"
-
+#include "string"
 #include <list>
 
 class Panel;
@@ -19,6 +19,8 @@ class PanelConsole;
 class PanelAnimation;
 class PanelAbout;
 class PanelLayer;
+class PanelSaveScene;
+class PanelLoading;
 
 enum class Aspect
 {
@@ -47,9 +49,6 @@ public:
 	bool PostUpdate();
 	bool CleanUp();
 
-	//bool IsInitialized(Panel* panel);
-	//std::list<Panel*> GetPanels();
-
 	//dockspace
 	void MainWindowDockspace();
 
@@ -73,6 +72,8 @@ public:
 	bool IsInitialized(Panel* panel);
 	std::list<Panel*> GetPanels() { return panels; }
 
+	static void HelpMarker(std::string text);
+
 private:
 
 
@@ -87,6 +88,8 @@ public:
 	PanelAnimation* animation_panel = nullptr;
 	PanelAbout* about_panel = nullptr;
 	PanelLayer* layer_panel = nullptr;
+	PanelSaveScene* save_scene_panel = nullptr;
+	PanelLoading* loading_panel = nullptr;
 
 private:
 	std::list<Panel*> panels;

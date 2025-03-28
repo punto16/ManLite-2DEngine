@@ -5,8 +5,10 @@
 #include "InputEM.h"
 #include "RendererEM.h"
 #include "SceneManagerEM.h"
+#include "AudioEM.h"
 
 #include "Defs.h"
+#include "Log.h"
 
 EngineCore::EngineCore()
 {
@@ -14,6 +16,7 @@ EngineCore::EngineCore()
 	window_em = new WindowEM(this);
 	input_em = new InputEM(this);
 	scene_manager_em = new SceneManagerEM(this);
+	audio_em = new AudioEM(this);
 
 	//renderer last
 	renderer_em = new RendererEM(this);
@@ -22,6 +25,7 @@ EngineCore::EngineCore()
 	//------add modules------
 	AddEngineModule(window_em, true);
 	AddEngineModule(input_em, true);
+	AddEngineModule(audio_em, true);
 	AddEngineModule(scene_manager_em, true);
 
 	//renderer last
@@ -47,6 +51,7 @@ void EngineCore::Awake()
 		if (!item->active) continue;
 		item->Awake();
 	}
+	LOG(LogType::LOG_OK, "EngineCore: Initialization Success");
 }
 
 void EngineCore::Start()

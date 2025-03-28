@@ -3,6 +3,7 @@
 #include <string.h>
 #include <SDL2/SDL.h>
 #include <imgui_impl_sdl2.h>
+#include "Log.h"
 
 InputEM::InputEM(EngineCore* parent) : EngineModule(parent), close_app(false)
 {
@@ -22,6 +23,8 @@ bool InputEM::Awake()
 
 	SDL_Init(0);
 	if (SDL_InitSubSystem(SDL_INIT_EVENTS) < 0) return false;
+
+	LOG(LogType::LOG_OK, "InputEM: Initialization Success");
 
 	return ret;
 }

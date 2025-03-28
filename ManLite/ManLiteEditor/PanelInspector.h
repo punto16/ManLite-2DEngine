@@ -22,6 +22,7 @@ public:
 	void CameraOptions(GameObject& go);
 	void SpriteOptions(GameObject& go);
 	void AnimatorOptions(GameObject& go);
+	void AudioSourceOptions(GameObject& go);
 
 	//add components last
 	void AddComponent(GameObject& go);
@@ -31,6 +32,8 @@ private:
 	float image_animation_size = 100.0f;
 	float currentFrame;
 
+
+	std::string selected_audio;
 };
 
 #endif // !__PANEL_INSPECTOR_H__

@@ -14,6 +14,7 @@ class WindowEM;
 class InputEM;
 class RendererEM;
 class SceneManagerEM;
+class AudioEM;
 
 class EngineCore
 {
@@ -49,6 +50,7 @@ public:
 	InputEM* input_em = nullptr;
 	RendererEM* renderer_em = nullptr;
 	SceneManagerEM* scene_manager_em = nullptr;
+	AudioEM* audio_em = nullptr;
 
 private:
 

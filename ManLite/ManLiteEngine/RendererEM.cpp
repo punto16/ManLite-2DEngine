@@ -33,6 +33,8 @@ bool RendererEM::Awake()
 		return false;
 	}
 
+	LOG(LogType::LOG_OK, "RendererEM: Initialization Success");
+
 	return ret;
 }
 

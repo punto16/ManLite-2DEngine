@@ -15,6 +15,8 @@
 #include "PanelAnimation.h"
 #include "PanelAbout.h"
 #include "PanelLayer.h"
+#include "PanelSaveScene.h"
+#include "PanelLoading.h"
 
 #include "FileDialog.h"
 #include "SceneManagerEM.h"
@@ -43,7 +45,9 @@ game_panel(nullptr),
 console_panel(nullptr),
 animation_panel(nullptr),
 about_panel(nullptr),
-layer_panel(nullptr)
+layer_panel(nullptr),
+save_scene_panel(nullptr),
+loading_panel(nullptr)
 {
 }
 
@@ -84,6 +88,14 @@ bool Gui::Awake()
 	layer_panel = new PanelLayer(PanelType::LAYER, "Layer", true);
 	panels.push_back(layer_panel);
 	ret *= IsInitialized(layer_panel);
+
+	save_scene_panel = new PanelSaveScene(PanelType::SAVE_SCENE, "Save Scene", false);
+	panels.push_back(save_scene_panel);
+	ret *= IsInitialized(save_scene_panel);
+
+	loading_panel = new PanelLoading(PanelType::LOADING, "Loading", false);
+	panels.push_back(loading_panel);
+	ret *= IsInitialized(loading_panel);
 
 	//"renders" last
 	game_panel = new PanelGame(PanelType::GAME, "Game", true);
@@ -232,6 +244,15 @@ bool Gui::Update(double dt)
 			if (!panel->Update()) return false;
 	}
 
+	//thread set loaded scene
+	if (save_scene_panel->set_scene)
+	{
+		engine->scene_manager_em->CleanUp();
+		engine->scene_manager_em->GetCurrentScene() = *save_scene_panel->new_scene;
+		LOG(LogType::LOG_INFO, "Scene <%s> created", save_scene_panel->new_scene->GetSceneName().c_str());
+		save_scene_panel->set_scene = false;
+	}
+
 	return ret;
 }
 
@@ -289,6 +310,19 @@ bool Gui::IsInitialized(Panel* panel)
 {
 	if (!panel) return false;
 	return true;
+}
+
+void Gui::HelpMarker(std::string text)
+{
+	ImGui::TextDisabled("(?)");
+	if (ImGui::IsItemHovered())
+	{
+		ImGui::BeginTooltip();
+		ImGui::PushTextWrapPos(450.0f);
+		ImGui::TextUnformatted(text.c_str());
+		ImGui::PopTextWrapPos();
+		ImGui::EndTooltip();
+	}
 }
 
 void Gui::MainWindowDockspace()
@@ -374,16 +408,13 @@ void Gui::FileMenu()
 {
 	if (ImGui::MenuItem("New Scene", "Ctrl+N"))
 	{
-		engine->scene_manager_em->CreateEmptyScene();
+		save_scene_panel->RequestFocus();
+		save_scene_panel->new_scene_or_open_scene = true;
 	}
 	if (ImGui::MenuItem("Open Scene", "Ctrl+O"))
 	{
-		std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Open ManLite Scene file (*.mlscene)\0*.mlscene\0")).string();
-		if (!filePath.empty() && filePath.ends_with(".mlscene"))
-		{
-			std::string sceneName = std::filesystem::path(filePath).stem().string();
-			engine->scene_manager_em->LoadSceneFromJson(filePath);
-		}
+		save_scene_panel->RequestFocus();
+		save_scene_panel->new_scene_or_open_scene = false;
 	}
 
 	ImGui::Separator();
@@ -601,7 +632,6 @@ void Gui::HelpMenu()
 	{
 		about_panel->SwitchState();
 	}
-
 	ImGui::Separator();
 
 	ImGui::TextLinkOpenURL("Documentation", "https://github.com/punto16/ManLite-2DEngine");
@@ -626,21 +656,24 @@ void Gui::HandleShortcut()
 	else if (engine->input_em->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT &&
 		engine->input_em->GetKey(SDL_SCANCODE_N) == KEY_DOWN)
 	{
-		engine->scene_manager_em->CreateEmptyScene();
+		save_scene_panel->RequestFocus();
+		save_scene_panel->new_scene_or_open_scene = true;
 	}
 	else if (engine->input_em->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT &&
 		engine->input_em->GetKey(SDL_SCANCODE_O) == KEY_DOWN)
 	{
-		std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Open ManLite Scene file (*.mlscene)\0*.mlscene\0")).string();
-		if (!filePath.empty() && filePath.ends_with(".mlscene"))
-		{
-			std::string sceneName = std::filesystem::path(filePath).stem().string();
-			engine->scene_manager_em->LoadSceneFromJson(filePath);
-		}
+		save_scene_panel->RequestFocus();
+		save_scene_panel->new_scene_or_open_scene = false;
 	}
 	else if (engine->input_em->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT &&
 		engine->input_em->GetKey(SDL_SCANCODE_S) == KEY_DOWN)
 	{
+		//test
+		if (!loading_panel->GetState()) loading_panel->RequestFocus();
+		else loading_panel->SwitchState();
+		//
+
+
 		std::string filePath = engine->scene_manager_em->GetCurrentScene().GetScenePath();
 		if (!filePath.empty() && filePath != "")
 		{

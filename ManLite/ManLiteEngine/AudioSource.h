@@ -9,7 +9,7 @@
 struct SoundRef {
     Mix_Chunk* chunk;
     std::string filePath;
-    int volume = 128;
+    int volume = 100;
     bool loop = false;
     bool play_on_awake = false;
 };
@@ -17,7 +17,7 @@ struct SoundRef {
 struct MusicRef {
     Mix_Music* music;
     std::string filePath;
-    int volume = 128;
+    int volume = 100;
     bool loop = false;
     bool play_on_awake = false;
 };
@@ -46,6 +46,8 @@ public:
     void PlaySound(const std::string& name);
     void PlayMusic(const std::string& name);
     void StopAll();
+    void StopSound(const std::string& name);
+    void StopMusic(const std::string& name);
     void SetSoundVolume(const std::string& name, int volume);
     void SetMusicVolume(const std::string& name, int volume);
 
@@ -60,5 +62,8 @@ public:
 private:
     std::unordered_map<std::string, SoundRef> sounds;
     std::unordered_map<std::string, MusicRef> musics;
+
+    Mix_Music* current_music = nullptr;
+
 };
 #endif // !__AUDIO_SOURCE_H__

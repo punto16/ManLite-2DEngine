@@ -2,6 +2,8 @@
 #include "GameObject.h"
 #include "Log.h"
 
+#include "SDL2/SDL_mixer.h"
+
 AudioSource::AudioSource(std::weak_ptr<GameObject> container_go, std::string name, bool enable)
     : Component(container_go, ComponentType::AudioSource, name, enable)
 {
@@ -101,6 +103,7 @@ void AudioSource::PlayMusic(const std::string& name)
 {
     auto it = musics.find(name);
     if (it != musics.end()) {
+        current_music = it->second.music;
         Mix_VolumeMusic(it->second.volume * 1.28);
         Mix_PlayMusic(it->second.music, it->second.loop ? -1 : 0);
     }
@@ -112,11 +115,46 @@ void AudioSource::StopAll()
     Mix_HaltMusic();
 }
 
+void AudioSource::StopSound(const std::string& name)
+{
+    auto it = sounds.find(name);
+    if (it != sounds.end()) {
+        Mix_Chunk* targetChunk = it->second.chunk;
+        int numChannels = Mix_AllocateChannels(-1);
+        for (int i = 0; i < numChannels; ++i) {
+            if (Mix_GetChunk(i) == targetChunk && Mix_Playing(i)) {
+                Mix_HaltChannel(i);
+            }
+        }
+    }
+}
+
+void AudioSource::StopMusic(const std::string& name)
+{
+    auto it = musics.find(name);
+    if (it != musics.end() && Mix_PlayingMusic() && current_music == it->second.music)
+    {
+        Mix_HaltMusic();
+        current_music = nullptr;
+    }
+}
+
 void AudioSource::SetSoundVolume(const std::string& name, int volume)
 {
     auto it = sounds.find(name);
     if (it != sounds.end()) {
         it->second.volume = std::clamp(volume, 0, 100);
+        Mix_Chunk* targetChunk = it->second.chunk;
+        int targetVolume = it->second.volume * 1.28;
+
+        Mix_VolumeChunk(targetChunk, targetVolume);
+
+        int numChannels = Mix_AllocateChannels(-1);
+        for (int i = 0; i < numChannels; ++i) {
+            if (Mix_GetChunk(i) == targetChunk && Mix_Playing(i)) {
+                Mix_Volume(i, targetVolume);
+            }
+        }
     }
 }
 

@@ -34,6 +34,9 @@
     <Filter Include="Utils\ResourceManager">
       <UniqueIdentifier>{c20d70b3-5716-4950-a012-58f5e64acb3e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="EngineModules\Audio">
+      <UniqueIdentifier>{a1162fa3-d751-4029-bc1a-a466cabf3a76}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EngineCore.cpp">
@@ -92,6 +95,9 @@
     </ClCompile>
     <ClCompile Include="AudioSource.cpp">
       <Filter>GameObject\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="AudioEM.cpp">
+      <Filter>EngineModules\Audio</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -154,6 +160,9 @@
     </ClInclude>
     <ClInclude Include="AudioSource.h">
       <Filter>GameObject\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="AudioEM.h">
+      <Filter>EngineModules\Audio</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

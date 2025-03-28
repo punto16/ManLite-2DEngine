@@ -5,6 +5,9 @@
 #include "../ManLiteEngine/Log.h"
 #include "../ManLiteEngine/EngineCore.h"
 
+#include "App.h"
+#include "PanelSaveScene.h"
+
 #include <imgui.h>
 
 PanelConsole::PanelConsole(PanelType type, std::string name, bool enabled) : Panel(type, name, enabled)
@@ -108,7 +111,7 @@ bool PanelConsole::Update()
 		}
 		ImGui::EndChild();
 
-		if (clearOnPlay) engine->CleanLogs();
+		if (clearOnPlay || app->gui->save_scene_panel->is_loading) engine->CleanLogs();
 	}
 	ImGui::End();
 

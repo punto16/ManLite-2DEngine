@@ -26,11 +26,11 @@ GLuint ResourceManager::LoadTexture(const std::string& path, int& tex_width, int
     unsigned char* data = stbi_load(path.c_str(), &tex_width, &tex_height, &channels, 0);
 
     if (!data) {
-        LOG(LogType::LOG_ERROR, "Failed to load texture: {}", path);
+        LOG(LogType::LOG_ERROR, "Failed to load texture: %s", path.c_str());
         return 0;
     }
 
-    GLuint textureID;
+    GLuint textureID = -1;
     glGenTextures(1, &textureID);
     glBindTexture(GL_TEXTURE_2D, textureID);
 
@@ -79,7 +79,7 @@ Animation* ResourceManager::LoadAnimation(const std::string& path)
 
     Animation newAnim;
     if (!newAnim.LoadFromFile(path)) {
-        LOG(LogType::LOG_ERROR, "Failed to load animation: %s", path);
+        LOG(LogType::LOG_ERROR, "Failed to load animation: %s", path.c_str());
         return nullptr;
     }
 
@@ -116,7 +116,7 @@ Mix_Chunk* ResourceManager::LoadSound(const std::string& path)
     Mix_Chunk* chunk = Mix_LoadWAV(path.c_str());
     if (!chunk)
     {
-        LOG(LogType::LOG_ERROR, "Failed to load sound: %s", path);
+        LOG(LogType::LOG_ERROR, "Failed to load sound: %s", path.c_str());
         return nullptr;
     }
 
@@ -149,7 +149,7 @@ Mix_Music* ResourceManager::LoadMusic(const std::string& path)
     Mix_Music* music = Mix_LoadMUS(path.c_str());
     if (!music)
     {
-        LOG(LogType::LOG_ERROR, "Failed to load music: %s", path);
+        LOG(LogType::LOG_ERROR, "Failed to load music: %s", path.c_str());
         return nullptr;
     }
 

@@ -202,6 +202,91 @@ void SceneManagerEM::LoadSceneFromJson(const std::string& file_name)
 	LOG(LogType::LOG_OK, "Succesfully Loaded Scene %s", file_name.c_str());
 }
 
+void SceneManagerEM::LoadSceneToScene(const std::string& file_name, Scene& scene)
+{
+	if (!fs::exists(file_name))
+	{
+		LOG(LogType::LOG_ERROR, "Scene file does not exist: %s", file_name.c_str());
+		return;
+	}
+
+	std::ifstream file(file_name);
+	if (!file.is_open())
+	{
+		LOG(LogType::LOG_ERROR, "Failed Opening file: %s", file_name.c_str());
+		return;
+	}
+
+	nlohmann::json sceneJSON;
+	try
+	{
+		file >> sceneJSON;
+	}
+	catch (const nlohmann::json::parse_error& e)
+	{
+		LOG(LogType::LOG_ERROR, "Failed to parse scene JSON: %s", e.what());
+		return;
+	}
+	file.close();
+
+	scene.SetScenePath(file_name);
+	if (sceneJSON.contains("scene_name"))
+	{
+		scene.SetSceneName(sceneJSON["scene_name"]);
+		scene.GetSceneRoot().SetName(sceneJSON["scene_name"]);
+	}
+
+	scene.GetSceneRoot().GetChildren().clear();
+
+	if (sceneJSON.contains("game_objects"))
+	{
+		const nlohmann::json& gameObjectsJSON = sceneJSON["game_objects"];
+
+		for (const auto& gameObjectJSON : gameObjectsJSON)
+		{
+			std::shared_ptr<GameObject> go = scene.CreateEmptyGO(scene.GetSceneRoot());
+			go->LoadGameObject(gameObjectJSON);
+		}
+	}
+	scene.GetSceneLayers().clear();
+
+	if (sceneJSON.contains("layers"))
+	{
+		const nlohmann::json& layersJSON = sceneJSON["layers"];
+
+		for (const auto& layerJSON : layersJSON)
+		{
+			std::shared_ptr<Layer> layer = scene.CreateEmptyLayer();
+			layer->LoadLayer(layerJSON);
+
+			if (layerJSON.contains("Layer_children_go_id"))
+			{
+				int children_count = 0;
+				if (layerJSON.contains("children_count")) children_count = layerJSON["children_count"];
+				std::vector<uint32_t> childIDs;
+
+				for (size_t i = 0; i < children_count; i++)
+				{
+					childIDs.push_back(layerJSON["Layer_children_go_id"][i]);
+				}
+
+				for (auto& id : childIDs)
+				{
+					if (auto child = scene.FindGameObjectByID(id))
+					{
+						layer->AddChild(child);
+						child->SetParentLayer(layer);
+					}
+					else
+						LOG(LogType::LOG_WARNING, "GameObject <id: %u> not found for layer", id);
+				}
+			}
+		}
+	}
+
+	LOG(LogType::LOG_OK, "Succesfully Loaded Scene %s", file_name.c_str());
+}
+
 //SCENE
 Scene::Scene(std::string scene_name) : scene_name(scene_name)
 {

@@ -130,9 +130,10 @@ public:
 	//scene serialization
 	void SaveScene(std::string directory, std::string scene_name);
 	void LoadSceneFromJson(const std::string& file_name);
+	void LoadSceneToScene(const std::string& file_name, Scene& scene);
 
 	//getters // setters
-	Scene& GetCurrentScene() const { return *current_scene; }
+	Scene& GetCurrentScene() { return *current_scene; }
 
 private:
 	std::unique_ptr<Scene> current_scene;

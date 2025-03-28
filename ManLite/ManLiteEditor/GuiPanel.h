@@ -19,6 +19,8 @@ enum class PanelType
 	SETTINGS,
 	BUILD,
 	LAYER,
+	SAVE_SCENE,
+	LOADING,
 
 	UNKNOWN
 };

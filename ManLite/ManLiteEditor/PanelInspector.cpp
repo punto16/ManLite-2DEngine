@@ -14,6 +14,8 @@
 #include "Sprite2D.h"
 #include "Animator.h"
 #include "Animation.h"
+#include "AudioSource.h"
+
 #include "ResourceManager.h"
 
 #include "FileDialog.h"
@@ -59,6 +61,7 @@ bool PanelInspector::Update()
 				CameraOptions(go);
 				SpriteOptions(go);
 				AnimatorOptions(go);
+				AudioSourceOptions(go);
 
 				//last
 				AddComponent(go);
@@ -441,7 +444,7 @@ void PanelInspector::AnimatorOptions(GameObject& go)
 		//add animation
 		const ImVec2 button_size_default = ImVec2(150, 0);
 		ImGui::Dummy(ImVec2(0, 10));
-		ImGui::Dummy(ImVec2((ImGui::GetWindowWidth() - button_size_default.x - 30) * 0.5, 0));
+		ImGui::Dummy(ImVec2((ImGui::GetWindowWidth() - (button_size_default.x * 2 + 10) - 30) * 0.5, 0));
 		ImGui::SameLine();
 	
 		std::string add_animation_label = "Add Animation##" + std::to_string(go.GetID());
@@ -468,7 +471,208 @@ void PanelInspector::AnimatorOptions(GameObject& go)
 				}
 			}
 		}
+		std::string create_animation_label = "Create Animation##" + std::to_string(go.GetID());
+		ImGui::SameLine(0, 10);
+		if (ImGui::Button(create_animation_label.c_str(), button_size_default))
+		{
+			std::string filePath = std::filesystem::relative(FileDialog::SaveFile("Save Animation file (*.animation)\0*.animation\0")).string();
+			if (!filePath.empty())
+			{
+				std::string animName = fs::path(filePath).stem().string();
+				if (!filePath.ends_with(".animation")) filePath += ".animation";
+				Animation a;
+				if (a.SaveToFile(filePath)) LOG(LogType::LOG_OK, "Animation file saved to: %s", filePath.c_str());
+				else LOG(LogType::LOG_ERROR, "ERROR on Animation file save to: %s", filePath.c_str());
 
+				animator->AddAnimation(animName, filePath);
+			}
+		}
+
+
+		ImGui::Dummy(ImVec2(0, 4));
+		ImGui::Separator();
+	}
+}
+
+void PanelInspector::AudioSourceOptions(GameObject& go)
+{
+	uint treeFlags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_DefaultOpen;
+	AudioSource* audio = go.GetComponent<AudioSource>();
+	if (audio == nullptr) return;
+	std::string spriteLabel = std::string("Audio Source##" + std::to_string(go.GetID()));
+	if (ImGui::CollapsingHeader(spriteLabel.c_str(), treeFlags))
+	{
+		ImGui::Dummy(ImVec2(10, 0));
+		ImGui::SameLine();
+		if (ImGui::CollapsingHeader("Musics"))
+		{
+			for (auto& musics_map : audio->GetMusics())
+			{
+				std::string audio_name = musics_map.first;
+				std::string audio_path = musics_map.second.filePath;
+				MusicRef* music = &(musics_map.second);
+
+				std::string audio_label = audio_name + "##" + audio_path + std::to_string(go.GetID());
+				ImGui::Dummy(ImVec2(30, 0));
+				ImGui::SameLine();
+				ImGui::CollapsingHeader(audio_label.c_str(), ImGuiTreeNodeFlags_Leaf);
+				if (ImGui::BeginPopupContextItem())
+				{
+					std::string context_label = "Remove Music##" + audio_label;
+					if (ImGui::MenuItem(context_label.c_str()))
+					{
+						audio->RemoveMusic(audio_name);
+						ImGui::EndPopup();
+						break;
+					}
+					ImGui::EndPopup();
+				}
+				if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+				{
+					selected_audio = audio_name;
+				}
+				if (selected_audio == audio_name)
+				{
+					ImGui::Dummy(ImVec2(30, 0));
+					ImGui::SameLine();
+					ImGui::SetNextItemWidth(ImGui::CalcItemWidth() * 0.4);
+					ImGui::Checkbox("Loop##MusicInspectorPanel", &music->loop);
+					ImGui::SameLine();
+					ImGui::SetNextItemWidth(ImGui::CalcItemWidth() * 0.4);
+					ImGui::Checkbox("Play On Awake##MusicInspectorPanel", &music->play_on_awake);
+
+					ImGui::Dummy(ImVec2(30, 0));
+					ImGui::SameLine();
+					int volume = music->volume;
+					ImGui::DragInt("Volume##MusicInspectorPanel", &volume, 1.0f, 0, 100);
+					if (music->volume != volume) audio->SetMusicVolume(audio_name, volume);
+					ImGui::Dummy(ImVec2(30, 0));
+					ImGui::SameLine();
+					ImGui::Separator();
+
+					const ImVec2 button_size_default = ImVec2(60, 0);
+					ImGui::Dummy(ImVec2((ImGui::GetWindowWidth() - (button_size_default.x * 2 + 10) - 30) * 0.5, 0));
+					ImGui::SameLine();
+
+					if (ImGui::Button("Play", button_size_default))
+					{
+						audio->PlayMusic(audio_name);
+					}
+
+					ImGui::SameLine();
+					if (ImGui::Button("Stop", button_size_default))
+					{
+						audio->StopMusic(audio_name);
+					}
+
+					ImGui::Dummy(ImVec2(0, 5));
+				}
+			}
+			ImGui::Dummy(ImVec2(10, 0));
+			ImGui::SameLine();
+			ImGui::Separator();
+		}
+
+		ImGui::Dummy(ImVec2(10, 0));
+		ImGui::SameLine();
+		if (ImGui::CollapsingHeader("Sound Effects"))
+		{
+			for (auto& sounds_map : audio->GetSounds())
+			{
+				std::string audio_name = sounds_map.first;
+				std::string audio_path = sounds_map.second.filePath;
+				SoundRef* sound = &(sounds_map.second);
+
+				std::string audio_label = audio_name + "##" + audio_path + std::to_string(go.GetID());
+				ImGui::Dummy(ImVec2(30, 0));
+				ImGui::SameLine();
+				ImGui::CollapsingHeader(audio_label.c_str(), ImGuiTreeNodeFlags_Leaf);
+				if (ImGui::BeginPopupContextItem())
+				{
+					std::string context_label = "Remove Sound Effect##" + audio_label;
+					if (ImGui::MenuItem(context_label.c_str()))
+					{
+						audio->RemoveSound(audio_name);
+						ImGui::EndPopup();
+						break;
+					}
+					ImGui::EndPopup();
+				}
+				if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+				{
+					selected_audio = audio_name;
+				}
+				if (selected_audio == audio_name)
+				{
+					ImGui::Dummy(ImVec2(30, 0));
+					ImGui::SameLine();
+					ImGui::SetNextItemWidth(ImGui::CalcItemWidth() * 0.5);
+					ImGui::Checkbox("Loop##MusicInspectorPanel", &sound->loop);
+					ImGui::SameLine();
+					ImGui::SetNextItemWidth(ImGui::CalcItemWidth() * 0.5);
+					ImGui::Checkbox("Play On Awake##MusicInspectorPanel", &sound->play_on_awake);
+
+					ImGui::Dummy(ImVec2(30, 0));
+					ImGui::SameLine();
+					int volume = sound->volume;
+					ImGui::DragInt("Volume##MusicInspectorPanel", &volume, 1.0f, 0, 100);
+					if (sound->volume != volume) audio->SetSoundVolume(audio_name, volume);
+
+					ImGui::Dummy(ImVec2(30, 0));
+					ImGui::SameLine();
+					ImGui::Separator();
+
+					const ImVec2 button_size_default = ImVec2(60, 0);
+					ImGui::Dummy(ImVec2((ImGui::GetWindowWidth() - (button_size_default.x * 2 + 10) - 30) * 0.5, 0));
+					ImGui::SameLine();
+
+					if (ImGui::Button("Play", button_size_default))
+					{
+						audio->PlaySound(audio_name);
+					}
+
+					ImGui::SameLine();
+					if (ImGui::Button("Stop", button_size_default))
+					{
+						audio->StopSound(audio_name);
+					}
+
+					ImGui::Dummy(ImVec2(0, 5));
+				}
+			}
+			ImGui::Dummy(ImVec2(10, 0));
+			ImGui::SameLine();
+			ImGui::Separator();
+		}
+
+		// add audio source
+		const ImVec2 button_size_default = ImVec2(150, 0);
+		ImGui::Dummy(ImVec2(0, 10));
+		ImGui::Dummy(ImVec2((ImGui::GetWindowWidth() - (button_size_default.x * 2 + 10) - 30) * 0.5, 0));
+		ImGui::SameLine();
+
+		std::string add_music_label = "Add Music##" + std::to_string(go.GetID());
+
+		if (ImGui::Button(add_music_label.c_str(), button_size_default))
+		{
+			std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Open Music file (*.ogg)\0*.ogg\0")).string();
+			if (!filePath.empty() && filePath.ends_with(".ogg"))
+			{
+				std::string audioName = std::filesystem::path(filePath).stem().string();
+				audio->AddMusic(audioName, filePath);
+			}
+		}
+		std::string add_sound_label = "Add Sound Effect##" + std::to_string(go.GetID());
+		ImGui::SameLine(0, 10);
+		if (ImGui::Button(add_sound_label.c_str(), button_size_default))
+		{
+			std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Open Sound Effect file (*.wav)\0*.wav\0")).string();
+			if (!filePath.empty() && filePath.ends_with(".wav"))
+			{
+				std::string audioName = std::filesystem::path(filePath).stem().string();
+				audio->AddSound(audioName, filePath);
+			}
+		}
 
 		ImGui::Dummy(ImVec2(0, 4));
 		ImGui::Separator();
@@ -535,9 +739,11 @@ void PanelInspector::AddComponent(GameObject& go)
 			show_component_window = false;
 		}
 
+		bool has_sprite = go.GetComponent<Sprite2D>();
+		if (!has_sprite) ImGui::BeginDisabled();
 		if (ImGui::Selectable("Animation"))
 		{
-			if (go.GetComponent<Sprite2D>())
+			if (has_sprite)
 			{
 				go.AddComponent<Animator>();
 			}
@@ -545,6 +751,15 @@ void PanelInspector::AddComponent(GameObject& go)
 			{
 				LOG(LogType::LOG_WARNING, "Can NOT add Animator Component if GameObject does NOT have Sprite2D Component");
 			}
+			show_component_window = false;
+		}
+		if (!has_sprite) ImGui::EndDisabled();
+		ImGui::SameLine();
+		Gui::HelpMarker("Requires a Sprite2D component to add animations");
+
+		if (ImGui::Selectable("Audio Source"))
+		{
+			go.AddComponent<AudioSource>();
 			show_component_window = false;
 		}
 
