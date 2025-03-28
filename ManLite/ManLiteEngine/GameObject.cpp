@@ -7,6 +7,7 @@
 #include "Sprite2D.h"
 #include "Camera.h"
 #include "Animator.h"
+#include "AudioSource.h"
 
 #include "Log.h"
 #include "Defs.h"
@@ -412,8 +413,8 @@ void GameObject::LoadGameObject(const nlohmann::json& goJSON)
             }
             else if (componentJSON["ComponentType"] == (int)ComponentType::AudioSource)
             {
-                //this->AddComponent<AudioSource>();
-                //this->GetComponent<AudioSource>()->LoadComponent(componentJSON);
+                this->AddComponent<AudioSource>();
+                this->GetComponent<AudioSource>()->LoadComponent(componentJSON);
             }
             else if (componentJSON["ComponentType"] == (int)ComponentType::ParticleSystem)
             {
