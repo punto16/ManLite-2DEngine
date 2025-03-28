@@ -36,7 +36,7 @@
       "Enabled": true,
       "ID": 1100071130,
       "Name": "Camera",
-      "ParentID": 3546561130,
+      "ParentID": 4072764397,
       "ParentLayerID": 0,
       "Tag": "Camera",
       "Visible": true
@@ -70,7 +70,7 @@
           "PixelArtRender": true,
           "TexturePath": "Assets\\Textures\\IDLE.png",
           "TextureSection": [
-            419,
+            227,
             43,
             26,
             39
@@ -80,9 +80,9 @@
             96
           ],
           "TextureUVs": [
-            0.4364583194255829,
+            0.23645833134651184,
             0.1458333283662796,
-            0.4635416567325592,
+            0.26354166865348816,
             0.5520833134651184
           ]
         },
@@ -108,9 +108,55 @@
       "Enabled": true,
       "ID": 2355176325,
       "Name": "Samurai",
-      "ParentID": 3546561130,
+      "ParentID": 4072764397,
       "ParentLayerID": 0,
       "Tag": "Player",
+      "Visible": true
+    },
+    {
+      "Components": [
+        {
+          "AspectRatio": 1.0,
+          "ComponentID": 2571517185,
+          "ComponentName": "Transform",
+          "ComponentType": 0,
+          "ContainerGOID": 3572031647,
+          "Enabled": true,
+          "LockAspect": true,
+          "Position": [
+            0.0,
+            0.0
+          ],
+          "Rotation": 0.0,
+          "Scale": [
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "ComponentID": 153423167,
+          "ComponentName": "AudioSource",
+          "ComponentType": 7,
+          "ContainerGOID": 3572031647,
+          "Enabled": true,
+          "Musics": [
+            {
+              "loop": false,
+              "name": "music",
+              "path": "Assets\\Audio\\Music\\music.ogg",
+              "play_on_awake": false,
+              "volume": 4
+            }
+          ],
+          "Sounds": null
+        }
+      ],
+      "Enabled": true,
+      "ID": 3572031647,
+      "Name": "BackGround_Music",
+      "ParentID": 4072764397,
+      "ParentLayerID": 0,
+      "Tag": "Sound",
       "Visible": true
     }
   ],
@@ -118,9 +164,10 @@
     {
       "Layer_children_go_id": [
         1100071130,
-        2355176325
+        2355176325,
+        3572031647
       ],
-      "children_count": 2,
+      "children_count": 3,
       "layer_id": 0,
       "layer_name": "DefaultLayer_0",
       "visible": true

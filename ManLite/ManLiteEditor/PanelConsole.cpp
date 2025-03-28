@@ -32,6 +32,12 @@ bool PanelConsole::Update()
 	consoleFlags |= ImGuiWindowFlags_NoFocusOnAppearing;
 	if (ImGui::Begin(name.c_str(), &enabled))
 	{
+		if (app->gui->save_scene_panel->is_loading)
+		{
+			engine->CleanLogs();
+			ImGui::End();
+			return true;
+		}
 		if (ImGui::Button("Clear"))
 			engine->CleanLogs();
 
@@ -111,7 +117,7 @@ bool PanelConsole::Update()
 		}
 		ImGui::EndChild();
 
-		if (clearOnPlay || app->gui->save_scene_panel->is_loading) engine->CleanLogs();
+		if (clearOnPlay) engine->CleanLogs();
 	}
 	ImGui::End();
 

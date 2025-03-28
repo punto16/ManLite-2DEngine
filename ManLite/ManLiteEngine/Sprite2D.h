@@ -6,6 +6,8 @@
 #include "ResourceManager.h"
 #include "Transform.h"
 #include "memory"
+#include <future>
+#include <atomic>
 
 class Sprite2D : public Component {
 public:
@@ -44,6 +46,10 @@ private:
     int sectionX = 0, sectionY = 0, sectionW = 0, sectionH = 0;
 
     float u1 = 0.0f, v1 = 0.0f, u2 = 1.0f, v2 = 1.0f;
+
+
+    std::future<GLuint> textureFuture;
+    std::atomic<bool> textureLoading{ false };
 };
 
 #endif // !__SPRITE2D_H__

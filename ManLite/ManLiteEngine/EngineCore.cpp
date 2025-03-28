@@ -6,6 +6,7 @@
 #include "RendererEM.h"
 #include "SceneManagerEM.h"
 #include "AudioEM.h"
+#include "ResourceManager.h"
 
 #include "Defs.h"
 #include "Log.h"
@@ -66,6 +67,8 @@ void EngineCore::Start()
 bool EngineCore::PreUpdate()
 {
 	bool ret = true;
+
+	ResourceManager::GetInstance().ProcessTextures();
 
 	for (auto& item : engine_modules)
 	{

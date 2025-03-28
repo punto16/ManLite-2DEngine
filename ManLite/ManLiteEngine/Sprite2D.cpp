@@ -13,8 +13,10 @@ Sprite2D::Sprite2D(std::weak_ptr<GameObject> container_go, const std::string& te
     : Component(container_go, ComponentType::Sprite, name, enable),
     texturePath(texture_path), pixel_art(false)
 {
+    ResourceManager::GetInstance().LoadTexture("Config\\placeholder.png", tex_width, tex_height);//load placeholder
     textureID = ResourceManager::GetInstance().LoadTexture(texturePath, tex_width, tex_height);
     SetTextureSection(0, 0, tex_width, tex_height);
+
 }
 
 Sprite2D::Sprite2D(const Sprite2D& component_to_copy, std::shared_ptr<GameObject> container_go)
@@ -36,7 +38,26 @@ Sprite2D::~Sprite2D()
 
 void Sprite2D::Draw()
 {
-    if (!enabled || textureID == 0) return;
+    if (!enabled) return;
+
+    if (textureLoading && textureFuture.valid()) {
+        if (textureFuture.wait_for(std::chrono::seconds(0)) == std::future_status::ready) {
+            textureID = textureFuture.get();
+            textureLoading = false;
+            SetTextureSection(0, 0, tex_width, tex_height);
+        }
+    }
+
+    if (textureID == 0) {
+        static GLuint placeholder = ResourceManager::GetInstance().GetTexture("Config\\placeholder.png");
+        engine->renderer_em->SubmitSprite(
+            placeholder,
+            GetContainerGO()->GetComponent<Transform>()->GetWorldMatrix(),
+            0, 1, 1, 0,
+            pixel_art
+        );
+        return;
+    }
 
     if (auto transform = GetContainerGO()->GetComponent<Transform>()) {
         engine->renderer_em->SubmitSprite(
@@ -83,8 +104,12 @@ void Sprite2D::LoadComponent(const nlohmann::json& componentJSON)
     if (componentJSON.contains("ComponentType")) type = (ComponentType)componentJSON["ComponentType"];
     if (componentJSON.contains("Enabled")) enabled = componentJSON["Enabled"];
     
-    if (componentJSON.contains("TexturePath")) texturePath = componentJSON["TexturePath"];
-    SwapTexture(texturePath);
+    if (componentJSON.contains("TexturePath"))
+    {
+        texturePath = componentJSON["TexturePath"];
+        textureLoading = true;
+        textureFuture = ResourceManager::GetInstance().LoadTextureAsync(texturePath, tex_width, tex_height);
+    }
     if (componentJSON.contains("PixelArtRender")) pixel_art = componentJSON["PixelArtRender"];
     if (componentJSON.contains("TextureSize")) tex_width = componentJSON["TextureSize"][0];
     if (componentJSON.contains("TextureSize")) tex_height = componentJSON["TextureSize"][1];

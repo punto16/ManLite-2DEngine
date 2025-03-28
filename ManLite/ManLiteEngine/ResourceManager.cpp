@@ -167,6 +167,77 @@ void ResourceManager::ReleaseMusic(const std::string& path)
     }
 }
 
+std::future<GLuint> ResourceManager::LoadTextureAsync(const std::string& path, int& tex_width, int& tex_height)
+{
+    if (path.empty()) return {};
+
+    auto it = textures.find(path);
+    if (it != textures.end()) {
+        tex_width = it->second.w;
+        tex_height = it->second.h;
+        std::promise<GLuint> p;
+        p.set_value(it->second.id);
+        return p.get_future();
+    }
+
+    int channels;
+    stbi_set_flip_vertically_on_load(true);
+    unsigned char* data = stbi_load(path.c_str(), &tex_width, &tex_height, &channels, 0);
+
+    if (!data) {
+        LOG(LogType::LOG_ERROR, "Failed to load texture: %s", path.c_str());
+        return {};
+    }
+
+    TextureLoadTask task;
+    task.path = path;
+    task.pixel_data = data;
+    task.width = tex_width;
+    task.height = tex_height;
+    task.channels = channels;
+
+    std::future<GLuint> future = task.promise.get_future();
+
+    {
+        std::lock_guard<std::mutex> lock(texture_queue_mutex);
+        texture_load_queue.push(std::move(task));
+    }
+
+    return future;
+}
+
+void ResourceManager::ProcessTextures()
+{
+    {
+        std::lock_guard<std::mutex> lock(texture_queue_mutex);
+
+        while (!texture_load_queue.empty()) {
+            TextureLoadTask task = std::move(texture_load_queue.front());
+            texture_load_queue.pop();
+
+            GLuint textureID;
+            glGenTextures(1, &textureID);
+            glBindTexture(GL_TEXTURE_2D, textureID);
+
+            GLenum format = (task.channels == 4) ? GL_RGBA : GL_RGB;
+            glTexImage2D(GL_TEXTURE_2D, 0, format, task.width, task.height, 0,
+                format, GL_UNSIGNED_BYTE, task.pixel_data);
+            glGenerateMipmap(GL_TEXTURE_2D);
+
+            stbi_image_free(task.pixel_data);
+
+            TextureData newData;
+            newData.id = textureID;
+            newData.refCount = 1;
+            newData.w = task.width;
+            newData.h = task.height;
+            textures[task.path] = newData;
+
+            task.promise.set_value(textureID);
+        }
+    }
+}
+
 void ResourceManager::CleanUnusedResources()
 {
     for (auto it = textures.begin(); it != textures.end();) {
