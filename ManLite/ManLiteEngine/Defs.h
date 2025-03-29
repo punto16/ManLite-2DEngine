@@ -130,6 +130,38 @@ public:
 	float x, y, w, h;
 };
 
+//meant for 0 to 255
+class ML_Color
+{
+public:
+	ML_Color(int r, int g, int b, int a)
+	{
+		this->r = r;
+		this->g = g;
+		this->b = b;
+		this->a = a;
+	}
+	ML_Color(float r, float g, float b, float a)
+	{
+		this->r = (int)r;
+		this->g = (int)g;
+		this->b = (int)b;
+		this->a = (int)a;
+	}
+	ML_Color()
+	{
+		this->r = 0;
+		this->g = 0;
+		this->b = 0;
+		this->a = 0;
+	}
+	~ML_Color()
+	{
+	}
+
+	int r, g, b, a;
+};
+
 // OTHERS ------------------------------------------------------------------------
 
 #define DEFAULT_CAM_WIDTH 1700

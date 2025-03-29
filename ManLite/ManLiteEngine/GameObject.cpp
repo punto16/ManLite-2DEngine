@@ -8,6 +8,7 @@
 #include "Camera.h"
 #include "Animator.h"
 #include "AudioSource.h"
+#include "Collider2D.h"
 
 #include "Log.h"
 #include "Defs.h"
@@ -403,8 +404,8 @@ void GameObject::LoadGameObject(const nlohmann::json& goJSON)
             }
             else if (componentJSON["ComponentType"] == (int)ComponentType::Collider2D)
             {
-                //this->AddComponent<Collider2D>();
-                //this->GetComponent<Collider2D>()->LoadComponent(componentJSON);
+                this->AddComponent<Collider2D>();
+                this->GetComponent<Collider2D>()->LoadComponent(componentJSON);
             }
             else if (componentJSON["ComponentType"] == (int)ComponentType::Canvas)
             {

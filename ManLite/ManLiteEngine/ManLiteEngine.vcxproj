@@ -171,6 +171,7 @@ popd
     <ClCompile Include="AudioSource.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Camera2D.cpp" />
+    <ClCompile Include="Collider2D.cpp" />
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="EngineCore.cpp" />
     <ClCompile Include="FileDialog.cpp" />
@@ -179,6 +180,7 @@ popd
     <ClCompile Include="Layer.cpp" />
     <ClCompile Include="Log.cpp" />
     <ClCompile Include="mat3f.cpp" />
+    <ClCompile Include="PhysicsEM.cpp" />
     <ClCompile Include="RendererEM.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="SceneManagerEM.cpp" />
@@ -192,6 +194,7 @@ popd
     <ClInclude Include="AudioSource.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Camera2D.h" />
+    <ClInclude Include="Collider2D.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="Defs.h" />
     <ClInclude Include="EngineCore.h" />
@@ -202,6 +205,7 @@ popd
     <ClInclude Include="Layer.h" />
     <ClInclude Include="Log.h" />
     <ClInclude Include="mat3f.h" />
+    <ClInclude Include="PhysicsEM.h" />
     <ClInclude Include="RendererEM.h" />
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="SceneManagerEM.h" />

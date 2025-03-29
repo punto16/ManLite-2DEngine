@@ -37,6 +37,9 @@
     <Filter Include="EngineModules\Audio">
       <UniqueIdentifier>{a1162fa3-d751-4029-bc1a-a466cabf3a76}</UniqueIdentifier>
     </Filter>
+    <Filter Include="EngineModules\Physics">
+      <UniqueIdentifier>{33a219c7-5c10-437f-9eec-d180f6850c24}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EngineCore.cpp">
@@ -98,6 +101,12 @@
     </ClCompile>
     <ClCompile Include="AudioEM.cpp">
       <Filter>EngineModules\Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysicsEM.cpp">
+      <Filter>EngineModules\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="Collider2D.cpp">
+      <Filter>GameObject\Components</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -163,6 +172,12 @@
     </ClInclude>
     <ClInclude Include="AudioEM.h">
       <Filter>EngineModules\Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsEM.h">
+      <Filter>EngineModules\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="Collider2D.h">
+      <Filter>GameObject\Components</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
