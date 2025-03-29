@@ -14,7 +14,9 @@ Collider2D::Collider2D(std::weak_ptr<GameObject> container_go,
     m_shapeType(shapeType),
     m_width(width),
     m_height(height),
-    m_radius(radius)
+    m_radius(radius),
+    m_friction(0.3f),
+    m_linearDamping(0.0f)
 {
     Init();
 }
@@ -28,7 +30,9 @@ Collider2D::Collider2D(const Collider2D& component_to_copy, std::shared_ptr<Game
     m_height(component_to_copy.m_height),
     m_radius(component_to_copy.m_radius),
     m_color(component_to_copy.m_color),
-    m_lockRotation(component_to_copy.m_lockRotation)
+    m_lockRotation(component_to_copy.m_lockRotation),
+    m_friction(component_to_copy.m_friction),
+    m_linearDamping(component_to_copy.m_linearDamping)
 {
     Transform* t = container_go->GetComponent<Transform>();
 
@@ -38,6 +42,7 @@ Collider2D::Collider2D(const Collider2D& component_to_copy, std::shared_ptr<Game
         PIXEL_TO_METERS(t->GetWorldPosition().x),
         PIXEL_TO_METERS(t->GetWorldPosition().y)
     );
+    bodyDef.linearDamping = m_linearDamping;
     bodyDef.fixedRotation = m_lockRotation;
 
     m_body = PhysicsEM::GetWorld()->CreateBody(&bodyDef);
@@ -62,7 +67,7 @@ Collider2D::Collider2D(const Collider2D& component_to_copy, std::shared_ptr<Game
     fixtureDef.shape = shape;
     fixtureDef.isSensor = m_isSensor;
     fixtureDef.density = m_isDynamic ? 1.0f : 0.0f;
-    fixtureDef.friction = 0.3f;
+    fixtureDef.friction = m_friction;
 
     b2Fixture* fixture = m_body->CreateFixture(&fixtureDef);
     fixture->GetUserData().pointer = reinterpret_cast<uintptr_t>(this);
@@ -83,6 +88,7 @@ void Collider2D::Init()
         PIXEL_TO_METERS(t->GetWorldPosition().x),
         PIXEL_TO_METERS(t->GetWorldPosition().y)
     );
+    bodyDef.linearDamping = m_linearDamping;
     bodyDef.fixedRotation = m_lockRotation;
     m_body = PhysicsEM::GetWorld()->CreateBody(&bodyDef);
 
@@ -108,7 +114,7 @@ void Collider2D::Init()
     fixtureDef.shape = shape;
     fixtureDef.isSensor = m_isSensor;
     fixtureDef.density = m_isDynamic ? 1.0f : 0.0f;
-    fixtureDef.friction = 0.3f;
+    fixtureDef.friction = m_friction;
 
     b2Fixture* fixture = m_body->CreateFixture(&fixtureDef);
     fixture->GetUserData().pointer = reinterpret_cast<uintptr_t>(this);
@@ -201,6 +207,8 @@ nlohmann::json Collider2D::SaveComponent()
     componentJSON["IsDynamic"] = m_isDynamic;
     componentJSON["IsSensor"] = m_isSensor;
     componentJSON["LockRotation"] = m_lockRotation;
+    componentJSON["Friction"] = m_friction;
+    componentJSON["LinearDamping"] = m_linearDamping;
     componentJSON["Width"] = m_width;
     componentJSON["Height"] = m_height;
     componentJSON["Radius"] = m_radius;
@@ -229,6 +237,8 @@ void Collider2D::LoadComponent(const nlohmann::json& componentJSON)
     if (componentJSON.contains("IsDynamic")) m_isDynamic = componentJSON["IsDynamic"];
     if (componentJSON.contains("IsSensor")) m_isSensor = componentJSON["IsSensor"];
     if (componentJSON.contains("LockRotation")) m_lockRotation = componentJSON["LockRotation"];
+    if (componentJSON.contains("Friction")) m_friction = componentJSON["Friction"];
+    if (componentJSON.contains("LinearDamping")) m_linearDamping = componentJSON["LinearDamping"];
     if (componentJSON.contains("Width")) m_width = componentJSON["Width"];
     if (componentJSON.contains("Height")) m_height = componentJSON["Height"];
     if (componentJSON.contains("Radius")) m_radius = componentJSON["Radius"];
@@ -256,6 +266,22 @@ void Collider2D::SetLockRotation(bool lockRotation)
     if (m_body)
     {
         m_body->SetFixedRotation(lockRotation);
+    }
+}
+
+void Collider2D::SetFriction(float friction)
+{
+    m_friction = friction;
+    if (m_body && m_body->GetFixtureList()) {
+        m_body->GetFixtureList()->SetFriction(friction);
+    }
+}
+
+void Collider2D::SetLinearDamping(float damping)
+{
+    m_linearDamping = damping;
+    if (m_body) {
+        m_body->SetLinearDamping(damping);
     }
 }
 

@@ -52,6 +52,16 @@ public:
     void SetLockRotation(bool lockRotation);
     bool GetLockRotation() const { return m_lockRotation; }
 
+    float GetFriction() const { return m_friction; }
+    //friction when colliding other bodies (on ice, on grass, etc)
+    //values from 0.0 (ice) to 1.0 (sand)
+    void SetFriction(float friction);
+
+    float GetLinearDamping() const { return m_linearDamping; }
+    //friction that always exist (swiming in water, air resistance, etc)
+    //values from 0.0 (space) to 5.0 (dense water)
+    void SetLinearDamping(float damping);
+
     void SetEnabled(bool enable);
 
 private:
@@ -62,6 +72,12 @@ private:
     bool m_isDynamic;
     bool m_isSensor = false;
     bool m_lockRotation = false;
+    //friction that always exist (swiming in water, air resistance, etc)
+    //values from 0.0 (space) to 5.0 (dense water)
+    float m_linearDamping = 0.0f;
+    //friction when colliding other bodies (on ice, on grass, etc)
+    //values from 0.0 (ice) to 1.0 (sand)
+    float m_friction = 0.3f;
     float m_width, m_height, m_radius;
     ML_Color m_color = { 0,255,0,255 };//green default
 };
