@@ -117,16 +117,16 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalDependencies>box2d.lib;freetype.lib;glew32.lib;glm.lib;SDL2.lib;SDL2_image.lib;SDL2_mixer.lib;SDL2_ttf.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>box2d.lib;freetyped.lib;glew32d.lib;glm.lib;SDL2d.lib;SDL2_imaged.lib;SDL2_mixerd.lib;SDL2_ttfd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
     <Lib>
-      <AdditionalLibraryDirectories>$(SolutionDir)..\vcpkg\installed\x64-windows\lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)..\vcpkg\installed\x64-windows\debug\lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
     <PreBuildEvent>
       <Command>pushd "$(SolutionDir).."
 call vcpkg\bootstrap-vcpkg.bat
 vcpkg\vcpkg.exe install glm glew stb nlohmann-json sdl2 sdl2-image sdl2-mixer sdl2-ttf box2d --recurse --overlay-triplets="custom-triplets"
-copy "vcpkg\installed\x64-windows\bin\*.*" "$(OutDir)"
+copy "vcpkg\installed\x64-windows\debug\bin\*.*" "$(OutDir)"
 popd
 </Command>
     </PreBuildEvent>

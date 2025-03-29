@@ -1,8 +1,12 @@
 #include "PhysicsEM.h"
 #include "GameObject.h"
 #include "Collider2D.h"
+#include "box2d/box2d.h"
 
 ContactListener* PhysicsEM::m_contactListener = nullptr;
+b2World* PhysicsEM::m_world = nullptr;
+int32 PhysicsEM::m_velocityIterations = 6;
+int32 PhysicsEM::m_positionIterations = 2;
 
 PhysicsEM::PhysicsEM(EngineCore* parent) : EngineModule(parent)
 {

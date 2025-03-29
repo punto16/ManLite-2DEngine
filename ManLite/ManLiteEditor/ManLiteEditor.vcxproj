@@ -115,13 +115,13 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)..\vcpkg\installed\x64-windows\debug\lib\;$(SolutionDir)..\vcpkg\installed\x64-windows\debug\lib\manual-link\;$(SolutionDir)..\vcpkg\installed\x64-windows\lib\;$(SolutionDir)..\vcpkg\installed\x64-windows\lib\manual-link\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>OpenGL32.lib;SDL2main.lib;imguizmo.lib;imguid.lib;SDL2.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>OpenGL32.lib;SDL2maind.lib;imguizmo.lib;imguid.lib;SDL2d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
       <Command>pushd "$(SolutionDir).."
 call vcpkg\bootstrap-vcpkg.bat
 vcpkg\vcpkg.exe install sdl2 imgui[sdl2-binding,opengl3-binding,docking-experimental] imguizmo --recurse --overlay-triplets="custom-triplets"
-copy "vcpkg\installed\x64-windows\bin\*.*" "$(OutDir)"
+copy "vcpkg\installed\x64-windows\debug\bin\*.*" "$(OutDir)"
 popd
 </Command>
     </PreBuildEvent>
