@@ -59,13 +59,20 @@ void Sprite2D::Draw()
         return;
     }
 
-    if (auto transform = GetContainerGO()->GetComponent<Transform>()) {
+    if (auto transform = GetContainerGO()->GetComponent<Transform>())
+    {
+        vec2f scale = transform->GetScale();
+        bool a_lock = transform->IsAspectRatioLocked();
+        transform->SetAspectRatioLock(false);
+        transform->SetScale({ scale.x * sectionW / sectionH, scale.y });
         engine->renderer_em->SubmitSprite(
             textureID,
             transform->GetWorldMatrix(),
             u1, v1, u2, v2,
             pixel_art
         );
+        transform->SetScale(scale);
+        transform->SetAspectRatioLock(a_lock);
     }
 }
 
