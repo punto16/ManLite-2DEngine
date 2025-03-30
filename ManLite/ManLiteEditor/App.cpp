@@ -88,10 +88,6 @@ bool App::Update()
 
 	time_since_start = start_timer->ReadSec();
 
-	//if (state == GameState::PLAY || state == GameState::PLAY_ONCE) {
-	//	game_time = game_timer->ReadSec(scale_time);
-	//}
-
 	return ret;
 }
 
@@ -169,7 +165,6 @@ void App::FinishUpdate()
 		dtCount = 0;
 	}
 	engine->window_em->SetTitle(std::string(TITLE) + " | FPS: " + std::to_string(fps));
-	//app->gui->panelSettings->AddFpsValue(fps);
 }
 
 bool App::CleanUp()
@@ -209,7 +204,7 @@ int App::GetFrameRate() const
 
 void App::SetFrameRate(int frameRate)
 {
-	this->frameRate = frameRate/* == 0 ? engine->window->GetDisplayRefreshRate() : frameRate*/;
+	this->frameRate = frameRate;
 	targetFrameDuration = (std::chrono::duration<double>)1 / this->frameRate;
 }
 
@@ -222,92 +217,3 @@ void App::SetDT(double dt)
 {
 	this->dt = dt;
 }
-
-//void App::Play()
-//{
-//	static std::string actual_scene_name;
-//	switch (state)
-//	{
-//	case GameState::NONE:
-//	{
-//		state = GameState::PLAY;
-//
-//		game_time = 0.0F;
-//		game_timer->Start();
-//
-//		LOG(LogType::LOG_INFO, "GameState changed to PLAY");
-//		break;
-//	}
-//	case GameState::PLAY:
-//	{
-//		state = GameState::NONE;
-//		game_time = 0.0F;
-//
-//		LOG(LogType::LOG_INFO, "GameState changed to NONE");
-//		break;
-//	}
-//	case GameState::PAUSE:
-//	{
-//		state = GameState::PLAY;
-//		game_timer->Resume();
-//
-//		LOG(LogType::LOG_INFO, "GameState changed to PLAY");
-//		break;
-//	}
-//	case GameState::PLAY_ONCE:
-//	{
-//
-//		break;
-//	}
-//	default:
-//		break;
-//	}
-//}
-
-//void App::Pause()
-//{
-//	if (state == GameState::PAUSE) {
-//		Play();
-//	}
-//	else if (state == GameState::PLAY || state == GameState::PLAY_ONCE) {
-//		state = GameState::PAUSE;
-//		game_timer->Pause();
-//
-//		LOG(LogType::LOG_INFO, "GameState changed to PAUSE");
-//	}
-//}
-
-//void App::PlayOnce()
-//{
-//	if (state == GameState::PAUSE) {
-//		game_timer->Resume();
-//		state = GameState::PLAY_ONCE;
-//
-//		LOG(LogType::LOG_INFO, "GameState changed to PLAY_ONCE");
-//	}
-//	else if (state == GameState::PLAY) {
-//		state = GameState::PLAY_ONCE;
-//		LOG(LogType::LOG_INFO, "GameState changed to PLAY_ONCE");
-//	}
-//}
-
-//bool App::IsPlaying()
-//{
-//	if (state == GameState::PLAY || state == GameState::PLAY_ONCE)
-//		return true;
-//	else
-//		return false;
-//}
-
-//bool App::IsInGameState()
-//{
-//	return state != GameState::NONE;
-//	LOG(LogType::LOG_INFO, "GameState changed to NONE");
-//}
-
-//void App::Stop()
-//{
-//	game_time = 0.0F;
-//	state = GameState::NONE;
-//	LOG(LogType::LOG_INFO, "GameState changed to NONE");
-//}

@@ -124,6 +124,8 @@ public:
     void UseGameViewCam();
 
     void SubmitSprite(GLuint textureID, const mat3f& modelMatrix, float u1, float v1, float u2, float v2, bool pixel_art);
+    void SubmitDebugCollider(const mat3f& modelMatrix, const ML_Color& color, bool isCircle, float radius = 0.0f);
+    void RenderDebugColliders();
 
     glm::mat4 ConvertMat3fToGlmMat4(const mat3f& mat);
 private:
@@ -151,6 +153,32 @@ public:
 	GLuint renderTexture;
 	GLuint rbo;
 	glm::ivec2 fbSize = { DEFAULT_CAM_WIDTH, DEFAULT_CAM_HEIGHT };
+
+    //collider stuff
+    GLuint debugShaderProgram;
+    GLuint lineVAO, lineVBO;
+    std::vector<std::tuple<mat3f, ML_Color, bool, float>> debugColliders;
+
+    const char* debugVertexShader = R"glsl(
+#version 330 core
+layout (location = 0) in vec2 aPos;
+uniform mat4 uViewProj;
+uniform mat4 uModel;
+
+void main() {
+    gl_Position = uViewProj * uModel * vec4(aPos, 0.0, 1.0);
+}
+)glsl";
+    
+    const char* debugFragmentShader = R"glsl(
+#version 330 core
+out vec4 FragColor;
+uniform vec4 uColor;
+
+void main() {
+    FragColor = uColor;
+}
+)glsl";
 };
 
 #endif // !__RENDERER_EM_H__

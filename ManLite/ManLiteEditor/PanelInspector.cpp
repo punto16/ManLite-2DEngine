@@ -15,6 +15,7 @@
 #include "Animator.h"
 #include "Animation.h"
 #include "AudioSource.h"
+#include "Collider2D.h"
 
 #include "ResourceManager.h"
 
@@ -62,6 +63,7 @@ bool PanelInspector::Update()
 				SpriteOptions(go);
 				AnimatorOptions(go);
 				AudioSourceOptions(go);
+				Collider2DOptions(go); 
 
 				//last
 				AddComponent(go);
@@ -679,6 +681,168 @@ void PanelInspector::AudioSourceOptions(GameObject& go)
 	}
 }
 
+void PanelInspector::Collider2DOptions(GameObject& go)
+{
+	uint treeFlags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_DefaultOpen;
+	uint tableFlags = ImGuiTableFlags_BordersOuterV | ImGuiTableFlags_BordersInnerV;
+	Collider2D* collider2d = go.GetComponent<Collider2D>();
+	if (collider2d == nullptr) return;
+	std::string collider2dLabel = std::string("Collider2D##" + std::to_string(go.GetID()));
+	if (ImGui::CollapsingHeader(collider2dLabel.c_str(), treeFlags))
+	{
+		ImGui::Dummy(ImVec2(0, 4));
+
+		// Sección principal
+		if (ImGui::BeginTable("Collider2DTable", 2, ImGuiTableFlags_BordersInnerV))
+		{
+			ImGui::TableSetupColumn("Label", ImGuiTableColumnFlags_WidthFixed, 100.0f);
+			ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthStretch);
+
+			// Shape Type
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0);
+			ImGui::Text("Shape Type");
+			ImGui::TableSetColumnIndex(1);
+
+			const char* shapeTypes[] = { "Rectangle", "Circle" };
+			int currentShape = static_cast<int>(collider2d->GetShapeType());
+			if (ImGui::Combo("##ShapeType", &currentShape, shapeTypes, IM_ARRAYSIZE(shapeTypes)))
+			{
+				collider2d->SetShapeType(static_cast<ShapeType>(currentShape));
+			}
+
+			// Color
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0);
+			ImGui::Text("Color");
+			ImGui::TableSetColumnIndex(1);
+
+			ML_Color color = collider2d->GetColor();
+			ImVec4 imColor(color.r / 255.0f, color.g / 255.0f, color.b / 255.0f, color.a / 255.0f);
+			if (ImGui::ColorEdit4("##ColliderColor", (float*)&imColor, ImGuiColorEditFlags_NoInputs))
+			{
+				color.r = static_cast<uint8_t>(imColor.x * 255);
+				color.g = static_cast<uint8_t>(imColor.y * 255);
+				color.b = static_cast<uint8_t>(imColor.z * 255);
+				color.a = static_cast<uint8_t>(imColor.w * 255);
+				collider2d->SetColor(color);
+			}
+
+			// Dynamic/Static
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0);
+			ImGui::Text("Body Type");
+			ImGui::TableSetColumnIndex(1);
+
+			bool isDynamic = collider2d->IsDynamic();
+			if (ImGui::Checkbox("Is Dynamic##Collider", &isDynamic))
+			{
+				collider2d->SetDynamic(isDynamic);
+			}
+
+			// Sensor
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0);
+			ImGui::Text("Sensor Mode");
+			ImGui::TableSetColumnIndex(1);
+
+			bool isSensor = collider2d->IsSensor();
+			if (ImGui::Checkbox("Is Sensor##Collider", &isSensor))
+			{
+				collider2d->SetSensor(isSensor);
+			}
+
+			// Lock Rotation
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0);
+			ImGui::Text("Lock Rotation");
+			ImGui::TableSetColumnIndex(1);
+
+			bool lockRotation = collider2d->GetLockRotation();
+			if (ImGui::Checkbox("##LockRotation", &lockRotation))
+			{
+				collider2d->SetLockRotation(lockRotation);
+			}
+
+			// Mass
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0);
+			ImGui::Text("Mass");
+			ImGui::TableSetColumnIndex(1);
+
+			float mass = collider2d->GetMass();
+			if (ImGui::DragFloat("##Mass", &mass, 0.1f, 0.0f, 1000.0f, "%.2f kg"))
+			{
+				collider2d->SetMass(mass);
+			}
+
+			// Linear Damping
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0);
+			ImGui::Text("Linear Damping");
+			ImGui::TableSetColumnIndex(1);
+
+			float damping = collider2d->GetLinearDamping();
+			if (ImGui::DragFloat("##Damping", &damping, 0.01f, 0.0f, 5.0f, "%.2f"))
+			{
+				collider2d->SetLinearDamping(damping);
+			}
+
+			// Friction
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0);
+			ImGui::Text("Friction");
+			ImGui::TableSetColumnIndex(1);
+
+			float friction = collider2d->GetFriction();
+			if (ImGui::SliderFloat("##Friction", &friction, 0.0f, 1.0f, "%.2f"))
+			{
+				collider2d->SetFriction(friction);
+			}
+
+			// Use Gravity
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0);
+			ImGui::Text("Use Gravity");
+			ImGui::TableSetColumnIndex(1);
+
+			bool useGravity = collider2d->GetUseGravity();
+			if (ImGui::Checkbox("##UseGravity", &useGravity))
+			{
+				collider2d->SetUseGravity(useGravity);
+			}
+
+			// Dimensions
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0);
+			ImGui::Text("Dimensions");
+			ImGui::TableSetColumnIndex(1);
+
+			if (collider2d->GetShapeType() == ShapeType::RECTANGLE) {
+				float width = collider2d->GetWidth();
+				float height = collider2d->GetHeight();
+
+				if (ImGui::DragFloat("Width##Collider", &width, 0.05f, 0.1f, 10000.0f)) {
+					collider2d->SetSize(width, height);
+				}
+				if (ImGui::DragFloat("Height##Collider", &height, 0.05f, 0.1f, 10000.0f)) {
+					collider2d->SetSize(width, height);
+				}
+			}
+			else {
+				float radius = collider2d->GetRadius();
+				if (ImGui::DragFloat("Radius##Collider", &radius, 0.05f, 0.1f, 10000.0f)) {
+					collider2d->SetRadius(radius);
+				}
+			}
+
+			ImGui::EndTable();
+		}
+		ImGui::Dummy(ImVec2(0, 4));
+		ImGui::Separator();
+	}
+}
+
 void PanelInspector::AddComponent(GameObject& go)
 {
 	const ImVec2 button_size_default = ImVec2(150, 0);
@@ -760,6 +924,12 @@ void PanelInspector::AddComponent(GameObject& go)
 		if (ImGui::Selectable("Audio Source"))
 		{
 			go.AddComponent<AudioSource>();
+			show_component_window = false;
+		}
+
+		if (ImGui::Selectable("Collider2D"))
+		{
+			go.AddComponent<Collider2D>();
 			show_component_window = false;
 		}
 

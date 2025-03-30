@@ -108,6 +108,44 @@ bool RendererEM::Start()
 
 	this->scene_camera.SetZoom(100.0f);
 	SetupQuad();
+	
+
+	GLuint vShader = glCreateShader(GL_VERTEX_SHADER);
+	glShaderSource(vShader, 1, &debugVertexShader, NULL);
+	glCompileShader(vShader);
+
+	GLuint fShader = glCreateShader(GL_FRAGMENT_SHADER);
+	glShaderSource(fShader, 1, &debugFragmentShader, NULL);
+	glCompileShader(fShader);
+
+	debugShaderProgram = glCreateProgram();
+	glAttachShader(debugShaderProgram, vShader);
+	glAttachShader(debugShaderProgram, fShader);
+	glLinkProgram(debugShaderProgram);
+
+	glDeleteShader(vShader);
+	glDeleteShader(fShader);
+
+	// Crear buffers para líneas
+	float lineVertices[] = {
+		-0.5f,  0.5f, // Rectángulo
+		 0.5f,  0.5f,
+		 0.5f, -0.5f,
+		-0.5f, -0.5f,
+		-0.5f,  0.5f
+	};
+
+	glGenVertexArrays(1, &lineVAO);
+	glGenBuffers(1, &lineVBO);
+
+	glBindVertexArray(lineVAO);
+	glBindBuffer(GL_ARRAY_BUFFER, lineVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(lineVertices), lineVertices, GL_STATIC_DRAW);
+
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+
+	glBindVertexArray(0);
 
 	return ret;
 }
@@ -131,6 +169,7 @@ bool RendererEM::Update(double dt)
 
 	glUseProgram(shaderProgram);
 	RenderBatch();
+	RenderDebugColliders();
 
 	return ret;
 }
@@ -397,6 +436,76 @@ void RendererEM::SubmitSprite(GLuint textureID, const mat3f& modelMatrix, float 
 	u1, v1, u2, v2,
 	pixel_art
 		});
+}
+
+void RendererEM::SubmitDebugCollider(const mat3f& modelMatrix, const ML_Color& color, bool isCircle, float radius)
+{
+	debugColliders.emplace_back(modelMatrix, color, isCircle, radius);
+}
+
+void RendererEM::RenderDebugColliders()
+{
+	glUseProgram(debugShaderProgram);
+	glBindVertexArray(lineVAO);
+
+	glLineWidth(2.0f);
+
+	GLuint uColor = glGetUniformLocation(debugShaderProgram, "uColor");
+	GLuint uModel = glGetUniformLocation(debugShaderProgram, "uModel");
+	GLuint uViewProj = glGetUniformLocation(debugShaderProgram, "uViewProj");
+
+	glm::mat4 viewProj;
+
+	if (use_scene_cam) {
+		viewProj = scene_camera.GetViewProjMatrix();
+	}
+	else {
+		GameObject* cam_go = &engine->scene_manager_em->GetCurrentScene().GetCurrentCameraGO();
+		if (cam_go && cam_go->GetComponent<Camera>())
+		{
+			auto camera = cam_go->GetComponent<Camera>();
+			viewProj = camera->GetProjectionMatrix() * camera->GetViewMatrix();
+		}
+		else
+		{
+			viewProj = scene_camera.GetViewProjMatrix();
+		}
+	}
+
+	glUniformMatrix4fv(uViewProj, 1, GL_FALSE, glm::value_ptr(viewProj));
+
+	for (const auto& [modelMat, color, isCircle, radius] : debugColliders) {
+		glm::mat4 glmModel = ConvertMat3fToGlmMat4(modelMat);
+		glUniformMatrix4fv(uModel, 1, GL_FALSE, glm::value_ptr(glmModel));
+		glUniform4f(uColor,
+			color.r / 255.0f,
+			color.g / 255.0f,
+			color.b / 255.0f,
+			color.a / 255.0f);
+
+		if (isCircle) {
+			// Dibujar círculo con líneas
+			const int segments = 32;
+			std::vector<float> circleVertices;
+			for (int i = 0; i <= segments; ++i) {
+				float angle = 2.0f * PI * i / segments;
+				circleVertices.push_back(cos(angle) * radius);
+				circleVertices.push_back(sin(angle) * radius);
+			}
+
+			glBindBuffer(GL_ARRAY_BUFFER, lineVBO);
+			glBufferData(GL_ARRAY_BUFFER, circleVertices.size() * sizeof(float), circleVertices.data(), GL_DYNAMIC_DRAW);
+			glDrawArrays(GL_LINE_LOOP, 0, segments + 1);
+		}
+		else {
+			// Dibujar rectángulo
+			glDrawArrays(GL_LINE_LOOP, 0, 5);
+		}
+	}
+	glLineWidth(1.0f);
+
+	debugColliders.clear();
+	glBindVertexArray(0);
 }
 
 Grid::Grid(float size, int divisions)

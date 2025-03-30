@@ -155,9 +155,6 @@ void SceneManagerEM::LoadSceneFromJson(const std::string& file_name)
 	}
 	file.close();
 
-	PhysicsEM::Shutdown();
-	PhysicsEM::Init();
-
 	current_scene->SetScenePath(file_name);
 	if (sceneJSON.contains("scene_name"))
 	{
@@ -244,9 +241,6 @@ void SceneManagerEM::LoadSceneToScene(const std::string& file_name, Scene& scene
 		return;
 	}
 	file.close();
-
-	PhysicsEM::Shutdown();
-	PhysicsEM::Init();
 
 	scene.SetScenePath(file_name);
 	if (sceneJSON.contains("scene_name"))

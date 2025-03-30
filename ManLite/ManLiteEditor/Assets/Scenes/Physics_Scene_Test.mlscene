@@ -1,0 +1,175 @@
+{
+  "CamerasAmount": 0,
+  "game_objects": [
+    {
+      "Components": [
+        {
+          "AspectRatio": 1.0,
+          "ComponentID": 227411211,
+          "ComponentName": "Transform",
+          "ComponentType": 0,
+          "ContainerGOID": 3613049865,
+          "Enabled": true,
+          "LockAspect": true,
+          "Position": [
+            0.0,
+            0.0
+          ],
+          "Rotation": 0.0,
+          "Scale": [
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "ComponentID": 518352688,
+          "ComponentName": "Sprite2D",
+          "ComponentType": 2,
+          "ContainerGOID": 3613049865,
+          "Enabled": true,
+          "PixelArtRender": false,
+          "TexturePath": "Assets\\Textures\\image.png",
+          "TextureSection": [
+            0,
+            0,
+            640,
+            480
+          ],
+          "TextureSize": [
+            640,
+            480
+          ],
+          "TextureUVs": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "Color": {
+            "A": 255,
+            "B": 0,
+            "G": 255,
+            "R": 116
+          },
+          "ComponentID": 3884527710,
+          "ComponentName": "Collider2D",
+          "ComponentType": 5,
+          "ContainerGOID": 3613049865,
+          "Enabled": true,
+          "Friction": 0.30000001192092896,
+          "Height": 1.0,
+          "IsDynamic": false,
+          "IsSensor": false,
+          "LinearDamping": 0.0,
+          "LockRotation": false,
+          "Mass": 0.0,
+          "Radius": 0.5,
+          "ShapeType": "RECTANGLE",
+          "UseGravity": false,
+          "Width": 1.0
+        }
+      ],
+      "Enabled": true,
+      "ID": 3613049865,
+      "Name": "Ground",
+      "ParentID": 168259370,
+      "ParentLayerID": 0,
+      "Tag": "Default",
+      "Visible": true
+    },
+    {
+      "Components": [
+        {
+          "AspectRatio": 1.0,
+          "ComponentID": 860296632,
+          "ComponentName": "Transform",
+          "ComponentType": 0,
+          "ContainerGOID": 1245056060,
+          "Enabled": true,
+          "LockAspect": true,
+          "Position": [
+            0.0,
+            4.0
+          ],
+          "Rotation": 0.0,
+          "Scale": [
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "ComponentID": 4207198697,
+          "ComponentName": "Sprite2D",
+          "ComponentType": 2,
+          "ContainerGOID": 1245056060,
+          "Enabled": true,
+          "PixelArtRender": false,
+          "TexturePath": "Assets\\Textures\\image.png",
+          "TextureSection": [
+            0,
+            0,
+            640,
+            480
+          ],
+          "TextureSize": [
+            640,
+            480
+          ],
+          "TextureUVs": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "Color": {
+            "A": 255,
+            "B": 0,
+            "G": 255,
+            "R": 116
+          },
+          "ComponentID": 261235901,
+          "ComponentName": "Collider2D",
+          "ComponentType": 5,
+          "ContainerGOID": 1245056060,
+          "Enabled": true,
+          "Friction": 0.30000001192092896,
+          "Height": 1.0,
+          "IsDynamic": true,
+          "IsSensor": false,
+          "LinearDamping": 0.0,
+          "LockRotation": true,
+          "Mass": 5.0,
+          "Radius": 0.5,
+          "ShapeType": "RECTANGLE",
+          "UseGravity": true,
+          "Width": 1.0
+        }
+      ],
+      "Enabled": true,
+      "ID": 1245056060,
+      "Name": "movable",
+      "ParentID": 168259370,
+      "ParentLayerID": 0,
+      "Tag": "Default",
+      "Visible": true
+    }
+  ],
+  "layers": [
+    {
+      "Layer_children_go_id": [
+        3613049865,
+        1245056060
+      ],
+      "children_count": 2,
+      "layer_id": 0,
+      "layer_name": "DefaultLayer_0",
+      "visible": true
+    }
+  ],
+  "scene_name": "Untitled_Scene",
+  "scene_path": "Assets\\Scenes\\Physics_Scene_Test.mlscene"
+}

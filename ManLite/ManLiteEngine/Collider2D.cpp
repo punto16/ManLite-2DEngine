@@ -2,6 +2,8 @@
 #include "PhysicsEM.h"
 #include "GameObject.h"
 #include "Transform.h"
+#include "EngineCore.h"
+#include "RendererEM.h"
 
 Collider2D::Collider2D(std::weak_ptr<GameObject> container_go,
     bool isDynamic,
@@ -20,6 +22,19 @@ Collider2D::Collider2D(std::weak_ptr<GameObject> container_go,
     m_mass(0.0f),
     m_useGravity(true)
 {
+    b2BodyDef bodyDef;
+    Transform* t = container_go.lock()->GetComponent<Transform>();
+    bodyDef.type = m_isDynamic ? b2_dynamicBody : b2_staticBody;
+    bodyDef.position.Set(
+        PIXEL_TO_METERS(t->GetWorldPosition().x),
+        PIXEL_TO_METERS(t->GetWorldPosition().y)
+    );
+    bodyDef.linearDamping = m_linearDamping;
+    bodyDef.fixedRotation = m_lockRotation;
+    bodyDef.gravityScale = m_useGravity ? 1.0f : 0.0f;
+
+    m_body = PhysicsEM::GetWorld()->CreateBody(&bodyDef);
+
     RecreateFixture();
 }
 
@@ -38,7 +53,26 @@ Collider2D::Collider2D(const Collider2D& component_to_copy, std::shared_ptr<Game
     m_mass(component_to_copy.m_mass),
     m_useGravity(component_to_copy.m_useGravity)
 {
+    b2BodyDef bodyDef;
+    Transform* t = container_go->GetComponent<Transform>();
+    bodyDef.type = m_isDynamic ? b2_dynamicBody : b2_staticBody;
+    bodyDef.position.Set(
+        PIXEL_TO_METERS(t->GetWorldPosition().x),
+        PIXEL_TO_METERS(t->GetWorldPosition().y)
+    );
+    bodyDef.linearDamping = m_linearDamping;
+    bodyDef.fixedRotation = m_lockRotation;
+    bodyDef.gravityScale = m_useGravity ? 1.0f : 0.0f;
+
+    m_body = PhysicsEM::GetWorld()->CreateBody(&bodyDef);
+
     RecreateFixture();
+
+    if (m_isDynamic && component_to_copy.m_body)
+    {
+        m_body->SetLinearVelocity(component_to_copy.m_body->GetLinearVelocity());
+        m_body->SetAngularVelocity(component_to_copy.m_body->GetAngularVelocity());
+    }
 }
 
 Collider2D::~Collider2D()
@@ -51,7 +85,11 @@ Collider2D::~Collider2D()
 
 bool Collider2D::Update(float dt)
 {
-
+    if (!m_body)
+    {
+        LOG(LogType::LOG_ERROR, "Collider2D: Update error, m_body is nullptr");
+        return true;
+    }
     b2Vec2 position = m_body->GetPosition();
     Transform* t = container_go.lock()->GetComponent<Transform>();
     t->SetWorldPosition({
@@ -68,7 +106,46 @@ bool Collider2D::Update(float dt)
 
 void Collider2D::Draw()
 {
-    //empty for the moment
+    if (!m_body)
+    {
+        LOG(LogType::LOG_ERROR, "Collider2D: Draw error, m_body is nullptr");
+        return;
+    }
+
+    Transform* t = container_go.lock()->GetComponent<Transform>();
+    if (!t) return;
+
+    // Obtener transformación base del GameObject
+    mat3f modelMat = t->GetWorldMatrix();
+    ML_Color color = m_color;
+    color.a = 150; // 60% de opacidad
+
+    if (m_shapeType == ShapeType::RECTANGLE) {
+        // Crear matriz de escala para el tamaño del collider
+        vec2f scale(m_width, m_height);
+        mat3f colliderMat = mat3f::CreateTransformMatrix(
+            vec2f(0, 0),
+            0.0f,
+            scale
+        );
+
+        // Combinar con la transformación del GameObject
+        mat3f finalMat = modelMat * colliderMat;
+
+        engine->renderer_em->SubmitDebugCollider(finalMat, color, false);
+    }
+    else {
+        // Para círculos, escalar por el diámetro (radio * 2)
+        float diameter = m_radius * 2.0f;
+        mat3f colliderMat = mat3f::CreateTransformMatrix(
+            vec2f(0, 0),
+            0.0f,
+            vec2f(diameter, diameter)
+        );
+
+        mat3f finalMat = modelMat * colliderMat;
+        engine->renderer_em->SubmitDebugCollider(finalMat, color, true);
+    }
 }
 
 void Collider2D::SetShapeType(ShapeType newType)
