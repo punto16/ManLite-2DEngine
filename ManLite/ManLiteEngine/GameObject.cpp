@@ -85,6 +85,32 @@ bool GameObject::Update(double dt)
     return ret;
 }
 
+bool GameObject::Pause()
+{
+    bool ret = true;
+
+    //pause components
+    for (const auto& item : components_gameobject) if (item->IsEnabled()) item->Pause();
+
+    //then, pause children game objects
+    for (const auto& item : children_gameobject) if (item->IsEnabled()) item->Pause();
+
+    return ret;
+}
+
+bool GameObject::Unpause()
+{
+    bool ret = true;
+
+    //unpause components
+    for (const auto& item : components_gameobject) if (item->IsEnabled()) item->Unpause();
+
+    //then, unpause children game objects
+    for (const auto& item : children_gameobject) if (item->IsEnabled()) item->Unpause();
+
+    return ret;
+}
+
 void GameObject::Draw()
 {
     //draw components
@@ -209,6 +235,7 @@ void GameObject::CloneComponents(const std::shared_ptr<GameObject>& original)
         }
         case ComponentType::Collider2D:
         {
+            AddCopiedComponent<Collider2D>(*dynamic_cast<const Collider2D*>(item.get()));
             break;
         }
         case ComponentType::Canvas:
@@ -217,6 +244,7 @@ void GameObject::CloneComponents(const std::shared_ptr<GameObject>& original)
         }
         case ComponentType::AudioSource:
         {
+            AddCopiedComponent<AudioSource>(*dynamic_cast<const AudioSource*>(item.get()));
             break;
         }
         case ComponentType::ParticleSystem:

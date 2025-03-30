@@ -12,6 +12,8 @@ App::App(int argc, char* args[]) : argc(argc), args(args)
 {
 	//create modules
 	engine = new EngineCore();
+	engine->SetEditorOrBuild(true); //important! tell the engine we are in editor mode
+
 	gui = new Gui(this);
 
 	//add modules
@@ -19,12 +21,10 @@ App::App(int argc, char* args[]) : argc(argc), args(args)
 	//render module last to swap buffer
 	AddModule(gui, true);
 
-	//state = GameState::NONE;
+	//timer
 	time_since_start = 0.0f;
-	game_time = 0.0f;
-	scale_time = 1.0f;
 	start_timer = new Timer();
-	game_timer = new Timer();
+
 }
 
 App::~App()
@@ -176,7 +176,6 @@ bool App::CleanUp()
 {
 	bool ret = true;
 	RELEASE(start_timer)
-	RELEASE(game_timer)
 
 	engine->CleanUp();
 	for (auto item = modules.rbegin(); item != modules.rend(); ++item)

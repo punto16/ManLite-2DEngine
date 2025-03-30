@@ -171,7 +171,6 @@ popd
     <ClCompile Include="PanelProject.cpp" />
     <ClCompile Include="PanelSaveScene.cpp" />
     <ClCompile Include="PanelScene.cpp" />
-    <ClCompile Include="Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.h" />
@@ -189,7 +188,6 @@ popd
     <ClInclude Include="PanelSaveScene.h" />
     <ClInclude Include="PanelScene.h" />
     <ClInclude Include="resource.h" />
-    <ClInclude Include="Timer.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ManLiteEngine\ManLiteEngine.vcxproj">

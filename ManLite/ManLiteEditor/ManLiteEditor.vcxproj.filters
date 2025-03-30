@@ -21,9 +21,6 @@
     <ClCompile Include="App.cpp">
       <Filter>Main</Filter>
     </ClCompile>
-    <ClCompile Include="Timer.cpp">
-      <Filter>Utils</Filter>
-    </ClCompile>
     <ClCompile Include="GUI.cpp">
       <Filter>Modules</Filter>
     </ClCompile>
@@ -67,9 +64,6 @@
   <ItemGroup>
     <ClInclude Include="App.h">
       <Filter>Main</Filter>
-    </ClInclude>
-    <ClInclude Include="Timer.h">
-      <Filter>Utils</Filter>
     </ClInclude>
     <ClInclude Include="Module.h">
       <Filter>Modules</Filter>

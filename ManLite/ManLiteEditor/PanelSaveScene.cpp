@@ -81,6 +81,8 @@ bool PanelSaveScene::Update()
 						engine->scene_manager_em->SaveScene(directory, sceneName);
 					}
 					//
+					engine->SetEngineState(EngineState::STOP);
+					//
 					if (new_scene_or_open_scene)
 						engine->scene_manager_em->CreateEmptyScene();
 					else
@@ -112,6 +114,8 @@ bool PanelSaveScene::Update()
 				ImGui::SameLine();
 				if (ImGui::Button("Save As...", { 80, 20 }))
 				{
+					//
+					engine->SetEngineState(EngineState::STOP);
 					//
 					std::string filePath = std::filesystem::relative(FileDialog::SaveFile("Save ManLite Scene file (*.mlscene)\0*.mlscene\0")).string();
 					if (!filePath.empty())
@@ -157,6 +161,8 @@ bool PanelSaveScene::Update()
 				ImGui::SameLine();
 				if (ImGui::Button("Don't Save", { 80, 20 }))
 				{
+					engine->SetEngineState(EngineState::STOP);
+					//
 					if (new_scene_or_open_scene)
 						engine->scene_manager_em->CreateEmptyScene();
 					else
@@ -188,6 +194,8 @@ bool PanelSaveScene::Update()
 				ImGui::SameLine();
 				if (ImGui::Button("Cancel", { 80, 20 }))
 				{
+					engine->SetEngineState(EngineState::STOP);
+					//
 					ImGui::CloseCurrentPopup();
 					ResourceManager::GetInstance().ReleaseTexture("Config\\Icons\\icon.png");
 					enabled = false;

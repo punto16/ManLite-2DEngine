@@ -34,6 +34,8 @@ public:
 	virtual bool Init() { return true; }
 	virtual bool Update(float dt) { return true; }
 	virtual void Draw() {}
+	virtual bool Pause() { return true; }
+	virtual bool Unpause() { return true; }
 
 	static std::string ComponentTypeToString(ComponentType type)
 	{

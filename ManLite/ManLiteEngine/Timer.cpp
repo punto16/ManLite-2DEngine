@@ -56,3 +56,15 @@ void Timer::Resume()
 	offset = time - time_pause + offset;
 	is_pause = false;
 }
+
+void Timer::SecondsToFormat(float totalSeconds, int& h, int& m, int& s, int& ms) {
+	h = static_cast<int>(totalSeconds / 3600);
+	totalSeconds = fmodf(totalSeconds, 3600.0f);
+
+	m = static_cast<int>(totalSeconds / 60);
+	totalSeconds = fmodf(totalSeconds, 60.0f);
+
+	s = static_cast<int>(totalSeconds);
+	float fractSec = totalSeconds - s;
+	ms = static_cast<int>(fractSec * 1000.0f);
+}

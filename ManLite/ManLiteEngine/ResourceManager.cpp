@@ -60,6 +60,7 @@ GLuint ResourceManager::GetTexture(const std::string& path) const
 void ResourceManager::ReleaseTexture(const std::string& path)
 {
     if (path == "") return;
+    std::lock_guard<std::mutex> lock(textures_mutex);
     auto it = textures.find(path);
     if (it != textures.end() && --it->second.refCount <= 0)
     {
@@ -171,8 +172,10 @@ std::future<GLuint> ResourceManager::LoadTextureAsync(const std::string& path, i
 {
     if (path.empty()) return {};
 
+    std::lock_guard<std::mutex> lock(textures_mutex);
     auto it = textures.find(path);
     if (it != textures.end()) {
+        it->second.refCount++;
         tex_width = it->second.w;
         tex_height = it->second.h;
         std::promise<GLuint> p;
@@ -208,33 +211,44 @@ std::future<GLuint> ResourceManager::LoadTextureAsync(const std::string& path, i
 
 void ResourceManager::ProcessTextures()
 {
+    std::lock_guard<std::mutex> lock(texture_queue_mutex);
+
+    while (!texture_load_queue.empty())
     {
-        std::lock_guard<std::mutex> lock(texture_queue_mutex);
+        TextureLoadTask task = std::move(texture_load_queue.front());
+        texture_load_queue.pop();
 
-        while (!texture_load_queue.empty()) {
-            TextureLoadTask task = std::move(texture_load_queue.front());
-            texture_load_queue.pop();
-
-            GLuint textureID;
-            glGenTextures(1, &textureID);
-            glBindTexture(GL_TEXTURE_2D, textureID);
-
-            GLenum format = (task.channels == 4) ? GL_RGBA : GL_RGB;
-            glTexImage2D(GL_TEXTURE_2D, 0, format, task.width, task.height, 0,
-                format, GL_UNSIGNED_BYTE, task.pixel_data);
-            glGenerateMipmap(GL_TEXTURE_2D);
-
+        std::unique_lock<std::mutex> tex_lock(textures_mutex);
+        auto it = textures.find(task.path);
+        if (it != textures.end()) {
+            it->second.refCount++;
             stbi_image_free(task.pixel_data);
-
-            TextureData newData;
-            newData.id = textureID;
-            newData.refCount = 1;
-            newData.w = task.width;
-            newData.h = task.height;
-            textures[task.path] = newData;
-
-            task.promise.set_value(textureID);
+            task.promise.set_value(it->second.id);
+            continue;
         }
+        tex_lock.unlock();
+
+        GLuint textureID;
+        glGenTextures(1, &textureID);
+        glBindTexture(GL_TEXTURE_2D, textureID);
+
+        GLenum format = (task.channels == 4) ? GL_RGBA : GL_RGB;
+        glTexImage2D(GL_TEXTURE_2D, 0, format, task.width, task.height, 0,
+            format, GL_UNSIGNED_BYTE, task.pixel_data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+
+        stbi_image_free(task.pixel_data);
+
+        tex_lock.lock();
+        TextureData newData;
+        newData.id = textureID;
+        newData.refCount = 1;
+        newData.w = task.width;
+        newData.h = task.height;
+        textures[task.path] = newData;
+        tex_lock.unlock();
+
+        task.promise.set_value(textureID);
     }
 }
 

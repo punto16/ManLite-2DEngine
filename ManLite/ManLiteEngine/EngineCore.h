@@ -3,7 +3,7 @@
 #pragma once
 
 #include "Log.h"
-
+#include "Timer.h"
 #include <list>
 #include <vector>
 
@@ -53,6 +53,17 @@ public:
 
 	void SetEngineState(EngineState new_state);
 	EngineState GetEngineState() { return engine_state; }
+	// true -> we are in editor
+	// false -> we are in build
+	void SetEditorOrBuild(bool b) { editor_or_build = b; }
+	// true -> we are in editor
+	// false -> we are in build
+	bool GetEditorOrBuild() { return editor_or_build; }
+
+	float GetTimeScale() { return scale_time; }
+	void SetTimeScale(float t) { scale_time = t; }
+
+	float GetGameTime() { return game_time; }
 
 private:
 
@@ -68,8 +79,15 @@ public:
 private:
 
 	EngineState engine_state = EngineState::STOP;
+	// true -> we are in editor
+	// false -> we are in build
+	bool editor_or_build = true;
 
+	//time management
 	double dt;
+	Timer* game_timer;
+	float game_time;
+	float scale_time;
 
 	std::list<EngineModule*> engine_modules;
 

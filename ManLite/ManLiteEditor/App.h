@@ -10,14 +10,6 @@
 class Module;
 class Gui;
 
-enum class GameState
-{
-	NONE,
-	PLAY,
-	PAUSE,
-	PLAY_ONCE
-};
-
 class App
 {
 public:
@@ -41,21 +33,6 @@ public:
 	double GetDT() const;
 	void SetDT(double dt);
 
-	//int GetFrameRate() const;
-	//void SetFrameRate(int refreshRate);
-
-	//double GetDeltaTime() const;
-	//void SetDeltaTime(double dt);
-
-
-	//GameState state;
-	//void Play();
-	//void Pause();
-	//void PlayOnce();
-	//bool IsPlaying();
-	//bool IsInGameState();
-	//void Stop();
-
 private:
 	void PrepareUpdate();
 	bool PreUpdate();
@@ -63,19 +40,11 @@ private:
 	bool PostUpdate();
 	void FinishUpdate();
 
-	//Timer* game_timer;
-	//Timer* start_timer;
-
-	//float time_since_start;
-	//float game_time;
-	//float scale_time;
-
 public:
 	//modules
 	Gui* gui = nullptr;
 
-
-
+	//data
 	std::string title;
 	std::string organization;
 
@@ -91,13 +60,9 @@ private:
 	std::chrono::steady_clock::time_point frameStart, frameEnd;
 
 	Timer* start_timer;
-	Timer* game_timer;
-
 	float time_since_start;
-	float game_time;
-	float scale_time;
 
-	int frameRate = 240;
+	int frameRate = 280;
 	double dt = 0;
 	double dtCount = 0;
 	int frameCount = 0;

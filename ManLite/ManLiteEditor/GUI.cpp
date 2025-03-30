@@ -401,7 +401,7 @@ void Gui::MainMenuBar()
 			ImGui::EndMenu();
 		}
 
-		//engine state
+		//manage engine state
 		ImGui::Dummy(ImVec2(ImGui::GetContentRegionAvail().x / 2 - 255, 0.0f));
 		if (ImGui::Button(">"))
 		{
@@ -415,6 +415,32 @@ void Gui::MainMenuBar()
 		{
 			engine->SetEngineState(EngineState::STOP);
 		}
+
+		//show engine state
+		ImGui::Dummy({50, 0});
+
+		if (engine->GetEngineState() == EngineState::PLAY)
+			ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(0, 255, 0, 255)); // green
+		else if (engine->GetEngineState() == EngineState::PAUSE)
+			ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 0, 0, 255)); // red
+		else
+			ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(100, 100, 100, 255)); // grey
+		ImGui::Text("o");
+		ImGui::PopStyleColor();
+
+		ImGui::Dummy({5, 0});
+		if (engine->GetEngineState() == EngineState::PLAY)
+			ImGui::Text("Scene is now Playing");
+		if (engine->GetEngineState() == EngineState::PAUSE)
+			ImGui::Text("Scene is now Paused ");
+		if (engine->GetEngineState() == EngineState::STOP)
+			ImGui::Text("Scene is now Stopped");
+
+		ImGui::Dummy({5, 0});
+		int h = 0, m = 0, s = 0, ms = 0;
+		Timer::SecondsToFormat(engine->GetGameTime(), h, m, s, ms);
+		ImGui::Text("Game Duration: %02d:%02d:%02d:%03d", h, m, s, ms);
+
 		//
 		ImGui::EndMainMenuBar();
 	}

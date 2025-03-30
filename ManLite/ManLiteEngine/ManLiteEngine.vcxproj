@@ -185,6 +185,7 @@ popd
     <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="SceneManagerEM.cpp" />
     <ClCompile Include="Sprite2D.cpp" />
+    <ClCompile Include="Timer.cpp" />
     <ClCompile Include="Transform.cpp" />
     <ClCompile Include="WindowEM.cpp" />
   </ItemGroup>
@@ -210,6 +211,7 @@ popd
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="SceneManagerEM.h" />
     <ClInclude Include="Sprite2D.h" />
+    <ClInclude Include="Timer.h" />
     <ClInclude Include="Transform.h" />
     <ClInclude Include="WindowEM.h" />
   </ItemGroup>

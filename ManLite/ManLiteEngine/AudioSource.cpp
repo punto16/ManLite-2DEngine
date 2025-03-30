@@ -44,11 +44,28 @@ bool AudioSource::Update(float dt)
     return true;
 }
 
+bool AudioSource::Pause()
+{
+    bool ret = true;
+
+    PauseAll();
+
+    return ret;
+}
+
+bool AudioSource::Unpause()
+{
+    bool ret = true;
+
+    UnpauseAll();
+
+    return ret;
+}
+
 void AudioSource::AddSound(const std::string& name, const std::string& filePath, int volume, bool loop, bool play_on_awake)
 {
     if (Mix_Chunk* chunk = ResourceManager::GetInstance().LoadSound(filePath)) {
         sounds[name] = { chunk, filePath, volume, loop, play_on_awake };
-        if (play_on_awake) PlaySound(name);
     }
 }
 
@@ -78,7 +95,6 @@ void AudioSource::AddMusic(const std::string& name, const std::string& filePath,
 {
     if (Mix_Music* music = ResourceManager::GetInstance().LoadMusic(filePath)) {
         musics[name] = { music, filePath, volume, loop, play_on_awake };
-        if (play_on_awake) PlayMusic(name);
     }
 }
 
@@ -150,6 +166,62 @@ void AudioSource::StopMusic(const std::string& name)
     {
         Mix_HaltMusic();
         current_music = nullptr;
+    }
+}
+
+void AudioSource::PauseAll()
+{
+    Mix_Pause(-1);
+    Mix_PauseMusic();
+}
+
+void AudioSource::PauseSound(const std::string& name)
+{
+    auto it = sounds.find(name);
+    if (it != sounds.end()) {
+        Mix_Chunk* targetChunk = it->second.chunk;
+        int numChannels = Mix_AllocateChannels(-1);
+        for (int i = 0; i < numChannels; ++i) {
+            if (Mix_GetChunk(i) == targetChunk && Mix_Playing(i)) {
+                Mix_Pause(i);
+            }
+        }
+    }
+}
+
+void AudioSource::PauseMusic(const std::string& name)
+{
+    auto it = musics.find(name);
+    if (it != musics.end() && current_music == it->second.music && Mix_PlayingMusic()) {
+        Mix_PauseMusic();
+    }
+}
+
+void AudioSource::UnpauseAll()
+{
+    Mix_Resume(-1);
+    Mix_ResumeMusic();
+}
+
+void AudioSource::UnpauseSound(const std::string& name)
+{
+    auto it = sounds.find(name);
+    if (it != sounds.end()) {
+        Mix_Chunk* targetChunk = it->second.chunk;
+        int numChannels = Mix_AllocateChannels(-1);
+        for (int i = 0; i < numChannels; ++i) {
+            if (Mix_GetChunk(i) == targetChunk && Mix_Paused(i)) {
+                Mix_Resume(i);
+            }
+        }
+    }
+}
+
+void AudioSource::UnpauseMusic(const std::string& name)
+{
+    auto it = musics.find(name);
+    if (it != musics.end() && current_music == it->second.music && Mix_PausedMusic()) {
+        Mix_ResumeMusic();
     }
 }
 

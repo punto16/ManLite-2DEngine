@@ -82,6 +82,7 @@ private:
     //thread management
     std::queue<TextureLoadTask> texture_load_queue;
     std::mutex texture_queue_mutex;
+    std::mutex textures_mutex;
 };
 
 #endif // !__RESOURCE_MANAGER_EM_H__

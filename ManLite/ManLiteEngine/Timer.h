@@ -2,7 +2,7 @@
 #ifndef __TIMER_H__
 #define __TIMER_H__
 
-#include "ManLiteEngine/Defs.h"
+#include "Defs.h"
 
 class Timer
 {
@@ -17,6 +17,8 @@ public:
 	float ReadSec(float scale);
 	void Pause();
 	void Resume();
+
+	static void SecondsToFormat(float totalSeconds, int& h, int& m, int& s, int& ms);
 
 private:
 	uint started_at;

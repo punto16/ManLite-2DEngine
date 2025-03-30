@@ -23,6 +23,9 @@ public:
 	bool Init();
 	bool Update(double dt);
 
+	bool Pause();
+	bool Unpause();
+
 	void Draw();
 
 	//DO NOT call this function to delete a game object
@@ -146,10 +149,11 @@ public:
 
 	//getters // setters
 	std::string GetName() const { return this->gameobject_name; }
-	void SetName(std::string name) { this->gameobject_name = GenerateUniqueName(name, this); }
+	void SetName(std::string name, bool unique_name = true) { this->gameobject_name = unique_name ? GenerateUniqueName(name, this) : name; }
 	std::string GetTag() const { return this->gameobject_tag; }
 	void SetTag(std::string tag) { this->gameobject_tag = tag; }
 	uint32_t GetID() const { return this->gameobject_id; }
+	void SetID(uint32_t id) { this->gameobject_id = id; }
 	std::weak_ptr<GameObject> GetParentGO() const { return this->parent_gameobject; }
 	std::weak_ptr<Layer> GetParentLayer() const { return this->parent_layer; }
 	void SetParentLayer(std::shared_ptr<Layer> layer) { this->parent_layer = layer; }

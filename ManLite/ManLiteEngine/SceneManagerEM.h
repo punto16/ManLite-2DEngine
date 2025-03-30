@@ -21,11 +21,14 @@ public:
 	bool Init();
 	bool Update(double dt);
 
+	bool Pause();
+	bool Unpause();
+
 	bool CleanUp();
 
 	//general functions for game objects
 	std::shared_ptr<GameObject> CreateEmptyGO(GameObject& parent);
-	std::shared_ptr<GameObject> DuplicateGO(GameObject& go_to_copy);
+	std::shared_ptr<GameObject> DuplicateGO(GameObject& go_to_copy, bool scene_duplication = false);
 	//general functions for layers
 	std::shared_ptr<Layer> CreateEmptyLayer();
 	std::shared_ptr<Layer> DuplicateLayer(Layer& layer_to_copy);

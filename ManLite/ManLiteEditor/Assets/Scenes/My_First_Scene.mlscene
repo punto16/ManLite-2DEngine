@@ -1,11 +1,12 @@
 {
   "CamerasAmount": 0,
+  "CurrentCamID": 959569685,
   "game_objects": [
     {
       "Components": [
         {
           "AspectRatio": 1.0,
-          "ComponentID": 1360164218,
+          "ComponentID": 2525932589,
           "ComponentName": "Transform",
           "ComponentType": 0,
           "ContainerGOID": 959569685,
@@ -23,7 +24,7 @@
         },
         {
           "CameraZoom": 91.0,
-          "ComponentID": 3078615547,
+          "ComponentID": 732650942,
           "ComponentName": "Camera",
           "ComponentType": 1,
           "ContainerGOID": 959569685,
@@ -36,8 +37,9 @@
       ],
       "Enabled": true,
       "ID": 959569685,
-      "Name": "Camera_(1)",
-      "ParentID": 3364290237,
+      "Name": "Camera",
+      "ParentID": 1361115545,
+      "ParentLayerID": 0,
       "Tag": "Camera",
       "Visible": true
     },
@@ -45,7 +47,7 @@
       "Components": [
         {
           "AspectRatio": 1.0,
-          "ComponentID": 3675034324,
+          "ComponentID": 2488623420,
           "ComponentName": "Transform",
           "ComponentType": 0,
           "ContainerGOID": 1667443374,
@@ -53,7 +55,7 @@
           "LockAspect": true,
           "Position": [
             0.0,
-            1.0
+            0.949999988079071
           ],
           "Rotation": 0.0,
           "Scale": [
@@ -62,7 +64,7 @@
           ]
         },
         {
-          "ComponentID": 2957416127,
+          "ComponentID": 2516639909,
           "ComponentName": "Sprite2D",
           "ComponentType": 2,
           "ContainerGOID": 1667443374,
@@ -70,7 +72,7 @@
           "PixelArtRender": true,
           "TexturePath": "Assets\\Textures\\IDLE.png",
           "TextureSection": [
-            323,
+            35,
             43,
             26,
             39
@@ -80,9 +82,9 @@
             96
           ],
           "TextureUVs": [
-            0.33645832538604736,
+            0.0364583320915699,
             0.1458333283662796,
-            0.3635416626930237,
+            0.06354166567325592,
             0.5520833134651184
           ]
         },
@@ -97,7 +99,7 @@
               "path": "Assets\\Animations\\samurai_idle_animation_test2.animation"
             }
           ],
-          "ComponentID": 2556859343,
+          "ComponentID": 689257960,
           "ComponentName": "Animator",
           "ComponentType": 3,
           "ContainerGOID": 1667443374,
@@ -107,8 +109,8 @@
       ],
       "Enabled": true,
       "ID": 1667443374,
-      "Name": "Samurai_(1)",
-      "ParentID": 3364290237,
+      "Name": "Samurai",
+      "ParentID": 1361115545,
       "ParentLayerID": 0,
       "Tag": "Player",
       "Visible": true
@@ -117,7 +119,7 @@
       "Components": [
         {
           "AspectRatio": 1.0,
-          "ComponentID": 2274138284,
+          "ComponentID": 1230387730,
           "ComponentName": "Transform",
           "ComponentType": 0,
           "ContainerGOID": 1536642911,
@@ -132,12 +134,30 @@
             1.0,
             1.0
           ]
+        },
+        {
+          "ComponentID": 1661813060,
+          "ComponentName": "AudioSource",
+          "ComponentType": 7,
+          "ContainerGOID": 1536642911,
+          "Enabled": true,
+          "Musics": [
+            {
+              "loop": false,
+              "name": "music",
+              "path": "Assets\\Audio\\Music\\music.ogg",
+              "play_on_awake": true,
+              "volume": 9
+            }
+          ],
+          "Sounds": null
         }
       ],
       "Enabled": true,
       "ID": 1536642911,
-      "Name": "BackGround_Music_(1)",
-      "ParentID": 3364290237,
+      "Name": "BackGround_Music",
+      "ParentID": 1361115545,
+      "ParentLayerID": 0,
       "Tag": "Sound",
       "Visible": true
     }
@@ -145,9 +165,11 @@
   "layers": [
     {
       "Layer_children_go_id": [
-        1667443374
+        1667443374,
+        959569685,
+        1536642911
       ],
-      "children_count": 1,
+      "children_count": 3,
       "layer_id": 0,
       "layer_name": "DefaultLayer_0",
       "visible": true

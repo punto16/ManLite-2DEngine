@@ -31,6 +31,11 @@ EngineCore::EngineCore()
 
 	//renderer last
 	AddEngineModule(renderer_em, true);
+
+	//timer
+	scale_time = 1.0f;
+	game_time = 0.0f;
+	game_timer = new Timer();
 }
 
 EngineCore::~EngineCore()
@@ -103,11 +108,18 @@ bool EngineCore::PostUpdate()
 		if (!item->PostUpdate()) return false;
 	}
 
+	if (engine_state == EngineState::PLAY)
+	{
+		game_time = game_timer->ReadSec(scale_time);
+	}
+
 	return ret;
 }
 
 void EngineCore::CleanUp()
 {
+	RELEASE(game_timer)
+
 	for (auto item = engine_modules.rbegin(); item != engine_modules.rend(); ++item)
 	{
 		EngineModule* module = *item;
@@ -154,12 +166,16 @@ void EngineCore::SetEngineState(EngineState new_state)
 		}
 		case PAUSE: //play to pause stops updates
 		{
-			
+			game_timer->Pause();
+			scene_manager_em->GetCurrentScene().Pause();
+			LOG(LogType::LOG_INFO, "EngineCore: State from Play to Pause");
 			break;
 		}
 		case STOP: //play to stop takes pre-play scene to front
 		{
+			game_time = 0.0f;
 			scene_manager_em->StopSession();
+			LOG(LogType::LOG_INFO, "EngineCore: State from Play to Stop");
 			break;
 		}
 		case COUNT:
@@ -177,7 +193,9 @@ void EngineCore::SetEngineState(EngineState new_state)
 		{
 		case PLAY: //pause to play resume updates
 		{
-
+			game_timer->Resume();
+			scene_manager_em->GetCurrentScene().Unpause();
+			LOG(LogType::LOG_INFO, "EngineCore: State from Pause to Play");
 			break;
 		}
 		case PAUSE: //pause to pause do nothing
@@ -187,7 +205,9 @@ void EngineCore::SetEngineState(EngineState new_state)
 		}
 		case STOP: //pause to stop takes pre-play scene to front
 		{
+			game_time = 0.0f;
 			scene_manager_em->StopSession();
+			LOG(LogType::LOG_INFO, "EngineCore: State from Pause to Stop");
 			break;
 		}
 		case COUNT:
@@ -197,7 +217,6 @@ void EngineCore::SetEngineState(EngineState new_state)
 		}
 		break;
 		//
-		break;
 	}
 	case STOP:
 	{
@@ -206,7 +225,10 @@ void EngineCore::SetEngineState(EngineState new_state)
 		{
 		case PLAY: //stop to play init things and resume updates
 		{
+			game_time = 0.0f;
+			game_timer->Start();
 			scene_manager_em->StartSession();
+			LOG(LogType::LOG_INFO, "EngineCore: State from Stop to Play");
 			break;
 		}
 		case PAUSE: //stop to pause do nothing
@@ -226,7 +248,6 @@ void EngineCore::SetEngineState(EngineState new_state)
 		}
 		break;
 		//
-		break;
 	}
 	case COUNT:
 		break;

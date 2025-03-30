@@ -312,18 +312,21 @@ void SceneManagerEM::StartSession()
 {
 	if (current_scene)
 	{
-		//save scene
-		if (!current_scene->GetScenePath().empty() && current_scene->GetScenePath() != "")
+		if (engine->GetEditorOrBuild()) // if we are in build mode, we dont need to save scene, duplicate scene, etc...
 		{
-			fs::path scene_path(current_scene->GetScenePath());
+			//save scene
+			if (!current_scene->GetScenePath().empty() && current_scene->GetScenePath() != "")
+			{
+				fs::path scene_path(current_scene->GetScenePath());
 
-			std::string directory = scene_path.parent_path().string();
-			std::string scene_name = scene_path.stem().string();
+				std::string directory = scene_path.parent_path().string();
+				std::string scene_name = scene_path.stem().string();
 
-			SaveScene(directory, scene_name);
+				SaveScene(directory, scene_name);
+			}
+			//copy the scene in memory
+			pre_play_scene.reset(DuplicateScene(*current_scene.get()));
 		}
-		//copy the scene in memory
-		pre_play_scene.reset(DuplicateScene(*current_scene.get()));
 		//init all
 		current_scene->Init();
 	}
@@ -334,7 +337,7 @@ void SceneManagerEM::StopSession()
 	if (pre_play_scene)
 	{
 		current_scene->CleanUp();
-		current_scene = std::move(pre_play_scene);
+		if (engine->GetEditorOrBuild()) current_scene = std::move(pre_play_scene);
 	}
 }
 
@@ -358,7 +361,7 @@ Scene::Scene(const Scene& other)
 	{
 		auto children = std::vector<std::shared_ptr<GameObject>>(other.scene_root->GetChildren());
 		for (const auto& child_to_copy : children)
-			DuplicateGO(*child_to_copy)->Reparent(this->scene_root);
+			DuplicateGO(*child_to_copy, true)->Reparent(this->scene_root);
 	}
 
 	for (const auto& item : other.scene_layers)
@@ -401,6 +404,30 @@ bool Scene::Update(double dt)
 	return ret;
 }
 
+bool Scene::Pause()
+{
+	bool ret = true;
+
+	for (const auto& go : scene_root->GetChildren())
+		if (go->IsEnabled())
+			if (!go->Pause())
+				return false;
+
+	return ret;
+}
+
+bool Scene::Unpause()
+{
+	bool ret = true;
+
+	for (const auto& go : scene_root->GetChildren())
+		if (go->IsEnabled())
+			if (!go->Unpause())
+				return false;
+
+	return ret;
+}
+
 bool Scene::CleanUp()
 {
 	bool ret = true;
@@ -425,9 +452,14 @@ std::shared_ptr<GameObject> Scene::CreateEmptyGO(GameObject& parent)
 	return empty_go;
 }
 
-std::shared_ptr<GameObject> Scene::DuplicateGO(GameObject& go_to_copy)
+std::shared_ptr<GameObject> Scene::DuplicateGO(GameObject& go_to_copy, bool scene_duplication)
 {
 	std::shared_ptr<GameObject> copy = std::make_shared<GameObject>(go_to_copy.GetSharedPtr());
+	if (scene_duplication)
+	{
+		copy->SetName(go_to_copy.GetName(), false);
+		copy->SetID(go_to_copy.GetID());
+	}
 	copy->CloneComponents(go_to_copy.GetSharedPtr());
 	go_to_copy.GetParentGO().lock()->AddChild(copy);
 	if (go_to_copy.GetParentLayer().lock() != nullptr)
@@ -439,7 +471,7 @@ std::shared_ptr<GameObject> Scene::DuplicateGO(GameObject& go_to_copy)
 	{
 		auto children = std::vector<std::shared_ptr<GameObject>>(go_to_copy.GetChildren());
 		for (const auto& child_to_copy : children)
-			DuplicateGO(*child_to_copy)->Reparent(copy);
+			DuplicateGO(*child_to_copy, scene_duplication)->Reparent(copy);
 	}
 
 	return copy;
