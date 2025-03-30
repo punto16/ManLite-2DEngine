@@ -10,10 +10,11 @@
 class GameObject;
 class json;
 
-class Layer : std::enable_shared_from_this<Layer>
+class Layer : public std::enable_shared_from_this<Layer>
 {
 public:
 	Layer(uint32_t layer_id = -1, std::string layer_name = "Layer", bool visible = true);
+	Layer(const Layer& other);
 	~Layer();
 
 	bool Update(double dt);

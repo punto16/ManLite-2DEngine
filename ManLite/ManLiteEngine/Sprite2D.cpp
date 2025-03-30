@@ -44,7 +44,7 @@ void Sprite2D::Draw()
         if (textureFuture.wait_for(std::chrono::seconds(0)) == std::future_status::ready) {
             textureID = textureFuture.get();
             textureLoading = false;
-            SetTextureSection(0, 0, tex_width, tex_height);
+            SetTextureSection(sectionX, sectionY, sectionW, sectionH);
         }
     }
 

@@ -137,3 +137,103 @@ void EngineCore::CleanLogs()
 {
 	logs.clear();
 }
+
+void EngineCore::SetEngineState(EngineState new_state)
+{
+	switch (engine_state)
+	{
+	case PLAY:
+	{
+		//
+		switch (new_state)
+		{
+		case PLAY: //play to play do nothing
+		{
+			
+			break;
+		}
+		case PAUSE: //play to pause stops updates
+		{
+			
+			break;
+		}
+		case STOP: //play to stop takes pre-play scene to front
+		{
+			scene_manager_em->StopSession();
+			break;
+		}
+		case COUNT:
+			break;
+		default:
+			break;
+		}
+		break;
+		//
+	}
+	case PAUSE:
+	{
+		//
+		switch (new_state)
+		{
+		case PLAY: //pause to play resume updates
+		{
+
+			break;
+		}
+		case PAUSE: //pause to pause do nothing
+		{
+			
+			break;
+		}
+		case STOP: //pause to stop takes pre-play scene to front
+		{
+			scene_manager_em->StopSession();
+			break;
+		}
+		case COUNT:
+			break;
+		default:
+			break;
+		}
+		break;
+		//
+		break;
+	}
+	case STOP:
+	{
+		//
+		switch (new_state)
+		{
+		case PLAY: //stop to play init things and resume updates
+		{
+			scene_manager_em->StartSession();
+			break;
+		}
+		case PAUSE: //stop to pause do nothing
+		{
+			
+			break;
+		}
+		case STOP: //stop to stop do nothing
+		{
+			
+			break;
+		}
+		case COUNT:
+			break;
+		default:
+			break;
+		}
+		break;
+		//
+		break;
+	}
+	case COUNT:
+		break;
+	default:
+		break;
+	}
+
+	//update to new state
+	engine_state = new_state;
+}

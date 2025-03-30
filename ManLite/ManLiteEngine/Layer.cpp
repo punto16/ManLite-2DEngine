@@ -11,6 +11,14 @@ Layer::Layer(uint32_t layer_id, std::string layer_name, bool visible) :
 {
 }
 
+Layer::Layer(const Layer& other)
+	: layer_id(other.layer_id),
+	layer_name(other.layer_name),
+	visible(other.visible),
+	children_gameobject()
+{
+}
+
 Layer::~Layer()
 {
 }

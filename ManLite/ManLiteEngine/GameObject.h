@@ -20,6 +20,7 @@ public:
 	~GameObject();
 	
 	bool Awake();
+	bool Init();
 	bool Update(double dt);
 
 	void Draw();

@@ -28,6 +28,7 @@ public:
     AudioSource(const AudioSource& component_to_copy, std::shared_ptr<GameObject> container_go);
     ~AudioSource();
 
+    bool Init() override;
     bool Update(float dt) override;
 
     // sound

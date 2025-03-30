@@ -400,6 +400,22 @@ void Gui::MainMenuBar()
 			HelpMenu();
 			ImGui::EndMenu();
 		}
+
+		//engine state
+		ImGui::Dummy(ImVec2(ImGui::GetContentRegionAvail().x / 2 - 255, 0.0f));
+		if (ImGui::Button(">"))
+		{
+			engine->SetEngineState(EngineState::PLAY);
+		}
+		if (ImGui::Button("||"))
+		{
+			engine->SetEngineState(EngineState::PAUSE);
+		}
+		if (ImGui::Button("[]"))
+		{
+			engine->SetEngineState(EngineState::STOP);
+		}
+		//
 		ImGui::EndMainMenuBar();
 	}
 }

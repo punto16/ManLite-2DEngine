@@ -59,6 +59,19 @@ bool GameObject::Awake()
     return ret;
 }
 
+bool GameObject::Init()
+{
+    bool ret = true;
+
+    //init components
+    for (const auto& item : components_gameobject) if (item->IsEnabled()) item->Init();
+
+    //then, init children game objects
+    for (const auto& item : children_gameobject) if (item->IsEnabled()) item->Init();
+
+    return ret;
+}
+
 bool GameObject::Update(double dt)
 {
     bool ret = true;

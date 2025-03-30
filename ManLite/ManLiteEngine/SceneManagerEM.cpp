@@ -3,6 +3,9 @@
 #include "GameObject.h"
 #include "Layer.h"
 #include "Sprite2D.h"
+#include "EngineCore.h"
+#include "PhysicsEM.h"
+#include "AudioEM.h"
 
 #include "Defs.h"
 #include "Log.h"
@@ -86,6 +89,11 @@ void SceneManagerEM::CreateEmptyScene()
 	Awake();
 }
 
+Scene* SceneManagerEM::DuplicateScene(Scene& scene_to_copy)
+{
+	return new Scene(scene_to_copy);
+}
+
 void SceneManagerEM::SaveScene(std::string directory, std::string scene_name)
 {
 	std::string file_name_ext = scene_name + ".mlscene";
@@ -111,6 +119,9 @@ void SceneManagerEM::SaveScene(std::string directory, std::string scene_name)
 		layersJSON.push_back(layer->SaveLayer());
 	}
 	sceneJSON["layers"] = layersJSON;
+
+	sceneJSON["CamerasAmount"] = current_scene->GetCamerasInSceneAmount();
+	if (current_scene->HasCameraSet()) sceneJSON["CurrentCamID"] = current_scene->GetCurrentCameraGO().GetID();
 
 	LOG(LogType::LOG_OK, "Succesfully Saved Scene at %s", (directory + file_name_ext).c_str());
 
@@ -143,6 +154,9 @@ void SceneManagerEM::LoadSceneFromJson(const std::string& file_name)
 		return;
 	}
 	file.close();
+
+	PhysicsEM::Shutdown();
+	PhysicsEM::Init();
 
 	current_scene->SetScenePath(file_name);
 	if (sceneJSON.contains("scene_name"))
@@ -198,6 +212,8 @@ void SceneManagerEM::LoadSceneFromJson(const std::string& file_name)
 			}
 		}
 	}
+	if (sceneJSON.contains("CamerasAmount")) current_scene->SetCamerasInSceneAmount(sceneJSON["CamerasAmount"]);
+	if (sceneJSON.contains("CurrentCamID")) current_scene->SetCurrentCameraGO(current_scene->FindGameObjectByID(sceneJSON["CurrentCamID"]));
 
 	LOG(LogType::LOG_OK, "Succesfully Loaded Scene %s", file_name.c_str());
 }
@@ -228,6 +244,9 @@ void SceneManagerEM::LoadSceneToScene(const std::string& file_name, Scene& scene
 		return;
 	}
 	file.close();
+
+	PhysicsEM::Shutdown();
+	PhysicsEM::Init();
 
 	scene.SetScenePath(file_name);
 	if (sceneJSON.contains("scene_name"))
@@ -283,8 +302,40 @@ void SceneManagerEM::LoadSceneToScene(const std::string& file_name, Scene& scene
 			}
 		}
 	}
+	if (sceneJSON.contains("CamerasAmount")) current_scene->SetCamerasInSceneAmount(sceneJSON["CamerasAmount"]);
+	if (sceneJSON.contains("CurrentCamID")) current_scene->SetCurrentCameraGO(current_scene->FindGameObjectByID(sceneJSON["CurrentCamID"]));
 
 	LOG(LogType::LOG_OK, "Succesfully Loaded Scene %s", file_name.c_str());
+}
+
+void SceneManagerEM::StartSession()
+{
+	if (current_scene)
+	{
+		//save scene
+		if (!current_scene->GetScenePath().empty() && current_scene->GetScenePath() != "")
+		{
+			fs::path scene_path(current_scene->GetScenePath());
+
+			std::string directory = scene_path.parent_path().string();
+			std::string scene_name = scene_path.stem().string();
+
+			SaveScene(directory, scene_name);
+		}
+		//copy the scene in memory
+		pre_play_scene.reset(DuplicateScene(*current_scene.get()));
+		//init all
+		current_scene->Init();
+	}
+}
+
+void SceneManagerEM::StopSession()
+{
+	if (pre_play_scene)
+	{
+		current_scene->CleanUp();
+		current_scene = std::move(pre_play_scene);
+	}
 }
 
 //SCENE
@@ -296,22 +347,55 @@ Scene::Scene(std::string scene_name) : scene_name(scene_name)
 	LOG(LogType::LOG_INFO, "Scene <%s> created", scene_name.c_str());
 }
 
+Scene::Scene(const Scene& other)
+	: scene_name(other.scene_name),
+	scene_path(other.scene_path),
+	cameras_in_scene_amount(other.cameras_in_scene_amount)
+{
+	this->scene_root = std::make_shared<GameObject>(other.scene_root->GetSharedPtr());
+
+	if (!other.scene_root->GetChildren().empty())
+	{
+		auto children = std::vector<std::shared_ptr<GameObject>>(other.scene_root->GetChildren());
+		for (const auto& child_to_copy : children)
+			DuplicateGO(*child_to_copy)->Reparent(this->scene_root);
+	}
+
+	for (const auto& item : other.scene_layers)
+	{
+		std::shared_ptr<Layer> layer = DuplicateLayer(*item);
+		scene_layers.push_back(layer);
+	}
+
+	if (other.current_camera_go) current_camera_go = FindGameObjectByID(other.current_camera_go->GetID());
+}
+
 Scene::~Scene()
 {
+}
+
+bool Scene::Init()
+{
+	for (const auto& go : scene_root->GetChildren())
+		if (go->IsEnabled())
+			if (!go->Init())
+				return false;
+
+	return true;
 }
 
 bool Scene::Update(double dt)
 {
 	bool ret = true;
 
-	for (const auto& item : scene_root.get()->GetChildren()) 
-		if (item->IsEnabled())
-			if (!item->Update(dt)) 
+	for (const auto& item : scene_root.get()->GetChildren())
+		if (item->IsEnabled() && engine->GetEngineState() == EngineState::PLAY)
+			if (!item->Update(dt))
 				return false;
 
-	for (const auto& item : scene_layers) 
+	for (const auto& item : scene_layers)
 		if (item->IsVisible())
-			if (!item->Update(dt)) 
+			if (!item->Update(dt))
 				return false;
 
 	return ret;
@@ -366,6 +450,21 @@ std::shared_ptr<Layer> Scene::CreateEmptyLayer()
 	std::shared_ptr<Layer> empty_layer = std::make_shared<Layer>(scene_layers.size(), std::string("Layer_" + std::to_string(scene_layers.size())));
 	scene_layers.push_back(empty_layer);
 	return empty_layer;
+}
+
+std::shared_ptr<Layer> Scene::DuplicateLayer(Layer& layer_to_copy)
+{
+	std::shared_ptr<Layer> layer = std::make_shared<Layer>(layer_to_copy);
+
+	for (const auto& go : layer_to_copy.GetChildren())
+	{
+		if (auto child = FindGameObjectByID(go->GetID()))
+		{
+			layer->AddChild(child);
+			child->SetParentLayer(layer);
+		}
+	}
+	return layer;
 }
 
 void Scene::SafeAddGO(std::shared_ptr<GameObject> object_to_add)

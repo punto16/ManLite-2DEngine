@@ -21,8 +21,22 @@ AudioSource::AudioSource(const AudioSource& component_to_copy, std::shared_ptr<G
 
 AudioSource::~AudioSource()
 {
+    StopAll();
     RemoveAllSounds();
     RemoveAllMusic();
+}
+
+bool AudioSource::Init()
+{
+    for (auto& pair : sounds)
+        if (pair.second.play_on_awake)
+            PlaySound(pair.first);
+
+    for (auto& pair : musics)
+        if (pair.second.play_on_awake)
+            PlayMusic(pair.first);
+
+    return true;
 }
 
 bool AudioSource::Update(float dt)

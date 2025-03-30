@@ -31,6 +31,7 @@ public:
 	Component(const Component& component_to_copy, std::shared_ptr<GameObject> container_go);
 	virtual ~Component() {}
 
+	virtual bool Init() { return true; }
 	virtual bool Update(float dt) { return true; }
 	virtual void Draw() {}
 

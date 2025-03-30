@@ -15,8 +15,10 @@ class Scene
 {
 public:
 	Scene(std::string scene_name = "Untitled_Scene");
+	Scene(const Scene& other);
 	~Scene();
 
+	bool Init();
 	bool Update(double dt);
 
 	bool CleanUp();
@@ -26,6 +28,7 @@ public:
 	std::shared_ptr<GameObject> DuplicateGO(GameObject& go_to_copy);
 	//general functions for layers
 	std::shared_ptr<Layer> CreateEmptyLayer();
+	std::shared_ptr<Layer> DuplicateLayer(Layer& layer_to_copy);
 
 	//safely adds a game object to a pending to add list
 	//whenever it is safe place, they will be added to scene root go
@@ -84,6 +87,7 @@ public:
 	void SetScenePath(std::string scene_path) { this->scene_path = scene_path; }
 
 	GameObject& GetCurrentCameraGO() const { return *current_camera_go; }
+	bool HasCameraSet() { return current_camera_go ? true : false; }
 	void SetCurrentCameraGO(std::shared_ptr<GameObject> new_cam_go) { this->current_camera_go = new_cam_go; }
 	uint16_t GetCamerasInSceneAmount() const { return this->cameras_in_scene_amount; }
 	void SetCamerasInSceneAmount(const uint16_t c) { this->cameras_in_scene_amount = c; }
@@ -126,17 +130,24 @@ public:
 	bool CleanUp();
 
 	void CreateEmptyScene();
+	Scene* DuplicateScene(Scene& scene_to_copy);
 
 	//scene serialization
 	void SaveScene(std::string directory, std::string scene_name);
 	void LoadSceneFromJson(const std::string& file_name);
 	void LoadSceneToScene(const std::string& file_name, Scene& scene);
 
+	//engine state scene manager
+	void StartSession();
+	void StopSession();
+
 	//getters // setters
 	Scene& GetCurrentScene() { return *current_scene; }
 
 private:
 	std::unique_ptr<Scene> current_scene;
+
+	std::unique_ptr<Scene> pre_play_scene;
 };
 
 #endif // !__SCENEMANAGER_EM_H__

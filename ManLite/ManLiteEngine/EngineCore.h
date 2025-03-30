@@ -8,13 +8,23 @@
 #include <vector>
 
 //EM means Engine Module
-
 class EngineModule;
 class WindowEM;
 class InputEM;
 class RendererEM;
 class SceneManagerEM;
 class AudioEM;
+
+
+enum EngineState
+{
+	PLAY,
+	PAUSE,
+	STOP,
+
+	//
+	COUNT
+};
 
 class EngineCore
 {
@@ -41,6 +51,9 @@ public:
 	//getters // setters
 	double GetDT() const { return this->dt; }
 
+	void SetEngineState(EngineState new_state);
+	EngineState GetEngineState() { return engine_state; }
+
 private:
 
 
@@ -53,6 +66,8 @@ public:
 	AudioEM* audio_em = nullptr;
 
 private:
+
+	EngineState engine_state = EngineState::STOP;
 
 	double dt;
 

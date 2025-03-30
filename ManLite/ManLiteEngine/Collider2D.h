@@ -16,7 +16,6 @@ public:
     Collider2D(const Collider2D& component_to_copy, std::shared_ptr<GameObject> container_go);
     ~Collider2D();
 
-    void Init();
     bool Update(float dt) override;
     void Draw() override;
 
