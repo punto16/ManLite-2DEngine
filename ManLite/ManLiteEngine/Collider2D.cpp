@@ -16,47 +16,11 @@ Collider2D::Collider2D(std::weak_ptr<GameObject> container_go,
     m_height(height),
     m_radius(radius),
     m_friction(0.3f),
-    m_linearDamping(0.0f)
+    m_linearDamping(0.0f),
+    m_mass(0.0f),
+    m_useGravity(true)
 {
-    b2BodyDef bodyDef;
-    Transform* t = container_go.lock()->GetComponent<Transform>();
-    bodyDef.type = m_isDynamic ? b2_dynamicBody : b2_staticBody;
-    bodyDef.position.Set(
-        PIXEL_TO_METERS(t->GetWorldPosition().x),
-        PIXEL_TO_METERS(t->GetWorldPosition().y)
-    );
-    bodyDef.linearDamping = m_linearDamping;
-    bodyDef.fixedRotation = m_lockRotation;
-    m_body = PhysicsEM::GetWorld()->CreateBody(&bodyDef);
-
-    b2FixtureDef fixtureDef;
-    b2Shape* shape = nullptr;
-
-    if (m_shapeType == ShapeType::RECTANGLE)
-    {
-        b2PolygonShape* boxShape = new b2PolygonShape();
-        boxShape->SetAsBox(
-            PIXEL_TO_METERS(m_width / 2),
-            PIXEL_TO_METERS(m_height / 2)
-        );
-        shape = boxShape;
-    }
-    else
-    {
-        b2CircleShape* circleShape = new b2CircleShape();
-        circleShape->m_radius = PIXEL_TO_METERS(m_radius);
-        shape = circleShape;
-    }
-
-    fixtureDef.shape = shape;
-    fixtureDef.isSensor = m_isSensor;
-    fixtureDef.density = m_isDynamic ? 1.0f : 0.0f;
-    fixtureDef.friction = m_friction;
-
-    b2Fixture* fixture = m_body->CreateFixture(&fixtureDef);
-    fixture->GetUserData().pointer = reinterpret_cast<uintptr_t>(this);
-
-    delete shape;
+    RecreateFixture();
 }
 
 Collider2D::Collider2D(const Collider2D& component_to_copy, std::shared_ptr<GameObject> container_go)
@@ -70,52 +34,11 @@ Collider2D::Collider2D(const Collider2D& component_to_copy, std::shared_ptr<Game
     m_color(component_to_copy.m_color),
     m_lockRotation(component_to_copy.m_lockRotation),
     m_friction(component_to_copy.m_friction),
-    m_linearDamping(component_to_copy.m_linearDamping)
+    m_linearDamping(component_to_copy.m_linearDamping),
+    m_mass(component_to_copy.m_mass),
+    m_useGravity(component_to_copy.m_useGravity)
 {
-    Transform* t = container_go->GetComponent<Transform>();
-
-    b2BodyDef bodyDef;
-    bodyDef.type = m_isDynamic ? b2_dynamicBody : b2_staticBody;
-    bodyDef.position.Set(
-        PIXEL_TO_METERS(t->GetWorldPosition().x),
-        PIXEL_TO_METERS(t->GetWorldPosition().y)
-    );
-    bodyDef.linearDamping = m_linearDamping;
-    bodyDef.fixedRotation = m_lockRotation;
-
-    m_body = PhysicsEM::GetWorld()->CreateBody(&bodyDef);
-
-    b2FixtureDef fixtureDef;
-    b2Shape* shape = nullptr;
-
-    if (m_shapeType == ShapeType::RECTANGLE) {
-        b2PolygonShape* boxShape = new b2PolygonShape();
-        boxShape->SetAsBox(
-            PIXEL_TO_METERS(m_width / 2),
-            PIXEL_TO_METERS(m_height / 2)
-        );
-        shape = boxShape;
-    }
-    else {
-        b2CircleShape* circleShape = new b2CircleShape();
-        circleShape->m_radius = PIXEL_TO_METERS(m_radius);
-        shape = circleShape;
-    }
-
-    fixtureDef.shape = shape;
-    fixtureDef.isSensor = m_isSensor;
-    fixtureDef.density = m_isDynamic ? 1.0f : 0.0f;
-    fixtureDef.friction = m_friction;
-
-    b2Fixture* fixture = m_body->CreateFixture(&fixtureDef);
-    fixture->GetUserData().pointer = reinterpret_cast<uintptr_t>(this);
-
-    delete shape;
-
-    if (m_isDynamic && component_to_copy.m_body) {
-        m_body->SetLinearVelocity(component_to_copy.m_body->GetLinearVelocity());
-        m_body->SetAngularVelocity(component_to_copy.m_body->GetAngularVelocity());
-    }
+    RecreateFixture();
 }
 
 Collider2D::~Collider2D()
@@ -146,6 +69,58 @@ bool Collider2D::Update(float dt)
 void Collider2D::Draw()
 {
     //empty for the moment
+}
+
+void Collider2D::SetShapeType(ShapeType newType)
+{
+    if (m_shapeType != newType)
+    {
+        m_shapeType = newType;
+        RecreateFixture();
+    }
+}
+
+void Collider2D::SetSize(float width, float height)
+{
+    if (width <= 0 || height <= 0) return;
+    if (m_shapeType == ShapeType::RECTANGLE &&
+        (m_width != width || m_height != height))
+    {
+        m_width = width;
+        m_height = height;
+        RecreateFixture();
+    }
+}
+
+void Collider2D::SetRadius(float radius)
+{
+    if (radius <= 0) return;
+    if (m_shapeType == ShapeType::CIRCLE && m_radius != radius)
+    {
+        m_radius = radius;
+        RecreateFixture();
+    }
+}
+
+void Collider2D::SetDynamic(bool isDynamic)
+{
+    if (m_isDynamic != isDynamic)
+    {
+        m_isDynamic = isDynamic;
+
+        if (m_body)
+        {
+            m_body->SetType(m_isDynamic ? b2_dynamicBody : b2_staticBody);
+
+            RecreateFixture();
+
+            if (!m_isDynamic)
+            {
+                m_body->SetLinearVelocity(b2Vec2_zero);
+                m_body->SetAngularVelocity(0.0f);
+            }
+        }
+    }
 }
 
 void Collider2D::SetSensor(bool sensor)
@@ -208,6 +183,8 @@ nlohmann::json Collider2D::SaveComponent()
     componentJSON["Width"] = m_width;
     componentJSON["Height"] = m_height;
     componentJSON["Radius"] = m_radius;
+    componentJSON["Mass"] = m_mass;
+    componentJSON["UseGravity"] = m_useGravity;
 
     componentJSON["Color"]["R"] = m_color.r;
     componentJSON["Color"]["G"] = m_color.g;
@@ -238,6 +215,8 @@ void Collider2D::LoadComponent(const nlohmann::json& componentJSON)
     if (componentJSON.contains("Width")) m_width = componentJSON["Width"];
     if (componentJSON.contains("Height")) m_height = componentJSON["Height"];
     if (componentJSON.contains("Radius")) m_radius = componentJSON["Radius"];
+    if (componentJSON.contains("Mass")) m_mass = componentJSON["Mass"];
+    if (componentJSON.contains("UseGravity")) m_useGravity = componentJSON["UseGravity"];
 
     if (componentJSON.contains("Color")) {
         m_color.r = componentJSON["Color"]["R"];
@@ -251,7 +230,20 @@ void Collider2D::LoadComponent(const nlohmann::json& componentJSON)
         PhysicsEM::GetWorld()->DestroyBody(m_body);
         m_body = nullptr;
     }
-    Init();
+    //
+    b2BodyDef bodyDef;
+    Transform* t = container_go.lock()->GetComponent<Transform>();
+    bodyDef.type = m_isDynamic ? b2_dynamicBody : b2_staticBody;
+    bodyDef.position.Set(
+        PIXEL_TO_METERS(t->GetWorldPosition().x),
+        PIXEL_TO_METERS(t->GetWorldPosition().y)
+    );
+    bodyDef.linearDamping = m_linearDamping;
+    bodyDef.fixedRotation = m_lockRotation;
+    bodyDef.gravityScale = m_useGravity ? 1.0f : 0.0f;
+    m_body = PhysicsEM::GetWorld()->CreateBody(&bodyDef);
+    //
+    RecreateFixture();
     SetSensor(m_isSensor);
     SetLockRotation(m_lockRotation);
 }
@@ -281,6 +273,33 @@ void Collider2D::SetLinearDamping(float damping)
     }
 }
 
+void Collider2D::SetMass(float mass)
+{
+    m_mass = mass;
+    if (m_body && m_isDynamic) {
+        float area = 0.0f;
+        if (m_shapeType == ShapeType::RECTANGLE) {
+            area = PIXEL_TO_METERS(m_width) * PIXEL_TO_METERS(m_height);
+        }
+        else {
+            float radius = PIXEL_TO_METERS(m_radius);
+            area = b2_pi * radius * radius;
+        }
+
+        float newDensity = area > 0.0f ? m_mass / area : 0.0f;
+        m_body->GetFixtureList()->SetDensity(newDensity);
+        m_body->ResetMassData();
+    }
+}
+
+void Collider2D::SetUseGravity(bool useGravity)
+{
+    m_useGravity = useGravity;
+    if (m_body) {
+        m_body->SetGravityScale(m_useGravity ? 1.0f : 0.0f);
+    }
+}
+
 void Collider2D::SetEnabled(bool enable)
 {
     if (enabled == enable) return;
@@ -304,4 +323,51 @@ void Collider2D::UpdateBodyActivation()
         m_body->SetLinearVelocity(b2Vec2_zero);
         m_body->SetAngularVelocity(0.0f);
     }
+}
+
+void Collider2D::RecreateFixture()
+{
+    if (!m_body) return;
+
+    while (m_body->GetFixtureList()) m_body->DestroyFixture(m_body->GetFixtureList());
+
+    b2Shape* shape = nullptr;
+    if (m_shapeType == ShapeType::RECTANGLE)
+    {
+        b2PolygonShape* boxShape = new b2PolygonShape();
+        boxShape->SetAsBox(
+            PIXEL_TO_METERS(m_width / 2),
+            PIXEL_TO_METERS(m_height / 2)
+        );
+        shape = boxShape;
+    }
+    else
+    {
+        b2CircleShape* circleShape = new b2CircleShape();
+        circleShape->m_radius = PIXEL_TO_METERS(m_radius);
+        shape = circleShape;
+    }
+
+    b2FixtureDef fixtureDef;
+    fixtureDef.shape = shape;
+    fixtureDef.isSensor = m_isSensor;
+    fixtureDef.friction = m_friction;
+
+    float density = m_isDynamic ? 1.0f : 0.0f;
+    if (m_mass > 0.0f && m_isDynamic)
+    {
+        float area = (m_shapeType == ShapeType::RECTANGLE) ?
+            PIXEL_TO_METERS(m_width) * PIXEL_TO_METERS(m_height) :
+            b2_pi * PIXEL_TO_METERS(m_radius) * PIXEL_TO_METERS(m_radius);
+
+        density = (area > 0.0f) ? m_mass / area : 0.0f;
+    }
+    fixtureDef.density = density;
+
+    b2Fixture* fixture = m_body->CreateFixture(&fixtureDef);
+    fixture->GetUserData().pointer = reinterpret_cast<uintptr_t>(this);
+
+    if (m_isDynamic) m_body->ResetMassData();
+
+    delete shape;
 }

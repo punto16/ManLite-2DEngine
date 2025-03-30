@@ -25,6 +25,12 @@ public:
     float GetHeight() const { return m_height; }
     float GetRadius() const { return m_radius; }
 
+    void SetShapeType(ShapeType newType);
+    void SetSize(float width, float height);
+    void SetRadius(float radius);
+    bool IsDynamic() const { return m_isDynamic; }
+    void SetDynamic(bool isDynamic);
+
     // Sensor management
     void SetSensor(bool sensor);
     bool IsSensor() const { return m_isSensor; }
@@ -61,10 +67,17 @@ public:
     //values from 0.0 (space) to 5.0 (dense water)
     void SetLinearDamping(float damping);
 
+    float GetMass() const { return m_mass; }
+    void SetMass(float mass);
+
+    bool GetUseGravity() const { return m_useGravity; }
+    void SetUseGravity(bool useGravity);
+
     void SetEnabled(bool enable);
 
 private:
     void UpdateBodyActivation();
+    void RecreateFixture();
 
     b2Body* m_body = nullptr;
     ShapeType m_shapeType;
@@ -78,5 +91,8 @@ private:
     //values from 0.0 (ice) to 1.0 (sand)
     float m_friction = 0.3f;
     float m_width, m_height, m_radius;
+    // Mass in kg (0 = auto-calculate)
+    float m_mass = 0.0f;
+    bool m_useGravity = true;
     ML_Color m_color = { 0,255,0,255 };//green default
 };
