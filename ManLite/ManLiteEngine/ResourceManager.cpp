@@ -218,7 +218,6 @@ void ResourceManager::ProcessTextures()
         TextureLoadTask task = std::move(texture_load_queue.front());
         texture_load_queue.pop();
 
-        std::unique_lock<std::mutex> tex_lock(textures_mutex);
         auto it = textures.find(task.path);
         if (it != textures.end()) {
             it->second.refCount++;
@@ -226,7 +225,6 @@ void ResourceManager::ProcessTextures()
             task.promise.set_value(it->second.id);
             continue;
         }
-        tex_lock.unlock();
 
         GLuint textureID;
         glGenTextures(1, &textureID);
@@ -239,14 +237,12 @@ void ResourceManager::ProcessTextures()
 
         stbi_image_free(task.pixel_data);
 
-        tex_lock.lock();
         TextureData newData;
         newData.id = textureID;
         newData.refCount = 1;
         newData.w = task.width;
         newData.h = task.height;
         textures[task.path] = newData;
-        tex_lock.unlock();
 
         task.promise.set_value(textureID);
     }

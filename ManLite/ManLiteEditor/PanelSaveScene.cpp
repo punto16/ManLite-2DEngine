@@ -97,7 +97,7 @@ bool PanelSaveScene::Update()
 							is_loading = true;
 							app->gui->loading_panel->RequestFocus();
 							app->gui->loading_panel->SetText("Loading Scene...");
-							std::string description = "Scene < " + sceneName + " > is being loaded from < " + filePath + " >\n\nJust a moment! :D";
+							std::string description = "Scene   < " + sceneName + " >   is being loaded from\nScenePath:  < " + filePath + " >\n\nJust a moment! :D";
 							app->gui->loading_panel->SetDescription(description);
 							new_scene = std::make_shared<Scene>();
 							auto scene_copy = new_scene;
@@ -149,7 +149,7 @@ bool PanelSaveScene::Update()
 								is_loading = true;
 								app->gui->loading_panel->RequestFocus();
 								app->gui->loading_panel->SetText("Loading Scene...");
-								std::string description = "Scene < " + sceneName + " > is being loaded from < " + filePath + " >\n\nJust a moment! :D";
+								std::string description = "Scene   < " + sceneName + " >   is being loaded from\nScenePath:  < " + filePath + " >\n\nJust a moment! :D";
 								app->gui->loading_panel->SetDescription(description);
 								new_scene = std::make_shared<Scene>();
 								auto scene_copy = new_scene;
@@ -181,7 +181,7 @@ bool PanelSaveScene::Update()
 							is_loading = true;
 							app->gui->loading_panel->RequestFocus();
 							app->gui->loading_panel->SetText("Loading Scene...");
-							std::string description = "Scene < " + sceneName + " > is being loaded from < " + filePath + " >\n\nJust a moment! :D";
+							std::string description = "Scene   < " + sceneName + " >   is being loaded from\nScenePath:  < " + filePath + " >\n\nJust a moment! :D";
 							app->gui->loading_panel->SetDescription(description);
 							new_scene = std::make_shared<Scene>();
 							auto scene_copy = new_scene;

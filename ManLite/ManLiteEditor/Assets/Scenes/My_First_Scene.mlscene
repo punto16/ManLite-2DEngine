@@ -1,12 +1,11 @@
 {
   "CamerasAmount": 0,
-  "CurrentCamID": 959569685,
   "game_objects": [
     {
       "Components": [
         {
           "AspectRatio": 1.0,
-          "ComponentID": 2525932589,
+          "ComponentID": 1759786535,
           "ComponentName": "Transform",
           "ComponentType": 0,
           "ContainerGOID": 959569685,
@@ -24,7 +23,7 @@
         },
         {
           "CameraZoom": 91.0,
-          "ComponentID": 732650942,
+          "ComponentID": 2269175809,
           "ComponentName": "Camera",
           "ComponentType": 1,
           "ContainerGOID": 959569685,
@@ -38,7 +37,7 @@
       "Enabled": true,
       "ID": 959569685,
       "Name": "Camera",
-      "ParentID": 1361115545,
+      "ParentID": 3260902614,
       "ParentLayerID": 0,
       "Tag": "Camera",
       "Visible": true
@@ -47,7 +46,7 @@
       "Components": [
         {
           "AspectRatio": 1.0,
-          "ComponentID": 2488623420,
+          "ComponentID": 3919081956,
           "ComponentName": "Transform",
           "ComponentType": 0,
           "ContainerGOID": 1667443374,
@@ -64,7 +63,7 @@
           ]
         },
         {
-          "ComponentID": 2516639909,
+          "ComponentID": 3927367669,
           "ComponentName": "Sprite2D",
           "ComponentType": 2,
           "ContainerGOID": 1667443374,
@@ -99,7 +98,7 @@
               "path": "Assets\\Animations\\samurai_idle_animation_test2.animation"
             }
           ],
-          "ComponentID": 689257960,
+          "ComponentID": 2523010200,
           "ComponentName": "Animator",
           "ComponentType": 3,
           "ContainerGOID": 1667443374,
@@ -110,7 +109,7 @@
       "Enabled": true,
       "ID": 1667443374,
       "Name": "Samurai",
-      "ParentID": 1361115545,
+      "ParentID": 3260902614,
       "ParentLayerID": 0,
       "Tag": "Player",
       "Visible": true
@@ -119,7 +118,7 @@
       "Components": [
         {
           "AspectRatio": 1.0,
-          "ComponentID": 1230387730,
+          "ComponentID": 3162583829,
           "ComponentName": "Transform",
           "ComponentType": 0,
           "ContainerGOID": 1536642911,
@@ -136,7 +135,7 @@
           ]
         },
         {
-          "ComponentID": 1661813060,
+          "ComponentID": 994095986,
           "ComponentName": "AudioSource",
           "ComponentType": 7,
           "ContainerGOID": 1536642911,
@@ -156,7 +155,7 @@
       "Enabled": true,
       "ID": 1536642911,
       "Name": "BackGround_Music",
-      "ParentID": 1361115545,
+      "ParentID": 3260902614,
       "ParentLayerID": 0,
       "Tag": "Sound",
       "Visible": true

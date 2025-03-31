@@ -111,8 +111,11 @@ void Collider2D::Draw()
 
     Transform* t = container_go.lock()->GetComponent<Transform>();
     if (!t) return;
-
+    vec2f o_scale = t->GetWorldScale();
+    t->SetWorldScale({1.0f, 1.0f});
     mat3f modelMat = t->GetWorldMatrix();
+    t->SetWorldScale(o_scale);
+
     ML_Color color = m_color;
     color.a = 150;
 
@@ -325,11 +328,11 @@ void Collider2D::LoadComponent(const nlohmann::json& componentJSON)
         m_body = nullptr;
     }
     //
-    //RecreateBody();
-    //m_body->SetEnabled(false);
+    RecreateBody();
+    m_body->SetEnabled(false);
 
-    //SetSensor(m_isSensor);
-    //SetLockRotation(m_lockRotation);
+    SetSensor(m_isSensor);
+    SetLockRotation(m_lockRotation);
 }
 
 void Collider2D::SetLockRotation(bool lockRotation)
