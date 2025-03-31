@@ -350,7 +350,7 @@ Scene::Scene(const Scene& other)
 	cameras_in_scene_amount(other.cameras_in_scene_amount)
 {
 	this->scene_root = std::make_shared<GameObject>(other.scene_root->GetSharedPtr());
-
+	this->scene_root->Awake();
 	if (!other.scene_root->GetChildren().empty())
 	{
 		auto children = std::vector<std::shared_ptr<GameObject>>(other.scene_root->GetChildren());

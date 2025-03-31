@@ -451,12 +451,12 @@ void Gui::FileMenu()
 	if (ImGui::MenuItem("New Scene", "Ctrl+N"))
 	{
 		save_scene_panel->RequestFocus();
-		save_scene_panel->new_scene_or_open_scene = true;
+		save_scene_panel->save_panel_action = SavePanelAction::NEW_SCENE;
 	}
 	if (ImGui::MenuItem("Open Scene", "Ctrl+O"))
 	{
 		save_scene_panel->RequestFocus();
-		save_scene_panel->new_scene_or_open_scene = false;
+		save_scene_panel->save_panel_action = SavePanelAction::OPEN_SCENE;
 	}
 
 	ImGui::Separator();
@@ -510,7 +510,8 @@ void Gui::FileMenu()
 
 	if (ImGui::MenuItem("Exit"))
 	{
-		engine->input_em->CloseApp();
+		save_scene_panel->RequestFocus();
+		save_scene_panel->save_panel_action = SavePanelAction::CLOSE_APP;
 	}
 }
 
@@ -699,13 +700,13 @@ void Gui::HandleShortcut()
 		engine->input_em->GetKey(SDL_SCANCODE_N) == KEY_DOWN)
 	{
 		save_scene_panel->RequestFocus();
-		save_scene_panel->new_scene_or_open_scene = true;
+		save_scene_panel->save_panel_action = SavePanelAction::NEW_SCENE;
 	}
 	else if (engine->input_em->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT &&
 		engine->input_em->GetKey(SDL_SCANCODE_O) == KEY_DOWN)
 	{
 		save_scene_panel->RequestFocus();
-		save_scene_panel->new_scene_or_open_scene = false;
+		save_scene_panel->save_panel_action = SavePanelAction::OPEN_SCENE;
 	}
 	else if (engine->input_em->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT &&
 		engine->input_em->GetKey(SDL_SCANCODE_S) == KEY_DOWN)

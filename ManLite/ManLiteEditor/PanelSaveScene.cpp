@@ -83,8 +83,10 @@ bool PanelSaveScene::Update()
 					//
 					engine->SetEngineState(EngineState::STOP);
 					//
-					if (new_scene_or_open_scene)
+					if (save_panel_action == SavePanelAction::NEW_SCENE)
 						engine->scene_manager_em->CreateEmptyScene();
+					else if (save_panel_action == SavePanelAction::CLOSE_APP)
+						return false;
 					else
 					{
 						std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Open ManLite Scene file (*.mlscene)\0*.mlscene\0")).string();
@@ -133,8 +135,10 @@ bool PanelSaveScene::Update()
 						ResourceManager::GetInstance().ReleaseTexture("Config\\Icons\\icon.png");
 						enabled = false;
 						//
-						if (new_scene_or_open_scene)
+						if (save_panel_action == SavePanelAction::NEW_SCENE)
 							engine->scene_manager_em->CreateEmptyScene();
+						else if (save_panel_action == SavePanelAction::CLOSE_APP)
+							return false;
 						else
 						{
 							std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Open ManLite Scene file (*.mlscene)\0*.mlscene\0")).string();
@@ -163,8 +167,10 @@ bool PanelSaveScene::Update()
 				{
 					engine->SetEngineState(EngineState::STOP);
 					//
-					if (new_scene_or_open_scene)
+					if (save_panel_action == SavePanelAction::NEW_SCENE)
 						engine->scene_manager_em->CreateEmptyScene();
+					else if (save_panel_action == SavePanelAction::CLOSE_APP)
+						return false;
 					else
 					{
 						std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Open ManLite Scene file (*.mlscene)\0*.mlscene\0")).string();
@@ -192,7 +198,7 @@ bool PanelSaveScene::Update()
 					enabled = false;
 				}
 				ImGui::SameLine();
-				if (ImGui::Button("Cancel", { 80, 20 }))
+				if (ImGui::Button("Cancel", { 80, 20 }) || ImGui::IsKeyDown(ImGuiKey_Escape))
 				{
 					engine->SetEngineState(EngineState::STOP);
 					//

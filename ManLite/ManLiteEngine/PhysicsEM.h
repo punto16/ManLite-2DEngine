@@ -32,7 +32,7 @@ public:
 
 	bool Awake();
 	bool Start();
-    bool Update(float dt);
+    bool Update(double dt);
 	bool CleanUp();
 
 	//

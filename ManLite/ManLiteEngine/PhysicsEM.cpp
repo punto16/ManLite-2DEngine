@@ -1,6 +1,9 @@
 #include "PhysicsEM.h"
+
 #include "GameObject.h"
 #include "Collider2D.h"
+#include "EngineCore.h"
+
 #include "box2d/box2d.h"
 
 ContactListener* PhysicsEM::m_contactListener = nullptr;
@@ -32,10 +35,10 @@ bool PhysicsEM::Start()
 	return ret;
 }
 
-bool PhysicsEM::Update(float dt)
+bool PhysicsEM::Update(double dt)
 {
 	bool ret = true;
-	if (m_world)
+	if (m_world && engine->GetEngineState() == EngineState::PLAY)
 	{
 		m_world->Step(dt, m_velocityIterations, m_positionIterations);
 	}

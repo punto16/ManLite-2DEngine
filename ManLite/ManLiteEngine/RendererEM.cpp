@@ -499,6 +499,16 @@ void RendererEM::RenderDebugColliders()
 		}
 		else {
 			// Dibujar rectángulo
+			float vertices[] = {
+				-0.5f,  0.5f,  // Esquina superior izquierda
+				 0.5f,  0.5f,  // Esquina superior derecha
+				 0.5f, -0.5f,  // Esquina inferior derecha
+				-0.5f, -0.5f,  // Esquina inferior izquierda
+				-0.5f,  0.5f   // Cerrar el bucle
+			};
+
+			glBindBuffer(GL_ARRAY_BUFFER, lineVBO);
+			glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 			glDrawArrays(GL_LINE_LOOP, 0, 5);
 		}
 	}

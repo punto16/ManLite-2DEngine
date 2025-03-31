@@ -692,13 +692,11 @@ void PanelInspector::Collider2DOptions(GameObject& go)
 	{
 		ImGui::Dummy(ImVec2(0, 4));
 
-		// Sección principal
 		if (ImGui::BeginTable("Collider2DTable", 2, ImGuiTableFlags_BordersInnerV))
 		{
 			ImGui::TableSetupColumn("Label", ImGuiTableColumnFlags_WidthFixed, 100.0f);
 			ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthStretch);
 
-			// Shape Type
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0);
 			ImGui::Text("Shape Type");
@@ -711,7 +709,6 @@ void PanelInspector::Collider2DOptions(GameObject& go)
 				collider2d->SetShapeType(static_cast<ShapeType>(currentShape));
 			}
 
-			// Color
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0);
 			ImGui::Text("Color");
@@ -728,7 +725,6 @@ void PanelInspector::Collider2DOptions(GameObject& go)
 				collider2d->SetColor(color);
 			}
 
-			// Dynamic/Static
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0);
 			ImGui::Text("Body Type");
@@ -740,7 +736,6 @@ void PanelInspector::Collider2DOptions(GameObject& go)
 				collider2d->SetDynamic(isDynamic);
 			}
 
-			// Sensor
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0);
 			ImGui::Text("Sensor Mode");
@@ -752,7 +747,6 @@ void PanelInspector::Collider2DOptions(GameObject& go)
 				collider2d->SetSensor(isSensor);
 			}
 
-			// Lock Rotation
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0);
 			ImGui::Text("Lock Rotation");
@@ -764,7 +758,6 @@ void PanelInspector::Collider2DOptions(GameObject& go)
 				collider2d->SetLockRotation(lockRotation);
 			}
 
-			// Mass
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0);
 			ImGui::Text("Mass");
@@ -776,7 +769,6 @@ void PanelInspector::Collider2DOptions(GameObject& go)
 				collider2d->SetMass(mass);
 			}
 
-			// Linear Damping
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0);
 			ImGui::Text("Linear Damping");
@@ -788,7 +780,6 @@ void PanelInspector::Collider2DOptions(GameObject& go)
 				collider2d->SetLinearDamping(damping);
 			}
 
-			// Friction
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0);
 			ImGui::Text("Friction");
@@ -800,7 +791,19 @@ void PanelInspector::Collider2DOptions(GameObject& go)
 				collider2d->SetFriction(friction);
 			}
 
-			// Use Gravity
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0);
+			ImGui::Text("Bounce");
+			ImGui::SameLine();
+			Gui::HelpMarker("Bounce coefficient:\n  0 for NOT bounce\n  1 for same energy bounce\n  +1 for more energy bounce");
+			ImGui::TableSetColumnIndex(1);
+
+			float restitution = collider2d->GetRestitution();
+			if (ImGui::DragFloat("Restitution##Bounce", &restitution, 0.01f, 0.0f, 100.0f))
+			{
+				collider2d->SetRestitution(restitution);
+			}
+
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0);
 			ImGui::Text("Use Gravity");
@@ -812,7 +815,6 @@ void PanelInspector::Collider2DOptions(GameObject& go)
 				collider2d->SetUseGravity(useGravity);
 			}
 
-			// Dimensions
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0);
 			ImGui::Text("Dimensions");

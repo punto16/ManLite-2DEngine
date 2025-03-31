@@ -9,6 +9,13 @@
 
 class Scene;
 
+enum SavePanelAction
+{
+	NEW_SCENE,
+	OPEN_SCENE,
+	CLOSE_APP
+};
+
 class PanelSaveScene : public Panel
 {
 public:
@@ -19,7 +26,7 @@ public:
 
 	//true for new scene
 	//false for open scene
-	bool new_scene_or_open_scene = true;
+	SavePanelAction save_panel_action = SavePanelAction::NEW_SCENE;
 	std::future<void> loading_task;
 	std::atomic<bool> is_loading{ false };
 	std::atomic<bool> set_scene{ false };
@@ -28,7 +35,6 @@ public:
 private:
 	int icon_image_id = -1;
 	int w, h;
-
 };
 
 #endif // !__PANEL_SAVE_SCENE_H__

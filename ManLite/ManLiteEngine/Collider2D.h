@@ -16,8 +16,12 @@ public:
     Collider2D(const Collider2D& component_to_copy, std::shared_ptr<GameObject> container_go);
     ~Collider2D();
 
+    bool Init() override;
     bool Update(float dt) override;
     void Draw() override;
+
+    bool Pause() override;
+    bool Unpause() override;
 
     // Shape management
     ShapeType GetShapeType() const { return m_shapeType; }
@@ -70,6 +74,12 @@ public:
     float GetMass() const { return m_mass; }
     void SetMass(float mass);
 
+    float GetRestitution() const { return m_restitution; }
+    //bounce coefficient
+       //0 -> no bounce
+       //1 -> no energy-loss bounce
+    void SetRestitution(float restitution);
+
     bool GetUseGravity() const { return m_useGravity; }
     void SetUseGravity(bool useGravity);
 
@@ -77,6 +87,7 @@ public:
 
 private:
     void UpdateBodyActivation();
+    void RecreateBody();
     void RecreateFixture();
 
     b2Body* m_body = nullptr;
@@ -93,6 +104,10 @@ private:
     float m_width, m_height, m_radius;
     // Mass in kg (0 = auto-calculate)
     float m_mass = 0.0f;
+    //bounce coefficient
+    //0 -> no bounce
+    //1 -> no energy-loss bounce
+    float m_restitution = 0.0f;
     bool m_useGravity = true;
     ML_Color m_color = { 0,255,0,255 };//green default
 };

@@ -20,22 +20,11 @@ Collider2D::Collider2D(std::weak_ptr<GameObject> container_go,
     m_friction(0.3f),
     m_linearDamping(0.0f),
     m_mass(0.0f),
+    m_restitution(0.0f),
     m_useGravity(true)
 {
-    b2BodyDef bodyDef;
-    Transform* t = container_go.lock()->GetComponent<Transform>();
-    bodyDef.type = m_isDynamic ? b2_dynamicBody : b2_staticBody;
-    bodyDef.position.Set(
-        PIXEL_TO_METERS(t->GetWorldPosition().x),
-        PIXEL_TO_METERS(t->GetWorldPosition().y)
-    );
-    bodyDef.linearDamping = m_linearDamping;
-    bodyDef.fixedRotation = m_lockRotation;
-    bodyDef.gravityScale = m_useGravity ? 1.0f : 0.0f;
-
-    m_body = PhysicsEM::GetWorld()->CreateBody(&bodyDef);
-
-    RecreateFixture();
+    RecreateBody();
+    m_body->SetAwake(false);
 }
 
 Collider2D::Collider2D(const Collider2D& component_to_copy, std::shared_ptr<GameObject> container_go)
@@ -51,28 +40,17 @@ Collider2D::Collider2D(const Collider2D& component_to_copy, std::shared_ptr<Game
     m_friction(component_to_copy.m_friction),
     m_linearDamping(component_to_copy.m_linearDamping),
     m_mass(component_to_copy.m_mass),
+    m_restitution(component_to_copy.m_restitution),
     m_useGravity(component_to_copy.m_useGravity)
 {
-    b2BodyDef bodyDef;
-    Transform* t = container_go->GetComponent<Transform>();
-    bodyDef.type = m_isDynamic ? b2_dynamicBody : b2_staticBody;
-    bodyDef.position.Set(
-        PIXEL_TO_METERS(t->GetWorldPosition().x),
-        PIXEL_TO_METERS(t->GetWorldPosition().y)
-    );
-    bodyDef.linearDamping = m_linearDamping;
-    bodyDef.fixedRotation = m_lockRotation;
-    bodyDef.gravityScale = m_useGravity ? 1.0f : 0.0f;
-
-    m_body = PhysicsEM::GetWorld()->CreateBody(&bodyDef);
-
-    RecreateFixture();
+    RecreateBody();
 
     if (m_isDynamic && component_to_copy.m_body)
     {
         m_body->SetLinearVelocity(component_to_copy.m_body->GetLinearVelocity());
         m_body->SetAngularVelocity(component_to_copy.m_body->GetAngularVelocity());
     }
+    m_body->SetEnabled(false);
 }
 
 Collider2D::~Collider2D()
@@ -83,34 +61,53 @@ Collider2D::~Collider2D()
     }
 }
 
+bool Collider2D::Init()
+{
+    bool ret = true;
+
+    if (!m_body) RecreateBody();
+    auto go = container_go.lock();
+    if (!go) return true;
+    Transform* t = go->GetComponent<Transform>();
+    if (!t) return true;
+
+
+    vec2f worldPos = t->GetWorldPosition();
+    b2Vec2 pos(
+        (worldPos.x),
+        (worldPos.y)
+    );
+    float angle = DEGTORAD * t->GetWorldAngle();
+
+    m_body->SetTransform(pos, angle);
+
+    m_body->SetLinearVelocity(b2Vec2_zero);
+    m_body->SetAngularVelocity(0.0f);
+
+    m_body->SetEnabled(true);
+
+    return ret;
+}
+
 bool Collider2D::Update(float dt)
 {
-    if (!m_body)
-    {
-        LOG(LogType::LOG_ERROR, "Collider2D: Update error, m_body is nullptr");
-        return true;
-    }
+    if (!m_body) RecreateBody();
     b2Vec2 position = m_body->GetPosition();
     Transform* t = container_go.lock()->GetComponent<Transform>();
     t->SetWorldPosition({
-    METERS_TO_PIXELS(position.x),
-    METERS_TO_PIXELS(position.y)
+    (position.x),
+    (position.y)
         });
 
     if (!m_lockRotation)
         t->SetWorldAngle(m_body->GetAngle() * RADTODEG);
-
 
     return true;
 }
 
 void Collider2D::Draw()
 {
-    if (!m_body)
-    {
-        LOG(LogType::LOG_ERROR, "Collider2D: Draw error, m_body is nullptr");
-        return;
-    }
+    if (!m_body) RecreateBody();
 
     Transform* t = container_go.lock()->GetComponent<Transform>();
     if (!t) return;
@@ -136,16 +133,38 @@ void Collider2D::Draw()
     }
     else {
         // Para círculos, escalar por el diámetro (radio * 2)
-        float diameter = m_radius * 2.0f;
+        //float diameter = m_radius * 2.0f;
         mat3f colliderMat = mat3f::CreateTransformMatrix(
             vec2f(0, 0),
             0.0f,
-            vec2f(diameter, diameter)
+            vec2f(1, 1)
         );
 
         mat3f finalMat = modelMat * colliderMat;
-        engine->renderer_em->SubmitDebugCollider(finalMat, color, true);
+        engine->renderer_em->SubmitDebugCollider(finalMat, color, true, m_radius);
     }
+}
+
+bool Collider2D::Pause()
+{
+    bool ret = true;
+
+    if (!m_body) RecreateBody();
+
+    m_body->SetEnabled(false);
+
+    return ret;
+}
+
+bool Collider2D::Unpause()
+{
+    bool ret = true;
+
+    if (!m_body) RecreateBody();
+
+    m_body->SetEnabled(true);
+
+    return ret;
 }
 
 void Collider2D::SetShapeType(ShapeType newType)
@@ -261,6 +280,7 @@ nlohmann::json Collider2D::SaveComponent()
     componentJSON["Height"] = m_height;
     componentJSON["Radius"] = m_radius;
     componentJSON["Mass"] = m_mass;
+    componentJSON["Restitution"] = m_restitution;
     componentJSON["UseGravity"] = m_useGravity;
 
     componentJSON["Color"]["R"] = m_color.r;
@@ -293,6 +313,7 @@ void Collider2D::LoadComponent(const nlohmann::json& componentJSON)
     if (componentJSON.contains("Height")) m_height = componentJSON["Height"];
     if (componentJSON.contains("Radius")) m_radius = componentJSON["Radius"];
     if (componentJSON.contains("Mass")) m_mass = componentJSON["Mass"];
+    if (componentJSON.contains("Restitution")) m_restitution = componentJSON["Restitution"];
     if (componentJSON.contains("UseGravity")) m_useGravity = componentJSON["UseGravity"];
 
     if (componentJSON.contains("Color")) {
@@ -308,19 +329,9 @@ void Collider2D::LoadComponent(const nlohmann::json& componentJSON)
         m_body = nullptr;
     }
     //
-    b2BodyDef bodyDef;
-    Transform* t = container_go.lock()->GetComponent<Transform>();
-    bodyDef.type = m_isDynamic ? b2_dynamicBody : b2_staticBody;
-    bodyDef.position.Set(
-        PIXEL_TO_METERS(t->GetWorldPosition().x),
-        PIXEL_TO_METERS(t->GetWorldPosition().y)
-    );
-    bodyDef.linearDamping = m_linearDamping;
-    bodyDef.fixedRotation = m_lockRotation;
-    bodyDef.gravityScale = m_useGravity ? 1.0f : 0.0f;
-    m_body = PhysicsEM::GetWorld()->CreateBody(&bodyDef);
-    //
-    RecreateFixture();
+    RecreateBody();
+    m_body->SetEnabled(false);
+
     SetSensor(m_isSensor);
     SetLockRotation(m_lockRotation);
 }
@@ -356,16 +367,29 @@ void Collider2D::SetMass(float mass)
     if (m_body && m_isDynamic) {
         float area = 0.0f;
         if (m_shapeType == ShapeType::RECTANGLE) {
-            area = PIXEL_TO_METERS(m_width) * PIXEL_TO_METERS(m_height);
+            area = (m_width) * (m_height);
         }
         else {
-            float radius = PIXEL_TO_METERS(m_radius);
+            float radius = (m_radius);
             area = b2_pi * radius * radius;
         }
 
         float newDensity = area > 0.0f ? m_mass / area : 0.0f;
         m_body->GetFixtureList()->SetDensity(newDensity);
         m_body->ResetMassData();
+    }
+}
+
+void Collider2D::SetRestitution(float restitution)
+{
+    m_restitution = restitution;
+    if (m_body) {
+        b2Fixture* fixture = m_body->GetFixtureList();
+        while (fixture)
+        {
+            fixture->SetRestitution(m_restitution);
+            fixture = fixture->GetNext();
+        }
     }
 }
 
@@ -402,6 +426,24 @@ void Collider2D::UpdateBodyActivation()
     }
 }
 
+void Collider2D::RecreateBody()
+{
+    b2BodyDef bodyDef;
+    Transform* t = container_go.lock()->GetComponent<Transform>();
+    bodyDef.type = m_isDynamic ? b2_dynamicBody : b2_staticBody;
+    bodyDef.position.Set(
+        (t->GetWorldPosition().x),
+        (t->GetWorldPosition().y)
+    );
+    bodyDef.linearDamping = m_linearDamping;
+    bodyDef.fixedRotation = m_lockRotation;
+    bodyDef.gravityScale = m_useGravity ? 1.0f : 0.0f;
+
+    m_body = PhysicsEM::GetWorld()->CreateBody(&bodyDef);
+
+    RecreateFixture();
+}
+
 void Collider2D::RecreateFixture()
 {
     if (!m_body) return;
@@ -413,15 +455,15 @@ void Collider2D::RecreateFixture()
     {
         b2PolygonShape* boxShape = new b2PolygonShape();
         boxShape->SetAsBox(
-            PIXEL_TO_METERS(m_width / 2),
-            PIXEL_TO_METERS(m_height / 2)
+            (m_width / 2),
+            (m_height / 2)
         );
         shape = boxShape;
     }
     else
     {
         b2CircleShape* circleShape = new b2CircleShape();
-        circleShape->m_radius = PIXEL_TO_METERS(m_radius);
+        circleShape->m_radius = (m_radius);
         shape = circleShape;
     }
 
@@ -429,13 +471,14 @@ void Collider2D::RecreateFixture()
     fixtureDef.shape = shape;
     fixtureDef.isSensor = m_isSensor;
     fixtureDef.friction = m_friction;
+    fixtureDef.restitution = m_restitution;
 
     float density = m_isDynamic ? 1.0f : 0.0f;
     if (m_mass > 0.0f && m_isDynamic)
     {
         float area = (m_shapeType == ShapeType::RECTANGLE) ?
-            PIXEL_TO_METERS(m_width) * PIXEL_TO_METERS(m_height) :
-            b2_pi * PIXEL_TO_METERS(m_radius) * PIXEL_TO_METERS(m_radius);
+            (m_width) * (m_height) :
+            b2_pi * (m_radius) * (m_radius);
 
         density = (area > 0.0f) ? m_mass / area : 0.0f;
     }
