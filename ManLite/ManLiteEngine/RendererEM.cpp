@@ -94,13 +94,13 @@ bool RendererEM::Start()
 	glGenSamplers(1, &samplerLinear);
 	glGenSamplers(1, &samplerNearest);
 
-	// Configurar sampler para modo lineal (suavizado)
+	// sampler for NON pixel art
 	glSamplerParameteri(samplerLinear, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 	glSamplerParameteri(samplerLinear, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glSamplerParameteri(samplerLinear, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glSamplerParameteri(samplerLinear, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-	// Configurar sampler para pixel art (sin suavizado)
+	// samper for pixel art
 	glSamplerParameteri(samplerNearest, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glSamplerParameteri(samplerNearest, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glSamplerParameteri(samplerNearest, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -126,9 +126,8 @@ bool RendererEM::Start()
 	glDeleteShader(vShader);
 	glDeleteShader(fShader);
 
-	// Crear buffers para líneas
 	float lineVertices[] = {
-		-0.5f,  0.5f, // Rectángulo
+		-0.5f,  0.5f, // Rectangle
 		 0.5f,  0.5f,
 		 0.5f, -0.5f,
 		-0.5f, -0.5f,
@@ -323,7 +322,7 @@ void RendererEM::RenderBatch()
 	}
 
 	glUniformMatrix4fv(uViewProjLoc, 1, GL_FALSE, glm::value_ptr(viewProj));
-	glUniform1i(uTextureLoc, 0); // Usamos texture unit 0
+	glUniform1i(uTextureLoc, 0); // texture unit 0
 
 	GLuint uUVRectLoc = glGetUniformLocation(shaderProgram, "uUVRect");
 
@@ -483,8 +482,7 @@ void RendererEM::RenderDebugColliders()
 			color.b / 255.0f,
 			color.a / 255.0f);
 
-		if (isCircle) {
-			// Dibujar círculo con líneas
+		if (isCircle){
 			const int segments = 32;
 			std::vector<float> circleVertices;
 			for (int i = 0; i <= segments; ++i) {
@@ -497,14 +495,14 @@ void RendererEM::RenderDebugColliders()
 			glBufferData(GL_ARRAY_BUFFER, circleVertices.size() * sizeof(float), circleVertices.data(), GL_DYNAMIC_DRAW);
 			glDrawArrays(GL_LINE_LOOP, 0, segments + 1);
 		}
-		else {
-			// Dibujar rectángulo
+		else
+		{
 			float vertices[] = {
-				-0.5f,  0.5f,  // Esquina superior izquierda
-				 0.5f,  0.5f,  // Esquina superior derecha
-				 0.5f, -0.5f,  // Esquina inferior derecha
-				-0.5f, -0.5f,  // Esquina inferior izquierda
-				-0.5f,  0.5f   // Cerrar el bucle
+				-0.5f,  0.5f,
+				 0.5f,  0.5f,
+				 0.5f, -0.5f,
+				-0.5f, -0.5f,
+				-0.5f,  0.5f
 			};
 
 			glBindBuffer(GL_ARRAY_BUFFER, lineVBO);

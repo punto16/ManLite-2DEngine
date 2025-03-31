@@ -24,7 +24,7 @@ Collider2D::Collider2D(std::weak_ptr<GameObject> container_go,
     m_useGravity(true)
 {
     RecreateBody();
-    m_body->SetAwake(false);
+    m_body->SetEnabled(false);
 }
 
 Collider2D::Collider2D(const Collider2D& component_to_copy, std::shared_ptr<GameObject> container_go)
@@ -112,13 +112,11 @@ void Collider2D::Draw()
     Transform* t = container_go.lock()->GetComponent<Transform>();
     if (!t) return;
 
-    // Obtener transformación base del GameObject
     mat3f modelMat = t->GetWorldMatrix();
     ML_Color color = m_color;
-    color.a = 150; // 60% de opacidad
+    color.a = 150;
 
     if (m_shapeType == ShapeType::RECTANGLE) {
-        // Crear matriz de escala para el tamaño del collider
         vec2f scale(m_width, m_height);
         mat3f colliderMat = mat3f::CreateTransformMatrix(
             vec2f(0, 0),
@@ -126,14 +124,12 @@ void Collider2D::Draw()
             scale
         );
 
-        // Combinar con la transformación del GameObject
         mat3f finalMat = modelMat * colliderMat;
 
         engine->renderer_em->SubmitDebugCollider(finalMat, color, false);
     }
-    else {
-        // Para círculos, escalar por el diámetro (radio * 2)
-        //float diameter = m_radius * 2.0f;
+    else
+    {
         mat3f colliderMat = mat3f::CreateTransformMatrix(
             vec2f(0, 0),
             0.0f,
@@ -329,11 +325,11 @@ void Collider2D::LoadComponent(const nlohmann::json& componentJSON)
         m_body = nullptr;
     }
     //
-    RecreateBody();
-    m_body->SetEnabled(false);
+    //RecreateBody();
+    //m_body->SetEnabled(false);
 
-    SetSensor(m_isSensor);
-    SetLockRotation(m_lockRotation);
+    //SetSensor(m_isSensor);
+    //SetLockRotation(m_lockRotation);
 }
 
 void Collider2D::SetLockRotation(bool lockRotation)

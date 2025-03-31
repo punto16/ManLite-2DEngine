@@ -24,8 +24,6 @@ public:
 
 	bool Update();
 
-	//true for new scene
-	//false for open scene
 	SavePanelAction save_panel_action = SavePanelAction::NEW_SCENE;
 	std::future<void> loading_task;
 	std::atomic<bool> is_loading{ false };
