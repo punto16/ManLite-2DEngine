@@ -32,6 +32,7 @@ Sprite2D::Sprite2D(const Sprite2D& component_to_copy, std::shared_ptr<GameObject
 
 Sprite2D::~Sprite2D()
 {
+    ResourceManager::GetInstance().ReleaseTexture("Config\\placeholder.png");
     if (texturePath.empty()) return;
     ResourceManager::GetInstance().ReleaseTexture(texturePath);
 }

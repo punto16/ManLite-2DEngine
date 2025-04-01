@@ -2,6 +2,8 @@
 #define __UIELEMENT_H__
 #pragma once
 
+#include "ResourceManager.h"
+
 #include "Defs.h"
 #include <string>
 #include <memory>
@@ -19,17 +21,6 @@ enum class UIElementType
 
 	//
 	Unkown
-};
-
-enum class UiState {
-	IDLE					= 0,
-	HOVERED					= 1,
-	SELECTED				= 2,
-	HOVEREDSELECTED			= 3,
-	DISABLED				= 4,
-
-	//
-	UNKNOWN
 };
 
 class UIElement
@@ -93,7 +84,10 @@ protected:
 	uint32_t uielement_id;
 	bool enabled;
 
-	UiState state = UiState::IDLE;
+	//trasnform options
+	float position_x = 0, position_y = 0;
+	float angle;
+	float scale_x = 1, scale_y = 1;
 };
 
 #endif // !__UIELEMENT_H__

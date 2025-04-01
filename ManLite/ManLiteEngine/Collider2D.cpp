@@ -112,9 +112,15 @@ void Collider2D::Draw()
     Transform* t = container_go.lock()->GetComponent<Transform>();
     if (!t) return;
     vec2f o_scale = t->GetWorldScale();
+    bool a_lock = t->IsAspectRatioLocked();
+
+    t->SetAspectRatioLock(false);
     t->SetWorldScale({1.0f, 1.0f});
+
     mat3f modelMat = t->GetWorldMatrix();
+
     t->SetWorldScale(o_scale);
+    t->SetAspectRatioLock(a_lock);
 
     ML_Color color = m_color;
     color.a = 150;

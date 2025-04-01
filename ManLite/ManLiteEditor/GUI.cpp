@@ -20,6 +20,9 @@
 
 #include "FileDialog.h"
 #include "SceneManagerEM.h"
+#include "GameObject.h"
+#include "Canvas.h"
+#include "ImageUI.h"
 
 #if defined(_WIN32)
 #   define WIN32_LEAN_AND_MEAN
@@ -603,9 +606,11 @@ void Gui::GameObjectMenu()
 	{
 
 	}
-	if (ImGui::MenuItem("Canvas", 0, false, false))
+	if (ImGui::MenuItem("Canvas"))
 	{
-
+		GameObject* e_go = engine->scene_manager_em->GetCurrentScene().CreateEmptyGO(engine->scene_manager_em->GetCurrentScene().GetSceneRoot()).get();
+		e_go->AddComponent<Canvas>(); 
+		e_go->GetComponent<Canvas>()->AddUIElement<ImageUI>("");
 	}
 }
 

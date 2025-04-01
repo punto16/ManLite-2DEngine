@@ -3,6 +3,12 @@
 #include "UIElement.h"
 #include "GameObject.h"
 
+#include "ImageUI.h"
+#include "ButtonImageUI.h"
+#include "SliderUI.h"
+#include "CheckBoxUI.h"
+#include "TextUI.h"
+
 Canvas::Canvas(std::weak_ptr<GameObject> container_go, std::string name, bool enable) : 
 	Component(container_go, ComponentType::Canvas, name, enable)
 {
@@ -17,27 +23,27 @@ Canvas::Canvas(const Canvas& component_to_copy, std::shared_ptr<GameObject> cont
 		{
 		case UIElementType::Image:
 		{
-			//AddCopiedUIElement<ImageUI>(*dynamic_cast<const ImageUI*>(ui_element.get()));
+			AddCopiedUIElement<ImageUI>(*dynamic_cast<const ImageUI*>(ui_element.get()));
 			break;
 		}
 		case UIElementType::ButtonImage:
 		{
-			//AddCopiedUIElement<ButtonImageUI>(*dynamic_cast<const ButtonImageUI*>(ui_element.get()));
+			AddCopiedUIElement<ButtonImageUI>(*dynamic_cast<const ButtonImageUI*>(ui_element.get()));
 			break;
 		}
 		case UIElementType::Slider:
 		{
-			//AddCopiedUIElement<SliderUI>(*dynamic_cast<const SliderUI*>(ui_element.get()));
+			AddCopiedUIElement<SliderUI>(*dynamic_cast<const SliderUI*>(ui_element.get()));
 			break;
 		}
 		case UIElementType::CheckBox:
 		{
-			//AddCopiedUIElement<CheckBoxUI>(*dynamic_cast<const CheckBoxUI*>(ui_element.get()));
+			AddCopiedUIElement<CheckBoxUI>(*dynamic_cast<const CheckBoxUI*>(ui_element.get()));
 			break;
 		}
 		case UIElementType::Text:
 		{
-			//AddCopiedUIElement<TextUI>(*dynamic_cast<const TextUI*>(ui_element.get()));
+			AddCopiedUIElement<TextUI>(*dynamic_cast<const TextUI*>(ui_element.get()));
 			break;
 		}
 		case UIElementType::Unkown:
@@ -157,28 +163,44 @@ void Canvas::LoadComponent(const nlohmann::json& componentJSON)
 		{
 			if (item["UIElementType"] == (int)UIElementType::Image)
 			{
-				//GetUIElement<ImageUI>(AddUIElement<ImageUI>())->LoadUIElement(item);
+				GetUIElement<ImageUI>(AddUIElement<ImageUI>(""))->LoadUIElement(item);
 			}
 			if (item["UIElementType"] == (int)UIElementType::ButtonImage)
 			{
-				//GetUIElement<ButtonImageUI>(AddUIElement<ButtonImageUI>())->LoadUIElement(item);
+				GetUIElement<ButtonImageUI>(AddUIElement<ButtonImageUI>(""))->LoadUIElement(item);
 			}
 			if (item["UIElementType"] == (int)UIElementType::Slider)
 			{
-				//GetUIElement<SliderUI>(AddUIElement<SliderUI>())->LoadUIElement(item);
+				GetUIElement<SliderUI>(AddUIElement<SliderUI>(""))->LoadUIElement(item);
 			}
 			if (item["UIElementType"] == (int)UIElementType::CheckBox)
 			{
-				//GetUIElement<CheckBoxUI>(AddUIElement<CheckBoxUI>())->LoadUIElement(item);
+				GetUIElement<CheckBoxUI>(AddUIElement<CheckBoxUI>(""))->LoadUIElement(item);
 			}
 			if (item["UIElementType"] == (int)UIElementType::Text)
 			{
-				//GetUIElement<TextUI>(AddUIElement<TextUI>())->LoadUIElement(item);
+				GetUIElement<TextUI>(AddUIElement<TextUI>(""))->LoadUIElement(item);
 			}
 			if (item["UIElementType"] == (int)UIElementType::Unkown)
 			{
 				//default
 			}
 		}
+	}
+}
+
+ML_Rect Canvas::GetUVs(ML_Rect section, int w, int h)
+{
+	if (w > 0 && h > 0)
+	{
+		float u1 = static_cast<float>(section.x) / w;
+		float u2 = static_cast<float>(section.x + section.w) / w;
+		float v1 = static_cast<float>(h - (section.y + section.h)) / h;
+		float v2 = static_cast<float>(h - section.y) / h;
+		return ML_Rect(u1, v2, u2, v1);
+	}
+	else
+	{
+		return ML_Rect(0, 1, 1, 0);
 	}
 }

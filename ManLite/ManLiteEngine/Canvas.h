@@ -11,7 +11,7 @@
 
 class UIElement;
 
-class Canvas : public Component {
+class Canvas : public Component, public std::enable_shared_from_this<Canvas>  {
 public:
     Canvas(std::weak_ptr<GameObject> container_go, std::string name = "Canvas", bool enable = true);
     Canvas(const Canvas& component_to_copy, std::shared_ptr<GameObject> container_go);
@@ -28,9 +28,9 @@ public:
 
     //ui elements 
     template <typename TUI>
-    unsigned int AddUIElement()
+    unsigned int AddUIElement(std::string file_path)
     {
-        std::unique_ptr<UIElement> new_uielement = std::make_unique<TUI>(container_go.lock());
+        std::unique_ptr<UIElement> new_uielement = std::make_unique<TUI>(shared_from_this(), file_path);
         unsigned int tempID = new_uielement->GetID();
         ui_elements.push_back(std::move(new_uielement));
     
@@ -38,9 +38,9 @@ public:
     }
 
     template <typename TUI>
-    unsigned int AddCopiedUIElement(TUI* ref)
+    unsigned int AddCopiedUIElement(const TUI& ref)
     {
-        std::unique_ptr<UIElement> new_uielement = std::make_unique<TUI>(ref, container_go.lock());
+        std::unique_ptr<UIElement> new_uielement = std::make_unique<TUI>(ref, shared_from_this());
         unsigned int tempID = new_uielement->GetID();
         ui_elements.push_back(std::move(new_uielement));
 
@@ -68,6 +68,9 @@ public:
     //serialization
     nlohmann::json SaveComponent() override;
     void LoadComponent(const nlohmann::json& componentJSON) override;
+
+    //utils
+    static ML_Rect GetUVs(ML_Rect section, int w, int h);
 
     //getters // setters
     std::vector<std::unique_ptr<UIElement>>& GetUIElements() { return ui_elements; }
