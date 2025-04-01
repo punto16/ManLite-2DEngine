@@ -14,7 +14,6 @@ Camera::Camera(std::weak_ptr<GameObject> container_go, std::string name, bool en
     Component(container_go, ComponentType::Camera, name, enable)
 {
     SetViewportSize(DEFAULT_CAM_WIDTH, DEFAULT_CAM_HEIGHT);
-    engine->scene_manager_em->GetCurrentScene().SetCamerasInSceneAmount(engine->scene_manager_em->GetCurrentScene().GetCamerasInSceneAmount() + 1);
 }
 
 Camera::Camera(const Camera& component_to_copy, std::shared_ptr<GameObject> container_go) :
@@ -23,12 +22,11 @@ Camera::Camera(const Camera& component_to_copy, std::shared_ptr<GameObject> cont
     viewport_height(component_to_copy.viewport_height),
     zoom(component_to_copy.zoom)
 {
-    engine->scene_manager_em->GetCurrentScene().SetCamerasInSceneAmount(engine->scene_manager_em->GetCurrentScene().GetCamerasInSceneAmount() + 1);
+    UpdateMatrices();
 }
 
 Camera::~Camera()
 {
-    engine->scene_manager_em->GetCurrentScene().SetCamerasInSceneAmount(engine->scene_manager_em->GetCurrentScene().GetCamerasInSceneAmount() - 1);
 }
 
 nlohmann::json Camera::SaveComponent()
@@ -57,6 +55,7 @@ void Camera::LoadComponent(const nlohmann::json& componentJSON)
 
     if (componentJSON.contains("ViewportSize")) SetViewportSize(componentJSON["ViewportSize"][0], componentJSON["ViewportSize"][1]);
     if (componentJSON.contains("CameraZoom")) SetZoom(componentJSON["CameraZoom"]);
+    UpdateMatrices();
 }
 
 void Camera::SetViewportSize(int width, int height)

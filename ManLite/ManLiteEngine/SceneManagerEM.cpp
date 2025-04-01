@@ -120,7 +120,6 @@ void SceneManagerEM::SaveScene(std::string directory, std::string scene_name)
 	}
 	sceneJSON["layers"] = layersJSON;
 
-	sceneJSON["CamerasAmount"] = current_scene->GetCamerasInSceneAmount();
 	if (current_scene->HasCameraSet()) sceneJSON["CurrentCamID"] = current_scene->GetCurrentCameraGO().GetID();
 
 	LOG(LogType::LOG_OK, "Succesfully Saved Scene at %s", (directory + file_name_ext).c_str());
@@ -209,7 +208,6 @@ void SceneManagerEM::LoadSceneFromJson(const std::string& file_name)
 			}
 		}
 	}
-	if (sceneJSON.contains("CamerasAmount")) current_scene->SetCamerasInSceneAmount(sceneJSON["CamerasAmount"]);
 	if (sceneJSON.contains("CurrentCamID")) current_scene->SetCurrentCameraGO(current_scene->FindGameObjectByID(sceneJSON["CurrentCamID"]));
 
 	LOG(LogType::LOG_OK, "Succesfully Loaded Scene %s", file_name.c_str());
@@ -296,8 +294,7 @@ void SceneManagerEM::LoadSceneToScene(const std::string& file_name, Scene& scene
 			}
 		}
 	}
-	if (sceneJSON.contains("CamerasAmount")) current_scene->SetCamerasInSceneAmount(sceneJSON["CamerasAmount"]);
-	if (sceneJSON.contains("CurrentCamID")) current_scene->SetCurrentCameraGO(current_scene->FindGameObjectByID(sceneJSON["CurrentCamID"]));
+	if (sceneJSON.contains("CurrentCamID")) scene.SetCurrentCameraGO(scene.FindGameObjectByID(sceneJSON["CurrentCamID"]));
 
 	LOG(LogType::LOG_OK, "Succesfully Loaded Scene %s", file_name.c_str());
 }
@@ -346,8 +343,7 @@ Scene::Scene(std::string scene_name) : scene_name(scene_name)
 
 Scene::Scene(const Scene& other)
 	: scene_name(other.scene_name),
-	scene_path(other.scene_path),
-	cameras_in_scene_amount(other.cameras_in_scene_amount)
+	scene_path(other.scene_path)
 {
 	this->scene_root = std::make_shared<GameObject>(other.scene_root->GetSharedPtr());
 	this->scene_root->Awake();

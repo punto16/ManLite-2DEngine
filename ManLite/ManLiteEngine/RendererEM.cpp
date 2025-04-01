@@ -304,8 +304,8 @@ void RendererEM::RenderBatch()
 	GLuint uViewProjLoc = glGetUniformLocation(shaderProgram, "uViewProj");
 	GLuint uModelLoc = glGetUniformLocation(shaderProgram, "uModel");
 	GLuint uTextureLoc = glGetUniformLocation(shaderProgram, "uTexture");
-
-	if (use_scene_cam) {
+	
+	if (use_scene_cam && engine->GetEditorOrBuild()) {
 		viewProj = scene_camera.GetViewProjMatrix();
 	}
 	else {
@@ -455,7 +455,7 @@ void RendererEM::RenderDebugColliders()
 
 	glm::mat4 viewProj;
 
-	if (use_scene_cam) {
+	if (use_scene_cam && engine->GetEditorOrBuild()) {
 		viewProj = scene_camera.GetViewProjMatrix();
 	}
 	else {

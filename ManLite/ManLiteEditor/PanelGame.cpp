@@ -79,8 +79,8 @@ void PanelGame::DrawTopBarControls()
 
     ImGui::SetNextItemWidth(combo_width);
 
-    // Obtener la cámara seleccionada actualmente
-    static std::shared_ptr<GameObject> selected_camera_go = nullptr;
+    GameObject& selected_camera_go_ref = engine->scene_manager_em->GetCurrentScene().GetCurrentCameraGO();
+	GameObject* selected_camera_go = &selected_camera_go_ref;
     std::string preview_name = selected_camera_go ? selected_camera_go->GetName() : "Output Camera";
 
     if (ImGui::BeginCombo("##Settings##ImGuizmoFunctionality", preview_name.c_str()))
@@ -94,10 +94,10 @@ void PanelGame::DrawTopBarControls()
             });
 
         for (const auto& camera_go : cameras) {
-            bool is_selected = (selected_camera_go == camera_go);
+            bool is_selected = (selected_camera_go == camera_go.get());
             if (ImGui::Selectable(camera_go->GetName().c_str(), is_selected)) {
-                selected_camera_go = camera_go;
-				engine->scene_manager_em->GetCurrentScene().SetCurrentCameraGO(selected_camera_go);
+                selected_camera_go = camera_go.get();
+				current_scene.SetCurrentCameraGO(selected_camera_go->GetSharedPtr());
             }
 
             if (is_selected) {

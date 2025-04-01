@@ -272,6 +272,17 @@ void PanelInspector::CameraOptions(GameObject& go)
 	std::string camLabel = std::string("Camera##" + std::to_string(go.GetID()));
 	if (ImGui::CollapsingHeader(camLabel.c_str(), treeFlags))
 	{
+		if (ImGui::BeginPopupContextItem())
+		{
+			std::string context_label = "Remove Component##" + camLabel;
+			if (ImGui::MenuItem(context_label.c_str()))
+			{
+				go.RemoveComponent(ComponentType::Camera);
+				ImGui::EndPopup();
+				return;
+			}
+			ImGui::EndPopup();
+		}
 		int cam_width, cam_height;
 		cam->GetViewportSize(cam_width, cam_height);
 		std::string cam_width_label = std::string("Viewport Width##" + std::to_string(go.GetID()));
@@ -300,6 +311,17 @@ void PanelInspector::SpriteOptions(GameObject& go)
 	std::string spriteLabel = std::string("Sprite2D##" + std::to_string(go.GetID()));
 	if (ImGui::CollapsingHeader(spriteLabel.c_str(), treeFlags))
 	{
+		if (ImGui::BeginPopupContextItem())
+		{
+			std::string context_label = "Remove Component##" + spriteLabel;
+			if (ImGui::MenuItem(context_label.c_str()))
+			{
+				go.RemoveComponent(ComponentType::Sprite);
+				ImGui::EndPopup();
+				return;
+			}
+			ImGui::EndPopup();
+		}
 		int w, h;
 		sprite->GetTextureSize(w, h);
 		if (w == 0) w = 1;
@@ -358,6 +380,17 @@ void PanelInspector::AnimatorOptions(GameObject& go)
 	std::string animatorLabel = std::string("Animator##" + std::to_string(go.GetID()));
 	if (ImGui::CollapsingHeader(animatorLabel.c_str(), treeFlags))
 	{
+		if (ImGui::BeginPopupContextItem())
+		{
+			std::string context_label = "Remove Component##" + animatorLabel;
+			if (ImGui::MenuItem(context_label.c_str()))
+			{
+				go.RemoveComponent(ComponentType::Animator);
+				ImGui::EndPopup();
+				return;
+			}
+			ImGui::EndPopup();
+		}
 		//display animations
 		for (const auto& animation_map : animator->GetAnimations())
 		{
@@ -501,9 +534,20 @@ void PanelInspector::AudioSourceOptions(GameObject& go)
 	uint treeFlags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_DefaultOpen;
 	AudioSource* audio = go.GetComponent<AudioSource>();
 	if (audio == nullptr) return;
-	std::string spriteLabel = std::string("Audio Source##" + std::to_string(go.GetID()));
-	if (ImGui::CollapsingHeader(spriteLabel.c_str(), treeFlags))
+	std::string audioLabel = std::string("Audio Source##" + std::to_string(go.GetID()));
+	if (ImGui::CollapsingHeader(audioLabel.c_str(), treeFlags))
 	{
+		if (ImGui::BeginPopupContextItem())
+		{
+			std::string context_label = "Remove Component##" + audioLabel;
+			if (ImGui::MenuItem(context_label.c_str()))
+			{
+				go.RemoveComponent(ComponentType::AudioSource);
+				ImGui::EndPopup();
+				return;
+			}
+			ImGui::EndPopup();
+		}
 		ImGui::Dummy(ImVec2(10, 0));
 		ImGui::SameLine();
 		if (ImGui::CollapsingHeader("Musics"))
@@ -690,6 +734,17 @@ void PanelInspector::Collider2DOptions(GameObject& go)
 	std::string collider2dLabel = std::string("Collider2D##" + std::to_string(go.GetID()));
 	if (ImGui::CollapsingHeader(collider2dLabel.c_str(), treeFlags))
 	{
+		if (ImGui::BeginPopupContextItem())
+		{
+			std::string context_label = "Remove Component##" + collider2dLabel;
+			if (ImGui::MenuItem(context_label.c_str()))
+			{
+				go.RemoveComponent(ComponentType::Collider2D);
+				ImGui::EndPopup();
+				return;
+			}
+			ImGui::EndPopup();
+		}
 		ImGui::Dummy(ImVec2(0, 4));
 
 		if (ImGui::BeginTable("Collider2DTable", 2, ImGuiTableFlags_BordersInnerV))

@@ -29,13 +29,6 @@ enum class Aspect
 	A_21x9
 };
 
-//struct EditColor
-//{
-//	std::string id;
-//	ImVec4 color;
-//	ImVec4 previousColor;
-//};
-
 class Gui : public Module
 {
 public:
