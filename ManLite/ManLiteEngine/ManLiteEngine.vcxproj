@@ -171,6 +171,7 @@ popd
     <ClCompile Include="AudioSource.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Camera2D.cpp" />
+    <ClCompile Include="Canvas.cpp" />
     <ClCompile Include="Collider2D.cpp" />
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="EngineCore.cpp" />
@@ -187,6 +188,7 @@ popd
     <ClCompile Include="Sprite2D.cpp" />
     <ClCompile Include="Timer.cpp" />
     <ClCompile Include="Transform.cpp" />
+    <ClCompile Include="UIElement.cpp" />
     <ClCompile Include="WindowEM.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -195,6 +197,7 @@ popd
     <ClInclude Include="AudioSource.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Camera2D.h" />
+    <ClInclude Include="Canvas.h" />
     <ClInclude Include="Collider2D.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="Defs.h" />
@@ -213,6 +216,7 @@ popd
     <ClInclude Include="Sprite2D.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="Transform.h" />
+    <ClInclude Include="UIElement.h" />
     <ClInclude Include="WindowEM.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

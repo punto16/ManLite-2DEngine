@@ -9,6 +9,7 @@
 #include "Animator.h"
 #include "AudioSource.h"
 #include "Collider2D.h"
+#include "Canvas.h"
 
 #include "Log.h"
 #include "Defs.h"
@@ -240,6 +241,7 @@ void GameObject::CloneComponents(const std::shared_ptr<GameObject>& original)
         }
         case ComponentType::Canvas:
         {
+            AddCopiedComponent<Canvas>(*dynamic_cast<const Canvas*>(item.get()));
             break;
         }
         case ComponentType::AudioSource:
@@ -450,8 +452,8 @@ void GameObject::LoadGameObject(const nlohmann::json& goJSON)
             }
             else if (componentJSON["ComponentType"] == (int)ComponentType::Canvas)
             {
-                //this->AddComponent<Canvas>();
-                //this->GetComponent<Canvas>()->LoadComponent(componentJSON);
+                this->AddComponent<Canvas>();
+                this->GetComponent<Canvas>()->LoadComponent(componentJSON);
             }
             else if (componentJSON["ComponentType"] == (int)ComponentType::AudioSource)
             {

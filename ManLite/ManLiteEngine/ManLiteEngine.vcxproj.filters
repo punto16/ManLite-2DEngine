@@ -40,6 +40,9 @@
     <Filter Include="EngineModules\Physics">
       <UniqueIdentifier>{33a219c7-5c10-437f-9eec-d180f6850c24}</UniqueIdentifier>
     </Filter>
+    <Filter Include="GameObject\Components\UIElements">
+      <UniqueIdentifier>{306a99c2-9dff-4792-aaab-388cf1fa6ece}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EngineCore.cpp">
@@ -110,6 +113,12 @@
     </ClCompile>
     <ClCompile Include="Timer.cpp">
       <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Canvas.cpp">
+      <Filter>GameObject\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="UIElement.cpp">
+      <Filter>GameObject\Components\UIElements</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -184,6 +193,12 @@
     </ClInclude>
     <ClInclude Include="Timer.h">
       <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Canvas.h">
+      <Filter>GameObject\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="UIElement.h">
+      <Filter>GameObject\Components\UIElements</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
