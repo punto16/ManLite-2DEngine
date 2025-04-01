@@ -294,7 +294,7 @@ void PanelInspector::CameraOptions(GameObject& go)
 
 		int cam_zoom = (int)cam->GetZoom();
 		std::string cam_zoom_label = std::string("Camera Zoom##" + std::to_string(go.GetID()));
-		ImGui::DragInt(cam_zoom_label.c_str(), &cam_zoom, 1.0f, 10, 200);
+		ImGui::DragInt(cam_zoom_label.c_str(), &cam_zoom, 1.0f, 1, 1000);
 		cam->SetZoom((float)cam_zoom);
 
 

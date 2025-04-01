@@ -13,6 +13,8 @@ public:
     Camera(const Camera& component_to_copy, std::shared_ptr<GameObject> container_go);
     ~Camera();
 
+    void Draw() override;
+
     //serialization
     nlohmann::json SaveComponent() override;
     void LoadComponent(const nlohmann::json& componentJSON) override;

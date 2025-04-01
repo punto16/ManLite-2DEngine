@@ -1,5 +1,5 @@
 {
-  "CamerasAmount": 0,
+  "CurrentCamID": 365540813,
   "game_objects": [
     {
       "Components": [
@@ -75,7 +75,7 @@
       "Enabled": true,
       "ID": 4138794320,
       "Name": "ball",
-      "ParentID": 3349817039,
+      "ParentID": 3172509337,
       "ParentLayerID": 0,
       "Tag": "Default",
       "Visible": true
@@ -154,7 +154,7 @@
       "Enabled": true,
       "ID": 1220738609,
       "Name": "cube",
-      "ParentID": 3349817039,
+      "ParentID": 3172509337,
       "ParentLayerID": 0,
       "Tag": "Default",
       "Visible": true
@@ -208,9 +208,50 @@
       "Enabled": true,
       "ID": 3498053229,
       "Name": "ground",
-      "ParentID": 3349817039,
+      "ParentID": 3172509337,
       "ParentLayerID": 0,
       "Tag": "Default",
+      "Visible": true
+    },
+    {
+      "Components": [
+        {
+          "AspectRatio": 1.0,
+          "ComponentID": 71895818,
+          "ComponentName": "Transform",
+          "ComponentType": 0,
+          "ContainerGOID": 365540813,
+          "Enabled": true,
+          "LockAspect": true,
+          "Position": [
+            0.4000000059604645,
+            13.25
+          ],
+          "Rotation": 0.0,
+          "Scale": [
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "CameraZoom": 21.0,
+          "ComponentID": 403440454,
+          "ComponentName": "Camera",
+          "ComponentType": 1,
+          "ContainerGOID": 365540813,
+          "Enabled": true,
+          "ViewportSize": [
+            1700,
+            900
+          ]
+        }
+      ],
+      "Enabled": true,
+      "ID": 365540813,
+      "Name": "cam",
+      "ParentID": 3172509337,
+      "ParentLayerID": 0,
+      "Tag": "Camera",
       "Visible": true
     }
   ],
@@ -219,9 +260,10 @@
       "Layer_children_go_id": [
         4138794320,
         1220738609,
-        3498053229
+        3498053229,
+        365540813
       ],
-      "children_count": 3,
+      "children_count": 4,
       "layer_id": 0,
       "layer_name": "DefaultLayer_0",
       "visible": true

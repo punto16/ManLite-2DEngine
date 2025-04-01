@@ -29,6 +29,36 @@ Camera::~Camera()
 {
 }
 
+void Camera::Draw()
+{
+    if (auto transform = container_go.lock()->GetComponent<Transform>())
+    {
+        vec2f o_scale = transform->GetWorldScale();
+        bool a_lock = transform->IsAspectRatioLocked();
+        transform->SetAspectRatioLock(false);
+        transform->SetWorldScale({ 1.0f, 1.0f });
+
+        mat3f worldMat = transform->GetWorldMatrix();
+
+        transform->SetAspectRatioLock(a_lock);
+        transform->SetWorldScale(o_scale);
+
+        ML_Color color = { 255, 255, 255, 255 };
+
+        float half_width = (viewport_width) / zoom;
+        float half_height = (viewport_height) / zoom;
+
+        mat3f colliderMat = mat3f::CreateTransformMatrix(
+            vec2f(0, 0),
+            0.0f,
+            { half_width, half_height }
+        );
+
+        mat3f finalMat = worldMat * colliderMat;
+        engine->renderer_em->SubmitDebugCollider(finalMat, color, false);
+    }
+}
+
 nlohmann::json Camera::SaveComponent()
 {
     nlohmann::json componentJSON;
@@ -73,7 +103,7 @@ void Camera::GetViewportSize(int& width, int& height)
 
 void Camera::SetZoom(float new_zoom)
 {
-    zoom = glm::clamp(new_zoom, 10.0f, 200.0f);
+    zoom = glm::clamp(new_zoom, 1.0f, 1000.0f);
     UpdateMatrices();
 }
 
@@ -81,9 +111,17 @@ glm::mat4 Camera::GetViewMatrix() const
 {
     if (auto transform = container_go.lock()->GetComponent<Transform>())
     {
-       mat3f worldMat = transform->GetWorldMatrix();
-       glm::mat4 viewMat = engine->renderer_em->ConvertMat3fToGlmMat4(worldMat.Inverted());
-       return viewMat;
+        vec2f o_scale = transform->GetWorldScale();
+        bool a_lock = transform->IsAspectRatioLocked();
+        transform->SetAspectRatioLock(false);
+        transform->SetWorldScale({ 1.0f, 1.0f });
+
+        mat3f worldMat = transform->GetWorldMatrix();
+
+        transform->SetAspectRatioLock(a_lock);
+        transform->SetWorldScale(o_scale);
+        glm::mat4 viewMat = engine->renderer_em->ConvertMat3fToGlmMat4(worldMat.Inverted());
+        return viewMat;
     }
     return glm::mat4(1.0f);
 }
