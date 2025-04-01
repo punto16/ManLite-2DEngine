@@ -169,14 +169,17 @@ popd
     <ClCompile Include="Animator.h" />
     <ClCompile Include="AudioEM.cpp" />
     <ClCompile Include="AudioSource.cpp" />
+    <ClCompile Include="ButtonImageUI.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Camera2D.cpp" />
     <ClCompile Include="Canvas.cpp" />
+    <ClCompile Include="CheckBoxUI.cpp" />
     <ClCompile Include="Collider2D.cpp" />
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="EngineCore.cpp" />
     <ClCompile Include="FileDialog.cpp" />
     <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="ImageUI.cpp" />
     <ClCompile Include="InputEM.cpp" />
     <ClCompile Include="Layer.cpp" />
     <ClCompile Include="Log.cpp" />
@@ -185,7 +188,9 @@ popd
     <ClCompile Include="RendererEM.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="SceneManagerEM.cpp" />
+    <ClCompile Include="SliderUI.cpp" />
     <ClCompile Include="Sprite2D.cpp" />
+    <ClCompile Include="TextUI.cpp" />
     <ClCompile Include="Timer.cpp" />
     <ClCompile Include="Transform.cpp" />
     <ClCompile Include="UIElement.cpp" />
@@ -198,6 +203,7 @@ popd
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Camera2D.h" />
     <ClInclude Include="Canvas.h" />
+    <ClInclude Include="CheckBoxUI.h" />
     <ClInclude Include="Collider2D.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="Defs.h" />
@@ -205,6 +211,8 @@ popd
     <ClInclude Include="EngineModule.h" />
     <ClInclude Include="FileDialog.h" />
     <ClInclude Include="GameObject.h" />
+    <ClInclude Include="ButtonImageUI.h" />
+    <ClInclude Include="ImageUI.h" />
     <ClInclude Include="InputEM.h" />
     <ClInclude Include="Layer.h" />
     <ClInclude Include="Log.h" />
@@ -213,7 +221,9 @@ popd
     <ClInclude Include="RendererEM.h" />
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="SceneManagerEM.h" />
+    <ClInclude Include="SliderUI.h" />
     <ClInclude Include="Sprite2D.h" />
+    <ClInclude Include="TextUI.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="Transform.h" />
     <ClInclude Include="UIElement.h" />

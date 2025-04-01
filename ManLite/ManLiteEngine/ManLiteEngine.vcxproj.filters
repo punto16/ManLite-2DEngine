@@ -120,6 +120,21 @@
     <ClCompile Include="UIElement.cpp">
       <Filter>GameObject\Components\UIElements</Filter>
     </ClCompile>
+    <ClCompile Include="ImageUI.cpp">
+      <Filter>GameObject\Components\UIElements</Filter>
+    </ClCompile>
+    <ClCompile Include="ButtonImageUI.cpp">
+      <Filter>GameObject\Components\UIElements</Filter>
+    </ClCompile>
+    <ClCompile Include="SliderUI.cpp">
+      <Filter>GameObject\Components\UIElements</Filter>
+    </ClCompile>
+    <ClCompile Include="CheckBoxUI.cpp">
+      <Filter>GameObject\Components\UIElements</Filter>
+    </ClCompile>
+    <ClCompile Include="TextUI.cpp">
+      <Filter>GameObject\Components\UIElements</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="EngineCore.h">
@@ -198,6 +213,21 @@
       <Filter>GameObject\Components</Filter>
     </ClInclude>
     <ClInclude Include="UIElement.h">
+      <Filter>GameObject\Components\UIElements</Filter>
+    </ClInclude>
+    <ClInclude Include="ImageUI.h">
+      <Filter>GameObject\Components\UIElements</Filter>
+    </ClInclude>
+    <ClInclude Include="ButtonImageUI.h">
+      <Filter>GameObject\Components\UIElements</Filter>
+    </ClInclude>
+    <ClInclude Include="SliderUI.h">
+      <Filter>GameObject\Components\UIElements</Filter>
+    </ClInclude>
+    <ClInclude Include="CheckBoxUI.h">
+      <Filter>GameObject\Components\UIElements</Filter>
+    </ClInclude>
+    <ClInclude Include="TextUI.h">
       <Filter>GameObject\Components\UIElements</Filter>
     </ClInclude>
   </ItemGroup>

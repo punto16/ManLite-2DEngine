@@ -2,6 +2,7 @@
 #define __UIELEMENT_H__
 #pragma once
 
+#include "Defs.h"
 #include <string>
 #include <memory>
 #include "nlohmann/json.hpp"
@@ -91,6 +92,8 @@ protected:
 
 	uint32_t uielement_id;
 	bool enabled;
+
+	UiState state = UiState::IDLE;
 };
 
 #endif // !__UIELEMENT_H__

@@ -138,6 +138,8 @@ nlohmann::json Canvas::SaveComponent()
 		}
 		componentJSON["UIElements"] = uielementsJSON;
 	}
+
+	return componentJSON;
 }
 
 void Canvas::LoadComponent(const nlohmann::json& componentJSON)
