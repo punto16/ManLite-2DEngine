@@ -16,6 +16,12 @@
 #include "Animation.h"
 #include "AudioSource.h"
 #include "Collider2D.h"
+#include "Canvas.h"
+#include "ImageUI.h"
+#include "ButtonImageUI.h"
+#include "CheckBoxUI.h"
+#include "SliderUI.h"
+#include "TextUI.h"
 
 #include "ResourceManager.h"
 
@@ -63,7 +69,8 @@ bool PanelInspector::Update()
 				SpriteOptions(go);
 				AnimatorOptions(go);
 				AudioSourceOptions(go);
-				Collider2DOptions(go); 
+				Collider2DOptions(go);
+				CanvasOptions(go);
 
 				//last
 				AddComponent(go);
@@ -900,6 +907,203 @@ void PanelInspector::Collider2DOptions(GameObject& go)
 	}
 }
 
+void PanelInspector::CanvasOptions(GameObject& go)
+{
+	uint treeFlags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_DefaultOpen;
+	Canvas* canvas = go.GetComponent<Canvas>();
+	if (canvas == nullptr) return;
+	std::string canvasLabel = std::string("Canvas##" + std::to_string(go.GetID()));
+	if (ImGui::CollapsingHeader(canvasLabel.c_str(), treeFlags))
+	{
+		if (ImGui::BeginPopupContextItem())
+		{
+			std::string context_label = "Remove Component##" + canvasLabel;
+			if (ImGui::MenuItem(context_label.c_str()))
+			{
+				go.RemoveComponent(ComponentType::Canvas);
+				ImGui::EndPopup();
+				return;
+			}
+			ImGui::EndPopup();
+		}
+
+		//ui elements
+		ImGui::Dummy(ImVec2(0, 4));
+		ImGui::TextColored(ImVec4(1, 1, 0, 1), "UI Elements:");
+
+		for (auto& ui_element : canvas->GetUIElements())
+		{
+			std::string elementLabel = ui_element->GetName() +
+				"##" + std::to_string(ui_element->GetID());
+
+			if (ImGui::TreeNodeEx(elementLabel.c_str(), treeFlags))
+			{
+				std::string nameLabel = "Name##" + std::to_string(ui_element->GetID());
+				char nameBuffer[32];
+				strcpy(nameBuffer, ui_element->GetName().c_str());
+				if (ImGui::InputText(nameLabel.c_str(), nameBuffer, sizeof(nameBuffer), ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_CharsNoBlank))
+				{
+					ui_element->SetName(nameBuffer);
+				}
+
+				std::string enabledLabel = "Enabled##" + std::to_string(ui_element->GetID());
+				bool enabled = ui_element->IsEnabled();
+				if (ImGui::Checkbox(enabledLabel.c_str(), &enabled))
+				{
+					ui_element->SetEnabled(enabled);
+				}
+
+				vec2f position = ui_element->GetPosition();
+				std::string posLabel = "Position##" + std::to_string(ui_element->GetID());
+				if (ImGui::DragFloat2(posLabel.c_str(), &position.x, 0.05f))
+				{
+					ui_element->SetPosition(position);
+				}
+
+				float angle = ui_element->GetAngle();
+				std::string angleLabel = "Angle##" + std::to_string(ui_element->GetID());
+				if (ImGui::DragFloat(angleLabel.c_str(), &angle, 0.1f))
+				{
+					ui_element->SetAngle(angle);
+				}
+
+#pragma region SCALE
+				vec2f scale = ui_element->GetScale();
+				std::string scaleLabel = "Scale##" + std::to_string(ui_element->GetID());
+
+				bool lockAspect = ui_element->IsAspectLocked();
+				float aspectRatio = ui_element->GetLockedAspectRatio();
+
+				if (ImGui::Checkbox(("Lock Aspect##" + std::to_string(ui_element->GetID())).c_str(), &lockAspect))
+				{
+					ui_element->SetAspectLocked(lockAspect);
+
+					if (lockAspect)
+					{
+							aspectRatio = scale.x / scale.y;
+						ui_element->SetLockedAspectRatio(aspectRatio);
+					}
+				}
+
+				if (lockAspect)
+				{
+					ImGui::SameLine();
+					ImGui::TextDisabled("(%.2f:1.00)", aspectRatio);
+
+					ImGui::BeginGroup();
+					{
+						ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x * 0.45f);
+
+						if (ImGui::DragFloat(("X##ScaleX_" + std::to_string(ui_element->GetID())).c_str(),
+							&scale.x, 0.01f, 0.01f, 10.0f, "%.2f"))
+						{
+							scale.y = scale.x / aspectRatio;
+							ui_element->SetScale(scale);
+						}
+
+						ImGui::SameLine();
+
+						if (ImGui::DragFloat(("Y##ScaleY_" + std::to_string(ui_element->GetID())).c_str(),
+							&scale.y, 0.01f, 0.01f, 10.0f, "%.2f"))
+						{
+							scale.x = scale.y * aspectRatio;
+							ui_element->SetScale(scale);
+						}
+
+						ImGui::PopItemWidth();
+					}
+					ImGui::EndGroup();
+				}
+				else
+				{
+					if (ImGui::DragFloat2(scaleLabel.c_str(), &scale.x, 0.01f, 0.01f, 10.0f, "%.2f"))
+					{
+						ui_element->SetScale(scale);
+					}
+				}
+#pragma endregion SCALE
+
+
+				if (ui_element->GetType() == UIElementType::Image)
+				{
+					ImageUI* imageUI = dynamic_cast<ImageUI*>(ui_element.get());
+					if (imageUI)
+					{
+						ImGui::Separator();
+						ImGui::TextColored(ImVec4(0.4f, 0.8f, 1.0f, 1.0f), "Image Properties");
+
+						std::string texLabel = "Texture Path";
+						ImGui::Text("%s: %s", texLabel.c_str(), imageUI->GetTexturePath().c_str());
+
+						std::string changeTextureLabel = "Change Texture##" + std::to_string(ui_element->GetID());
+						if (ImGui::Button(changeTextureLabel.c_str()))
+						{
+							std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Open Sprite file (*.png)\0*.png\0")).string();
+							if (!filePath.empty() && filePath.ends_with(".png") && filePath != imageUI->GetTexturePath())
+							{
+								imageUI->SwapTexture(filePath);
+							}
+						}
+
+						std::string sizeLabel = "Texture Size";
+						ImGui::Text("%s: %d x %d", sizeLabel.c_str(), (int)imageUI->GetTextureSize().x, (int)imageUI->GetTextureSize().y);
+
+						ML_Rect section = imageUI->GetSection();
+						std::string sectionLabel = "Section##" + std::to_string(ui_element->GetID());
+						if (ImGui::DragFloat4(sectionLabel.c_str(), &section.x, 1.0f, 0, 4096))
+						{
+							imageUI->SetSection(section);
+						}
+
+						std::string pixelArtLabel = "Pixel Art##" + std::to_string(ui_element->GetID());
+						bool pixel_art = imageUI->IsPixelArt();
+						ImGui::Checkbox(pixelArtLabel.c_str(), &pixel_art);
+						imageUI->SetIsPixelArt(pixel_art);
+					}
+				}
+
+				ImGui::TreePop();
+			}
+		}
+
+		//add uielement
+		ImGui::Dummy(ImVec2(0, 4));
+		ImGui::Separator();
+
+		std::string addButtonLabel = "Add UI Element##" + std::to_string(go.GetID());
+		if (ImGui::Button(addButtonLabel.c_str()))
+		{
+			ImGui::OpenPopup("add_ui_element_popup");
+		}
+
+		if (ImGui::BeginPopup("add_ui_element_popup"))
+		{
+			if (ImGui::MenuItem("Image"))
+			{
+				std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Image file (*.png)\0*.png\0")).string();
+				if (!filePath.empty() && filePath.ends_with(".png"))
+				{
+					canvas->AddUIElement<ImageUI>(filePath);
+				}
+			}
+			if (ImGui::MenuItem("Button Image"))
+			{
+				// canvas->AddUIElement<ButtonImage>(...);
+			}
+			if (ImGui::MenuItem("Text"))
+			{
+				// canvas->AddUIElement<TextUI>();
+			}
+
+			ImGui::EndPopup();
+		}
+		//
+
+		ImGui::Dummy(ImVec2(0, 4));
+		ImGui::Separator();
+	}
+}
+
 void PanelInspector::AddComponent(GameObject& go)
 {
 	const ImVec2 button_size_default = ImVec2(150, 0);
@@ -987,6 +1191,12 @@ void PanelInspector::AddComponent(GameObject& go)
 		if (ImGui::Selectable("Collider2D"))
 		{
 			go.AddComponent<Collider2D>();
+			show_component_window = false;
+		}
+
+		if (ImGui::Selectable("Canvas"))
+		{
+			go.AddComponent<Canvas>();
 			show_component_window = false;
 		}
 

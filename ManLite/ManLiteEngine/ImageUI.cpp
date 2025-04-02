@@ -49,7 +49,7 @@ void ImageUI::Draw()
         vec2f scale = transform->GetScale();
         bool a_lock = transform->IsAspectRatioLocked();
         transform->SetAspectRatioLock(false);
-        transform->SetScale({ scale.x * section_idle.w / section_idle.h, scale.y });
+        transform->SetScale({ 1, 1 });
 
         mat3f modelMat = transform->GetWorldMatrix();
 
@@ -60,7 +60,7 @@ void ImageUI::Draw()
         mat3f localMat = mat3f::CreateTransformMatrix(
             { this->position_x, this->position_y },
             DEGTORAD * this->angle,
-            { this->scale_x, this->scale_y }
+            { this->scale_x * section_idle.w / section_idle.h, this->scale_y }
         );
         mat3f finalMat = modelMat * localMat;
 
@@ -88,6 +88,8 @@ nlohmann::json ImageUI::SaveUIElement()
     uielementJSON["UIElementPosition"] = { position_x, position_y };
     uielementJSON["UIElementAngle"] = angle;
     uielementJSON["UIElementScale"] = { scale_x, scale_y };
+    uielementJSON["UIElementAspectLocked"] = aspectLocked;
+    uielementJSON["UIElementAspectLockedRatio"] = lockedAspectRatio;
 
     //specific uielement
     uielementJSON["TexturePath"] = texture_path;
@@ -109,6 +111,8 @@ void ImageUI::LoadUIElement(const nlohmann::json& uielementJSON)
     if (uielementJSON.contains("UIElementAngle")) angle = uielementJSON["UIElementAngle"];
     if (uielementJSON.contains("UIElementScale")) scale_x = uielementJSON["UIElementScale"][0];
     if (uielementJSON.contains("UIElementScale")) scale_y = uielementJSON["UIElementScale"][1];
+    if (uielementJSON.contains("UIElementAspectLocked")) aspectLocked = uielementJSON["UIElementAspectLocked"];
+    if (uielementJSON.contains("UIElementAspectLockedRatio")) lockedAspectRatio = uielementJSON["UIElementAspectLockedRatio"];
 
     //
     if (uielementJSON.contains("TexturePath"))

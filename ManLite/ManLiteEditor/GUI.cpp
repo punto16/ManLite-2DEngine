@@ -609,7 +609,7 @@ void Gui::GameObjectMenu()
 	if (ImGui::MenuItem("Canvas"))
 	{
 		GameObject* e_go = engine->scene_manager_em->GetCurrentScene().CreateEmptyGO(engine->scene_manager_em->GetCurrentScene().GetSceneRoot()).get();
-		e_go->AddComponent<Canvas>(); 
+		e_go->AddComponent<Canvas>();
 		e_go->GetComponent<Canvas>()->AddUIElement<ImageUI>("");
 	}
 }

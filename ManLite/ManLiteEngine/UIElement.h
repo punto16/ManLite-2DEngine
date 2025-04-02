@@ -76,15 +76,30 @@ public:
 	}
 	void SwitchEnabled() { SetEnabled(!this->enabled); }
 
+	void SetPosition(vec2f position) { position_x = position.x; position_y = position.y; }
+	vec2f GetPosition() { return { position_x, position_y }; }
+	void SetAngle(float angle_degree) { angle = angle_degree; }
+	float GetAngle() { return angle; }
+	void SetScale(vec2f scale) { scale_x = scale.x; scale_y = scale.y; }
+	vec2f GetScale() { return { scale_x, scale_y }; }
+
+	bool IsAspectLocked() const { return aspectLocked; }
+	void SetAspectLocked(bool state) { aspectLocked = state; }
+	float GetLockedAspectRatio() const { return lockedAspectRatio; }
+	void SetLockedAspectRatio(float ratio) { lockedAspectRatio = ratio; }
+
 protected:
 	std::weak_ptr<GameObject> container_go;
 	std::string name;
 	UIElementType type;
 
+	bool aspectLocked = false;
+	float lockedAspectRatio = 1.0f;
+
 	uint32_t uielement_id;
 	bool enabled;
 
-	//trasnform options
+	//transform options
 	float position_x = 0, position_y = 0;
 	float angle;
 	float scale_x = 1, scale_y = 1;

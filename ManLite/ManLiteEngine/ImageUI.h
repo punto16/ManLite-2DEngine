@@ -25,6 +25,16 @@ public:
 
 	void SwapTexture(std::string new_path);
 
+	//getters // setters
+	ML_Rect GetSection() { return section_idle; }
+	void SetSection(ML_Rect s) { section_idle = s; }
+	
+	std::string GetTexturePath() { return texture_path; }
+
+	vec2f GetTextureSize() { return { tex_width, tex_height }; }
+	bool IsPixelArt() { return pixel_art; }
+	void SetIsPixelArt(bool pa) { pixel_art = pa; }
+
 private:
 
 	ML_Rect section_idle;

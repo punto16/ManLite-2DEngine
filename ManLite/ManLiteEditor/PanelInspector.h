@@ -24,6 +24,7 @@ public:
 	void AnimatorOptions(GameObject& go);
 	void AudioSourceOptions(GameObject& go);
 	void Collider2DOptions(GameObject& go);
+	void CanvasOptions(GameObject& go);
 
 	//add components last
 	void AddComponent(GameObject& go);
