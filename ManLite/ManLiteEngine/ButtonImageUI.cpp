@@ -6,8 +6,8 @@
 #include "GameObject.h"
 #include "Canvas.h"
 
-ButtonImageUI::ButtonImageUI(std::weak_ptr<Canvas> container_canvas, std::string texturePath, std::string name, bool enable) :
-	UIElement(container_canvas, UIElementType::ButtonImage, name, enable),
+ButtonImageUI::ButtonImageUI(std::weak_ptr<GameObject> container_go, std::string texturePath, std::string name, bool enable) :
+	UIElement(container_go, UIElementType::ButtonImage, name, enable),
 	texture_path(texturePath),
 	pixel_art(false)
 {
@@ -15,8 +15,8 @@ ButtonImageUI::ButtonImageUI(std::weak_ptr<Canvas> container_canvas, std::string
 	textureID = ResourceManager::GetInstance().LoadTexture(texturePath, tex_width, tex_height);
 }
 
-ButtonImageUI::ButtonImageUI(const ButtonImageUI& uielement_to_copy, std::shared_ptr<Canvas> container_canvas) :
-	UIElement(uielement_to_copy, container_canvas),
+ButtonImageUI::ButtonImageUI(const ButtonImageUI& uielement_to_copy, std::shared_ptr<GameObject> container_go) :
+	UIElement(uielement_to_copy, container_go),
 	texture_path(uielement_to_copy.texture_path),
 	pixel_art(uielement_to_copy.pixel_art)
 {
@@ -46,14 +46,14 @@ void ButtonImageUI::Draw()
         static GLuint placeholder = ResourceManager::GetInstance().GetTexture("Config\\placeholder.png");
         engine->renderer_em->SubmitSprite(
             placeholder,
-            container_canvas.lock()->GetContainerGO()->GetComponent<Transform>()->GetWorldMatrix(),
+            GetContainerGO()->GetComponent<Transform>()->GetWorldMatrix(),
             0, 1, 1, 0,
             pixel_art
         );
         return;
     }
 
-    if (auto transform = container_canvas.lock()->GetContainerGO()->GetComponent<Transform>())
+    if (auto transform = GetContainerGO()->GetComponent<Transform>())
     {
         vec2f scale = transform->GetScale();
         bool a_lock = transform->IsAspectRatioLocked();
@@ -68,4 +68,13 @@ void ButtonImageUI::Draw()
         transform->SetScale(scale);
         transform->SetAspectRatioLock(a_lock);
     }
+}
+
+nlohmann::json ButtonImageUI::SaveUIElement()
+{
+    return nlohmann::json();
+}
+
+void ButtonImageUI::LoadUIElement(const nlohmann::json& uielementJSON)
+{
 }

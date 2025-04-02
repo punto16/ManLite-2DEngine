@@ -9,7 +9,7 @@
 #include <memory>
 #include "nlohmann/json.hpp"
 
-class Canvas;
+class GameObject;
 
 enum class UIElementType
 {
@@ -26,8 +26,8 @@ enum class UIElementType
 class UIElement
 {
 public:
-	UIElement(std::weak_ptr<Canvas> container_canvas, UIElementType type = UIElementType::Unkown, std::string name = "UIElement", bool enable = true);
-	UIElement(const UIElement& uielement_to_copy, std::shared_ptr<Canvas> container_canvas);
+	UIElement(std::weak_ptr<GameObject> container_go, UIElementType type = UIElementType::Unkown, std::string name = "UIElement", bool enable = true);
+	UIElement(const UIElement& uielement_to_copy, std::shared_ptr<GameObject> container_go);
 	virtual ~UIElement() {}
 
 	virtual bool Init() { return true; }
@@ -55,7 +55,7 @@ public:
 	virtual void LoadUIElement(const nlohmann::json& uielementJSON) = 0;
 
 	//getters // setters
-	std::shared_ptr<Canvas> GetContainerGO() const { return container_canvas.lock(); }
+	std::shared_ptr<GameObject> GetContainerGO() const { return container_go.lock(); }
 	std::string GetName() const { return this->name; }
 	void SetName(std::string name) { this->name = name; }
 	UIElementType GetType() const { return this->type; }
@@ -77,7 +77,7 @@ public:
 	void SwitchEnabled() { SetEnabled(!this->enabled); }
 
 protected:
-	std::weak_ptr<Canvas> container_canvas;
+	std::weak_ptr<GameObject> container_go;
 	std::string name;
 	UIElementType type;
 

@@ -13,8 +13,8 @@
 class ImageUI : public UIElement
 {
 public:
-	ImageUI(std::weak_ptr<Canvas> container_canvas, std::string texturePath = "", std::string name = "ImageUI", bool enable = true);
-	ImageUI(const ImageUI& uielement_to_copy, std::shared_ptr<Canvas> container_canvas);
+	ImageUI(std::weak_ptr<GameObject> container_go, std::string texturePath = "", std::string name = "ImageUI", bool enable = true);
+	ImageUI(const ImageUI& uielement_to_copy, std::shared_ptr<GameObject> container_go);
 	virtual ~ImageUI();
 
 	virtual void Draw();

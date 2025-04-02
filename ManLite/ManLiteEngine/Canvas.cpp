@@ -197,10 +197,10 @@ ML_Rect Canvas::GetUVs(ML_Rect section, int w, int h)
 		float u2 = static_cast<float>(section.x + section.w) / w;
 		float v1 = static_cast<float>(h - (section.y + section.h)) / h;
 		float v2 = static_cast<float>(h - section.y) / h;
-		return ML_Rect(u1, v2, u2, v1);
+		return ML_Rect(u1, v1, u2, v2);
 	}
 	else
 	{
-		return ML_Rect(0, 1, 1, 0);
+		return ML_Rect(0, 0, 1, 1);
 	}
 }

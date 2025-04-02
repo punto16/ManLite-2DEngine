@@ -11,7 +11,7 @@
 
 class UIElement;
 
-class Canvas : public Component, public std::enable_shared_from_this<Canvas>  {
+class Canvas : public Component  {
 public:
     Canvas(std::weak_ptr<GameObject> container_go, std::string name = "Canvas", bool enable = true);
     Canvas(const Canvas& component_to_copy, std::shared_ptr<GameObject> container_go);
@@ -30,7 +30,7 @@ public:
     template <typename TUI>
     unsigned int AddUIElement(std::string file_path)
     {
-        std::unique_ptr<UIElement> new_uielement = std::make_unique<TUI>(shared_from_this(), file_path);
+        std::unique_ptr<UIElement> new_uielement = std::make_unique<TUI>(container_go.lock(), file_path);
         unsigned int tempID = new_uielement->GetID();
         ui_elements.push_back(std::move(new_uielement));
     
@@ -40,7 +40,7 @@ public:
     template <typename TUI>
     unsigned int AddCopiedUIElement(const TUI& ref)
     {
-        std::unique_ptr<UIElement> new_uielement = std::make_unique<TUI>(ref, shared_from_this());
+        std::unique_ptr<UIElement> new_uielement = std::make_unique<TUI>(ref, container_go.lock());
         unsigned int tempID = new_uielement->GetID();
         ui_elements.push_back(std::move(new_uielement));
 

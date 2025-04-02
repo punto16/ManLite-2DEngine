@@ -47,8 +47,8 @@ class CheckBoxSectionManager
 class CheckBoxUI : public UIElement
 {
 public:
-	CheckBoxUI(std::weak_ptr<Canvas> container_canvas, std::string texturePath = "", std::string name = "CheckBoxUI", bool enable = true);
-	CheckBoxUI(const CheckBoxUI& uielement_to_copy, std::shared_ptr<Canvas> container_canvas);
+	CheckBoxUI(std::weak_ptr<GameObject> container_go, std::string texturePath = "", std::string name = "CheckBoxUI", bool enable = true);
+	CheckBoxUI(const CheckBoxUI& uielement_to_copy, std::shared_ptr<GameObject> container_go);
 	virtual ~CheckBoxUI();
 
 	//virtual bool Init();
@@ -59,9 +59,9 @@ public:
 	//virtual bool Pause();
 	//virtual bool Unpause();
 
-	////serialization
-	//virtual nlohmann::json SaveUIElement();
-	//virtual void LoadUIElement(const nlohmann::json& uielementJSON);
+	//serialization
+	virtual nlohmann::json SaveUIElement();
+	virtual void LoadUIElement(const nlohmann::json& uielementJSON);
 
 private:
 	CheckBoxSectionManager section_manager;

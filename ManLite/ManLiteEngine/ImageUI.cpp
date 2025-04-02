@@ -6,8 +6,8 @@
 #include "GameObject.h"
 #include "Canvas.h"
 
-ImageUI::ImageUI(std::weak_ptr<Canvas> container_canvas, std::string texturePath, std::string name, bool enable) :
-	UIElement(container_canvas, UIElementType::Image, name, enable),
+ImageUI::ImageUI(std::weak_ptr<GameObject> container_go, std::string texturePath, std::string name, bool enable) :
+	UIElement(container_go, UIElementType::Image, name, enable),
 	texture_path(texturePath),
     pixel_art(false)
 {
@@ -16,8 +16,8 @@ ImageUI::ImageUI(std::weak_ptr<Canvas> container_canvas, std::string texturePath
     section_idle = {0, 0, tex_width, tex_height};
 }
 
-ImageUI::ImageUI(const ImageUI& uielement_to_copy, std::shared_ptr<Canvas> container_canvas) :
-	UIElement(uielement_to_copy, container_canvas),
+ImageUI::ImageUI(const ImageUI& uielement_to_copy, std::shared_ptr<GameObject> container_go) :
+	UIElement(uielement_to_copy, container_go),
     texture_path(uielement_to_copy.texture_path),
     pixel_art(uielement_to_copy.pixel_art),
     section_idle(uielement_to_copy.section_idle)
@@ -43,7 +43,7 @@ void ImageUI::Draw()
         }
     }
 
-    if (auto transform = container_canvas.lock()->GetContainerGO()->GetComponent<Transform>())
+    if (auto transform = GetContainerGO()->GetComponent<Transform>())
     {
         //get world mat without deformations
         vec2f scale = transform->GetScale();
@@ -82,7 +82,7 @@ nlohmann::json ImageUI::SaveUIElement()
     //general uielement
     uielementJSON["UIElementID"] = uielement_id;
     uielementJSON["UIElementName"] = name;
-    uielementJSON["CointainerCanvasID"] = container_canvas.lock()->GetID();
+    uielementJSON["CointainerCanvasID"] = GetContainerGO()->GetComponent<Canvas>()->GetID();
     uielementJSON["UIElementType"] = type;
     uielementJSON["UIElementEnabled"] = enabled;
     uielementJSON["UIElementPosition"] = { position_x, position_y };
