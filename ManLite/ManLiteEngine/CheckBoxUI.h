@@ -11,23 +11,18 @@
 #include <atomic>
 
 enum class CheckBoxState {
-	IDLE_TRUE					= 0,
-	HOVERED_TRUE				= 1,
-	SELECTED_TRUE				= 2,
-	HOVEREDSELECTED_TRUE		= 3,
-	DISABLED_TRUE				= 4,
-
-	IDLE_FALSE					= 5,
-	HOVERED_FALSE				= 6,
-	SELECTED_FALSE				= 7,
-	HOVEREDSELECTED_FALSE		= 8,
-	DISABLED_FALSE				= 9,
+	IDLE						= 0,
+	HOVERED						= 1,
+	SELECTED					= 2,
+	HOVEREDSELECTED				= 3,
+	DISABLED					= 4,
 
 	//
 	UNKNOWN
 };
 class CheckBoxSectionManager
 {
+public:
 	ML_Rect* current_section;
 	CheckBoxState checkbox_state;
 
@@ -51,17 +46,25 @@ public:
 	CheckBoxUI(const CheckBoxUI& uielement_to_copy, std::shared_ptr<GameObject> container_go);
 	virtual ~CheckBoxUI();
 
-	//virtual bool Init();
-	//virtual bool Update(float dt);
-
 	virtual void Draw();
-
-	//virtual bool Pause();
-	//virtual bool Unpause();
 
 	//serialization
 	virtual nlohmann::json SaveUIElement();
 	virtual void LoadUIElement(const nlohmann::json& uielementJSON);
+
+	// Getters/Setters
+	std::string GetTexturePath() { return texture_path; }
+	vec2f GetTextureSize() { return { tex_width, tex_height }; }
+	bool IsPixelArt() { return pixel_art; }
+	void SetIsPixelArt(bool pa) { pixel_art = pa; }
+
+	CheckBoxSectionManager& GetSectionManager() { return section_manager; }
+
+	void SwapTexture(std::string new_path);
+	void UpdateCurrentSection();
+
+	void SetValue(bool b) { value = b; }
+	bool GetValue() { return value; }
 
 private:
 	CheckBoxSectionManager section_manager;
@@ -73,6 +76,8 @@ private:
 
 	std::future<GLuint> textureFuture;
 	std::atomic<bool> textureLoading{ false };
+
+	bool value = false;
 };
 
 #endif // !__CHECKBOXUI_H__

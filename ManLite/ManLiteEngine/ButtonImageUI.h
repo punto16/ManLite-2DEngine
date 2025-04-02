@@ -41,13 +41,7 @@ public:
 	ButtonImageUI(const ButtonImageUI& uielement_to_copy, std::shared_ptr<GameObject> container_go);
 	virtual ~ButtonImageUI();
 
-	//virtual bool Init();
-	//virtual bool Update(float dt);
-
 	virtual void Draw();
-
-	//virtual bool Pause();
-	//virtual bool Unpause();
 
 	//serialization
 	virtual nlohmann::json SaveUIElement();

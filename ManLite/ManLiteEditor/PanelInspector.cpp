@@ -1115,6 +1115,93 @@ void PanelInspector::CanvasOptions(GameObject& go)
 						DrawSection("Disabled Section", buttonImage->GetButtonSectionManager().section_disabled);
 					}
 				}
+				if (ui_element->GetType() == UIElementType::CheckBox)
+				{
+					CheckBoxUI* checkboxUI = dynamic_cast<CheckBoxUI*>(ui_element.get());
+					if (checkboxUI)
+					{
+						ImGui::Separator();
+						ImGui::TextColored(ImVec4(0.8f, 0.2f, 0.8f, 1.0f), "CheckBox Properties");
+
+						std::string texLabel = "Texture Path";
+						ImGui::Text("%s: %s", texLabel.c_str(), checkboxUI->GetTexturePath().c_str());
+
+						std::string changeTextureLabel = "Change Texture##" + std::to_string(ui_element->GetID());
+						if (ImGui::Button(changeTextureLabel.c_str()))
+						{
+							std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Open Sprite file (*.png)\0*.png\0")).string();
+							if (!filePath.empty() && filePath.ends_with(".png") && filePath != checkboxUI->GetTexturePath())
+							{
+								checkboxUI->SwapTexture(filePath);
+							}
+						}
+
+						std::string sizeLabel = "Texture Size";
+						ImGui::Text("%s: %d x %d", sizeLabel.c_str(), (int)checkboxUI->GetTextureSize().x, (int)checkboxUI->GetTextureSize().y);
+
+						std::string pixelArtLabel = "Pixel Art##" + std::to_string(ui_element->GetID());
+						bool pixel_art = checkboxUI->IsPixelArt();
+						ImGui::Checkbox(pixelArtLabel.c_str(), &pixel_art);
+						checkboxUI->SetIsPixelArt(pixel_art);
+
+						std::string valueLabel = "Value##" + std::to_string(ui_element->GetID());
+						bool currentValue = checkboxUI->GetValue();
+						if (ImGui::Checkbox(valueLabel.c_str(), &currentValue))
+						{
+							checkboxUI->SetValue(currentValue);
+						}
+
+						const char* checkboxStates[] = { "Idle", "Hovered", "Selected", "Hovered+Selected", "Disabled" };
+						int currentState = static_cast<int>(checkboxUI->GetSectionManager().checkbox_state);
+						std::string stateLabel = "Interaction State##" + std::to_string(ui_element->GetID());
+						if (ImGui::Combo(stateLabel.c_str(), &currentState, checkboxStates, IM_ARRAYSIZE(checkboxStates)))
+						{
+							checkboxUI->GetSectionManager().checkbox_state = static_cast<CheckBoxState>(currentState);
+						}
+
+						ImGui::Separator();
+						ImGui::TextColored(ImVec4(1, 1, 0, 1), "State Sections");
+						ImGui::Dummy(ImVec2(0, 5));
+
+						auto DrawSectionGroup = [&](const char* stateName, bool forTrueState) {
+							ImGui::PushStyleVar(ImGuiStyleVar_IndentSpacing, 10.0f);
+							std::string headerLabel = std::string(stateName) + " Sections##" + std::to_string(ui_element->GetID());
+							if (ImGui::TreeNodeEx(headerLabel.c_str(), treeFlags))
+							{
+								ML_Rect* sections[5] = {
+									forTrueState ? &checkboxUI->GetSectionManager().section_idle_true : &checkboxUI->GetSectionManager().section_idle_false,
+									forTrueState ? &checkboxUI->GetSectionManager().section_hovered_true : &checkboxUI->GetSectionManager().section_hovered_false,
+									forTrueState ? &checkboxUI->GetSectionManager().section_selected_true : &checkboxUI->GetSectionManager().section_selected_false,
+									forTrueState ? &checkboxUI->GetSectionManager().section_hovered_selected_true : &checkboxUI->GetSectionManager().section_hovered_selected_false,
+									forTrueState ? &checkboxUI->GetSectionManager().section_disabled_true : &checkboxUI->GetSectionManager().section_disabled_false
+								};
+
+								const char* subStates[] = { "Idle", "Hovered", "Selected", "Hovered+Selected", "Disabled" };
+
+								for (int i = 0; i < 5; ++i)
+								{
+									std::string subLabel = subStates[i] + std::string("##") + std::to_string(ui_element->GetID()) + stateName + std::to_string(i);
+									if (ImGui::TreeNodeEx(subLabel.c_str(), treeFlags))
+									{
+										std::string dragLabel = "Section##" + std::string(subStates[i]) + std::to_string(ui_element->GetID());
+										ImGui::DragFloat4(dragLabel.c_str(), &sections[i]->x, 1.0f, 0, checkboxUI->GetTextureSize().x);
+										ImGui::TreePop();
+									}
+								}
+								ImGui::TreePop();
+							}
+							ImGui::PopStyleVar();
+							};
+
+						ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.2f, 0.8f, 0.2f, 0.4f));
+						DrawSectionGroup("When True", true);
+						ImGui::PopStyleColor();
+
+						ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.8f, 0.2f, 0.2f, 0.4f));
+						DrawSectionGroup("When False", false);
+						ImGui::PopStyleColor();
+					}
+				}
 
 				ImGui::TreePop();
 			}
@@ -1148,9 +1235,13 @@ void PanelInspector::CanvasOptions(GameObject& go)
 					canvas->AddUIElement<ButtonImageUI>(filePath);
 				}
 			}
-			if (ImGui::MenuItem("Text"))
+			if (ImGui::MenuItem("CheckBox"))
 			{
-				// canvas->AddUIElement<TextUI>();
+				std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Image file (*.png)\0*.png\0")).string();
+				if (!filePath.empty() && filePath.ends_with(".png"))
+				{
+					canvas->AddUIElement<CheckBoxUI>(filePath);
+				}
 			}
 
 			ImGui::EndPopup();
