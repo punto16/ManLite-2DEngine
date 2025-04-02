@@ -28,8 +28,7 @@ ImageUI::ImageUI(const ImageUI& uielement_to_copy, std::shared_ptr<GameObject> c
 ImageUI::~ImageUI()
 {
 	ResourceManager::GetInstance().ReleaseTexture("Config\\placeholder.png");
-	if (texture_path.empty()) return;
-	ResourceManager::GetInstance().ReleaseTexture(texture_path);
+	if (!texture_path.empty()) ResourceManager::GetInstance().ReleaseTexture(texture_path);
 }
 
 void ImageUI::Draw()

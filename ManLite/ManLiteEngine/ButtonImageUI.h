@@ -23,6 +23,7 @@ enum class ButtonState {
 
 class ButtonSectionManager
 {
+public:
 	ML_Rect* current_section;
 	ButtonState button_state;
 
@@ -53,6 +54,16 @@ public:
 	virtual void LoadUIElement(const nlohmann::json& uielementJSON);
 
 	//getters // setters
+	ButtonSectionManager& GetButtonSectionManager() { return button_section_manager; }
+
+	std::string GetTexturePath() { return texture_path; }
+
+	vec2f GetTextureSize() { return { tex_width, tex_height }; }
+	bool IsPixelArt() { return pixel_art; }
+	void SetIsPixelArt(bool pa) { pixel_art = pa; }
+
+	void SwapTexture(std::string new_path);
+	void UpdateCurrentTexture();
 
 private:
 

@@ -1061,6 +1061,60 @@ void PanelInspector::CanvasOptions(GameObject& go)
 						imageUI->SetIsPixelArt(pixel_art);
 					}
 				}
+				if (ui_element->GetType() == UIElementType::ButtonImage)
+				{
+					ButtonImageUI* buttonImage = dynamic_cast<ButtonImageUI*>(ui_element.get());
+					if (buttonImage)
+					{
+						ImGui::Separator();
+						ImGui::TextColored(ImVec4(0.2f, 0.8f, 0.4f, 1.0f), "Button Image Properties");
+
+						std::string texLabel = "Texture Path";
+						ImGui::Text("%s: %s", texLabel.c_str(), buttonImage->GetTexturePath().c_str());
+
+						std::string changeTextureLabel = "Change Texture##" + std::to_string(ui_element->GetID());
+						if (ImGui::Button(changeTextureLabel.c_str()))
+						{
+							std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Open Sprite file (*.png)\0*.png\0")).string();
+							if (!filePath.empty() && filePath.ends_with(".png") && filePath != buttonImage->GetTexturePath())
+							{
+								buttonImage->SwapTexture(filePath);
+							}
+						}
+
+						std::string sizeLabel = "Texture Size";
+						ImGui::Text("%s: %d x %d", sizeLabel.c_str(), (int)buttonImage->GetTextureSize().x, (int)buttonImage->GetTextureSize().y);
+
+						std::string pixelArtLabel = "Pixel Art##" + std::to_string(ui_element->GetID());
+						bool pixel_art = buttonImage->IsPixelArt();
+						ImGui::Checkbox(pixelArtLabel.c_str(), &pixel_art);
+						buttonImage->SetIsPixelArt(pixel_art);
+
+						const char* buttonStates[] = { "Idle", "Hovered", "Selected", "Hovered+Selected", "Disabled" };
+						int currentState = static_cast<int>(buttonImage->GetButtonSectionManager().button_state);
+						std::string stateLabel = "Preview State##" + std::to_string(ui_element->GetID());
+						if (ImGui::Combo(stateLabel.c_str(), &currentState, buttonStates, IM_ARRAYSIZE(buttonStates)))
+						{
+							buttonImage->GetButtonSectionManager().button_state = static_cast<ButtonState>(currentState);
+						}
+
+						auto DrawSection = [&](const char* label, ML_Rect& section) {
+							std::string headerLabel = label + std::string("##") + std::to_string(ui_element->GetID());
+							if (ImGui::TreeNodeEx(headerLabel.c_str(), treeFlags))
+							{
+								std::string dragLabel = "Section##" + std::string(label) + std::to_string(ui_element->GetID());
+								ImGui::DragFloat4(dragLabel.c_str(), &section.x, 1.0f, 0, buttonImage->GetTextureSize().x);
+								ImGui::TreePop();
+							}
+							};
+
+						DrawSection("Idle Section", buttonImage->GetButtonSectionManager().section_idle);
+						DrawSection("Hovered Section", buttonImage->GetButtonSectionManager().section_hovered);
+						DrawSection("Selected Section", buttonImage->GetButtonSectionManager().section_selected);
+						DrawSection("Hovered+Selected Section", buttonImage->GetButtonSectionManager().section_hovered_selected);
+						DrawSection("Disabled Section", buttonImage->GetButtonSectionManager().section_disabled);
+					}
+				}
 
 				ImGui::TreePop();
 			}
@@ -1088,7 +1142,11 @@ void PanelInspector::CanvasOptions(GameObject& go)
 			}
 			if (ImGui::MenuItem("Button Image"))
 			{
-				// canvas->AddUIElement<ButtonImage>(...);
+				std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Image file (*.png)\0*.png\0")).string();
+				if (!filePath.empty() && filePath.ends_with(".png"))
+				{
+					canvas->AddUIElement<ButtonImageUI>(filePath);
+				}
 			}
 			if (ImGui::MenuItem("Text"))
 			{
