@@ -15,13 +15,7 @@ public:
 	TextUI(const TextUI& uielement_to_copy, std::shared_ptr<GameObject> container_go);
 	virtual ~TextUI();
 
-	//virtual bool Init();
-	//virtual bool Update(float dt);
-
 	virtual void Draw();
-
-	//virtual bool Pause();
-	//virtual bool Unpause();
 
 	//serialization
 	virtual nlohmann::json SaveUIElement();

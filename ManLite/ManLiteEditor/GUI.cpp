@@ -135,12 +135,14 @@ bool Gui::Start()
 
 #pragma region IMGUI_STYLE
 
+	io.Fonts->AddFontFromFileTTF("Config\\Font\\Rubik.ttf", 14);
+
 	ImGui::StyleColorsDark();
 
 	ImGuiStyle& style = ImGui::GetStyle();
 	ImVec4* colors = style.Colors;
 
-	colors[ImGuiCol_Text]						= ImVec4(0.95f, 0.95f, 0.95f, 1.00f);
+	colors[ImGuiCol_Text]						= ImVec4(0.98f, 0.98f, 0.98f, 1.00f);
 	colors[ImGuiCol_TextDisabled]				= ImVec4(0.50f, 0.50f, 0.50f, 1.00f);
 	colors[ImGuiCol_WindowBg]					= ImVec4(0.09f, 0.09f, 0.09f, 1.00f);
 	colors[ImGuiCol_ChildBg]					= ImVec4(0.09f, 0.09f, 0.09f, 1.00f);

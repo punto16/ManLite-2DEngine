@@ -235,12 +235,12 @@ nlohmann::json SliderUI::SaveUIElement() {
     uielementJSON["UIElementAspectLocked"] = aspectLocked;
     uielementJSON["UIElementAspectLockedRatio"] = lockedAspectRatio;
 
-    // CheckBox specific properties
+    // slider specific properties
     uielementJSON["TexturePath"] = texture_path;
     uielementJSON["PixelArt"] = pixel_art;
+    uielementJSON["CurrentValue"] = current_value;
     uielementJSON["MinValue"] = min_value;
     uielementJSON["MaxValue"] = max_value;
-    uielementJSON["CurrentValue"] = current_value;
     uielementJSON["Offset"] = offset;
     uielementJSON["OffsetFirst"] = offset_first;
     uielementJSON["OffsetLast"] = offset_last;
@@ -295,7 +295,7 @@ void SliderUI::LoadUIElement(const nlohmann::json& uielementJSON)
     if (uielementJSON.contains("UIElementAspectLocked")) aspectLocked = uielementJSON["UIElementAspectLocked"];
     if (uielementJSON.contains("UIElementAspectLockedRatio")) lockedAspectRatio = uielementJSON["UIElementAspectLockedRatio"];
 
-    // Load CheckBox specific properties
+    // Load slider specific properties
     if (uielementJSON.contains("TexturePath")) {
         texture_path = uielementJSON["TexturePath"];
         textureLoading = true;
@@ -303,9 +303,9 @@ void SliderUI::LoadUIElement(const nlohmann::json& uielementJSON)
     }
 
     if (uielementJSON.contains("PixelArt")) pixel_art = uielementJSON["PixelArt"];
+    if (uielementJSON.contains("CurrentValue")) current_value = uielementJSON["CurrentValue"];
     if (uielementJSON.contains("MinValue")) min_value = uielementJSON["MinValue"];
     if (uielementJSON.contains("MaxValue")) max_value = uielementJSON["MaxValue"];
-    if (uielementJSON.contains("CurrentValue")) current_value = uielementJSON["CurrentValue"];
     if (uielementJSON.contains("Offset")) offset = uielementJSON["Offset"];
     if (uielementJSON.contains("OffsetFirst")) offset_first = uielementJSON["OffsetFirst"];
     if (uielementJSON.contains("OffsetLast")) offset_last = uielementJSON["OffsetLast"];
