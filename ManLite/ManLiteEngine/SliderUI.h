@@ -114,6 +114,8 @@ public:
 
     int GetMinValue() { return min_value; }
     int GetMaxValue() { return max_value; }
+
+    vec2 GetTextureSize() { return { tex_width, tex_height}; }
 private:
     void CalculateDimensions();
 

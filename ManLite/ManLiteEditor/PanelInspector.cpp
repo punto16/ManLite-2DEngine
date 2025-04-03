@@ -1202,7 +1202,6 @@ void PanelInspector::CanvasOptions(GameObject& go)
 						ImGui::PopStyleColor();
 					}
 				}
-				// Dentro de CanvasOptions, después del caso del CheckBoxUI
 				if (ui_element->GetType() == UIElementType::Slider)
 				{
 					SliderUI* sliderUI = dynamic_cast<SliderUI*>(ui_element.get());
@@ -1211,7 +1210,6 @@ void PanelInspector::CanvasOptions(GameObject& go)
 						ImGui::Separator();
 						ImGui::TextColored(ImVec4(0.4f, 0.8f, 0.2f, 1.0f), "Slider Properties");
 
-						// Texture properties
 						std::string texLabel = "Texture Path";
 						ImGui::Text("%s: %s", texLabel.c_str(), sliderUI->GetTexturePath().c_str());
 
@@ -1224,25 +1222,23 @@ void PanelInspector::CanvasOptions(GameObject& go)
 								sliderUI->SwapTexture(filePath);
 							}
 						}
+						std::string sizeLabel = "Texture Size";
+						ImGui::Text("%s: %d x %d", sizeLabel.c_str(), (int)sliderUI->GetTextureSize().x, (int)sliderUI->GetTextureSize().y);
 
-						// Pixel Art
 						std::string pixelArtLabel = "Pixel Art##" + std::to_string(ui_element->GetID());
 						bool pixel_art = sliderUI->IsPixelArt();
 						ImGui::Checkbox(pixelArtLabel.c_str(), &pixel_art);
 						sliderUI->SetIsPixelArt(pixel_art);
 
-						// Value controls
 						int minVal = sliderUI->GetMinValue();
 						int maxVal = sliderUI->GetMaxValue();
 						int currentVal = sliderUI->GetValue();
 
-						ImGui::DragInt("Min Value", &minVal, 0.1f, 0, maxVal);
 						ImGui::DragInt("Max Value", &maxVal, 0.1f, minVal, 100);
 						ImGui::SliderInt("Current Value", &currentVal, minVal, maxVal);
 						sliderUI->SetRange(minVal, maxVal);
 						sliderUI->SetValue(currentVal);
 
-						// Style and Alignment
 						const char* styles[] = { "All Equal", "First/Last Different" };
 						int currentStyle = static_cast<int>(sliderUI->GetSliderStyle());
 						if (ImGui::Combo("Slider Style", &currentStyle, styles, IM_ARRAYSIZE(styles)))
@@ -1257,15 +1253,13 @@ void PanelInspector::CanvasOptions(GameObject& go)
 							sliderUI->SetAlignment(static_cast<SliderAlignment>(currentAlign));
 						}
 
-						// Offsets
 						float offset, offsetFirst, offsetLast;
 						sliderUI->GetOffsets(offset, offsetFirst, offsetLast);
-						ImGui::DragFloat("Main Offset", &offset, 0.5f, 0.0f, 100.0f);
-						ImGui::DragFloat("First Offset", &offsetFirst, 0.5f, 0.0f, 100.0f);
-						ImGui::DragFloat("Last Offset", &offsetLast, 0.5f, 0.0f, 100.0f);
+						ImGui::DragFloat("Main Offset", &offset, 0.01f);
+						ImGui::DragFloat("First Offset", &offsetFirst, 0.01f);
+						ImGui::DragFloat("Last Offset", &offsetLast, 0.01f);
 						sliderUI->SetOffsets(offset, offsetFirst, offsetLast);
 
-						// State selection
 						const char* states[] = { "Idle", "Hovered", "Disabled" };
 						int currentState = static_cast<int>(sliderUI->GetSliderState());
 						if (ImGui::Combo("Interaction State", &currentState, states, IM_ARRAYSIZE(states)))
@@ -1273,8 +1267,8 @@ void PanelInspector::CanvasOptions(GameObject& go)
 							sliderUI->SetSliderState(static_cast<SliderState>(currentState));
 						}
 
-						// Sections
 						auto DrawSliderSection = [&](const char* partName, SliderSectionPart& part) {
+							ImGui::PushStyleVar(ImGuiStyleVar_IndentSpacing, 10.0f);
 							std::string headerLabel = partName + std::string("##") + std::to_string(ui_element->GetID());
 							if (ImGui::TreeNodeEx(headerLabel.c_str(), treeFlags))
 							{
@@ -1300,6 +1294,7 @@ void PanelInspector::CanvasOptions(GameObject& go)
 
 								ImGui::TreePop();
 							}
+							ImGui::PopStyleVar();
 							};
 
 						DrawSliderSection("Regular Part", sliderUI->GetRegularPart());
@@ -1383,7 +1378,7 @@ void PanelInspector::AddComponent(GameObject& go)
 
 	if (ImGui::Button("Add Component", button_size_default))
 	{
-		const float margin = 10.0f; // Margen de seguridad
+		const float margin = 10.0f;
 		ImVec2 mouse_pos = ImGui::GetMousePos();
 		ImVec2 panel_pos = ImGui::GetWindowPos();
 		float panel_height = ImGui::GetWindowHeight();

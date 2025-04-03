@@ -157,7 +157,6 @@ void SliderUI::Draw() {
         //alineation
         float total_width = 0.0f;
 
-        // Calcular ancho total
         if (slider_manager.slider_style == SliderStyle::FIRST_AND_LAST_DIFFERENT) {
             total_width = offset_first + (max_value - 2) * (element_width + offset) + offset_last + element_width;
         }
@@ -167,7 +166,6 @@ void SliderUI::Draw() {
 
         float currentX = position_x;
 
-        // Ajustar según alineación
         switch (alignment) {
         case SliderAlignment::CENTER:
             currentX -= total_width * 0.5f;
@@ -195,13 +193,12 @@ void SliderUI::Draw() {
 
             if (!section) continue;
 
-            // Calculate position with offsets
-            if (i == 0 && slider_manager.slider_style == SliderStyle::FIRST_AND_LAST_DIFFERENT) {
-                currentX += offset_first;
+            if (i == max_value - 1 && slider_manager.slider_style == SliderStyle::FIRST_AND_LAST_DIFFERENT) {
+                currentX += offset_last;
             }
-            else if (i > 0) {
+            if (i > 0) {
                 currentX += (i == 1 && slider_manager.slider_style == SliderStyle::FIRST_AND_LAST_DIFFERENT) ?
-                    offset_first : offset;
+                    (offset + offset_first) : offset;
             }
 
             mat3f localMat = mat3f::CreateTransformMatrix(

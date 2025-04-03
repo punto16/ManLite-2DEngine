@@ -155,9 +155,9 @@ void Canvas::LoadComponent(const nlohmann::json& componentJSON)
 	if (componentJSON.contains("ComponentType")) type = (ComponentType)componentJSON["ComponentType"];
 	if (componentJSON.contains("Enabled")) enabled = componentJSON["Enabled"];
 
-	if (componentJSON.contains("UiElements"))
+	if (componentJSON.contains("UIElements"))
 	{
-		const nlohmann::json& uiElementsJSON = componentJSON["UiElements"];
+		const nlohmann::json& uiElementsJSON = componentJSON["UIElements"];
 
 		for (auto& item : uiElementsJSON)
 		{

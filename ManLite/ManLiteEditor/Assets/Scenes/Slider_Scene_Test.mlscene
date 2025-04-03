@@ -1,0 +1,325 @@
+{
+  "CurrentCamID": 959569685,
+  "game_objects": [
+    {
+      "Components": [
+        {
+          "AspectRatio": 1.0,
+          "ComponentID": 1396636162,
+          "ComponentName": "Transform",
+          "ComponentType": 0,
+          "ContainerGOID": 959569685,
+          "Enabled": true,
+          "LockAspect": true,
+          "Position": [
+            0.0,
+            1.7000000476837158
+          ],
+          "Rotation": 0.0,
+          "Scale": [
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "CameraZoom": 91.0,
+          "ComponentID": 3996301789,
+          "ComponentName": "Camera",
+          "ComponentType": 1,
+          "ContainerGOID": 959569685,
+          "Enabled": true,
+          "ViewportSize": [
+            1700,
+            900
+          ]
+        },
+        {
+          "ComponentID": 1145340513,
+          "ComponentName": "Canvas",
+          "ComponentType": 6,
+          "ContainerGOID": 959569685,
+          "Enabled": true,
+          "UIElements": [
+            {
+              "Alignment": 0,
+              "CointainerCanvasID": 1145340513,
+              "CurrentValue": 4,
+              "FirstPartDisabledFalseSection": [
+                408.0,
+                135.0,
+                191.0,
+                111.0
+              ],
+              "FirstPartDisabledTrueSection": [
+                1069.0,
+                135.0,
+                191.0,
+                111.0
+              ],
+              "FirstPartHoveredFalseSection": [
+                210.0,
+                135.0,
+                191.0,
+                111.0
+              ],
+              "FirstPartHoveredTrueSection": [
+                866.0,
+                135.0,
+                191.0,
+                111.0
+              ],
+              "FirstPartIdleFalseSection": [
+                17.0,
+                135.0,
+                191.0,
+                111.0
+              ],
+              "FirstPartIdleTrueSection": [
+                675.0,
+                135.0,
+                191.0,
+                111.0
+              ],
+              "LastPartDisabledFalseSection": [
+                408.0,
+                260.0,
+                191.0,
+                111.0
+              ],
+              "LastPartDisabledTrueSection": [
+                1069.0,
+                260.0,
+                191.0,
+                111.0
+              ],
+              "LastPartHoveredFalseSection": [
+                210.0,
+                260.0,
+                191.0,
+                111.0
+              ],
+              "LastPartHoveredTrueSection": [
+                866.0,
+                260.0,
+                191.0,
+                111.0
+              ],
+              "LastPartIdleFalseSection": [
+                17.0,
+                260.0,
+                191.0,
+                111.0
+              ],
+              "LastPartIdleTrueSection": [
+                675.0,
+                260.0,
+                191.0,
+                111.0
+              ],
+              "MaxValue": 7,
+              "MinValue": 0,
+              "Offset": 1.059999942779541,
+              "OffsetFirst": 0.0,
+              "OffsetLast": 0.0,
+              "PixelArt": true,
+              "RegularPartDisabledFalseSection": [
+                408.0,
+                8.0,
+                191.0,
+                111.0
+              ],
+              "RegularPartDisabledTrueSection": [
+                1069.0,
+                8.0,
+                191.0,
+                111.0
+              ],
+              "RegularPartHoveredFalseSection": [
+                210.0,
+                8.0,
+                191.0,
+                111.0
+              ],
+              "RegularPartHoveredTrueSection": [
+                866.0,
+                8.0,
+                191.0,
+                111.0
+              ],
+              "RegularPartIdleFalseSection": [
+                17.0,
+                8.0,
+                191.0,
+                111.0
+              ],
+              "RegularPartIdleTrueSection": [
+                675.0,
+                8.0,
+                191.0,
+                111.0
+              ],
+              "SliderState": 0,
+              "SliderStyle": 1,
+              "TexturePath": "Assets\\Textures\\slider_test_spritesheet.png",
+              "UIElementAngle": 0.0,
+              "UIElementAspectLocked": true,
+              "UIElementAspectLockedRatio": 1.0,
+              "UIElementEnabled": true,
+              "UIElementID": 777093994,
+              "UIElementName": "SliderUI",
+              "UIElementPosition": [
+                -7.949999809265137,
+                4.199999809265137
+              ],
+              "UIElementScale": [
+                0.6499999761581421,
+                0.6499999761581421
+              ],
+              "UIElementType": 2
+            }
+          ]
+        }
+      ],
+      "Enabled": true,
+      "ID": 959569685,
+      "Name": "Camera",
+      "ParentID": 1012241126,
+      "ParentLayerID": 0,
+      "Tag": "Camera",
+      "Visible": true
+    },
+    {
+      "Components": [
+        {
+          "AspectRatio": 1.0,
+          "ComponentID": 860294536,
+          "ComponentName": "Transform",
+          "ComponentType": 0,
+          "ContainerGOID": 1667443374,
+          "Enabled": true,
+          "LockAspect": true,
+          "Position": [
+            0.0,
+            0.949999988079071
+          ],
+          "Rotation": 0.0,
+          "Scale": [
+            2.0,
+            2.0
+          ]
+        },
+        {
+          "ComponentID": 3528819198,
+          "ComponentName": "Sprite2D",
+          "ComponentType": 2,
+          "ContainerGOID": 1667443374,
+          "Enabled": true,
+          "PixelArtRender": true,
+          "TexturePath": "Assets\\Textures\\IDLE.png",
+          "TextureSection": [
+            35,
+            43,
+            26,
+            39
+          ],
+          "TextureSize": [
+            960,
+            96
+          ],
+          "TextureUVs": [
+            0.0364583320915699,
+            0.1458333283662796,
+            0.06354166567325592,
+            0.5520833134651184
+          ]
+        },
+        {
+          "Animations": [
+            {
+              "name": "samurai_idle_animation_test1",
+              "path": "Assets\\Animations\\samurai_idle_animation_test1.animation"
+            },
+            {
+              "name": "samurai_idle_animation_test2",
+              "path": "Assets\\Animations\\samurai_idle_animation_test2.animation"
+            }
+          ],
+          "ComponentID": 3559779401,
+          "ComponentName": "Animator",
+          "ComponentType": 3,
+          "ContainerGOID": 1667443374,
+          "CurrentAnimation": "samurai_idle_animation_test1",
+          "Enabled": true
+        }
+      ],
+      "Enabled": true,
+      "ID": 1667443374,
+      "Name": "Samurai",
+      "ParentID": 1012241126,
+      "ParentLayerID": 0,
+      "Tag": "Player",
+      "Visible": true
+    },
+    {
+      "Components": [
+        {
+          "AspectRatio": 1.0,
+          "ComponentID": 916396335,
+          "ComponentName": "Transform",
+          "ComponentType": 0,
+          "ContainerGOID": 1536642911,
+          "Enabled": true,
+          "LockAspect": true,
+          "Position": [
+            0.0,
+            0.0
+          ],
+          "Rotation": 0.0,
+          "Scale": [
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "ComponentID": 1910721398,
+          "ComponentName": "AudioSource",
+          "ComponentType": 7,
+          "ContainerGOID": 1536642911,
+          "Enabled": true,
+          "Musics": [
+            {
+              "loop": false,
+              "name": "music",
+              "path": "Assets\\Audio\\Music\\music.ogg",
+              "play_on_awake": true,
+              "volume": 9
+            }
+          ],
+          "Sounds": null
+        }
+      ],
+      "Enabled": true,
+      "ID": 1536642911,
+      "Name": "BackGround_Music",
+      "ParentID": 1012241126,
+      "ParentLayerID": 0,
+      "Tag": "Sound",
+      "Visible": true
+    }
+  ],
+  "layers": [
+    {
+      "Layer_children_go_id": [
+        1667443374,
+        959569685,
+        1536642911
+      ],
+      "children_count": 3,
+      "layer_id": 0,
+      "layer_name": "DefaultLayer_0",
+      "visible": true
+    }
+  ],
+  "scene_name": "Test_Scene",
+  "scene_path": "Assets\\Scenes\\Slider_Scene_Test.mlscene"
+}
