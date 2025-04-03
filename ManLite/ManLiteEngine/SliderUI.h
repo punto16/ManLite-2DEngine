@@ -10,6 +10,13 @@
 #include <future>
 #include <atomic>
 
+enum class SliderAlignment
+{
+    LEFT                        = 0,
+    CENTER                      = 1,
+    RIGHT                       = 2
+};
+
 enum class SliderStyle
 {
 	ALL_EQUAL					= 0,
@@ -21,13 +28,9 @@ enum class SliderStyle
 
 enum class SliderState
 {
-	IDLE_TRUE					= 0,
-	HOVERED_TRUE				= 1,
-	DISABLED_TRUE				= 2,
-
-	IDLE_FALSE					= 3,
-	HOVERED_FALSE				= 4,
-	DISABLED_FALSE				= 5,
+	IDLE						= 0,
+	HOVERED						= 1,
+	DISABLED					= 2,
 
 	//
 	UNKNOWN
@@ -35,65 +38,107 @@ enum class SliderState
 
 class SliderSectionPart
 {
-	ML_Rect* current_section;
+public:
+    ML_Rect* current_section_true = nullptr;
+    ML_Rect* current_section_false = nullptr;
 
-	ML_Rect section_idle_true;
-	ML_Rect section_hovered_true;
-	ML_Rect section_disabled_true;
+    ML_Rect section_idle_true;
+    ML_Rect section_hovered_true;
+    ML_Rect section_disabled_true;
 
-	ML_Rect section_idle_false;
-	ML_Rect section_hovered_false;
-	ML_Rect section_disabled_false;
+    ML_Rect section_idle_false;
+    ML_Rect section_hovered_false;
+    ML_Rect section_disabled_false;
+
+    void UpdateSections(SliderState state);
 };
 
 class SliderSectionManager
 {
-	SliderStyle slider_style;
-	SliderState slider_state;
+public:
+    SliderStyle slider_style = SliderStyle::ALL_EQUAL;
+    SliderState slider_state = SliderState::IDLE;
 
-	SliderSectionPart regular_section_part;
-	SliderSectionPart first_section_part;
-	SliderSectionPart last_section_part;
+    SliderSectionPart regular_part;
+    SliderSectionPart first_part;
+    SliderSectionPart last_part;
+
+    void UpdateAllSections();
 };
 
-class SliderUI : public UIElement
-{
+class SliderUI : public UIElement {
 public:
-	SliderUI(std::weak_ptr<GameObject> container_go, std::string texturePath = "", std::string name = "SliderUI", bool enable = true);
-	SliderUI(const SliderUI& uielement_to_copy, std::shared_ptr<GameObject> container_go);
-	virtual ~SliderUI();
+    SliderUI(std::weak_ptr<GameObject> container_go, std::string texturePath = "", std::string name = "SliderUI", bool enable = true);
+    SliderUI(const SliderUI& uielement_to_copy, std::shared_ptr<GameObject> container_go);
+    virtual ~SliderUI();
 
-	//virtual bool Init();
-	//virtual bool Update(float dt);
+    virtual void Draw() override;
 
-	virtual void Draw();
+    // Serialization
+    virtual nlohmann::json SaveUIElement() override;
+    virtual void LoadUIElement(const nlohmann::json& uielementJSON) override;
 
-	//virtual bool Pause();
-	//virtual bool Unpause();
+    // Getters/Setters
+    void SetValue(int value);
+    int GetValue() const { return current_value; }
+    void SetRange(int min, int max);
+    void SetOffsets(float regular, float first, float last);
 
-	//serialization
-	virtual nlohmann::json SaveUIElement();
-	virtual void LoadUIElement(const nlohmann::json& uielementJSON);
+    void SetAlignment(SliderAlignment new_alignment);
+    SliderAlignment GetAlignment() const { return alignment; }
 
+
+    SliderSectionPart& GetRegularPart() { return slider_manager.regular_part; }
+    SliderSectionPart& GetFirstPart() { return slider_manager.first_part; }
+    SliderSectionPart& GetLastPart() { return slider_manager.last_part; }
+
+    SliderStyle GetSliderStyle() const { return slider_manager.slider_style; }
+    void SetSliderStyle(SliderStyle style) { slider_manager.slider_style = style; }
+
+    SliderState GetSliderState() const { return slider_manager.slider_state; }
+    void SetSliderState(SliderState state) { slider_manager.slider_state = state; }
+
+    void GetOffsets(float& main, float& first, float& last) const {
+        main = offset;
+        first = offset_first;
+        last = offset_last;
+    }
+
+    void SwapTexture(const std::string& new_path);
+
+
+    std::string GetTexturePath() { return texture_path; }
+
+    bool IsPixelArt() { return pixel_art; }
+    void SetIsPixelArt(bool b) { pixel_art = b; }
+
+    int GetMinValue() { return min_value; }
+    int GetMaxValue() { return max_value; }
 private:
+    void CalculateDimensions();
 
-	SliderSectionManager slider_section_manager;
+    SliderSectionManager slider_manager;
 
-	std::string texture_path;
-	GLuint textureID = 0;
-	int tex_width, tex_height;
-	bool pixel_art;
+    std::string texture_path;
+    GLuint textureID = 0;
+    int tex_width = 0;
+    int tex_height = 0;
+    bool pixel_art = false;
 
-	std::future<GLuint> textureFuture;
-	std::atomic<bool> textureLoading{ false };
+    SliderAlignment alignment = SliderAlignment::LEFT;
 
-	int min_value = 0;
-	int current_value = 3;
-	int max_value = 3;
+    std::future<GLuint> textureFuture;
+    std::atomic<bool> textureLoading{ false };
 
-	float offset = 0;
-	float offset_first = 0;
-	float offset_last = 0;
+    int min_value = 0;
+    int current_value = 0;
+    int max_value = 0;
+
+    float element_width = 0.0f;
+    float element_height = 0.0f;
+    float offset = 0.0f;
+    float offset_first = 0.0f;
+    float offset_last = 0.0f;
 };
 
 #endif // !__SLIDERUI_H__

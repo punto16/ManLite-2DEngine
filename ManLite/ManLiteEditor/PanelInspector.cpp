@@ -980,7 +980,7 @@ void PanelInspector::CanvasOptions(GameObject& go)
 
 					if (lockAspect)
 					{
-							aspectRatio = scale.x / scale.y;
+						aspectRatio = scale.x / scale.y;
 						ui_element->SetLockedAspectRatio(aspectRatio);
 					}
 				}
@@ -1202,6 +1202,114 @@ void PanelInspector::CanvasOptions(GameObject& go)
 						ImGui::PopStyleColor();
 					}
 				}
+				// Dentro de CanvasOptions, después del caso del CheckBoxUI
+				if (ui_element->GetType() == UIElementType::Slider)
+				{
+					SliderUI* sliderUI = dynamic_cast<SliderUI*>(ui_element.get());
+					if (sliderUI)
+					{
+						ImGui::Separator();
+						ImGui::TextColored(ImVec4(0.4f, 0.8f, 0.2f, 1.0f), "Slider Properties");
+
+						// Texture properties
+						std::string texLabel = "Texture Path";
+						ImGui::Text("%s: %s", texLabel.c_str(), sliderUI->GetTexturePath().c_str());
+
+						std::string changeTextureLabel = "Change Texture##" + std::to_string(ui_element->GetID());
+						if (ImGui::Button(changeTextureLabel.c_str()))
+						{
+							std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Open Sprite file (*.png)\0*.png\0")).string();
+							if (!filePath.empty() && filePath.ends_with(".png") && filePath != sliderUI->GetTexturePath())
+							{
+								sliderUI->SwapTexture(filePath);
+							}
+						}
+
+						// Pixel Art
+						std::string pixelArtLabel = "Pixel Art##" + std::to_string(ui_element->GetID());
+						bool pixel_art = sliderUI->IsPixelArt();
+						ImGui::Checkbox(pixelArtLabel.c_str(), &pixel_art);
+						sliderUI->SetIsPixelArt(pixel_art);
+
+						// Value controls
+						int minVal = sliderUI->GetMinValue();
+						int maxVal = sliderUI->GetMaxValue();
+						int currentVal = sliderUI->GetValue();
+
+						ImGui::DragInt("Min Value", &minVal, 0.1f, 0, maxVal);
+						ImGui::DragInt("Max Value", &maxVal, 0.1f, minVal, 100);
+						ImGui::SliderInt("Current Value", &currentVal, minVal, maxVal);
+						sliderUI->SetRange(minVal, maxVal);
+						sliderUI->SetValue(currentVal);
+
+						// Style and Alignment
+						const char* styles[] = { "All Equal", "First/Last Different" };
+						int currentStyle = static_cast<int>(sliderUI->GetSliderStyle());
+						if (ImGui::Combo("Slider Style", &currentStyle, styles, IM_ARRAYSIZE(styles)))
+						{
+							sliderUI->SetSliderStyle(static_cast<SliderStyle>(currentStyle));
+						}
+
+						const char* alignments[] = { "Left", "Center", "Right" };
+						int currentAlign = static_cast<int>(sliderUI->GetAlignment());
+						if (ImGui::Combo("Alignment", &currentAlign, alignments, IM_ARRAYSIZE(alignments)))
+						{
+							sliderUI->SetAlignment(static_cast<SliderAlignment>(currentAlign));
+						}
+
+						// Offsets
+						float offset, offsetFirst, offsetLast;
+						sliderUI->GetOffsets(offset, offsetFirst, offsetLast);
+						ImGui::DragFloat("Main Offset", &offset, 0.5f, 0.0f, 100.0f);
+						ImGui::DragFloat("First Offset", &offsetFirst, 0.5f, 0.0f, 100.0f);
+						ImGui::DragFloat("Last Offset", &offsetLast, 0.5f, 0.0f, 100.0f);
+						sliderUI->SetOffsets(offset, offsetFirst, offsetLast);
+
+						// State selection
+						const char* states[] = { "Idle", "Hovered", "Disabled" };
+						int currentState = static_cast<int>(sliderUI->GetSliderState());
+						if (ImGui::Combo("Interaction State", &currentState, states, IM_ARRAYSIZE(states)))
+						{
+							sliderUI->SetSliderState(static_cast<SliderState>(currentState));
+						}
+
+						// Sections
+						auto DrawSliderSection = [&](const char* partName, SliderSectionPart& part) {
+							std::string headerLabel = partName + std::string("##") + std::to_string(ui_element->GetID());
+							if (ImGui::TreeNodeEx(headerLabel.c_str(), treeFlags))
+							{
+								ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.2f, 0.6f, 1.0f, 0.4f));
+								if (ImGui::TreeNodeEx("True State", treeFlags))
+								{
+									ImGui::DragFloat4("Idle##True", &part.section_idle_true.x, 1.0f);
+									ImGui::DragFloat4("Hovered##True", &part.section_hovered_true.x, 1.0f);
+									ImGui::DragFloat4("Disabled##True", &part.section_disabled_true.x, 1.0f);
+									ImGui::TreePop();
+								}
+								ImGui::PopStyleColor();
+
+								ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(1.0f, 0.4f, 0.2f, 0.4f));
+								if (ImGui::TreeNodeEx("False State", treeFlags))
+								{
+									ImGui::DragFloat4("Idle##False", &part.section_idle_false.x, 1.0f);
+									ImGui::DragFloat4("Hovered##False", &part.section_hovered_false.x, 1.0f);
+									ImGui::DragFloat4("Disabled##False", &part.section_disabled_false.x, 1.0f);
+									ImGui::TreePop();
+								}
+								ImGui::PopStyleColor();
+
+								ImGui::TreePop();
+							}
+							};
+
+						DrawSliderSection("Regular Part", sliderUI->GetRegularPart());
+						if (sliderUI->GetSliderStyle() == SliderStyle::FIRST_AND_LAST_DIFFERENT)
+						{
+							DrawSliderSection("First Part", sliderUI->GetFirstPart());
+							DrawSliderSection("Last Part", sliderUI->GetLastPart());
+						}
+					}
+				}
 
 				ImGui::TreePop();
 			}
@@ -1241,6 +1349,14 @@ void PanelInspector::CanvasOptions(GameObject& go)
 				if (!filePath.empty() && filePath.ends_with(".png"))
 				{
 					canvas->AddUIElement<CheckBoxUI>(filePath);
+				}
+			}
+			if (ImGui::MenuItem("Slider"))
+			{
+				std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Image file (*.png)\0*.png\0")).string();
+				if (!filePath.empty() && filePath.ends_with(".png"))
+				{
+					canvas->AddUIElement<SliderUI>(filePath);
 				}
 			}
 
