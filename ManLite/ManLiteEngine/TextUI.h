@@ -8,6 +8,8 @@
 #include <memory>
 #include "nlohmann/json.hpp"
 
+class FontData;
+
 class TextUI : public UIElement
 {
 public:
@@ -17,16 +19,28 @@ public:
 
 	virtual void Draw();
 
+	void SwapFont(std::string new_font);
+
 	//serialization
 	virtual nlohmann::json SaveUIElement();
 	virtual void LoadUIElement(const nlohmann::json& uielementJSON);
 
+	//getters // setters
+	std::string GetText() { return text; }
+	void SetText(std::string t) { text = t; }
+
+	std::string GetFontPath() { return font_path; }
+
+	ML_Color GetColor() { return color; }
+	void SetColor(ML_Color c) { color = c; }
+
 private:
 
 	std::string text = "Lorem Ipsum";
-
 	std::string font_path;
 
+	FontData* font;
+	ML_Color color;
 };
 
 #endif // !__TEXTUI_H__

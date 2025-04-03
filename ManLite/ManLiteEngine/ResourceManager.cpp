@@ -1,4 +1,8 @@
 #include "ResourceManager.h"
+
+#include "EngineCore.h"
+#include "FontEM.h"
+
 #include "Log.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -168,6 +172,118 @@ void ResourceManager::ReleaseMusic(const std::string& path)
     }
 }
 
+FontData* ResourceManager::LoadFont(const std::string& path, int fontSize) {
+    auto it = fonts.find(path);
+    if (it != fonts.end()) {
+        it->second.refCount++;
+        return &it->second;
+    }
+
+    FT_Library ft = engine->font_em->GetFreeType();
+
+    FT_Face face;
+    FT_Error error = FT_New_Face(ft, path.c_str(), 0, &face);
+    if (error) {
+        LOG(LogType::LOG_ERROR, "Failed to load font: %s (Error: %d)", path.c_str(), error);
+        return nullptr;
+    }
+
+    error = FT_Set_Pixel_Sizes(face, 0, fontSize);
+    if (error) {
+        LOG(LogType::LOG_ERROR, "Failed to set font size for: %s", path.c_str());
+        FT_Done_Face(face);
+        return nullptr;
+    }
+
+    FontData newFontData;
+    newFontData.face = face;
+    newFontData.refCount = 1;
+    fonts[path] = newFontData;
+
+    if (!newFontData.face) {
+        LOG(LogType::LOG_ERROR, "Failed to create font face");
+        return nullptr;
+    }
+
+    LOG(LogType::LOG_OK, "Loaded font: %s (Size: %d)", path.c_str(), fontSize);
+    return &fonts[path];
+}
+
+FontData* ResourceManager::GetFont(const std::string& path)
+{
+    if (path == "") return nullptr;
+    auto it = fonts.find(path);
+    return (it != fonts.end()) ? &it->second : nullptr;
+}
+
+void ResourceManager::ReleaseFont(const std::string& path)
+{
+    auto it = fonts.find(path);
+    if (it != fonts.end())
+    {
+        if (--it->second.refCount <= 0)
+        {
+            FT_Done_Face(it->second.face);
+
+            for (auto& [charCode, character] : it->second.characters)
+            {
+                glDeleteTextures(1, &character.textureID);
+            }
+
+            fonts.erase(it);
+            LOG(LogType::LOG_OK, "Released font: %s", path.c_str());
+        }
+    }
+}
+
+FontCharacter* ResourceManager::LoadFontCharacter(FontData* fontData, FT_ULong charCode)
+{
+    if (fontData->characters.find(charCode) != fontData->characters.end()) {
+        return &fontData->characters[charCode];
+    }
+
+    FT_Error error = FT_Load_Char(fontData->face, charCode, FT_LOAD_RENDER);
+    if (error) {
+        LOG(LogType::LOG_ERROR, "Failed to load glyph for character: %s", (char)charCode);
+        return nullptr;
+    }
+
+    GLuint textureID;
+    glGenTextures(1, &textureID);
+    glBindTexture(GL_TEXTURE_2D, textureID);
+
+    glTexImage2D(
+        GL_TEXTURE_2D,
+        0,
+        GL_RED,
+        fontData->face->glyph->bitmap.width,
+        fontData->face->glyph->bitmap.rows,
+        0,
+        GL_RED,
+        GL_UNSIGNED_BYTE,
+        fontData->face->glyph->bitmap.buffer
+    );
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_R, GL_ONE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_G, GL_ONE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_B, GL_ONE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_A, GL_RED);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    FontCharacter character = {
+        textureID,
+        glm::ivec2(fontData->face->glyph->bitmap.width, fontData->face->glyph->bitmap.rows),
+        glm::ivec2(fontData->face->glyph->bitmap_left, fontData->face->glyph->bitmap_top),
+        fontData->face->glyph->advance.x
+    };
+
+    fontData->characters[charCode] = character;
+    return &character;
+}
+
 std::future<GLuint> ResourceManager::LoadTextureAsync(const std::string& path, int& tex_width, int& tex_height)
 {
     if (path.empty()) return {};
@@ -281,6 +397,19 @@ void ResourceManager::CleanUnusedResources()
     for (auto it = musics.begin(); it != musics.end();) {
         if (it->second.refCount <= 0) {
             it = musics.erase(it);
+        }
+        else {
+            ++it;
+        }
+    }
+
+    for (auto it = fonts.begin(); it != fonts.end();) {
+        if (it->second.refCount <= 0) {
+            FT_Done_Face(it->second.face);
+            for (auto& [charCode, character] : it->second.characters) {
+                glDeleteTextures(1, &character.textureID);
+            }
+            it = fonts.erase(it);
         }
         else {
             ++it;

@@ -166,7 +166,7 @@
               "UIElementAspectLockedRatio": 1.0,
               "UIElementEnabled": true,
               "UIElementID": 777093994,
-              "UIElementName": "SliderUI",
+              "UIElementName": "Health_Bar",
               "UIElementPosition": [
                 -7.949999809265137,
                 4.199999809265137
@@ -176,14 +176,15 @@
                 0.6499999761581421
               ],
               "UIElementType": 2
-            }
+            },
+            null
           ]
         }
       ],
       "Enabled": true,
       "ID": 959569685,
       "Name": "Camera",
-      "ParentID": 1012241126,
+      "ParentID": 875391691,
       "ParentLayerID": 0,
       "Tag": "Camera",
       "Visible": true
@@ -255,7 +256,7 @@
       "Enabled": true,
       "ID": 1667443374,
       "Name": "Samurai",
-      "ParentID": 1012241126,
+      "ParentID": 875391691,
       "ParentLayerID": 0,
       "Tag": "Player",
       "Visible": true
@@ -301,7 +302,7 @@
       "Enabled": true,
       "ID": 1536642911,
       "Name": "BackGround_Music",
-      "ParentID": 1012241126,
+      "ParentID": 875391691,
       "ParentLayerID": 0,
       "Tag": "Sound",
       "Visible": true

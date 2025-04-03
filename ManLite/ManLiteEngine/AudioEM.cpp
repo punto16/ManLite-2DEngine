@@ -1,6 +1,7 @@
 #include "AudioEM.h"
 #include "EngineCore.h"
 #include "Defs.h"
+#include "ResourceManager.h"
 
 AudioEM::AudioEM(EngineCore* parent) : EngineModule(parent)
 {

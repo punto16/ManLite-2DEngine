@@ -412,7 +412,7 @@ void Gui::MainMenuBar()
 		{
 			engine->SetEngineState(EngineState::PLAY);
 		}
-		if (ImGui::Button("||"))
+		if (ImGui::Button("l l"))
 		{
 			engine->SetEngineState(EngineState::PAUSE);
 		}

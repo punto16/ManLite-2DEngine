@@ -15,6 +15,7 @@ class RendererEM;
 class SceneManagerEM;
 class AudioEM;
 class PhysicsEM;
+class FontEM;
 
 enum EngineState
 {
@@ -76,6 +77,7 @@ public:
 	SceneManagerEM* scene_manager_em = nullptr;
 	AudioEM* audio_em = nullptr;
 	PhysicsEM* physics_em = nullptr;
+	FontEM* font_em = nullptr;
 
 private:
 

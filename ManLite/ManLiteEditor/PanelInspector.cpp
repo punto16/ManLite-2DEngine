@@ -1305,6 +1305,61 @@ void PanelInspector::CanvasOptions(GameObject& go)
 						}
 					}
 				}
+				if (ui_element->GetType() == UIElementType::Text)
+				{
+					TextUI* textUI = dynamic_cast<TextUI*>(ui_element.get());
+					if (textUI)
+					{
+						ImGui::Separator();
+						ImGui::TextColored(ImVec4(0.2f, 0.8f, 0.4f, 1.0f), "Text Properties");
+
+						std::string textLabel = "Text Content##" + std::to_string(ui_element->GetID());
+						char buffer[1024];
+						strncpy(buffer, textUI->GetText().c_str(), sizeof(buffer));
+						buffer[sizeof(buffer) - 1] = '\0';
+
+						if (ImGui::InputTextMultiline(textLabel.c_str(), buffer, sizeof(buffer),
+							ImVec2(-FLT_MIN, ImGui::GetTextLineHeight() * 4)
+							))
+						{
+							textUI->SetText(buffer);
+						}
+
+						std::string fontLabel = "Font Path: " + textUI->GetFontPath();
+						ImGui::Text("%s", fontLabel.c_str());
+
+						std::string changeFontLabel = "Change Font##" + std::to_string(ui_element->GetID());
+						if (ImGui::Button(changeFontLabel.c_str()))
+						{
+							std::string filePath = std::filesystem::relative(
+								FileDialog::OpenFile("Font files (*.ttf)\0*.ttf\0")
+							).string();
+
+							if (!filePath.empty() && filePath.ends_with(".ttf") && filePath != textUI->GetFontPath())
+							{
+								textUI->SwapFont(filePath);
+							}
+						}
+
+						std::string colorLabel = "Text Color##" + std::to_string(ui_element->GetID());
+						float colorValues[4] = {
+							textUI->GetColor().r / 255.0f,
+							textUI->GetColor().g / 255.0f,
+							textUI->GetColor().b / 255.0f,
+							textUI->GetColor().a / 255.0f
+						};
+
+						if (ImGui::ColorEdit4(colorLabel.c_str(), colorValues))
+						{
+							textUI->SetColor({
+								static_cast<uint8_t>(colorValues[0] * 255),
+								static_cast<uint8_t>(colorValues[1] * 255),
+								static_cast<uint8_t>(colorValues[2] * 255),
+								static_cast<uint8_t>(colorValues[3] * 255)
+								});
+						}
+					}
+				}
 
 				ImGui::TreePop();
 			}
@@ -1352,6 +1407,14 @@ void PanelInspector::CanvasOptions(GameObject& go)
 				if (!filePath.empty() && filePath.ends_with(".png"))
 				{
 					canvas->AddUIElement<SliderUI>(filePath);
+				}
+			}
+			if (ImGui::MenuItem("Text"))
+			{
+				std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Image file (*.ttf)\0*.ttf\0")).string();
+				if (!filePath.empty() && filePath.ends_with(".ttf"))
+				{
+					canvas->AddUIElement<TextUI>(filePath);
 				}
 			}
 

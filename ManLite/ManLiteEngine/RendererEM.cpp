@@ -5,6 +5,7 @@
 #include "Camera.h"
 #include "GameObject.h"
 #include "SceneManagerEM.h"
+#include "ResourceManager.h"
 
 #include <GL/glew.h>
 #include <glm/gtc/matrix_transform.hpp>
@@ -109,6 +110,21 @@ bool RendererEM::Start()
 	this->scene_camera.SetZoom(100.0f);
 	SetupQuad();
 	
+	GLuint tVertexShader = glCreateShader(GL_VERTEX_SHADER);
+	glShaderSource(tVertexShader, 1, &textVertexShader, NULL);
+	glCompileShader(tVertexShader);
+
+	GLuint tFragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+	glShaderSource(tFragmentShader, 1, &textFragmentShader, NULL);
+	glCompileShader(tFragmentShader);
+
+	textShaderProgram = glCreateProgram();
+	glAttachShader(textShaderProgram, tVertexShader);
+	glAttachShader(textShaderProgram, tFragmentShader);
+	glLinkProgram(textShaderProgram);
+
+	glDeleteShader(tVertexShader);
+	glDeleteShader(tFragmentShader);
 
 	GLuint vShader = glCreateShader(GL_VERTEX_SHADER);
 	glShaderSource(vShader, 1, &debugVertexShader, NULL);
@@ -166,9 +182,13 @@ bool RendererEM::Update(double dt)
 {
 	bool ret = true;
 
-	glUseProgram(shaderProgram);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 	RenderBatch();
 	RenderDebugColliders();
+
+	glDisable(GL_BLEND);
 
 	return ret;
 }
@@ -304,6 +324,7 @@ void RendererEM::RenderBatch()
 	GLuint uViewProjLoc = glGetUniformLocation(shaderProgram, "uViewProj");
 	GLuint uModelLoc = glGetUniformLocation(shaderProgram, "uModel");
 	GLuint uTextureLoc = glGetUniformLocation(shaderProgram, "uTexture");
+	GLuint uUVRectLoc = glGetUniformLocation(shaderProgram, "uUVRect");
 	
 	if (use_scene_cam && engine->GetEditorOrBuild()) {
 		viewProj = scene_camera.GetViewProjMatrix();
@@ -322,23 +343,52 @@ void RendererEM::RenderBatch()
 	}
 
 	glUniformMatrix4fv(uViewProjLoc, 1, GL_FALSE, glm::value_ptr(viewProj));
-	glUniform1i(uTextureLoc, 0); // texture unit 0
-
-	GLuint uUVRectLoc = glGetUniformLocation(shaderProgram, "uUVRect");
+	glUniform1i(uTextureLoc, 0);
 
 	for (const auto& sprite : spritesToRender) {
+		if (sprite.color.a != 1.0f) continue;
+
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, sprite.textureID);
 
-		if (sprite.pixel_art) {
-			glBindSampler(0, samplerNearest);
-		}
-		else {
-			glBindSampler(0, samplerLinear);
-		}
+		// Configurar sampler
+		if (sprite.pixel_art) glBindSampler(0, samplerNearest);
+		else glBindSampler(0, samplerLinear);
 
 		glUniformMatrix4fv(uModelLoc, 1, GL_FALSE, glm::value_ptr(sprite.modelMatrix));
 		glUniform4f(uUVRectLoc, sprite.u1, sprite.v1, sprite.u2, sprite.v2);
+
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+	}
+
+	// Renderizar texto
+	glUseProgram(textShaderProgram);
+	glBindVertexArray(quadVAO);
+
+	// Configurar uniforms para texto
+	GLuint text_uViewProj = glGetUniformLocation(textShaderProgram, "uViewProj");
+	GLuint text_uModel = glGetUniformLocation(textShaderProgram, "uModel");
+	GLuint text_uTexture = glGetUniformLocation(textShaderProgram, "uTexture");
+	GLuint text_uUVRect = glGetUniformLocation(textShaderProgram, "uUVRect");
+	GLuint text_uColor = glGetUniformLocation(textShaderProgram, "uTextColor");
+
+	glUniformMatrix4fv(text_uViewProj, 1, GL_FALSE, glm::value_ptr(viewProj));
+	glUniform1i(text_uTexture, 0);
+
+	for (const auto& sprite : spritesToRender) {
+		if (sprite.color.a == 1.0f) continue;
+
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, sprite.textureID);
+		glBindSampler(0, samplerLinear);
+
+		glUniformMatrix4fv(text_uModel, 1, GL_FALSE, glm::value_ptr(sprite.modelMatrix));
+		glUniform4f(text_uUVRect, sprite.u1, sprite.v1, sprite.u2, sprite.v2);
+		glUniform4f(text_uColor,
+			sprite.color.r,
+			sprite.color.g,
+			sprite.color.b,
+			sprite.color.a);
 
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 	}
@@ -433,7 +483,8 @@ void RendererEM::SubmitSprite(GLuint textureID, const mat3f& modelMatrix, float 
 	textureID,
 	ConvertMat3fToGlmMat4(modelMatrix),
 	u1, v1, u2, v2,
-	pixel_art
+	pixel_art,
+	{ 1.0f, 1.0f, 1.0f, 1.0f }
 		});
 }
 
@@ -514,6 +565,43 @@ void RendererEM::RenderDebugColliders()
 
 	debugColliders.clear();
 	glBindVertexArray(0);
+}
+
+void RendererEM::SubmitText(std::string text, FontData* font, const mat3f& modelMatrix, const ML_Color& color) {
+	if (!font) return;
+
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	float cursorX = 0.0f;
+	glm::vec4 textColor(color.r / 255.0f, color.g / 255.0f, color.b / 255.0f, color.a / 255.0f);
+
+	for (char c : text)
+	{
+		FontCharacter* ch = ResourceManager::GetInstance().LoadFontCharacter(font, c);
+		if (!ch) continue;
+
+		float xpos = cursorX + ch->bearing.x;
+		float ypos = -(ch->size.y - ch->bearing.y);
+
+		mat3f new_mat = mat3f::CreateTransformMatrix(
+			{ xpos, ypos },
+			0,
+			{ ch->size.x, ch->size.y });
+
+		mat3f charModel = modelMatrix * new_mat;
+
+		spritesToRender.push_back({
+			ch->textureID,
+			ConvertMat3fToGlmMat4(charModel),
+			0.0f, 0.0f, 1.0f, 1.0f,
+			false,
+			textColor
+			});
+
+		cursorX += (ch->advance >> 6);
+	}
+	glDisable(GL_BLEND);
 }
 
 Grid::Grid(float size, int divisions)

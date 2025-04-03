@@ -8,6 +8,7 @@
 #include "AudioEM.h"
 #include "ResourceManager.h"
 #include "PhysicsEM.h"
+#include "FontEM.h"
 
 #include "Defs.h"
 #include "Log.h"
@@ -18,6 +19,7 @@ EngineCore::EngineCore()
 	window_em = new WindowEM(this);
 	input_em = new InputEM(this);
 	audio_em = new AudioEM(this);
+	font_em = new FontEM(this);
 	physics_em = new PhysicsEM(this);
 	scene_manager_em = new SceneManagerEM(this);
 
@@ -29,6 +31,7 @@ EngineCore::EngineCore()
 	AddEngineModule(window_em, true);
 	AddEngineModule(input_em, true);
 	AddEngineModule(audio_em, true);
+	AddEngineModule(font_em, true);
 	AddEngineModule(physics_em, true);
 	AddEngineModule(scene_manager_em, true);
 

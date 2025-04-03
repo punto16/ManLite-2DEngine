@@ -12,14 +12,17 @@
 
 #include "Defs.h"
 #include "vector"
+#include "string"
 
 class mat3f;
+class FontData;
 
 struct SpriteRenderData {
     GLuint textureID;
     glm::mat4 modelMatrix;
     float u1, v1, u2, v2;
     bool pixel_art;
+    glm::vec4 color;
 };
 
 class Grid {
@@ -126,8 +129,9 @@ public:
     void SubmitSprite(GLuint textureID, const mat3f& modelMatrix, float u1, float v1, float u2, float v2, bool pixel_art);
     void SubmitDebugCollider(const mat3f& modelMatrix, const ML_Color& color, bool isCircle, float radius = 0.0f);
     void RenderDebugColliders();
+    void SubmitText(std::string text, FontData* font, const mat3f& modelMatrix, const ML_Color& color);
 
-    glm::mat4 ConvertMat3fToGlmMat4(const mat3f& mat);
+    static glm::mat4 ConvertMat3fToGlmMat4(const mat3f& mat);
 private:
 
 	bool vsync;
@@ -159,6 +163,10 @@ public:
     GLuint lineVAO, lineVBO;
     std::vector<std::tuple<mat3f, ML_Color, bool, float>> debugColliders;
 
+    //text
+    GLuint textShaderProgram;
+
+    //shaders
     const char* debugVertexShader = R"glsl(
 #version 330 core
 layout (location = 0) in vec2 aPos;
@@ -179,6 +187,43 @@ void main() {
     FragColor = uColor;
 }
 )glsl";
+
+
+    const char* textVertexShader = R"glsl(
+    #version 330 core
+    layout (location = 0) in vec2 aPos;
+    layout (location = 1) in vec2 aTexCoords;
+    
+    uniform mat4 uModel;
+    uniform mat4 uViewProj;
+    uniform vec4 uUVRect;
+    
+    out vec2 TexCoords;
+    
+    void main() {
+        gl_Position = uViewProj * uModel * vec4(aPos, 0.0, 1.0);
+        vec2 uvOffset = vec2(uUVRect.x, uUVRect.y);
+        vec2 uvScale = vec2(uUVRect.z - uUVRect.x, uUVRect.w - uUVRect.y);
+        TexCoords = uvOffset + aTexCoords * uvScale;
+    }
+    )glsl";
+
+    const char* textFragmentShader = R"glsl(
+    #version 330 core
+    in vec2 TexCoords;
+    out vec4 FragColor;
+    
+    uniform sampler2D uTexture;
+    uniform vec4 uTextColor;
+    
+    void main() {
+        vec4 texColor = texture(uTexture, TexCoords);
+        FragColor = uTextColor * texColor.r; // Usamos el canal rojo como alpha
+        
+        if (FragColor.a < 0.1)
+            discard;
+    }
+    )glsl";
 };
 
 #endif // !__RENDERER_EM_H__

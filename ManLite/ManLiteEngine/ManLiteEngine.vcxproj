@@ -125,7 +125,7 @@
     <PreBuildEvent>
       <Command>pushd "$(SolutionDir).."
 call vcpkg\bootstrap-vcpkg.bat
-vcpkg\vcpkg.exe install glm glew stb nlohmann-json sdl2 sdl2-image sdl2-mixer sdl2-ttf box2d --recurse --overlay-triplets="custom-triplets"
+vcpkg\vcpkg.exe install glm glew stb nlohmann-json sdl2 sdl2-image sdl2-mixer box2d --recurse --overlay-triplets="custom-triplets"
 copy "vcpkg\installed\x64-windows\debug\bin\*.*" "$(OutDir)"
 popd
 </Command>
@@ -158,7 +158,7 @@ popd
     <PreBuildEvent>
       <Command>pushd "$(SolutionDir).."
 call vcpkg\bootstrap-vcpkg.bat
-vcpkg\vcpkg.exe install glm glew stb nlohmann-json sdl2 sdl2-image sdl2-mixer sdl2-ttf box2d --recurse --overlay-triplets="custom-triplets"
+vcpkg\vcpkg.exe install glm glew stb nlohmann-json sdl2 sdl2-image sdl2-mixer box2d --recurse --overlay-triplets="custom-triplets"
 copy "vcpkg\installed\x64-windows\bin\*.*" "$(OutDir)"
 popd
 </Command>
@@ -178,6 +178,7 @@ popd
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="EngineCore.cpp" />
     <ClCompile Include="FileDialog.cpp" />
+    <ClCompile Include="FontEM.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="ImageUI.cpp" />
     <ClCompile Include="InputEM.cpp" />
@@ -210,6 +211,7 @@ popd
     <ClInclude Include="EngineCore.h" />
     <ClInclude Include="EngineModule.h" />
     <ClInclude Include="FileDialog.h" />
+    <ClInclude Include="FontEM.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="ButtonImageUI.h" />
     <ClInclude Include="ImageUI.h" />

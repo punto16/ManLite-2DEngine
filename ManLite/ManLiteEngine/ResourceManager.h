@@ -10,6 +10,9 @@
 #include <GL/glew.h>
 #include "SDL2/SDL_mixer.h"
 
+#include <ft2build.h>
+#include FT_FREETYPE_H
+
 //thread management
 #include <queue>
 #include <mutex>
@@ -46,6 +49,19 @@ struct MusicData {
     int refCount = 0;
 };
 
+struct FontCharacter {
+    GLuint textureID;
+    glm::ivec2 size;
+    glm::ivec2 bearing;
+    FT_Pos advance;
+};
+
+struct FontData {
+    FT_Face face;
+    int refCount = 0;
+    std::map<FT_ULong, FontCharacter> characters;
+};
+
 class ResourceManager {
 public:
     //general
@@ -68,6 +84,12 @@ public:
     Mix_Music* LoadMusic(const std::string& path);
     void ReleaseMusic(const std::string& path);
 
+    //fonts
+    FontData* LoadFont(const std::string& path, int fontSize);
+    FontData* GetFont(const std::string& path);
+    void ReleaseFont(const std::string& path);
+    FontCharacter* LoadFontCharacter(FontData* fontData, FT_ULong charCode);
+
     //thread management
     std::future<GLuint> LoadTextureAsync(const std::string& path, int& tex_width, int& tex_height);
     void ProcessTextures();
@@ -78,6 +100,7 @@ private:
     std::unordered_map<std::string, AnimationData> animations;
     std::unordered_map<std::string, SoundData> sounds;
     std::unordered_map<std::string, MusicData> musics;
+    std::unordered_map<std::string, FontData> fonts;
 
     //thread management
     std::queue<TextureLoadTask> texture_load_queue;
