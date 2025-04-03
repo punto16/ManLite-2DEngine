@@ -218,7 +218,7 @@ void main() {
     
     void main() {
         vec4 texColor = texture(uTexture, TexCoords);
-        FragColor = uTextColor * texColor.r; // Usamos el canal rojo como alpha
+        FragColor = vec4(uTextColor.rgb, uTextColor.a * texColor.a);
         
         if (FragColor.a < 0.1)
             discard;

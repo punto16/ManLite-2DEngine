@@ -574,7 +574,12 @@ void RendererEM::SubmitText(std::string text, FontData* font, const mat3f& model
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	float cursorX = 0.0f;
-	glm::vec4 textColor(color.r / 255.0f, color.g / 255.0f, color.b / 255.0f, color.a / 255.0f);
+	glm::vec4 textColor(
+		color.r / 255.0f,
+		color.g / 255.0f,
+		color.b / 255.0f,
+		color.a / 255.0f * 0.999f
+	);
 
 	for (char c : text)
 	{
