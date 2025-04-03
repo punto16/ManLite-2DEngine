@@ -346,7 +346,7 @@ void RendererEM::RenderBatch()
 	glUniform1i(uTextureLoc, 0);
 
 	for (const auto& sprite : spritesToRender) {
-		if (sprite.color.a != 1.0f) continue;
+		if (sprite.text) continue;
 
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, sprite.textureID);
@@ -376,7 +376,7 @@ void RendererEM::RenderBatch()
 	glUniform1i(text_uTexture, 0);
 
 	for (const auto& sprite : spritesToRender) {
-		if (sprite.color.a == 1.0f) continue;
+		if (!sprite.text) continue;
 
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, sprite.textureID);
@@ -484,7 +484,8 @@ void RendererEM::SubmitSprite(GLuint textureID, const mat3f& modelMatrix, float 
 	ConvertMat3fToGlmMat4(modelMatrix),
 	u1, v1, u2, v2,
 	pixel_art,
-	{ 1.0f, 1.0f, 1.0f, 1.0f }
+	{ 1.0f, 1.0f, 1.0f, 1.0f },
+	false
 		});
 }
 
@@ -578,7 +579,7 @@ void RendererEM::SubmitText(std::string text, FontData* font, const mat3f& model
 		color.r / 255.0f,
 		color.g / 255.0f,
 		color.b / 255.0f,
-		color.a / 255.0f * 0.999f
+		color.a / 255.0f
 	);
 
 	for (char c : text)
@@ -601,7 +602,8 @@ void RendererEM::SubmitText(std::string text, FontData* font, const mat3f& model
 			ConvertMat3fToGlmMat4(charModel),
 			0.0f, 0.0f, 1.0f, 1.0f,
 			false,
-			textColor
+			textColor,
+			true
 			});
 
 		cursorX += (ch->advance >> 6);

@@ -23,6 +23,7 @@ struct SpriteRenderData {
     float u1, v1, u2, v2;
     bool pixel_art;
     glm::vec4 color;
+    bool text;
 };
 
 class Grid {
