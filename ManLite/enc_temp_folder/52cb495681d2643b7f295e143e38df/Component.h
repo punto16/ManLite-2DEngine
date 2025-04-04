@@ -65,7 +65,6 @@ public:
 	ComponentType GetType() const { return this->type; }
 	void SetType(ComponentType type) { this->type = type; }
 	uint32_t GetID() const { return this->component_id; }
-	void SetID(uint32_t id) { component_id = id; }
 
 	bool IsEnabled() const { return this->enabled; }
 	void SetEnabled(bool enable)

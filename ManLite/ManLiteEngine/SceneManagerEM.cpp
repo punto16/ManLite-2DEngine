@@ -104,6 +104,7 @@ void SceneManagerEM::SaveScene(std::string directory, std::string scene_name)
 	nlohmann::json sceneJSON;
 
 	sceneJSON["scene_name"] = current_scene->GetSceneName();
+	sceneJSON["scene_id"] = current_scene->GetSceneRoot().GetID();
 	sceneJSON["scene_path"] = file_name;
 
 	nlohmann::json game_objectsJSON;
@@ -160,6 +161,8 @@ void SceneManagerEM::LoadSceneFromJson(const std::string& file_name)
 		current_scene->SetSceneName(sceneJSON["scene_name"]);
 		current_scene->GetSceneRoot().SetName(sceneJSON["scene_name"]);
 	}
+	if (sceneJSON.contains("scene_id")) current_scene->GetSceneRoot().SetID(sceneJSON["scene_id"]);
+
 
 	current_scene->GetSceneRoot().GetChildren().clear();
 
@@ -246,6 +249,7 @@ void SceneManagerEM::LoadSceneToScene(const std::string& file_name, Scene& scene
 		scene.SetSceneName(sceneJSON["scene_name"]);
 		scene.GetSceneRoot().SetName(sceneJSON["scene_name"]);
 	}
+	if (sceneJSON.contains("scene_id")) scene.GetSceneRoot().SetID(sceneJSON["scene_id"]);
 
 	scene.GetSceneRoot().GetChildren().clear();
 
@@ -347,6 +351,7 @@ Scene::Scene(const Scene& other)
 {
 	this->scene_root = std::make_shared<GameObject>(other.scene_root->GetSharedPtr());
 	this->scene_root->Awake();
+	this->scene_root->SetID(other.scene_root->GetID());
 	if (!other.scene_root->GetChildren().empty())
 	{
 		auto children = std::vector<std::shared_ptr<GameObject>>(other.scene_root->GetChildren());
