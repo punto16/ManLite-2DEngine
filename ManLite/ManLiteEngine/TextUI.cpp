@@ -68,9 +68,54 @@ void TextUI::SwapFont(std::string new_font)
 
 nlohmann::json TextUI::SaveUIElement()
 {
-	return nlohmann::json();
+    nlohmann::json uielementJSON;
+
+    //general uielement
+    uielementJSON["UIElementID"] = uielement_id;
+    uielementJSON["UIElementName"] = name;
+    uielementJSON["CointainerCanvasID"] = GetContainerGO()->GetComponent<Canvas>()->GetID();
+    uielementJSON["UIElementType"] = type;
+    uielementJSON["UIElementEnabled"] = enabled;
+    uielementJSON["UIElementPosition"] = { position_x, position_y };
+    uielementJSON["UIElementAngle"] = angle;
+    uielementJSON["UIElementScale"] = { scale_x, scale_y };
+    uielementJSON["UIElementAspectLocked"] = aspectLocked;
+    uielementJSON["UIElementAspectLockedRatio"] = lockedAspectRatio;
+
+    //specific uielement
+    uielementJSON["Text"] = text;
+    uielementJSON["FontPath"] = font_path;
+    uielementJSON["Color"] = { color.r, color.g, color.b, color.a };
+
+    return uielementJSON;
 }
 
 void TextUI::LoadUIElement(const nlohmann::json& uielementJSON)
 {
+    if (uielementJSON.contains("UIElementID")) uielement_id = uielementJSON["UIElementID"];
+    if (uielementJSON.contains("UIElementName")) name = uielementJSON["UIElementName"];
+    if (uielementJSON.contains("UIElementType")) type = (UIElementType)uielementJSON["UIElementType"];
+    if (uielementJSON.contains("UIElementEnabled")) enabled = uielementJSON["UIElementEnabled"];
+    if (uielementJSON.contains("UIElementPosition")) position_x = uielementJSON["UIElementPosition"][0];
+    if (uielementJSON.contains("UIElementPosition")) position_y = uielementJSON["UIElementPosition"][1];
+    if (uielementJSON.contains("UIElementAngle")) angle = uielementJSON["UIElementAngle"];
+    if (uielementJSON.contains("UIElementScale")) scale_x = uielementJSON["UIElementScale"][0];
+    if (uielementJSON.contains("UIElementScale")) scale_y = uielementJSON["UIElementScale"][1];
+    if (uielementJSON.contains("UIElementAspectLocked")) aspectLocked = uielementJSON["UIElementAspectLocked"];
+    if (uielementJSON.contains("UIElementAspectLockedRatio")) lockedAspectRatio = uielementJSON["UIElementAspectLockedRatio"];
+
+    //
+    if (uielementJSON.contains("Text")) text = uielementJSON["Text"];
+    if (uielementJSON.contains("FontPath"))
+    {
+        font_path = uielementJSON["TexturePath"];
+        font = ResourceManager::GetInstance().LoadFont(font_path, 512);
+    }
+    if (uielementJSON.contains("Color"))
+    {
+        color.r = uielementJSON["Color"][0];
+        color.g = uielementJSON["Color"][1];
+        color.b = uielementJSON["Color"][2];
+        color.a = uielementJSON["Color"][3];
+    }
 }
