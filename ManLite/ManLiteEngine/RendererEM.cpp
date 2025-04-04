@@ -380,7 +380,8 @@ void RendererEM::RenderBatch()
 
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, sprite.textureID);
-		glBindSampler(0, samplerLinear);
+		if (sprite.pixel_art) glBindSampler(0, samplerNearest);
+		else glBindSampler(0, samplerLinear);
 
 		glUniformMatrix4fv(text_uModel, 1, GL_FALSE, glm::value_ptr(sprite.modelMatrix));
 		glUniform4f(text_uUVRect, sprite.u1, sprite.v1, sprite.u2, sprite.v2);
@@ -571,8 +572,8 @@ void RendererEM::RenderDebugColliders()
 void RendererEM::SubmitText(std::string text, FontData* font, const mat3f& modelMatrix, const ML_Color& color) {
 	if (!font) return;
 
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	//glEnable(GL_BLEND);
+	//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	float cursorX = 0.0f;
 	glm::vec4 textColor(
@@ -600,15 +601,16 @@ void RendererEM::SubmitText(std::string text, FontData* font, const mat3f& model
 		spritesToRender.push_back({
 			ch->textureID,
 			ConvertMat3fToGlmMat4(charModel),
-			0.0f, 0.0f, 1.0f, 1.0f,
-			false,
+			0.0f, 1.0f,
+			1.0f, 0.0f,
+			true,
 			textColor,
 			true
 			});
 
 		cursorX += (ch->advance >> 6);
 	}
-	glDisable(GL_BLEND);
+	//glDisable(GL_BLEND);
 }
 
 Grid::Grid(float size, int divisions)
