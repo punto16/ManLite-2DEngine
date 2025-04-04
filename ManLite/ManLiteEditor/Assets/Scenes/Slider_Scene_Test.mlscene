@@ -162,10 +162,10 @@
               "SliderStyle": 1,
               "TexturePath": "Assets\\Textures\\slider_test_spritesheet.png",
               "UIElementAngle": 0.0,
-              "UIElementAspectLocked": true,
+              "UIElementAspectLocked": false,
               "UIElementAspectLockedRatio": 1.0,
               "UIElementEnabled": true,
-              "UIElementID": 777093994,
+              "UIElementID": 1927994903,
               "UIElementName": "Health_Bar",
               "UIElementPosition": [
                 -7.949999809265137,
@@ -176,15 +176,14 @@
                 0.6499999761581421
               ],
               "UIElementType": 2
-            },
-            null
+            }
           ]
         }
       ],
       "Enabled": true,
       "ID": 959569685,
       "Name": "Camera",
-      "ParentID": 875391691,
+      "ParentID": 3117153909,
       "ParentLayerID": 0,
       "Tag": "Camera",
       "Visible": true
@@ -251,12 +250,47 @@
           "ContainerGOID": 1667443374,
           "CurrentAnimation": "samurai_idle_animation_test1",
           "Enabled": true
+        },
+        {
+          "ComponentID": 3496342455,
+          "ComponentName": "Canvas",
+          "ComponentType": 6,
+          "ContainerGOID": 1667443374,
+          "Enabled": true,
+          "UIElements": [
+            {
+              "CointainerCanvasID": 3496342455,
+              "Color": [
+                255,
+                255,
+                255,
+                255
+              ],
+              "FontPath": "Assets\\Fonts\\Arial.ttf",
+              "Text": "SAMURAI",
+              "UIElementAngle": 0.0,
+              "UIElementAspectLocked": false,
+              "UIElementAspectLockedRatio": 1.0,
+              "UIElementEnabled": true,
+              "UIElementID": 1585918549,
+              "UIElementName": "TextUI",
+              "UIElementPosition": [
+                -1.25,
+                1.7000000476837158
+              ],
+              "UIElementScale": [
+                0.05999999865889549,
+                0.05999999865889549
+              ],
+              "UIElementType": 4
+            }
+          ]
         }
       ],
       "Enabled": true,
       "ID": 1667443374,
       "Name": "Samurai",
-      "ParentID": 875391691,
+      "ParentID": 3117153909,
       "ParentLayerID": 0,
       "Tag": "Player",
       "Visible": true
@@ -302,7 +336,7 @@
       "Enabled": true,
       "ID": 1536642911,
       "Name": "BackGround_Music",
-      "ParentID": 875391691,
+      "ParentID": 3117153909,
       "ParentLayerID": 0,
       "Tag": "Sound",
       "Visible": true
@@ -321,6 +355,7 @@
       "visible": true
     }
   ],
+  "scene_id": 3117153909,
   "scene_name": "Test_Scene",
   "scene_path": "Assets\\Scenes\\Slider_Scene_Test.mlscene"
 }

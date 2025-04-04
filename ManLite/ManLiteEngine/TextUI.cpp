@@ -108,7 +108,7 @@ void TextUI::LoadUIElement(const nlohmann::json& uielementJSON)
     if (uielementJSON.contains("Text")) text = uielementJSON["Text"];
     if (uielementJSON.contains("FontPath"))
     {
-        font_path = uielementJSON["TexturePath"];
+        font_path = uielementJSON["FontPath"];
         font = ResourceManager::GetInstance().LoadFont(font_path, 512);
     }
     if (uielementJSON.contains("Color"))
