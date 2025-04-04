@@ -22,7 +22,7 @@
 #include "SceneManagerEM.h"
 #include "GameObject.h"
 #include "Canvas.h"
-#include "ImageUI.h"
+#include "TextUI.h"
 
 #if defined(_WIN32)
 #   define WIN32_LEAN_AND_MEAN
@@ -612,7 +612,7 @@ void Gui::GameObjectMenu()
 	{
 		GameObject* e_go = engine->scene_manager_em->GetCurrentScene().CreateEmptyGO(engine->scene_manager_em->GetCurrentScene().GetSceneRoot()).get();
 		e_go->AddComponent<Canvas>();
-		e_go->GetComponent<Canvas>()->AddUIElement<ImageUI>("");
+		e_go->GetComponent<Canvas>()->AddUIElement<TextUI>("Assets\\Fonts\\Arial.ttf");
 	}
 }
 

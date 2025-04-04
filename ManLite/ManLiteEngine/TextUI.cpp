@@ -15,7 +15,7 @@ TextUI::TextUI(std::weak_ptr<GameObject> container_go, std::string fontPath, std
 	text("Lorem Ipsum"),
     color({255, 255, 255, 255})
 {
-	font = ResourceManager::GetInstance().LoadFont(font_path, 24);
+	font = ResourceManager::GetInstance().LoadFont(font_path, 512);
 }
 
 TextUI::TextUI(const TextUI& uielement_to_copy, std::shared_ptr<GameObject> container_go) :
@@ -24,7 +24,7 @@ TextUI::TextUI(const TextUI& uielement_to_copy, std::shared_ptr<GameObject> cont
 	text(uielement_to_copy.text),
     color(uielement_to_copy.color)
 {
-	font = ResourceManager::GetInstance().LoadFont(font_path, 24);
+	font = ResourceManager::GetInstance().LoadFont(font_path, 512);
 }
 
 TextUI::~TextUI()
@@ -63,7 +63,7 @@ void TextUI::SwapFont(std::string new_font)
 {
     if (font) ResourceManager::GetInstance().ReleaseFont(font_path);
     font_path = new_font;
-    font = ResourceManager::GetInstance().LoadFont(font_path, 24);
+    font = ResourceManager::GetInstance().LoadFont(font_path, 512);
 }
 
 nlohmann::json TextUI::SaveUIElement()

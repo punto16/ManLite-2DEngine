@@ -37,7 +37,7 @@ public:
 	bool MoveInVector(int new_position);
 
 	void CloneChildrenHierarchy(const std::shared_ptr<GameObject>& original);
-	void CloneComponents(const std::shared_ptr<GameObject>& original);
+	void CloneComponents(const std::shared_ptr<GameObject>& original, bool same_id = false);
 
 	void AddChild(std::shared_ptr<GameObject> child);
 	bool RemoveChild(const std::shared_ptr<GameObject>& child);

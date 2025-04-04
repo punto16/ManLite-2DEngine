@@ -204,7 +204,7 @@ void GameObject::CloneChildrenHierarchy(const std::shared_ptr<GameObject>& origi
     }
 }
 
-void GameObject::CloneComponents(const std::shared_ptr<GameObject>& original)
+void GameObject::CloneComponents(const std::shared_ptr<GameObject>& original, bool same_id)
 {
     for (const auto& item : original->GetComponents())
     {
@@ -213,21 +213,25 @@ void GameObject::CloneComponents(const std::shared_ptr<GameObject>& original)
         case ComponentType::Transform:
         {
             AddCopiedComponent<Transform>(*dynamic_cast<const Transform*>(item.get()));
+            if (same_id) GetComponent<Transform>()->SetID(item->GetID());
             break;
         }
         case ComponentType::Camera:
         {
             AddCopiedComponent<Camera>(*dynamic_cast<const Camera*>(item.get()));
+            if (same_id) GetComponent<Camera>()->SetID(item->GetID());
             break;
         }
         case ComponentType::Sprite:
         {
             AddCopiedComponent<Sprite2D>(*dynamic_cast<const Sprite2D*>(item.get()));
+            if (same_id) GetComponent<Sprite2D>()->SetID(item->GetID());
             break;
         }
         case ComponentType::Animator:
         {
             AddCopiedComponent<Animator>(*dynamic_cast<const Animator*>(item.get()));
+            if (same_id) GetComponent<Animator>()->SetID(item->GetID());
             break;
         }
         case ComponentType::Script:
@@ -237,16 +241,19 @@ void GameObject::CloneComponents(const std::shared_ptr<GameObject>& original)
         case ComponentType::Collider2D:
         {
             AddCopiedComponent<Collider2D>(*dynamic_cast<const Collider2D*>(item.get()));
+            if (same_id) GetComponent<Collider2D>()->SetID(item->GetID());
             break;
         }
         case ComponentType::Canvas:
         {
             AddCopiedComponent<Canvas>(*dynamic_cast<const Canvas*>(item.get()));
+            if (same_id) GetComponent<Canvas>()->SetID(item->GetID());
             break;
         }
         case ComponentType::AudioSource:
         {
             AddCopiedComponent<AudioSource>(*dynamic_cast<const AudioSource*>(item.get()));
+            if (same_id) GetComponent<AudioSource>()->SetID(item->GetID());
             break;
         }
         case ComponentType::ParticleSystem:

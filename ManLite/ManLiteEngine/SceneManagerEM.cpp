@@ -455,7 +455,7 @@ std::shared_ptr<GameObject> Scene::DuplicateGO(GameObject& go_to_copy, bool scen
 		copy->SetName(go_to_copy.GetName(), false);
 		copy->SetID(go_to_copy.GetID());
 	}
-	copy->CloneComponents(go_to_copy.GetSharedPtr());
+	copy->CloneComponents(go_to_copy.GetSharedPtr(), scene_duplication);
 	go_to_copy.GetParentGO().lock()->AddChild(copy);
 	if (go_to_copy.GetParentLayer().lock() != nullptr)
 	{
