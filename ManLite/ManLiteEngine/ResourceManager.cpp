@@ -241,6 +241,7 @@ FontCharacter* ResourceManager::LoadFontCharacter(FontData* fontData, FT_ULong c
     if (fontData->characters.find(charCode) != fontData->characters.end()) {
         return &fontData->characters[charCode];
     }
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
     FT_Error error = FT_Load_Char(fontData->face, charCode, FT_LOAD_RENDER);
     if (error) {
@@ -263,6 +264,8 @@ FontCharacter* ResourceManager::LoadFontCharacter(FontData* fontData, FT_ULong c
         GL_UNSIGNED_BYTE,
         fontData->face->glyph->bitmap.buffer
     );
+
+
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_R, GL_ONE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_G, GL_ONE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_B, GL_ONE);
@@ -277,10 +280,12 @@ FontCharacter* ResourceManager::LoadFontCharacter(FontData* fontData, FT_ULong c
         textureID,
         glm::ivec2(fontData->face->glyph->bitmap.width, fontData->face->glyph->bitmap.rows),
         glm::ivec2(fontData->face->glyph->bitmap_left, fontData->face->glyph->bitmap_top),
-        fontData->face->glyph->advance.x
+        fontData->face->glyph->advance.x,
+        charCode
     };
 
     fontData->characters[charCode] = character;
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
     return &character;
 }
 

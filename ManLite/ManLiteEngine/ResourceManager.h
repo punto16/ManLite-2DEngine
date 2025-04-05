@@ -54,6 +54,7 @@ struct FontCharacter {
     glm::ivec2 size;
     glm::ivec2 bearing;
     FT_Pos advance;
+    FT_ULong charCode;
 };
 
 struct FontData {

@@ -13,7 +13,8 @@ TextUI::TextUI(std::weak_ptr<GameObject> container_go, std::string fontPath, std
 	UIElement(container_go, UIElementType::Text, name, enable),
 	font_path(fontPath),
 	text("Lorem Ipsum"),
-    color({255, 255, 255, 255})
+    color({255, 255, 255, 255}),
+    text_alignment(TextAlignment::TEXT_ALIGN_LEFT)
 {
 	font = ResourceManager::GetInstance().LoadFont(font_path, 512);
 }
@@ -22,7 +23,8 @@ TextUI::TextUI(const TextUI& uielement_to_copy, std::shared_ptr<GameObject> cont
 	UIElement(uielement_to_copy, container_go),
 	font_path(uielement_to_copy.font_path),
 	text(uielement_to_copy.text),
-    color(uielement_to_copy.color)
+    color(uielement_to_copy.color),
+    text_alignment(uielement_to_copy.text_alignment)
 {
 	font = ResourceManager::GetInstance().LoadFont(font_path, 512);
 }
@@ -55,7 +57,7 @@ void TextUI::Draw()
         );
         mat3f finalMat = modelMat * localMat;
 
-        engine->renderer_em->SubmitText(text, font, finalMat, color);
+        engine->renderer_em->SubmitText(text, font, finalMat, color, text_alignment);
     }
 }
 
@@ -86,6 +88,7 @@ nlohmann::json TextUI::SaveUIElement()
     uielementJSON["Text"] = text;
     uielementJSON["FontPath"] = font_path;
     uielementJSON["Color"] = { color.r, color.g, color.b, color.a };
+    uielementJSON["TextAlignment"] = text_alignment;
 
     return uielementJSON;
 }
@@ -118,4 +121,5 @@ void TextUI::LoadUIElement(const nlohmann::json& uielementJSON)
         color.b = uielementJSON["Color"][2];
         color.a = uielementJSON["Color"][3];
     }
+    if (uielementJSON.contains("TextAlignment")) text_alignment = uielementJSON["TextAlignment"];
 }

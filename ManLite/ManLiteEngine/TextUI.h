@@ -3,6 +3,7 @@
 #pragma once
 
 #include "UIElement.h"
+#include "RendererEM.h"
 
 #include <string>
 #include <memory>
@@ -34,11 +35,16 @@ public:
 	ML_Color GetColor() { return color; }
 	void SetColor(ML_Color c) { color = c; }
 
+	TextAlignment GetTextAlignment() { return text_alignment; }
+	void SetTextAlignment(TextAlignment ta) { text_alignment = ta; }
+	
+
 private:
 
 	std::string text = "Lorem Ipsum";
 	std::string font_path;
 
+	TextAlignment text_alignment;
 	FontData* font;
 	ML_Color color;
 };

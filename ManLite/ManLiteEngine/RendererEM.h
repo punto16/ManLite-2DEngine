@@ -26,6 +26,13 @@ struct SpriteRenderData {
     bool text;
 };
 
+enum TextAlignment
+{
+    TEXT_ALIGN_LEFT             = 0,
+    TEXT_ALIGN_CENTER           = 1,
+    TEXT_ALIGN_RIGHT            = 2
+};
+
 class Grid {
 public:
     Grid(float size, int divisions);
@@ -130,7 +137,7 @@ public:
     void SubmitSprite(GLuint textureID, const mat3f& modelMatrix, float u1, float v1, float u2, float v2, bool pixel_art);
     void SubmitDebugCollider(const mat3f& modelMatrix, const ML_Color& color, bool isCircle, float radius = 0.0f);
     void RenderDebugColliders();
-    void SubmitText(std::string text, FontData* font, const mat3f& modelMatrix, const ML_Color& color);
+    void SubmitText(std::string text, FontData* font, const mat3f& modelMatrix, const ML_Color& color, TextAlignment ta = TextAlignment::TEXT_ALIGN_LEFT);
 
     static glm::mat4 ConvertMat3fToGlmMat4(const mat3f& mat);
 private:

@@ -1341,6 +1341,15 @@ void PanelInspector::CanvasOptions(GameObject& go)
 							}
 						}
 
+						static const char* alignmentItems[] = { "Left", "Centered", "Right" };
+						int currentAlignment = static_cast<int>(textUI->GetTextAlignment());
+						std::string alignmentLabel = "Alignment##" + std::to_string(ui_element->GetID());
+
+						if (ImGui::Combo(alignmentLabel.c_str(), &currentAlignment, alignmentItems, IM_ARRAYSIZE(alignmentItems)))
+						{
+							textUI->SetTextAlignment(static_cast<TextAlignment>(currentAlignment));
+						}
+
 						std::string colorLabel = "Text Color##" + std::to_string(ui_element->GetID());
 						float colorValues[4] = {
 							textUI->GetColor().r / 255.0f,

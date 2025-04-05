@@ -569,48 +569,93 @@ void RendererEM::RenderDebugColliders()
 	glBindVertexArray(0);
 }
 
-void RendererEM::SubmitText(std::string text, FontData* font, const mat3f& modelMatrix, const ML_Color& color) {
+void RendererEM::SubmitText(std::string text, FontData* font, const mat3f& modelMatrix, const ML_Color& color, TextAlignment ta) 
+{
 	if (!font) return;
 
-	//glEnable(GL_BLEND);
-	//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	float cursorY = 0.0f;
+	float lineHeight = font->face->size->metrics.height >> 6;
+	std::istringstream iss(text);
+	std::string line;
 
-	float cursorX = 0.0f;
-	glm::vec4 textColor(
-		color.r / 255.0f,
-		color.g / 255.0f,
-		color.b / 255.0f,
-		color.a / 255.0f
-	);
-
-	for (char c : text)
+	while (std::getline(iss, line, '\n'))
 	{
-		FontCharacter* ch = ResourceManager::GetInstance().LoadFontCharacter(font, c);
-		if (!ch) continue;
+		float lineWidth = 0.0f;
+		FT_UInt prevGlyph = 0;
+		std::vector<FontCharacter*> lineCharacters;
 
-		float xpos = cursorX + ch->bearing.x;
-		float ypos = -(ch->size.y - ch->bearing.y);
+		for (char c : line) {
+			FontCharacter* ch = ResourceManager::GetInstance().LoadFontCharacter(font, c);
+			if (!ch) continue;
 
-		mat3f new_mat = mat3f::CreateTransformMatrix(
-			{ xpos, ypos },
-			0,
-			{ ch->size.x, ch->size.y });
+			if (prevGlyph) {
+				FT_Vector kerning;
+				FT_Get_Kerning(font->face, prevGlyph, FT_Get_Char_Index(font->face, c),
+					FT_KERNING_DEFAULT, &kerning);
+				lineWidth += kerning.x >> 6;
+			}
+			prevGlyph = FT_Get_Char_Index(font->face, c);
 
-		mat3f charModel = modelMatrix * new_mat;
+			lineWidth += ch->advance >> 6;
+			lineCharacters.push_back(ch);
+		}
 
-		spritesToRender.push_back({
-			ch->textureID,
-			ConvertMat3fToGlmMat4(charModel),
-			0.0f, 1.0f,
-			1.0f, 0.0f,
-			true,
-			textColor,
-			true
-			});
+		float startX = 0.0f;
+		switch (ta) {
+		case TEXT_ALIGN_CENTER:
+			startX = -lineWidth / 2.0f;
+			break;
+		case TEXT_ALIGN_RIGHT:
+			startX = -lineWidth;
+			break;
+		default:
+			break;
+		}
 
-		cursorX += (ch->advance >> 6);
+		float cursorX = startX;
+		prevGlyph = 0;
+
+		for (FontCharacter* ch : lineCharacters)
+		{
+			if (prevGlyph) {
+				FT_Vector kerning;
+				FT_Get_Kerning(font->face, prevGlyph, FT_Get_Char_Index(font->face, ch->charCode),
+					FT_KERNING_DEFAULT, &kerning);
+				cursorX += kerning.x >> 6;
+			}
+			prevGlyph = FT_Get_Char_Index(font->face, ch->charCode);
+
+			float xpos = cursorX + ch->bearing.x + (ch->size.x / 2);
+			float ypos = cursorY - (ch->size.y - ch->bearing.y) + (ch->size.y / 2);
+
+			mat3f new_mat = mat3f::CreateTransformMatrix(
+				{ xpos, ypos },
+				0,
+				{ ch->size.x, ch->size.y }
+			);
+
+			mat3f charModel = modelMatrix * new_mat;
+
+			spritesToRender.push_back({
+				ch->textureID,
+				ConvertMat3fToGlmMat4(charModel),
+				0.0f, 1.0f,
+				1.0f, 0.0f,
+				true,
+				{
+					color.r / 255.0f,
+					color.g / 255.0f,
+					color.b / 255.0f,
+					color.a / 255.0f
+				},
+				true
+				});
+
+			cursorX += ch->advance >> 6;
+		}
+
+		cursorY -= lineHeight;
 	}
-	//glDisable(GL_BLEND);
 }
 
 Grid::Grid(float size, int divisions)
