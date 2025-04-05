@@ -22,7 +22,10 @@
 #include "SceneManagerEM.h"
 #include "GameObject.h"
 #include "Canvas.h"
-#include "TextUI.h"
+#include "Camera.h"
+#include "Collider2D.h"
+#include "AudioSource.h"
+#include "Animator.h"
 
 #if defined(_WIN32)
 #   define WIN32_LEAN_AND_MEAN
@@ -604,27 +607,29 @@ void Gui::GameObjectMenu()
 				engine->scene_manager_em->GetCurrentScene().CreateEmptyGO(*go.lock());
 		}
 	}
-	if (ImGui::MenuItem("Camera", 0, false, false))
+	if (ImGui::MenuItem("Camera"))
 	{
-
+		GameObject* e_go = engine->scene_manager_em->GetCurrentScene().CreateEmptyGO(engine->scene_manager_em->GetCurrentScene().GetSceneRoot()).get();
+		e_go->AddComponent<Camera>();
 	}
 	if (ImGui::MenuItem("Canvas"))
 	{
 		GameObject* e_go = engine->scene_manager_em->GetCurrentScene().CreateEmptyGO(engine->scene_manager_em->GetCurrentScene().GetSceneRoot()).get();
 		e_go->AddComponent<Canvas>();
-		e_go->GetComponent<Canvas>()->AddUIElement<TextUI>("Assets\\Fonts\\Arial.ttf");
 	}
 }
 
 void Gui::ComponentMenu()
 {
-	if (ImGui::MenuItem("Camera", 0, false, false))
+	if (ImGui::MenuItem("Camera"))
 	{
-
+		for (const auto& item : engine->scene_manager_em->GetCurrentScene().GetSelectedGOs())
+			item.lock()->AddComponent<Camera>();
 	}
-	if (ImGui::MenuItem("Collider 2D", 0, false, false))
+	if (ImGui::MenuItem("Collider 2D"))
 	{
-
+		for (const auto& item : engine->scene_manager_em->GetCurrentScene().GetSelectedGOs())
+			item.lock()->AddComponent<Collider2D>();
 	}
 	if (ImGui::MenuItem("Script", 0, false, false))
 	{
@@ -633,9 +638,10 @@ void Gui::ComponentMenu()
 
 	ImGui::Separator();
 
-	if (ImGui::MenuItem("Canvas", 0, false, false))
+	if (ImGui::MenuItem("Canvas", 0))
 	{
-
+		for (const auto& item : engine->scene_manager_em->GetCurrentScene().GetSelectedGOs())
+			item.lock()->AddComponent<Canvas>();
 	}
 
 	ImGui::Separator();
@@ -647,20 +653,18 @@ void Gui::ComponentMenu()
 
 	ImGui::Separator();
 
-	if (ImGui::MenuItem("Audio Source", 0, false, false))
+	if (ImGui::MenuItem("Audio Source"))
 	{
-
-	}
-	if (ImGui::MenuItem("Audio Listener", 0, false, false))
-	{
-
+		for (const auto& item : engine->scene_manager_em->GetCurrentScene().GetSelectedGOs())
+			item.lock()->AddComponent<AudioSource>();
 	}
 
 	ImGui::Separator();
 
-	if (ImGui::MenuItem("Animation", 0, false, false))
+	if (ImGui::MenuItem("Animator"))
 	{
-
+		for (const auto& item : engine->scene_manager_em->GetCurrentScene().GetSelectedGOs())
+			item.lock()->AddComponent<Animator>();
 	}
 }
 

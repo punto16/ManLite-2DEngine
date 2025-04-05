@@ -40,7 +40,7 @@ bool PanelAbout::Update()
 
 	ImVec2 center(ImGui::GetIO().DisplaySize.x * 0.5f, ImGui::GetIO().DisplaySize.y * 0.6f);
 	ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
-	ImGui::SetNextWindowSize(ImVec2(570, 730));
+	ImGui::SetNextWindowSize(ImVec2(520, 765));
 	if (ImGui::Begin("About", nullptr, window_flags)) {
 		{
 			// name engine + version
