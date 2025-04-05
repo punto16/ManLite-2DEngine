@@ -4,6 +4,7 @@
 #include "Transform.h"
 #include "GameObject.h"
 #include "Canvas.h"
+#include "Camera.h"
 
 CheckBoxUI::CheckBoxUI(std::weak_ptr<GameObject> container_go, std::string texturePath, std::string name, bool enable)
     : UIElement(container_go, UIElementType::CheckBox, name, enable),
@@ -84,10 +85,23 @@ void CheckBoxUI::Draw() {
         transform->SetScale(scale);
         transform->SetAspectRatioLock(a_lock);
 
+        //fixed scale to addapt text to scene size
+        vec2f o_scale_modification = { 1, 1 };
+        vec2f scale_modification = o_scale_modification;
+
+        //if go has camera, it will addapt to it
+        if (auto cam = GetContainerGO()->GetComponent<Camera>())
+        {
+            int viewport_x, viewport_y, zoom;
+            cam->GetViewportSize(viewport_x, viewport_y);
+            zoom = cam->GetZoom();
+            scale_modification = { scale_modification.x * 0.04705882352 * viewport_x / zoom, scale_modification.y * 0.08888888888 * viewport_y / zoom };
+        }
+
         mat3f localMat = mat3f::CreateTransformMatrix(
-            { this->position_x, this->position_y },
+            { this->position_x * (scale_modification.x / o_scale_modification.x), this->position_y * (scale_modification.y / o_scale_modification.y) },
             DEGTORAD * this->angle,
-            { this->scale_x * section_manager.current_section->w / section_manager.current_section->h, this->scale_y }
+            { this->scale_x * section_manager.current_section->w / section_manager.current_section->h * scale_modification.x, this->scale_y * scale_modification.y }
         );
         mat3f finalMat = modelMat * localMat;
 

@@ -4,6 +4,7 @@
 #include "Transform.h"
 #include "GameObject.h"
 #include "Canvas.h"
+#include "Camera.h"
 #include "ResourceManager.h"
 
 void SliderSectionPart::UpdateSections(SliderState state) {
@@ -201,10 +202,23 @@ void SliderUI::Draw() {
                     (offset + offset_first) : offset;
             }
 
+            //fixed scale to addapt text to scene size
+            vec2f o_scale_modification = { 1, 1 };
+            vec2f scale_modification = o_scale_modification;
+
+            //if go has camera, it will addapt to it
+            if (auto cam = GetContainerGO()->GetComponent<Camera>())
+            {
+                int viewport_x, viewport_y, zoom;
+                cam->GetViewportSize(viewport_x, viewport_y);
+                zoom = cam->GetZoom();
+                scale_modification = { scale_modification.x * 0.04705882352 * viewport_x / zoom, scale_modification.y * 0.08888888888 * viewport_y / zoom };
+            }
+
             mat3f localMat = mat3f::CreateTransformMatrix(
-                { currentX, position_y },
+                { currentX * (scale_modification.x / o_scale_modification.x), position_y * (scale_modification.y / o_scale_modification.y) },
                 DEGTORAD * angle,
-                { scale_x * section->w / section->h, scale_y }
+                { scale_x * section->w / section->h * scale_modification.x, scale_y * scale_modification.y }
             );
 
             ML_Rect uvs = Canvas::GetUVs(*section, tex_width, tex_height);

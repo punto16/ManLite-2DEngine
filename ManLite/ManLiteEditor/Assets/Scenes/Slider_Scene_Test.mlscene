@@ -268,19 +268,20 @@
               ],
               "FontPath": "Assets\\Fonts\\Arial.ttf",
               "Text": "SAMURAI",
+              "TextAlignment": 1,
               "UIElementAngle": 0.0,
-              "UIElementAspectLocked": false,
+              "UIElementAspectLocked": true,
               "UIElementAspectLockedRatio": 1.0,
               "UIElementEnabled": true,
               "UIElementID": 1585918549,
               "UIElementName": "TextUI",
               "UIElementPosition": [
-                -1.25,
-                1.7000000476837158
+                0.0,
+                1.2000000476837158
               ],
               "UIElementScale": [
-                0.05999999865889549,
-                0.05999999865889549
+                0.20000000298023224,
+                0.20000000298023224
               ],
               "UIElementType": 4
             }

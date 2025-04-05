@@ -34,7 +34,7 @@ private:
 
     int viewport_width = DEFAULT_CAM_WIDTH;
     int viewport_height = DEFAULT_CAM_HEIGHT;
-    float zoom = 1.0f;
+    float zoom = 80.0f;
     glm::mat4 view_matrix;
     glm::mat4 projection_matrix;
 };
