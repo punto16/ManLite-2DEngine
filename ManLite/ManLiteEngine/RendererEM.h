@@ -135,7 +135,7 @@ public:
     void UseGameViewCam();
 
     void SubmitSprite(GLuint textureID, const mat3f& modelMatrix, float u1, float v1, float u2, float v2, bool pixel_art);
-    void SubmitDebugCollider(const mat3f& modelMatrix, const ML_Color& color, bool isCircle, float radius = 0.0f);
+    void SubmitDebugCollider(const mat3f& modelMatrix, const ML_Color& color, bool isCircle, float radius = 0.0f, bool filled = false);
     void RenderDebugColliders();
     void SubmitText(std::string text, FontData* font, const mat3f& modelMatrix, const ML_Color& color, TextAlignment ta = TextAlignment::TEXT_ALIGN_LEFT);
 
@@ -169,7 +169,7 @@ public:
     //collider stuff
     GLuint debugShaderProgram;
     GLuint lineVAO, lineVBO;
-    std::vector<std::tuple<mat3f, ML_Color, bool, float>> debugColliders;
+    std::vector<std::tuple<mat3f, ML_Color, bool, float, bool>> debugColliders;
 
     //text
     GLuint textShaderProgram;

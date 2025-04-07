@@ -16,7 +16,7 @@ Particle::~Particle()
 
 void Particle::Reset()
 {
-	duration = 1.0f;
+	duration = 10.0f;
 	life_time = 0.0f;
 	//init
 	init_color = { 255, 255, 255, 255 };

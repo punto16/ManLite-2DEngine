@@ -26,6 +26,7 @@
 #include "Collider2D.h"
 #include "AudioSource.h"
 #include "Animator.h"
+#include "ParticleSystem.h"
 
 #if defined(_WIN32)
 #   define WIN32_LEAN_AND_MEAN
@@ -646,9 +647,10 @@ void Gui::ComponentMenu()
 
 	ImGui::Separator();
 
-	if (ImGui::MenuItem("Particle System", 0, false, false))
+	if (ImGui::MenuItem("Particle System"))
 	{
-
+		for (const auto& item : engine->scene_manager_em->GetCurrentScene().GetSelectedGOs())
+			item.lock()->AddComponent<ParticleSystem>();
 	}
 
 	ImGui::Separator();

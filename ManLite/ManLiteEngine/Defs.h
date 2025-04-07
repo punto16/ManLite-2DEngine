@@ -164,7 +164,7 @@ public:
 	int r, g, b, a;
 };
 
-std::mt19937& GetRandomEngine() {
+inline std::mt19937& GetEngineRandom() {
 	static std::random_device rd;
 	static std::mt19937 gen(rd());
 	return gen;
@@ -174,7 +174,7 @@ template<typename T>
 T RandomRange(const T& min_val, const T& max_val) {
 	static_assert(std::is_arithmetic<T>::value, "T must be numeric");
 
-	static std::mt19937 gen = GetRandomEngine();
+	static std::mt19937 gen = GetEngineRandom();
 
 	if constexpr (std::is_integral<T>::value) {
 		std::uniform_int_distribution<T> distrib(std::min(min_val, max_val),

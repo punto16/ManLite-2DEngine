@@ -25,6 +25,7 @@ public:
 	void AudioSourceOptions(GameObject& go);
 	void Collider2DOptions(GameObject& go);
 	void CanvasOptions(GameObject& go);
+	void ParticleSystemOptions(GameObject& go);
 
 	//add components last
 	void AddComponent(GameObject& go);

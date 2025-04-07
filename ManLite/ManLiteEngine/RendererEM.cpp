@@ -490,9 +490,9 @@ void RendererEM::SubmitSprite(GLuint textureID, const mat3f& modelMatrix, float 
 		});
 }
 
-void RendererEM::SubmitDebugCollider(const mat3f& modelMatrix, const ML_Color& color, bool isCircle, float radius)
+void RendererEM::SubmitDebugCollider(const mat3f& modelMatrix, const ML_Color& color, bool isCircle, float radius, bool filled)
 {
-	debugColliders.emplace_back(modelMatrix, color, isCircle, radius);
+	debugColliders.emplace_back(modelMatrix, color, isCircle, radius, filled);
 }
 
 void RendererEM::RenderDebugColliders()
@@ -526,7 +526,7 @@ void RendererEM::RenderDebugColliders()
 
 	glUniformMatrix4fv(uViewProj, 1, GL_FALSE, glm::value_ptr(viewProj));
 
-	for (const auto& [modelMat, color, isCircle, radius] : debugColliders) {
+	for (const auto& [modelMat, color, isCircle, radius, filled] : debugColliders) {
 		glm::mat4 glmModel = ConvertMat3fToGlmMat4(modelMat);
 		glUniformMatrix4fv(uModel, 1, GL_FALSE, glm::value_ptr(glmModel));
 		glUniform4f(uColor,
@@ -535,22 +535,51 @@ void RendererEM::RenderDebugColliders()
 			color.b / 255.0f,
 			color.a / 255.0f);
 
-		if (isCircle){
-			const int segments = 32;
+		if (isCircle) {
+			const int segments = filled ? 32 : 64; // Más segmentos si está relleno
 			std::vector<float> circleVertices;
-			for (int i = 0; i <= segments; ++i) {
-				float angle = 2.0f * PI * i / segments;
-				circleVertices.push_back(cos(angle) * radius);
-				circleVertices.push_back(sin(angle) * radius);
+
+			if (filled) {
+				// Centro del círculo
+				circleVertices.push_back(0.0f);
+				circleVertices.push_back(0.0f);
+
+				// Triángulo fan
+				for (int i = 0; i <= segments; ++i) {
+					float angle = 2.0f * PI * i / segments;
+					circleVertices.push_back(cos(angle) * radius);
+					circleVertices.push_back(sin(angle) * radius);
+				}
+			}
+			else {
+				// Línea contorno
+				for (int i = 0; i <= segments; ++i) {
+					float angle = 2.0f * PI * i / segments;
+					circleVertices.push_back(cos(angle) * radius);
+					circleVertices.push_back(sin(angle) * radius);
+				}
 			}
 
 			glBindBuffer(GL_ARRAY_BUFFER, lineVBO);
-			glBufferData(GL_ARRAY_BUFFER, circleVertices.size() * sizeof(float), circleVertices.data(), GL_DYNAMIC_DRAW);
-			glDrawArrays(GL_LINE_LOOP, 0, segments + 1);
+			glBufferData(GL_ARRAY_BUFFER, circleVertices.size() * sizeof(float),
+				circleVertices.data(), GL_DYNAMIC_DRAW);
+
+			filled ? glDrawArrays(GL_TRIANGLE_FAN, 0, segments + 2)
+				: glDrawArrays(GL_LINE_LOOP, 0, segments + 1);
 		}
-		else
-		{
+		else {
 			float vertices[] = {
+				// Triángulo 1
+				-0.5f,  0.5f,
+				 0.5f,  0.5f,
+				-0.5f, -0.5f,
+				// Triángulo 2
+				 0.5f,  0.5f,
+				 0.5f, -0.5f,
+				-0.5f, -0.5f
+			};
+
+			float outlineVertices[] = {
 				-0.5f,  0.5f,
 				 0.5f,  0.5f,
 				 0.5f, -0.5f,
@@ -559,8 +588,14 @@ void RendererEM::RenderDebugColliders()
 			};
 
 			glBindBuffer(GL_ARRAY_BUFFER, lineVBO);
-			glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-			glDrawArrays(GL_LINE_LOOP, 0, 5);
+			if (filled) {
+				glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+				glDrawArrays(GL_TRIANGLES, 0, 6);
+			}
+			else {
+				glBufferData(GL_ARRAY_BUFFER, sizeof(outlineVertices), outlineVertices, GL_STATIC_DRAW);
+				glDrawArrays(GL_LINE_LOOP, 0, 5);
+			}
 		}
 	}
 	glLineWidth(1.0f);

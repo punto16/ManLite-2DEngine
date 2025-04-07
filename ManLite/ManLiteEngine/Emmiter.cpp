@@ -54,14 +54,15 @@ bool Emmiter::Update(float dt)
 		if (spawn_timer >= spawn_rate) SpawnParticles();
 	}
 
-	for (const auto& particle : particles)
+	auto particles_list = std::vector<std::shared_ptr<Particle>>(particles);
+	for (const auto& particle : particles_list)
 	{
 		particle->Update(dt);
 
 		auto t = container_go.lock()->GetComponent<Transform>();
 		if (emmiter_type_manager->force_transform && t)
 		{
-			particle->position += t->GetWorldPosition(); // maybe this one should be removed(?
+			particle->position += t->GetWorldPosition();
 			particle->angle = t->GetWorldAngle();
 			particle->init_position += t->GetWorldPosition();
 			particle->final_position += t->GetWorldPosition();
@@ -84,7 +85,7 @@ void Emmiter::Draw()
 				DEGTORAD * particle->angle,
 				{ particle->scale.x, particle->scale.y });
 
-			engine->renderer_em->SubmitDebugCollider(particle_t, particle->color, false);
+			engine->renderer_em->SubmitDebugCollider(particle_t, particle->color, false, 0.0f, true);
 		}
 		break;
 	}
@@ -97,7 +98,7 @@ void Emmiter::Draw()
 				DEGTORAD * particle->angle,
 				{ particle->scale.x, particle->scale.y });
 
-			engine->renderer_em->SubmitDebugCollider(particle_t, particle->color, true, particle->scale.x / 2);
+			engine->renderer_em->SubmitDebugCollider(particle_t, particle->color, true, particle->scale.x / 2, true);
 		}
 		break;
 	}
@@ -135,7 +136,7 @@ void Emmiter::Draw()
 			mat3f particle_t = mat3f::CreateTransformMatrix(
 				particle->position,
 				DEGTORAD * particle->angle,
-				{ particle->scale.x * tex_w / tex_h, particle->scale.y });
+				{ particle->scale.x * tex_w / tex_h * 0.005, particle->scale.y * 0.005 });
 
 			engine->renderer_em->SubmitText(particle->char_to_print, font, particle_t, particle->color, TextAlignment::TEXT_ALIGN_CENTER);
 		}
