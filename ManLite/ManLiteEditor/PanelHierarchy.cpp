@@ -121,9 +121,10 @@ void PanelHierarchy::IterateTree(GameObject& parent, bool enabled)
 		GameObjectSelection(*item);
 		DragAndDrop(*item);
 
+		Context(*item);
+
 		if (nodeOpen)
 		{
-			Context(*item);
 			if (!empty_children) IterateTree(*item, !(!enabled || is_disabled));
 			ImGui::TreePop();
 		}

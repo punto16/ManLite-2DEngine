@@ -1496,9 +1496,11 @@ void PanelInspector::ParticleSystemOptions(GameObject& go) {
 					ImGui::TableNextRow();
 					ImGui::TableSetColumnIndex(0);
 					ImGui::Text("Spawn Rate");
+					ImGui::SameLine();
+					Gui::HelpMarker("Spawn Rate over time:\n0 means spawn each frame\n10 means spawn each 10 second");
 					ImGui::TableSetColumnIndex(1);
 					float spawnRate = emitter->GetSpawnRate();
-					if (ImGui::DragFloat("##SpawnRate", &spawnRate, 0.01f, 0.0f, 10.0f)) {
+					if (ImGui::DragFloat("##SpawnRate Over Time", &spawnRate, 0.01f, 0.0f, 10.0f)) {
 						emitter->SetSpawnRate(spawnRate);
 					}
 

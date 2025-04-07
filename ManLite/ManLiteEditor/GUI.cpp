@@ -611,11 +611,13 @@ void Gui::GameObjectMenu()
 	if (ImGui::MenuItem("Camera"))
 	{
 		GameObject* e_go = engine->scene_manager_em->GetCurrentScene().CreateEmptyGO(engine->scene_manager_em->GetCurrentScene().GetSceneRoot()).get();
+		e_go->SetName("Camera");
 		e_go->AddComponent<Camera>();
 	}
 	if (ImGui::MenuItem("Canvas"))
 	{
 		GameObject* e_go = engine->scene_manager_em->GetCurrentScene().CreateEmptyGO(engine->scene_manager_em->GetCurrentScene().GetSceneRoot()).get();
+		e_go->SetName("Canvas");
 		e_go->AddComponent<Canvas>();
 	}
 }
