@@ -176,6 +176,7 @@ popd
     <ClCompile Include="CheckBoxUI.cpp" />
     <ClCompile Include="Collider2D.cpp" />
     <ClCompile Include="Component.cpp" />
+    <ClCompile Include="Emmiter.cpp" />
     <ClCompile Include="EngineCore.cpp" />
     <ClCompile Include="FileDialog.cpp" />
     <ClCompile Include="FontEM.cpp" />
@@ -185,6 +186,8 @@ popd
     <ClCompile Include="Layer.cpp" />
     <ClCompile Include="Log.cpp" />
     <ClCompile Include="mat3f.cpp" />
+    <ClCompile Include="Particle.cpp" />
+    <ClCompile Include="ParticleSystem.cpp" />
     <ClCompile Include="PhysicsEM.cpp" />
     <ClCompile Include="RendererEM.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
@@ -208,6 +211,7 @@ popd
     <ClInclude Include="Collider2D.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="Defs.h" />
+    <ClInclude Include="Emmiter.h" />
     <ClInclude Include="EngineCore.h" />
     <ClInclude Include="EngineModule.h" />
     <ClInclude Include="FileDialog.h" />
@@ -219,6 +223,8 @@ popd
     <ClInclude Include="Layer.h" />
     <ClInclude Include="Log.h" />
     <ClInclude Include="mat3f.h" />
+    <ClInclude Include="Particle.h" />
+    <ClInclude Include="ParticleSystem.h" />
     <ClInclude Include="PhysicsEM.h" />
     <ClInclude Include="RendererEM.h" />
     <ClInclude Include="ResourceManager.h" />

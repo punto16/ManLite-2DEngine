@@ -39,6 +39,7 @@ CheckBoxUI::CheckBoxUI(const CheckBoxUI& uielement_to_copy, std::shared_ptr<Game
     value(uielement_to_copy.value)
 {
 
+    ResourceManager::GetInstance().LoadTexture("Config\\placeholder.png", tex_width, tex_height);//load placeholder
     textureID = ResourceManager::GetInstance().LoadTexture(texture_path, tex_width, tex_height);
     
     // Initialize all sections

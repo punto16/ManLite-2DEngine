@@ -23,7 +23,8 @@ ImageUI::ImageUI(const ImageUI& uielement_to_copy, std::shared_ptr<GameObject> c
     pixel_art(uielement_to_copy.pixel_art),
     section_idle(uielement_to_copy.section_idle)
 {
-	textureID = ResourceManager::GetInstance().LoadTexture(texture_path, tex_width, tex_height);
+    ResourceManager::GetInstance().LoadTexture("Config\\placeholder.png", tex_width, tex_height);//load placeholder
+    textureID = ResourceManager::GetInstance().LoadTexture(texture_path, tex_width, tex_height);
 }
 
 ImageUI::~ImageUI()

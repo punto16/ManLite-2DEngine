@@ -29,7 +29,8 @@ ButtonImageUI::ButtonImageUI(const ButtonImageUI& uielement_to_copy, std::shared
 	texture_path(uielement_to_copy.texture_path),
 	pixel_art(uielement_to_copy.pixel_art)
 {
-	textureID = ResourceManager::GetInstance().LoadTexture(texture_path, tex_width, tex_height);
+    ResourceManager::GetInstance().LoadTexture("Config\\placeholder.png", tex_width, tex_height);//load placeholder
+    textureID = ResourceManager::GetInstance().LoadTexture(texture_path, tex_width, tex_height);
 
     button_section_manager.current_section = nullptr;
     button_section_manager.button_state = uielement_to_copy.button_section_manager.button_state;

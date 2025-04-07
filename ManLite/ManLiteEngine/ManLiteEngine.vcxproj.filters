@@ -46,6 +46,9 @@
     <Filter Include="EngineModules\Font">
       <UniqueIdentifier>{39c26c8e-9a28-445d-b35a-e872a080b1dd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="GameObject\Components\ParticleSystem">
+      <UniqueIdentifier>{ceab878b-97a5-4bb4-acd2-bb0b74b5c1e3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EngineCore.cpp">
@@ -140,6 +143,15 @@
     </ClCompile>
     <ClCompile Include="FontEM.cpp">
       <Filter>EngineModules\Font</Filter>
+    </ClCompile>
+    <ClCompile Include="ParticleSystem.cpp">
+      <Filter>GameObject\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Emmiter.cpp">
+      <Filter>GameObject\Components\ParticleSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Particle.cpp">
+      <Filter>GameObject\Components\ParticleSystem</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -238,6 +250,15 @@
     </ClInclude>
     <ClInclude Include="FontEM.h">
       <Filter>EngineModules\Font</Filter>
+    </ClInclude>
+    <ClInclude Include="ParticleSystem.h">
+      <Filter>GameObject\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Emmiter.h">
+      <Filter>GameObject\Components\ParticleSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Particle.h">
+      <Filter>GameObject\Components\ParticleSystem</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

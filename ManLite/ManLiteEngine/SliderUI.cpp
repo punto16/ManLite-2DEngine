@@ -87,6 +87,7 @@ SliderUI::SliderUI(const SliderUI& uielement_to_copy, std::shared_ptr<GameObject
     offset_first(uielement_to_copy.offset_first),
     offset_last(uielement_to_copy.offset_last) {
 
+    ResourceManager::GetInstance().LoadTexture("Config\\placeholder.png", tex_width, tex_height);//load placeholder
     textureID = ResourceManager::GetInstance().LoadTexture(texture_path, tex_width, tex_height);
     CalculateDimensions();
 
