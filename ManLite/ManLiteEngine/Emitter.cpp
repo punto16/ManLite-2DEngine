@@ -60,16 +60,8 @@ bool Emitter::Update(float dt)
 	auto particles_list = std::vector<std::shared_ptr<Particle>>(particles);
 	for (const auto& particle : particles_list)
 	{
+		if (particle->finished) continue;
 		particle->Update(dt);
-
-		auto t = container_go.lock()->GetComponent<Transform>();
-		if (emitter_type_manager->force_transform && t)
-		{
-			particle->position += t->GetWorldPosition();
-			particle->angle = t->GetWorldAngle();
-			particle->init_position += t->GetWorldPosition();
-			particle->final_position += t->GetWorldPosition();
-		}
 	}
 
 	return ret;
@@ -83,10 +75,21 @@ void Emitter::Draw()
 	{
 		for (const auto& particle : particles)
 		{
+			if (particle->finished) continue;
+
+			mat3f mat;
+			
+			if (auto t = container_go.lock()->GetComponent<Transform>())
+			{
+				mat = t->GetWorldMatrix();
+			}
+
 			mat3f particle_t = mat3f::CreateTransformMatrix(
 				particle->position,
 				DEGTORAD * particle->angle,
 				{ particle->scale.x, particle->scale.y });
+
+			particle_t = mat * particle_t;
 
 			engine->renderer_em->SubmitDebugCollider(particle_t, particle->color, false, 0.0f, true);
 		}
@@ -96,10 +99,20 @@ void Emitter::Draw()
 	{
 		for (const auto& particle : particles)
 		{
+			if (particle->finished) continue;
+
+			mat3f mat;
+
+			if (auto t = container_go.lock()->GetComponent<Transform>())
+			{
+				mat = t->GetWorldMatrix();
+			}
+
 			mat3f particle_t = mat3f::CreateTransformMatrix(
 				particle->position,
 				DEGTORAD * particle->angle,
-				{ particle->scale.x, particle->scale.y });
+				{ 1, 1 });
+			particle_t = mat * particle_t;
 
 			engine->renderer_em->SubmitDebugCollider(particle_t, particle->color, true, particle->scale.x / 2, true);
 		}
@@ -118,10 +131,20 @@ void Emitter::Draw()
 
 		for (const auto& particle : particles)
 		{
+			if (particle->finished) continue;
+
+			mat3f mat;
+
+			if (auto t = container_go.lock()->GetComponent<Transform>())
+			{
+				mat = t->GetWorldMatrix();
+			}
+
 			mat3f particle_t = mat3f::CreateTransformMatrix(
 				particle->position,
 				DEGTORAD * particle->angle,
 				{ particle->scale.x * tex_w / tex_h, particle->scale.y });
+			particle_t = mat * particle_t;
 
 			engine->renderer_em->SubmitSprite(
 				texture_id != 0 ? texture_id : ResourceManager::GetInstance().GetTexture("Config\\placeholder.png"),
@@ -137,10 +160,20 @@ void Emitter::Draw()
 	case RenderType::CHARACTER:
 		for (const auto& particle : particles)
 		{
+			if (particle->finished) continue;
+
+			mat3f mat;
+
+			if (auto t = container_go.lock()->GetComponent<Transform>())
+			{
+				mat = t->GetWorldMatrix();
+			}
+
 			mat3f particle_t = mat3f::CreateTransformMatrix(
 				particle->position,
 				DEGTORAD * particle->angle,
 				{ particle->scale.x * tex_w / tex_h * 0.005, particle->scale.y * 0.005 });
+			particle_t = mat * particle_t;
 
 			engine->renderer_em->SubmitText(particle->char_to_print, font, particle_t, particle->color, TextAlignment::TEXT_ALIGN_CENTER);
 		}
@@ -176,11 +209,25 @@ void Emitter::SpawnParticles()
 
 void Emitter::SafeAddParticle()
 {
-	auto t = container_go.lock()->GetComponent<Transform>();
-	if (!t) return;
-
 	if (particles.size() >= max_particles)
 	{
+		particles[0]->duration = RandomRange(particle_duration_min, particle_duration_max);
+		particles[0]->init_color = RandomRange(init_color_min, init_color_max);
+		particles[0]->init_position = RandomRange(init_position_min, init_position_max);
+		particles[0]->init_direction = RandomRange(init_direction_min, init_direction_max);
+		particles[0]->init_speed = RandomRange(init_speed_min, init_speed_max);
+		particles[0]->init_angle_speed = RandomRange(init_angle_speed_min, init_angle_speed_max);
+		particles[0]->init_angle = RandomRange(init_angle_min, init_angle_max);
+		particles[0]->init_scale = RandomRange(init_scale_min, init_scale_max);
+		//final stats
+		particles[0]->final_color = RandomRange(final_color_min, final_color_max);
+		particles[0]->final_position = RandomRange(final_position_min, final_position_max);
+		particles[0]->final_direction = RandomRange(final_direction_min, final_direction_max);
+		particles[0]->final_speed = RandomRange(final_speed_min, final_speed_max);
+		particles[0]->final_angle_speed = RandomRange(final_angle_speed_min, final_angle_speed_max);
+		particles[0]->final_scale = RandomRange(final_scale_min, final_scale_max);
+		particles[0]->wind_effect = RandomRange(wind_effect_min, wind_effect_max);
+
 		particles[0]->Restart();
 	}
 	else
@@ -189,15 +236,15 @@ void Emitter::SafeAddParticle()
 		//init stats
 		p->duration = RandomRange(particle_duration_min, particle_duration_max);
 		p->init_color = RandomRange(init_color_min, init_color_max);
-		p->init_position = RandomRange(init_position_min + t->GetWorldPosition(), init_position_max + t->GetWorldPosition());
+		p->init_position = RandomRange(init_position_min, init_position_max);
 		p->init_direction = RandomRange(init_direction_min, init_direction_max);
 		p->init_speed = RandomRange(init_speed_min, init_speed_max);
 		p->init_angle_speed = RandomRange(init_angle_speed_min, init_angle_speed_max);
-		p->init_angle = RandomRange(init_angle_min + t->GetWorldAngle(), init_angle_max + t->GetWorldAngle());
+		p->init_angle = RandomRange(init_angle_min, init_angle_max);
 		p->init_scale = RandomRange(init_scale_min, init_scale_max);
 		//final stats
 		p->final_color = RandomRange(final_color_min, final_color_max);
-		p->final_position = RandomRange(final_position_min + t->GetWorldPosition(), final_position_max + t->GetWorldPosition());
+		p->final_position = RandomRange(final_position_min, final_position_max);
 		p->final_direction = RandomRange(final_direction_min, final_direction_max);
 		p->final_speed = RandomRange(final_speed_min, final_speed_max);
 		p->final_angle_speed = RandomRange(final_angle_speed_min, final_angle_speed_max);

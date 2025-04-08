@@ -73,7 +73,7 @@ bool Particle::Update(float dt)
 {
 	bool ret = true;
 
-	if (finished && loop) Restart();
+	//if (finished && loop) Restart();
 	life_time += dt;
 	if (life_time >= duration) finished = true;
 
@@ -99,7 +99,9 @@ bool Particle::Update(float dt)
 		speed = std::lerp(init_speed, final_speed, t);
 
 	if (update_type->final_angular_speed)
-		angle += std::lerp(init_angle_speed, final_angle_speed, t) * dt;
+		angle += std::lerp(init_angle_speed, final_angle_speed, t) * dt * 10;
+	else
+		angle += init_angle_speed * dt * 10;
 
 	if (update_type->final_scale)
 	{
@@ -117,17 +119,18 @@ bool Particle::Update(float dt)
 	if (update_type->wind_effect)
 	{
 		position = {
-		position.x + speed * RandomRange(-wind_effect.x / 2, wind_effect.x / 2),
-		position.y + speed * RandomRange(-wind_effect.y / 2, wind_effect.y / 2)
+		position.x + 0.01 * RandomRange(-wind_effect.x / 2, wind_effect.x / 2),
+		position.y + 0.01 * RandomRange(-wind_effect.y / 2, wind_effect.y / 2)
 		};
 	}
 
 	//reach final position
 	if (update_type->final_position)
 	{
+		float eased_t = t < 0.5f ? 2 * t * t : 1 - std::pow(-2 * t + 2, 2) / 2;
 		position = {
-		std::lerp(position.x, final_position.x, t),
-		std::lerp(position.y, final_position.y, t)
+			std::lerp(init_position.x, final_position.x, eased_t),
+			std::lerp(init_position.y, final_position.y, eased_t)
 		};
 	}
 
