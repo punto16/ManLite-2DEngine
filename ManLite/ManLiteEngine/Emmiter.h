@@ -84,6 +84,7 @@ public:
     EmmiterTypeManager* GetEmmiterTypeManager() { return emmiter_type_manager; }
 
     std::string GetCharacters() { return characters; }
+    void SetCharacters(std::string c) { characters = c; }
 
     std::weak_ptr<GameObject> GetContainerGO() const { return container_go; }
     std::string GetName() const { return emmiter_name; }

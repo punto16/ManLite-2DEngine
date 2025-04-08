@@ -1439,7 +1439,8 @@ void PanelInspector::CanvasOptions(GameObject& go)
 	}
 }
 
-void PanelInspector::ParticleSystemOptions(GameObject& go) {
+void PanelInspector::ParticleSystemOptions(GameObject& go) 
+{
 	uint treeFlags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_DefaultOpen;
 	ParticleSystem* psystem = go.GetComponent<ParticleSystem>();
 	if (psystem == nullptr) return;
@@ -1457,13 +1458,11 @@ void PanelInspector::ParticleSystemOptions(GameObject& go) {
 		}
 		ImGui::Dummy(ImVec2(0, 4));
 
-		// Lista de emisores
 		auto& emmiters = psystem->GetEmmiters();
 		for (size_t i = 0; i < emmiters.size(); ++i) {
 			std::string emitterLabel = "Emitter " + std::to_string(i + 1) + "##" + std::to_string(go.GetID());
 
 			if (ImGui::TreeNodeEx(emitterLabel.c_str(), treeFlags)) {
-				// Botón para eliminar emisor
 				ImGui::SameLine(ImGui::GetWindowWidth() - 30);
 				if (ImGui::SmallButton(("X##" + std::to_string(i)).c_str())) {
 					emmiters.erase(emmiters.begin() + i);
@@ -1472,106 +1471,335 @@ void PanelInspector::ParticleSystemOptions(GameObject& go) {
 				}
 
 				Emmiter* emitter = emmiters[i].get();
+				EmmiterTypeManager* typeManager = emitter->GetEmmiterTypeManager();
+				UpdateOptionsEnabled* updateOptions = &typeManager->update_options_enabled;
 
-				if (ImGui::BeginTable("EmitterSettings", 2, ImGuiTableFlags_BordersInnerV)) {
-					ImGui::TableSetupColumn("Label", ImGuiTableColumnFlags_WidthFixed, 120.0f);
-					ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthStretch);
+				// Sección SPAWN
+				if (ImGui::TreeNodeEx("Spawn Settings", ImGuiTreeNodeFlags_DefaultOpen)) {
+					if (ImGui::BeginTable("SpawnSettings", 2, ImGuiTableFlags_BordersInnerV)) {
+						ImGui::TableSetupColumn("Label", ImGuiTableColumnFlags_WidthFixed, 120.0f);
+						ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthStretch);
 
-					// Sección de Configuración Básica
-					ImGui::TableNextRow();
-					ImGui::TableSetColumnIndex(0);
-					ImGui::Text("Active Particles");
-					ImGui::TableSetColumnIndex(1);
-					ImGui::Text("%zu", emitter->GetParticles().size());
+						ImGui::TableNextRow();
+						ImGui::TableSetColumnIndex(0);
+						ImGui::Text("Spawn Type");
+						ImGui::TableSetColumnIndex(1);
+						const char* spawnTypes[] = { "Constant", "Burst", "Constant + Burst" };
+						int spawnType = static_cast<int>(typeManager->spawn_type);
+						if (ImGui::Combo("##SpawnType", &spawnType, spawnTypes, IM_ARRAYSIZE(spawnTypes))) {
+							typeManager->spawn_type = static_cast<SpawnType>(spawnType);
+						}
 
-					ImGui::TableNextRow();
-					ImGui::TableSetColumnIndex(0);
-					ImGui::Text("Max Particles");
-					ImGui::TableSetColumnIndex(1);
-					int maxParticles = emitter->GetMaxParticles();
-					if (ImGui::DragInt("##MaxParticles", &maxParticles, 1, 1, 10000)) {
-						emitter->SetMaxParticles(maxParticles);
+						ImGui::TableNextRow();
+						ImGui::TableSetColumnIndex(0);
+						ImGui::Text("Max Particles");
+						ImGui::TableSetColumnIndex(1);
+						int maxParticles = emitter->GetMaxParticles();
+						if (ImGui::DragInt("##MaxParticles", &maxParticles, 1, 1, 10000)) {
+							emitter->SetMaxParticles(maxParticles);
+						}
+
+						ImGui::TableNextRow();
+						ImGui::TableSetColumnIndex(0);
+						ImGui::Text("Spawn Rate");
+						ImGui::TableSetColumnIndex(1);
+						float spawnRate = emitter->GetSpawnRate();
+						if (ImGui::DragFloat("##SpawnRate", &spawnRate, 0.01f, 0.0f, 60.0f)) {
+							emitter->SetSpawnRate(spawnRate);
+						}
+
+						ImGui::TableNextRow();
+						ImGui::TableSetColumnIndex(0);
+						ImGui::Text("Particles/Spawn");
+						ImGui::TableSetColumnIndex(1);
+						int particlesPerSpawn = emitter->GetParticlesPerSpawn();
+						if (ImGui::DragInt("##ParticlesPerSpawn", &particlesPerSpawn, 1, 1, 1000)) {
+							emitter->SetParticlesPerSpawn(particlesPerSpawn);
+						}
+
+						ImGui::TableNextRow();
+						ImGui::TableSetColumnIndex(0);
+						ImGui::Text("Lifetime");
+						ImGui::TableSetColumnIndex(1);
+						float lifeMin = emitter->GetParticleDurationMin();
+						float lifeMax = emitter->GetParticleDurationMax();
+						if (ImGui::DragFloatRange2("##Lifetime", &lifeMin, &lifeMax, 0.1f, 0.1f, 100.0f, "Min: %.1f", "Max: %.1f")) {
+							emitter->SetParticleDurationMin(lifeMin);
+							emitter->SetParticleDurationMax(lifeMax);
+						}
+
+						ImGui::EndTable();
 					}
+					ImGui::TreePop();
+				}
 
-					ImGui::TableNextRow();
-					ImGui::TableSetColumnIndex(0);
-					ImGui::Text("Spawn Rate");
-					ImGui::SameLine();
-					Gui::HelpMarker("Spawn Rate over time:\n0 means spawn each frame\n10 means spawn each 10 second");
-					ImGui::TableSetColumnIndex(1);
-					float spawnRate = emitter->GetSpawnRate();
-					if (ImGui::DragFloat("##SpawnRate Over Time", &spawnRate, 0.01f, 0.0f, 10.0f)) {
-						emitter->SetSpawnRate(spawnRate);
-					}
+				// Sección INIT
+				if (ImGui::TreeNodeEx("Initial Settings", ImGuiTreeNodeFlags_DefaultOpen)) {
+					if (ImGui::BeginTable("InitSettings", 2, ImGuiTableFlags_BordersInnerV)) {
+						ImGui::TableSetupColumn("Label", ImGuiTableColumnFlags_WidthFixed, 120.0f);
+						ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthStretch);
+						ImGui::TableNextRow();
+						ImGui::TableSetColumnIndex(0);
+						ImGui::Text("Init Color");
+						ImGui::TableSetColumnIndex(1);
+						ML_Color initMin = emitter->GetInitColorMin();
+						ML_Color initMax = emitter->GetInitColorMax();
+						ImVec4 colorMin(initMin.r / 255.0f, initMin.g / 255.0f, initMin.b / 255.0f, initMin.a / 255.0f);
+						ImVec4 colorMax(initMax.r / 255.0f, initMax.g / 255.0f, initMax.b / 255.0f, initMax.a / 255.0f);
+						ImGui::ColorEdit4("Min##InitColor", (float*)&colorMin, ImGuiColorEditFlags_NoInputs);
+						emitter->SetInitColorMin(ML_Color(colorMin.x * 255, colorMin.y * 255, colorMin.z * 255, colorMin.w * 255));
+						ImGui::SameLine();
+						ImGui::ColorEdit4("Max##InitColor", (float*)&colorMax, ImGuiColorEditFlags_NoInputs);
+						emitter->SetInitColorMax(ML_Color(colorMax.x * 255, colorMax.y * 255, colorMax.z * 255, colorMax.w * 255));
 
-					// Sección de Apariencia
-					ImGui::TableNextRow();
-					ImGui::TableSetColumnIndex(0);
-					ImGui::Text("Particle Lifetime");
-					ImGui::TableSetColumnIndex(1);
-					float lifeMin = emitter->GetParticleDurationMin();
-					float lifeMax = emitter->GetParticleDurationMax();
-					if (ImGui::DragFloatRange2("##Lifetime", &lifeMin, &lifeMax, 0.1f, 0.1f, 100.0f, "Min: %.1f", "Max: %.1f")) {
-						emitter->SetParticleDurationMin(lifeMin);
-						emitter->SetParticleDurationMax(lifeMax);
-					}
+						ImGui::TableNextRow();
+						ImGui::TableSetColumnIndex(0);
+						ImGui::Text("Init Position");
+						ImGui::TableSetColumnIndex(1);
+						vec2f initPosMin = emitter->GetInitPositionMin();
+						vec2f initPosMax = emitter->GetInitPositionMax();
+						ImGui::DragFloat2("Min##InitPos", &initPosMin.x, 0.1f);
+						emitter->SetInitPositionMin(initPosMin);
+						ImGui::DragFloat2("Max##InitPos", &initPosMax.x, 0.1f);
+						emitter->SetInitPositionMax(initPosMax);
 
-					// Sección de Colores
-					ImGui::TableNextRow();
-					ImGui::TableSetColumnIndex(0);
-					ImGui::Text("Start Color");
-					ImGui::TableSetColumnIndex(1);
-					ML_Color initMin = emitter->GetInitColorMin();
-					ML_Color initMax = emitter->GetInitColorMax();
-					ImVec4 colorMin(initMin.r / 255.0f, initMin.g / 255.0f, initMin.b / 255.0f, initMin.a / 255.0f);
-					ImVec4 colorMax(initMax.r / 255.0f, initMax.g / 255.0f, initMax.b / 255.0f, initMax.a / 255.0f);
-					if (ImGui::ColorEdit4("Min##StartColor", (float*)&colorMin, ImGuiColorEditFlags_NoInputs)) {
-						emitter->SetInitColorMin(ML_Color(
-							colorMin.x * 255, colorMin.y * 255,
-							colorMin.z * 255, colorMin.w * 255
-						));
-					}
-					ImGui::SameLine();
-					if (ImGui::ColorEdit4("Max##StartColor", (float*)&colorMax, ImGuiColorEditFlags_NoInputs)) {
-						emitter->SetInitColorMax(ML_Color(
-							colorMax.x * 255, colorMax.y * 255,
-							colorMax.z * 255, colorMax.w * 255
-						));
-					}
+						ImGui::TableNextRow();
+						ImGui::TableSetColumnIndex(0);
+						ImGui::Text("Init Direction");
+						ImGui::TableSetColumnIndex(1);
+						vec2f initDirMin = emitter->GetInitDirectionMin();
+						vec2f initDirMax = emitter->GetInitDirectionMax();
+						ImGui::DragFloat2("Min##InitDir", &initDirMin.x, 0.1f);
+						emitter->SetInitDirectionMin(initDirMin);
+						ImGui::DragFloat2("Max##InitDir", &initDirMax.x, 0.1f);
+						emitter->SetInitDirectionMax(initDirMax);
 
-					// Sección de Movimiento
-					ImGui::TableNextRow();
-					ImGui::TableSetColumnIndex(0);
-					ImGui::Text("Initial Speed");
-					ImGui::TableSetColumnIndex(1);
-					float speedMin = emitter->GetInitSpeedMin();
-					float speedMax = emitter->GetInitSpeedMax();
-					if (ImGui::DragFloatRange2("##InitSpeed", &speedMin, &speedMax, 0.1f, 0.0f, 1000.0f, "Min: %.1f", "Max: %.1f")) {
-						emitter->SetInitSpeedMin(speedMin);
-						emitter->SetInitSpeedMax(speedMax);
-					}
+						ImGui::TableNextRow();
+						ImGui::TableSetColumnIndex(0);
+						ImGui::Text("Init Speed");
+						ImGui::TableSetColumnIndex(1);
+						float speedMin = emitter->GetInitSpeedMin();
+						float speedMax = emitter->GetInitSpeedMax();
+						if (ImGui::DragFloatRange2("##InitSpeed", &speedMin, &speedMax, 0.1f, 0.0f, 1000.0f, "Min: %.1f", "Max: %.1f")) {
+							emitter->SetInitSpeedMin(speedMin);
+							emitter->SetInitSpeedMax(speedMax);
+						}
 
-					ImGui::TableNextRow();
-					ImGui::TableSetColumnIndex(0);
-					ImGui::Text("Wind Effect");
-					ImGui::TableSetColumnIndex(1);
-					vec2f windMin = emitter->GetWindEffectMin();
-					vec2f windMax = emitter->GetWindEffectMax();
-					if (ImGui::InputFloat2("Min##Wind", &windMin.x, "%.2f")) {
-						emitter->SetWindEffectMin(windMin);
-					}
-					if (ImGui::InputFloat2("Max##Wind", &windMax.x, "%.2f")) {
-						emitter->SetWindEffectMax(windMax);
-					}
+						ImGui::TableNextRow();
+						ImGui::TableSetColumnIndex(0);
+						ImGui::Text("Init Angle");
+						ImGui::TableSetColumnIndex(1);
+						float angleMin = emitter->GetInitAngleMin();
+						float angleMax = emitter->GetInitAngleMax();
+						if (ImGui::DragFloatRange2("##InitAngle", &angleMin, &angleMax, 1.0f, 0.0f, 360.0f, "Min: %.1f", "Max: %.1f")) {
+							emitter->SetInitAngleMin(angleMin);
+							emitter->SetInitAngleMax(angleMax);
+						}
 
-					ImGui::EndTable();
+						ImGui::TableNextRow();
+						ImGui::TableSetColumnIndex(0);
+						ImGui::Text("Init Angular Speed");
+						ImGui::TableSetColumnIndex(1);
+						float angSpeedMin = emitter->GetInitAngleSpeedMin();
+						float angSpeedMax = emitter->GetInitAngleSpeedMax();
+						if (ImGui::DragFloatRange2("##InitAngSpeed", &angSpeedMin, &angSpeedMax, 0.1f, -360.0f, 360.0f, "Min: %.1f", "Max: %.1f")) {
+							emitter->SetInitAngleSpeedMin(angSpeedMin);
+							emitter->SetInitAngleSpeedMax(angSpeedMax);
+						}
+
+						ImGui::TableNextRow();
+						ImGui::TableSetColumnIndex(0);
+						ImGui::Text("Init Scale");
+						ImGui::TableSetColumnIndex(1);
+						vec2f scaleMin = emitter->GetInitScaleMin();
+						vec2f scaleMax = emitter->GetInitScaleMax();
+						ImGui::DragFloat2("Min##InitScale", &scaleMin.x, 0.01f);
+						emitter->SetInitScaleMin(scaleMin);
+						ImGui::DragFloat2("Max##InitScale", &scaleMax.x, 0.01f);
+						emitter->SetInitScaleMax(scaleMax);
+
+						ImGui::EndTable();
+					}
+					ImGui::TreePop();
+				}
+
+				// Sección UPDATE (FINAL)
+				if (ImGui::TreeNodeEx("Update Settings", ImGuiTreeNodeFlags_DefaultOpen)) {
+					if (ImGui::BeginTable("UpdateSettings", 2, ImGuiTableFlags_BordersInnerV)) {
+						ImGui::TableSetupColumn("Label", ImGuiTableColumnFlags_WidthFixed, 120.0f);
+						ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthStretch);
+
+						// Final Speed
+						ImGui::TableNextRow();
+						ImGui::TableSetColumnIndex(0);
+						ImGui::Text("Final Speed");
+						ImGui::TableSetColumnIndex(1);
+						bool finalSpeed = updateOptions->final_speed;
+						if (ImGui::Checkbox("##FinalSpeed", &finalSpeed)) updateOptions->final_speed = finalSpeed;
+						if (finalSpeed) {
+							float finalMin = emitter->GetFinalSpeedMin();
+							float finalMax = emitter->GetFinalSpeedMax();
+							if (ImGui::DragFloatRange2("##FinalSpeedVal", &finalMin, &finalMax, 0.1f, 0.0f, 1000.0f, "Min: %.1f", "Max: %.1f")) {
+								emitter->SetFinalSpeedMin(finalMin);
+								emitter->SetFinalSpeedMax(finalMax);
+							}
+						}
+
+						// Final Color
+						ImGui::TableNextRow();
+						ImGui::TableSetColumnIndex(0);
+						ImGui::Text("Final Color");
+						ImGui::TableSetColumnIndex(1);
+						bool finalColor = updateOptions->final_color;
+						if (ImGui::Checkbox("##FinalColor", &finalColor)) updateOptions->final_color = finalColor;
+						if (finalColor) {
+							ML_Color finalMin = emitter->GetFinalColorMin();
+							ML_Color finalMax = emitter->GetFinalColorMax();
+							ImVec4 colMin(finalMin.r / 255.0f, finalMin.g / 255.0f, finalMin.b / 255.0f, finalMin.a / 255.0f);
+							ImVec4 colMax(finalMax.r / 255.0f, finalMax.g / 255.0f, finalMax.b / 255.0f, finalMax.a / 255.0f);
+							ImGui::ColorEdit4("Min##FinalColor", (float*)&colMin, ImGuiColorEditFlags_NoInputs);
+							emitter->SetFinalColorMin(ML_Color(colMin.x * 255, colMin.y * 255, colMin.z * 255, colMin.w * 255));
+							ImGui::SameLine();
+							ImGui::ColorEdit4("Max##FinalColor", (float*)&colMax, ImGuiColorEditFlags_NoInputs);
+							emitter->SetFinalColorMax(ML_Color(colMax.x * 255, colMax.y * 255, colMax.z * 255, colMax.w * 255));
+						}
+
+						// Final Position
+						ImGui::TableNextRow();
+						ImGui::TableSetColumnIndex(0);
+						ImGui::Text("Final Position");
+						ImGui::TableSetColumnIndex(1);
+						bool finalPos = updateOptions->final_position;
+						if (ImGui::Checkbox("##FinalPosition", &finalPos)) updateOptions->final_position = finalPos;
+						if (finalPos) {
+							vec2f finalPosMin = emitter->GetFinalPositionMin();
+							vec2f finalPosMax = emitter->GetFinalPositionMax();
+							ImGui::DragFloat2("Min##FinalPos", &finalPosMin.x, 0.1f);
+							emitter->SetFinalPositionMin(finalPosMin);
+							ImGui::DragFloat2("Max##FinalPos", &finalPosMax.x, 0.1f);
+							emitter->SetFinalPositionMax(finalPosMax);
+						}
+
+						// Final Direction
+						ImGui::TableNextRow();
+						ImGui::TableSetColumnIndex(0);
+						ImGui::Text("Final Direction");
+						ImGui::TableSetColumnIndex(1);
+						bool finalDir = updateOptions->final_direction;
+						if (ImGui::Checkbox("##FinalDirection", &finalDir)) updateOptions->final_direction = finalDir;
+						if (finalDir) {
+							vec2f finalDirMin = emitter->GetFinalDirectionMin();
+							vec2f finalDirMax = emitter->GetFinalDirectionMax();
+							ImGui::DragFloat2("Min##FinalDir", &finalDirMin.x, 0.1f);
+							emitter->SetFinalDirectionMin(finalDirMin);
+							ImGui::DragFloat2("Max##FinalDir", &finalDirMax.x, 0.1f);
+							emitter->SetFinalDirectionMax(finalDirMax);
+						}
+
+						// Final Angular Speed
+						ImGui::TableNextRow();
+						ImGui::TableSetColumnIndex(0);
+						ImGui::Text("Final Angular Speed");
+						ImGui::TableSetColumnIndex(1);
+						bool finalAngSpeed = updateOptions->final_angular_speed;
+						if (ImGui::Checkbox("##FinalAngSpeed", &finalAngSpeed)) updateOptions->final_angular_speed = finalAngSpeed;
+						if (finalAngSpeed) {
+							float finalAngMin = emitter->GetFinalAngleSpeedMin();
+							float finalAngMax = emitter->GetFinalAngleSpeedMax();
+							if (ImGui::DragFloatRange2("##FinalAngSpeedVal", &finalAngMin, &finalAngMax, 1.0f, -360.0f, 360.0f, "Min: %.1f", "Max: %.1f")) {
+								emitter->SetFinalAngleSpeedMin(finalAngMin);
+								emitter->SetFinalAngleSpeedMax(finalAngMax);
+							}
+						}
+
+						// Final Scale
+						ImGui::TableNextRow();
+						ImGui::TableSetColumnIndex(0);
+						ImGui::Text("Final Scale");
+						ImGui::TableSetColumnIndex(1);
+						bool finalScale = updateOptions->final_scale;
+						if (ImGui::Checkbox("##FinalScale", &finalScale)) updateOptions->final_scale = finalScale;
+						if (finalScale) {
+							vec2f finalScaleMin = emitter->GetFinalScaleMin();
+							vec2f finalScaleMax = emitter->GetFinalScaleMax();
+							ImGui::DragFloat2("Min##FinalScale", &finalScaleMin.x, 0.01f);
+							emitter->SetFinalScaleMin(finalScaleMin);
+							ImGui::DragFloat2("Max##FinalScale", &finalScaleMax.x, 0.01f);
+							emitter->SetFinalScaleMax(finalScaleMax);
+						}
+
+						// Wind Effect
+						ImGui::TableNextRow();
+						ImGui::TableSetColumnIndex(0);
+						ImGui::Text("Wind Effect");
+						ImGui::TableSetColumnIndex(1);
+						bool windEffect = updateOptions->wind_effect;
+						if (ImGui::Checkbox("##WindEffect", &windEffect)) updateOptions->wind_effect = windEffect;
+						if (windEffect) {
+							vec2f windMin = emitter->GetWindEffectMin();
+							vec2f windMax = emitter->GetWindEffectMax();
+							ImGui::DragFloat2("Min##Wind", &windMin.x, 0.1f);
+							emitter->SetWindEffectMin(windMin);
+							ImGui::DragFloat2("Max##Wind", &windMax.x, 0.1f);
+							emitter->SetWindEffectMax(windMax);
+						}
+
+						ImGui::EndTable();
+					}
+					ImGui::TreePop();
+				}
+
+				// Sección RENDER
+				if (ImGui::TreeNodeEx("Render Settings", ImGuiTreeNodeFlags_DefaultOpen)) {
+					if (ImGui::BeginTable("RenderSettings", 2, ImGuiTableFlags_BordersInnerV)) {
+						ImGui::TableSetupColumn("Label", ImGuiTableColumnFlags_WidthFixed, 120.0f);
+						ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthStretch);
+
+						ImGui::TableNextRow();
+						ImGui::TableSetColumnIndex(0);
+						ImGui::Text("Render Type");
+						ImGui::TableSetColumnIndex(1);
+
+						const char* renderTypes[] = { "Square", "Circle", "Image", "Character" };
+						int renderType = static_cast<int>(typeManager->render_type);
+						if (ImGui::Combo("##RenderType", &renderType, renderTypes, IM_ARRAYSIZE(renderTypes))) {
+							typeManager->render_type = static_cast<RenderType>(renderType);
+						}
+
+						if (typeManager->render_type == RenderType::IMAGE) {
+							ImGui::TableNextRow();
+							ImGui::TableSetColumnIndex(0);
+							ImGui::Text("Texture");
+							ImGui::TableSetColumnIndex(1);
+							// Implementar carga de textura...
+						}
+						else if (typeManager->render_type == RenderType::CHARACTER) {
+							ImGui::TableNextRow();
+							ImGui::TableSetColumnIndex(0);
+							ImGui::Text("Characters");
+							ImGui::TableSetColumnIndex(1);
+							char buffer[256];
+							strcpy(buffer, emitter->GetCharacters().c_str());
+							if (ImGui::InputText("##Chars", buffer, sizeof(buffer))) {
+								emitter->SetCharacters(buffer);
+							}
+
+							ImGui::TableNextRow();
+							ImGui::TableSetColumnIndex(0);
+							ImGui::Text("Font");
+							ImGui::TableSetColumnIndex(1);
+							// Implementar carga de fuente...
+						}
+
+						ImGui::EndTable();
+					}
+					ImGui::TreePop();
 				}
 
 				ImGui::TreePop();
 			}
 		}
 
-		// Botón para añadir nuevo emisor
 		if (ImGui::Button("Add New Emitter")) {
 			psystem->GetEmmiters().emplace_back(std::make_shared<Emmiter>(go.weak_from_this()));
 		}

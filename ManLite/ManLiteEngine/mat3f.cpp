@@ -13,11 +13,12 @@ mat3f mat3f::CreateTransformMatrix(vec2f position, float rotation_radians, vec2f
     float s = sin(rotation_radians);
 
     // column-major (3 columns)
-    return mat3f(new float[9] {
+    float matrix[9] = {
             c* scale.x, s* scale.x, 0,      // Column 0 ( X)
             -s * scale.y, c* scale.y, 0,    // Column 1 ( Y)
             position.x, position.y, 1       // Column 2 (traslación)
-        });
+    };
+    return mat3f(matrix);
 }
 
 mat3f mat3f::operator*(const mat3f& other) const {

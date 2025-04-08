@@ -126,6 +126,7 @@ void Emmiter::Draw()
 				0, 1, 1, 0,
 				pixel_art
 			);
+
 		}
 
 		break;
