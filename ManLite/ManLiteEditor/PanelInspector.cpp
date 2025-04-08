@@ -23,7 +23,7 @@
 #include "SliderUI.h"
 #include "TextUI.h"
 #include "ParticleSystem.h"
-#include "Emmiter.h"
+#include "Emitter.h"
 
 #include "ResourceManager.h"
 
@@ -1458,20 +1458,20 @@ void PanelInspector::ParticleSystemOptions(GameObject& go)
 		}
 		ImGui::Dummy(ImVec2(0, 4));
 
-		auto& emmiters = psystem->GetEmmiters();
-		for (size_t i = 0; i < emmiters.size(); ++i) {
+		auto& emitters = psystem->GetEmitters();
+		for (size_t i = 0; i < emitters.size(); ++i) {
 			std::string emitterLabel = "Emitter " + std::to_string(i + 1) + "##" + std::to_string(go.GetID());
 
 			if (ImGui::TreeNodeEx(emitterLabel.c_str(), treeFlags)) {
 				ImGui::SameLine(ImGui::GetWindowWidth() - 30);
 				if (ImGui::SmallButton(("X##" + std::to_string(i)).c_str())) {
-					emmiters.erase(emmiters.begin() + i);
+					emitters.erase(emitters.begin() + i);
 					ImGui::TreePop();
 					break;
 				}
 
-				Emmiter* emitter = emmiters[i].get();
-				EmmiterTypeManager* typeManager = emitter->GetEmmiterTypeManager();
+				Emitter* emitter = emitters[i].get();
+				EmitterTypeManager* typeManager = emitter->GetEmitterTypeManager();
 				UpdateOptionsEnabled* updateOptions = &typeManager->update_options_enabled;
 
 				// Sección SPAWN
@@ -1493,15 +1493,19 @@ void PanelInspector::ParticleSystemOptions(GameObject& go)
 						ImGui::TableNextRow();
 						ImGui::TableSetColumnIndex(0);
 						ImGui::Text("Max Particles");
+						std::string curr_amount_particles = "Current amount of Particles in this Emitter:\n<< " + std::to_string(emitter->GetParticles().size()) + " particles>>";
+						Gui::HelpMarker(curr_amount_particles);
 						ImGui::TableSetColumnIndex(1);
 						int maxParticles = emitter->GetMaxParticles();
-						if (ImGui::DragInt("##MaxParticles", &maxParticles, 1, 1, 10000)) {
+						if (ImGui::DragInt("##MaxParticles", &maxParticles, 1, 1, 1000)) {
 							emitter->SetMaxParticles(maxParticles);
 						}
 
 						ImGui::TableNextRow();
 						ImGui::TableSetColumnIndex(0);
 						ImGui::Text("Spawn Rate");
+						ImGui::SameLine();
+						Gui::HelpMarker("Spawn Rate over time:\n0 means spawn each frame\n10 means spawn each 10 second");
 						ImGui::TableSetColumnIndex(1);
 						float spawnRate = emitter->GetSpawnRate();
 						if (ImGui::DragFloat("##SpawnRate", &spawnRate, 0.01f, 0.0f, 60.0f)) {
@@ -1771,7 +1775,15 @@ void PanelInspector::ParticleSystemOptions(GameObject& go)
 							ImGui::TableSetColumnIndex(0);
 							ImGui::Text("Texture");
 							ImGui::TableSetColumnIndex(1);
-							// Implementar carga de textura...
+							std::string change_font_label = "Change Texture: " + emitter->GetTexturePath();
+							if (ImGui::Button(change_font_label.c_str()))
+							{
+								std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Open Texture file (*.png)\0*.png\0")).string();
+								if (!filePath.empty() && filePath.ends_with(".png"))
+								{
+									emitter->SwapTexture(filePath);
+								}
+							}
 						}
 						else if (typeManager->render_type == RenderType::CHARACTER) {
 							ImGui::TableNextRow();
@@ -1788,7 +1800,15 @@ void PanelInspector::ParticleSystemOptions(GameObject& go)
 							ImGui::TableSetColumnIndex(0);
 							ImGui::Text("Font");
 							ImGui::TableSetColumnIndex(1);
-							// Implementar carga de fuente...
+							std::string change_font_label = "Change Font: " + emitter->GetFontPath();
+							if (ImGui::Button(change_font_label.c_str()))
+							{
+								std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Open Font file (*.ttf)\0*.ttf\0")).string();
+								if (!filePath.empty() && filePath.ends_with(".ttf"))
+								{
+									emitter->SwapFont(filePath);
+								}
+							}
 						}
 
 						ImGui::EndTable();
@@ -1801,7 +1821,7 @@ void PanelInspector::ParticleSystemOptions(GameObject& go)
 		}
 
 		if (ImGui::Button("Add New Emitter")) {
-			psystem->GetEmmiters().emplace_back(std::make_shared<Emmiter>(go.weak_from_this()));
+			psystem->GetEmitters().emplace_back(std::make_shared<Emitter>(go.weak_from_this()));
 		}
 
 		ImGui::Dummy(ImVec2(0, 4));

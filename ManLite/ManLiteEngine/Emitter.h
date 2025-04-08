@@ -1,5 +1,5 @@
-#ifndef __EMMITER_H__
-#define __EMMITER_H__
+#ifndef __EMITTER_H__
+#define __EMITTER_H__
 #pragma once
 
 #include "vector"
@@ -40,11 +40,11 @@ public:
     bool final_angular_speed = false;
 };
 
-class EmmiterTypeManager
+class EmitterTypeManager
 {
 public:
-    EmmiterTypeManager(){}
-    EmmiterTypeManager(EmmiterTypeManager* ref)
+    EmitterTypeManager(){}
+    EmitterTypeManager(EmitterTypeManager* ref)
     {
         spawn_type = ref->spawn_type;
         update_options_enabled = ref->update_options_enabled;
@@ -60,11 +60,11 @@ public:
     bool force_transform = false;
 };
 
-class Emmiter {
+class Emitter {
 public:
-    Emmiter(std::weak_ptr<GameObject> container_go, std::string name = "Emmiter", bool enable = true);
-    Emmiter(const Emmiter& emmiter_to_copy, std::shared_ptr<GameObject> container_go);
-    ~Emmiter();
+    Emitter(std::weak_ptr<GameObject> container_go, std::string name = "Emitter", bool enable = true);
+    Emitter(const Emitter& emitter_to_copy, std::shared_ptr<GameObject> container_go);
+    ~Emitter();
 
     //can also be used for play
     bool Init();
@@ -81,14 +81,14 @@ public:
     //getters // setters
     std::vector<std::shared_ptr<Particle>>& GetParticles() { return particles; }
 
-    EmmiterTypeManager* GetEmmiterTypeManager() { return emmiter_type_manager; }
+    EmitterTypeManager* GetEmitterTypeManager() { return emitter_type_manager; }
 
     std::string GetCharacters() { return characters; }
     void SetCharacters(std::string c) { characters = c; }
 
     std::weak_ptr<GameObject> GetContainerGO() const { return container_go; }
-    std::string GetName() const { return emmiter_name; }
-    uint32_t GetID() const { return emmiter_id; }
+    std::string GetName() const { return emitter_name; }
+    uint32_t GetID() const { return emitter_id; }
     bool IsEnabled() const { return enabled; }
     int GetMaxParticles() const { return max_particles; }
     int GetParticlesPerSpawn() const { return particles_amount_per_spawn; }
@@ -137,18 +137,14 @@ public:
     const vec2f& GetWindEffectMax() const { return wind_effect_max; }
 
     // Setters
-    void SetName(const std::string& name) { emmiter_name = name; }
+    void SetName(const std::string& name) { emitter_name = name; }
     void SetEnabled(bool enable) { enabled = enable; }
     void SetMaxParticles(int max) { max_particles = max; }
     void SetParticlesPerSpawn(int amount) { particles_amount_per_spawn = amount; }
     void SetSpawnRate(float rate) { spawn_rate = rate; }
-    void SetEmitterTypeManager(EmmiterTypeManager* manager) { emmiter_type_manager = manager; }
-    void SetTextureID(uint id) { texture_id = id; }
-    void SetTexturePath(const std::string& path) { texture_path = path; }
-    void SetTextureWidth(int width) { tex_w = width; }
-    void SetTextureHeight(int height) { tex_h = height; }
-    void SetFontPath(const std::string& path) { font_path = path; }
-    void SetFont(FontData* newFont) { font = newFont; }
+    void SetEmitterTypeManager(EmitterTypeManager* manager) { emitter_type_manager = manager; }
+    void SwapTexture(std::string new_path);
+    void SwapFont(std::string new_font);
     void SetPixelArt(bool enabled) { pixel_art = enabled; }
 
     // Particle stats setters
@@ -187,8 +183,8 @@ public:
 
 private:
     std::weak_ptr<GameObject> container_go;
-    std::string emmiter_name = "";
-    uint32_t emmiter_id = 0;
+    std::string emitter_name = "";
+    uint32_t emitter_id = 0;
     bool enabled = true;
 
     int max_particles = 100;
@@ -197,7 +193,7 @@ private:
     float spawn_rate = 0.1f;
     float spawn_timer = 0.0f;
 
-    EmmiterTypeManager* emmiter_type_manager = nullptr;
+    EmitterTypeManager* emitter_type_manager = nullptr;
 
     //render settings
     uint texture_id;
@@ -248,4 +244,4 @@ private:
     std::vector<std::shared_ptr<Particle>> particles;
 };
 
-#endif // !__EMMITER_H__
+#endif // !__EMITTER_H__

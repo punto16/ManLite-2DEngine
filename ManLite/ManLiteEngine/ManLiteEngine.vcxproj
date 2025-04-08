@@ -176,7 +176,7 @@ popd
     <ClCompile Include="CheckBoxUI.cpp" />
     <ClCompile Include="Collider2D.cpp" />
     <ClCompile Include="Component.cpp" />
-    <ClCompile Include="Emmiter.cpp" />
+    <ClCompile Include="Emitter.cpp" />
     <ClCompile Include="EngineCore.cpp" />
     <ClCompile Include="FileDialog.cpp" />
     <ClCompile Include="FontEM.cpp" />
@@ -211,7 +211,7 @@ popd
     <ClInclude Include="Collider2D.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="Defs.h" />
-    <ClInclude Include="Emmiter.h" />
+    <ClInclude Include="Emitter.h" />
     <ClInclude Include="EngineCore.h" />
     <ClInclude Include="EngineModule.h" />
     <ClInclude Include="FileDialog.h" />

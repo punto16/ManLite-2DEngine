@@ -1,4 +1,4 @@
-#include "Emmiter.h"
+#include "Emitter.h"
 
 #include "GameObject.h"
 #include "Transform.h"
@@ -8,34 +8,37 @@
 #include "EngineCore.h"
 #include "RendererEM.h"
 
-Emmiter::Emmiter(std::weak_ptr<GameObject> container_go, std::string name, bool enable) :
+Emitter::Emitter(std::weak_ptr<GameObject> container_go, std::string name, bool enable) :
 	container_go(container_go),
-	emmiter_name(name),
+	emitter_name(name),
 	enabled(enable),
-	emmiter_type_manager(new EmmiterTypeManager()),
-	emmiter_id(GameObject::GenerateGameObjectID())
+	emitter_type_manager(new EmitterTypeManager()),
+	emitter_id(GameObject::GenerateGameObjectID())
 {
 	ResourceManager::GetInstance().LoadTexture("Config\\placeholder.png", tex_w, tex_h);//load placeholder
+	font = nullptr;
 }
 
-Emmiter::Emmiter(const Emmiter& emmiter_to_copy, std::shared_ptr<GameObject> container_go) :
+Emitter::Emitter(const Emitter& emitter_to_copy, std::shared_ptr<GameObject> container_go) :
 	container_go(container_go),
-	emmiter_name(emmiter_to_copy.emmiter_name),
-	enabled(emmiter_to_copy.enabled),
-	emmiter_type_manager(new EmmiterTypeManager(emmiter_to_copy.emmiter_type_manager)),
-	emmiter_id(GameObject::GenerateGameObjectID())
+	emitter_name(emitter_to_copy.emitter_name),
+	enabled(emitter_to_copy.enabled),
+	emitter_type_manager(new EmitterTypeManager(emitter_to_copy.emitter_type_manager)),
+	emitter_id(GameObject::GenerateGameObjectID())
 {
 	ResourceManager::GetInstance().LoadTexture("Config\\placeholder.png", tex_w, tex_h);//load placeholder
 }
 
-Emmiter::~Emmiter()
+Emitter::~Emitter()
 {
 	ResourceManager::GetInstance().ReleaseTexture("Config\\placeholder.png");
+	ResourceManager::GetInstance().ReleaseTexture(texture_path);
+	if (font) ResourceManager::GetInstance().ReleaseFont(font_path);
 	particles.clear();
-	delete emmiter_type_manager;
+	delete emitter_type_manager;
 }
 
-bool Emmiter::Init()
+bool Emitter::Init()
 {
 	bool ret = true;
 
@@ -44,11 +47,11 @@ bool Emmiter::Init()
 	return ret;
 }
 
-bool Emmiter::Update(float dt)
+bool Emitter::Update(float dt)
 {
 	bool ret = true;
 
-	if (emmiter_type_manager->spawn_type != SpawnType::BURST_SPAWN)
+	if (emitter_type_manager->spawn_type != SpawnType::BURST_SPAWN)
 	{
 		spawn_timer += dt;
 		if (spawn_timer >= spawn_rate) SpawnParticles();
@@ -60,7 +63,7 @@ bool Emmiter::Update(float dt)
 		particle->Update(dt);
 
 		auto t = container_go.lock()->GetComponent<Transform>();
-		if (emmiter_type_manager->force_transform && t)
+		if (emitter_type_manager->force_transform && t)
 		{
 			particle->position += t->GetWorldPosition();
 			particle->angle = t->GetWorldAngle();
@@ -72,9 +75,9 @@ bool Emmiter::Update(float dt)
 	return ret;
 }
 
-void Emmiter::Draw()
+void Emitter::Draw()
 {
-	switch (emmiter_type_manager->render_type)
+	switch (emitter_type_manager->render_type)
 	{
 	case RenderType::SQUARE:
 	{
@@ -147,21 +150,21 @@ void Emmiter::Draw()
 	}
 }
 
-bool Emmiter::Pause()
+bool Emitter::Pause()
 {
 	bool ret = true;
 
 	return ret;
 }
 
-bool Emmiter::Unpause()
+bool Emitter::Unpause()
 {
 	bool ret = true;
 
 	return ret;
 }
 
-void Emmiter::SpawnParticles()
+void Emitter::SpawnParticles()
 {
 	for (size_t i = 0; i < particles_amount_per_spawn; i++)
 	{
@@ -171,7 +174,7 @@ void Emmiter::SpawnParticles()
 	spawn_timer = 0.0f;
 }
 
-void Emmiter::SafeAddParticle()
+void Emitter::SafeAddParticle()
 {
 	auto t = container_go.lock()->GetComponent<Transform>();
 	if (!t) return;
@@ -203,4 +206,18 @@ void Emmiter::SafeAddParticle()
 		p->Restart();
 		particles.push_back(p);
 	}
+}
+
+void Emitter::SwapFont(std::string new_font)
+{
+	if (font) ResourceManager::GetInstance().ReleaseFont(font_path);
+	font_path = new_font;
+	font = ResourceManager::GetInstance().LoadFont(font_path, 512);
+}
+
+void Emitter::SwapTexture(std::string new_path)
+{
+	ResourceManager::GetInstance().ReleaseTexture(texture_path);
+	texture_path = new_path;
+	texture_id = ResourceManager::GetInstance().LoadTexture(texture_path, tex_w, tex_h);
 }

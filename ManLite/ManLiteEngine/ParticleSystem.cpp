@@ -1,12 +1,12 @@
 #include "ParticleSystem.h"
 
 #include "GameObject.h"
-#include "Emmiter.h"
+#include "Emitter.h"
 
 ParticleSystem::ParticleSystem(std::weak_ptr<GameObject> container_go, std::string name, bool enable) :
 	Component(container_go, ComponentType::ParticleSystem, name, enable)
 {
-    emmiters.push_back(std::make_shared<Emmiter>(container_go));
+    emitters.push_back(std::make_shared<Emitter>(container_go));
 }
 
 ParticleSystem::ParticleSystem(const ParticleSystem& component_to_copy, std::shared_ptr<GameObject> container_go) :
@@ -16,15 +16,15 @@ ParticleSystem::ParticleSystem(const ParticleSystem& component_to_copy, std::sha
 
 ParticleSystem::~ParticleSystem()
 {
-    emmiters.clear();
+    emitters.clear();
 }
 
 bool ParticleSystem::Init()
 {
     bool ret = true;
 
-    for (const auto& emmiter : emmiters)
-        if (!emmiter->Init()) return false;
+    for (const auto& emitter : emitters)
+        if (!emitter->Init()) return false;
 
     return ret;
 }
@@ -33,24 +33,24 @@ bool ParticleSystem::Update(float dt)
 {
     bool ret = true;
 
-    for (const auto& emmiter : emmiters)
-        if (!emmiter->Update(dt)) return false;
+    for (const auto& emitter : emitters)
+        if (!emitter->Update(dt)) return false;
 
     return ret;
 }
 
 void ParticleSystem::Draw()
 {
-    for (const auto& emmiter : emmiters)
-        emmiter->Draw();
+    for (const auto& emitter : emitters)
+        emitter->Draw();
 }
 
 bool ParticleSystem::Pause()
 {
     bool ret = true;
 
-    for (const auto& emmiter : emmiters)
-        if (!emmiter->Pause()) return false;
+    for (const auto& emitter : emitters)
+        if (!emitter->Pause()) return false;
 
     return ret;
 }
@@ -59,8 +59,8 @@ bool ParticleSystem::Unpause()
 {
     bool ret = true;
 
-    for (const auto& emmiter : emmiters)
-        if (!emmiter->Unpause()) return false;
+    for (const auto& emitter : emitters)
+        if (!emitter->Unpause()) return false;
 
     return ret;
 }

@@ -7,7 +7,7 @@
 #include "vector"
 #include "memory"
 
-class Emmiter;
+class Emitter;
 
 class ParticleSystem : public Component {
 public:
@@ -28,10 +28,10 @@ public:
     void LoadComponent(const nlohmann::json& componentJSON) override;
 
     //getters // setters
-    std::vector<std::shared_ptr<Emmiter>>& GetEmmiters() { return emmiters; }
+    std::vector<std::shared_ptr<Emitter>>& GetEmitters() { return emitters; }
 
 private:
-    std::vector<std::shared_ptr<Emmiter>> emmiters;
+    std::vector<std::shared_ptr<Emitter>> emitters;
 };
 
 #endif // !__PARTICLE_SYSTEM_H__

@@ -1,11 +1,11 @@
 #include "Particle.h"
 
-#include "Emmiter.h"
+#include "Emitter.h"
 
 #include "Defs.h"
 
-Particle::Particle(Emmiter* container_emmiter) :
-	container_emmiter(container_emmiter)
+Particle::Particle(Emitter* container_emitter) :
+	container_emitter(container_emitter)
 {
 	Reset();
 }
@@ -42,13 +42,13 @@ void Particle::Reset()
 	final_scale = { 1.0f, 1.0f };
 	wind_effect = { 0.0f, 0.0f };
 
-	char_to_print = RandomCharacter(container_emmiter->GetCharacters());
+	char_to_print = RandomCharacter(container_emitter->GetCharacters());
 }
 
 void Particle::Restart()
 {
 	auto self = shared_from_this();
-	auto& particles = container_emmiter->GetParticles();
+	auto& particles = container_emitter->GetParticles();
 	particles.erase(
 		std::remove_if(particles.begin(), particles.end(),
 			[self](const std::shared_ptr<Particle>& c) {
@@ -79,7 +79,7 @@ bool Particle::Update(float dt)
 
 	float t = life_time / duration;
 	t = std::clamp(t, 0.0f, 1.0f);
-	UpdateOptionsEnabled* update_type = &container_emmiter->GetEmmiterTypeManager()->update_options_enabled;
+	UpdateOptionsEnabled* update_type = &container_emitter->GetEmitterTypeManager()->update_options_enabled;
 
 	if (update_type->final_color)
 	{

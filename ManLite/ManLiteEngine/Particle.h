@@ -5,11 +5,11 @@
 #include "Defs.h"
 #include <memory>
 
-class Emmiter;
+class Emitter;
 
 class Particle : public std::enable_shared_from_this<Particle> {
 public:
-    Particle(Emmiter* container_emmiter);
+    Particle(Emitter* container_emitter);
     ~Particle();
 
     void Reset();
@@ -68,7 +68,7 @@ public:
     //
     std::string char_to_print = "";
 
-    Emmiter* container_emmiter = nullptr;
+    Emitter* container_emitter = nullptr;
 };
 
 #endif // !__PARTICLE_H__

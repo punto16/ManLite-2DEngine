@@ -147,7 +147,7 @@
     <ClCompile Include="ParticleSystem.cpp">
       <Filter>GameObject\Components</Filter>
     </ClCompile>
-    <ClCompile Include="Emmiter.cpp">
+    <ClCompile Include="Emitter.cpp">
       <Filter>GameObject\Components\ParticleSystem</Filter>
     </ClCompile>
     <ClCompile Include="Particle.cpp">
@@ -254,7 +254,7 @@
     <ClInclude Include="ParticleSystem.h">
       <Filter>GameObject\Components</Filter>
     </ClInclude>
-    <ClInclude Include="Emmiter.h">
+    <ClInclude Include="Emitter.h">
       <Filter>GameObject\Components\ParticleSystem</Filter>
     </ClInclude>
     <ClInclude Include="Particle.h">

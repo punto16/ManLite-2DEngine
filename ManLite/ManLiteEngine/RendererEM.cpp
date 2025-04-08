@@ -606,7 +606,7 @@ void RendererEM::RenderDebugColliders()
 
 void RendererEM::SubmitText(std::string text, FontData* font, const mat3f& modelMatrix, const ML_Color& color, TextAlignment ta) 
 {
-	if (!font) return;
+	if (font == nullptr) return;
 
 	float cursorY = 0.0f;
 	float lineHeight = font->face->size->metrics.height >> 6;
