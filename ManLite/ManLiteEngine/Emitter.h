@@ -6,8 +6,12 @@
 #include "memory"
 #include "string"
 #include "Defs.h"
-#include <future>
+#include <queue>
+#include "future"
 #include <atomic>
+#include <mutex>
+#include <thread>
+#include "unordered_set"
 
 class GameObject;
 class Particle;
@@ -79,7 +83,6 @@ public:
     void SafeAddParticle();
 
     //getters // setters
-    std::vector<std::shared_ptr<Particle>>& GetParticles() { return particles; }
 
     EmitterTypeManager* GetEmitterTypeManager() { return emitter_type_manager; }
 
@@ -101,6 +104,9 @@ public:
     std::string GetFontPath() const { return font_path; }
     FontData* GetFont() const { return font; }
     bool IsPixelArt() const { return pixel_art; }
+
+    int GetActiveParticlesCount();
+    void SetMaxParticles(int max);
 
     // Particle stats getters
     float GetParticleDurationMin() const { return particle_duration_min; }
@@ -139,7 +145,6 @@ public:
     // Setters
     void SetName(const std::string& name) { emitter_name = name; }
     void SetEnabled(bool enable) { enabled = enable; }
-    void SetMaxParticles(int max) { max_particles = max; }
     void SetParticlesPerSpawn(int amount) { particles_amount_per_spawn = amount; }
     void SetSpawnRate(float rate) { spawn_rate = rate; }
     void SetEmitterTypeManager(EmitterTypeManager* manager) { emitter_type_manager = manager; }
@@ -182,12 +187,19 @@ public:
     void SetWindEffectMax(const vec2f& wind) { wind_effect_max = wind; }
 
 private:
+
+    std::vector<Particle> particle_pool;
+    std::unordered_set<size_t> active_indices;
+    std::queue<size_t> available_indices;
+    std::mutex pool_mutex;
+
+
     std::weak_ptr<GameObject> container_go;
     std::string emitter_name = "";
     uint32_t emitter_id = 0;
     bool enabled = true;
 
-    int max_particles = 100;
+    int max_particles = 10000;
     int particles_amount_per_spawn = 1;
 
     float spawn_rate = 0.1f;
@@ -241,7 +253,6 @@ private:
     vec2f wind_effect_min = { 0, 0 };
     vec2f wind_effect_max = { 0, 0 };
     //
-    std::vector<std::shared_ptr<Particle>> particles;
 };
 
 #endif // !__EMITTER_H__

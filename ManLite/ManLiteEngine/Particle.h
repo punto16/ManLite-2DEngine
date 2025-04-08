@@ -9,6 +9,7 @@ class Emitter;
 
 class Particle : public std::enable_shared_from_this<Particle> {
 public:
+    Particle() : container_emitter(nullptr) {}
     Particle(Emitter* container_emitter);
     ~Particle();
 

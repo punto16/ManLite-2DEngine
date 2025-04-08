@@ -1493,7 +1493,8 @@ void PanelInspector::ParticleSystemOptions(GameObject& go)
 						ImGui::TableNextRow();
 						ImGui::TableSetColumnIndex(0);
 						ImGui::Text("Max Particles");
-						std::string curr_amount_particles = "Current amount of Particles in this Emitter:\n<< " + std::to_string(emitter->GetParticles().size()) + " particles>>";
+						ImGui::SameLine();
+						std::string curr_amount_particles = "Current amount of Particles in this Emitter:\n<< " + std::to_string(emitter->GetActiveParticlesCount()) + " particles>>";
 						Gui::HelpMarker(curr_amount_particles);
 						ImGui::TableSetColumnIndex(1);
 						int maxParticles = emitter->GetMaxParticles();

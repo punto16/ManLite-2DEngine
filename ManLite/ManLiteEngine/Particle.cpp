@@ -4,6 +4,8 @@
 
 #include "Defs.h"
 
+#include "cmath"
+
 Particle::Particle(Emitter* container_emitter) :
 	container_emitter(container_emitter)
 {
@@ -47,17 +49,6 @@ void Particle::Reset()
 
 void Particle::Restart()
 {
-	auto self = shared_from_this();
-	auto& particles = container_emitter->GetParticles();
-	particles.erase(
-		std::remove_if(particles.begin(), particles.end(),
-			[self](const std::shared_ptr<Particle>& c) {
-				return c == self;
-			}),
-		particles.end()
-	);
-	particles.push_back(self);
-
 	life_time = 0.0f;
 	finished = false;
 
@@ -73,7 +64,6 @@ bool Particle::Update(float dt)
 {
 	bool ret = true;
 
-	//if (finished && loop) Restart();
 	life_time += dt;
 	if (life_time >= duration) finished = true;
 
@@ -116,11 +106,11 @@ bool Particle::Update(float dt)
 	};
 
 	//wind effect
-	if (update_type->wind_effect)
+	if (update_type->wind_effect && std::fmod(t, 0.2f) < 0.001f)
 	{
-		position = {
-		position.x + 0.01 * RandomRange(-wind_effect.x / 2, wind_effect.x / 2),
-		position.y + 0.01 * RandomRange(-wind_effect.y / 2, wind_effect.y / 2)
+		direction = {
+		direction.x + RandomRange(-wind_effect.x / 2, wind_effect.x / 2),
+		direction.y + RandomRange(-wind_effect.y / 2, wind_effect.y / 2)
 		};
 	}
 
@@ -129,8 +119,8 @@ bool Particle::Update(float dt)
 	{
 		float eased_t = t < 0.5f ? 2 * t * t : 1 - std::pow(-2 * t + 2, 2) / 2;
 		position = {
-			std::lerp(init_position.x, final_position.x, eased_t),
-			std::lerp(init_position.y, final_position.y, eased_t)
+			std::lerp(position.x - (position.x - init_position.x), final_position.x, eased_t),
+			std::lerp(position.y - (position.y - init_position.y), final_position.y, eased_t)
 		};
 	}
 
