@@ -23,15 +23,26 @@ public:
     bool Pause();
     bool Unpause();
 
+    std::shared_ptr<Emitter> AddEmptyEmitter();
+    std::shared_ptr<Emitter> AddDuplicatedEmitter(Emitter* ref);
+
     //serialization
     nlohmann::json SaveComponent() override;
     void LoadComponent(const nlohmann::json& componentJSON) override;
 
+    void SaveParticleSystemToFile(std::string save_path);
+    void LoadParticleSystemToFile(std::string load_path);
+
     //getters // setters
     std::vector<std::shared_ptr<Emitter>>& GetEmitters() { return emitters; }
 
+    std::string GetPath() { return path; }
+    void SetPath(std::string p) { path = p; }
+
 private:
     std::vector<std::shared_ptr<Emitter>> emitters;
+
+    std::string path;
 };
 
 #endif // !__PARTICLE_SYSTEM_H__

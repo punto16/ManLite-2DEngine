@@ -13,10 +13,49 @@ Emitter::Emitter(std::weak_ptr<GameObject> container_go, std::string name, bool 
 	emitter_name(name),
 	enabled(enable),
 	emitter_type_manager(new EmitterTypeManager()),
-	emitter_id(GameObject::GenerateGameObjectID())
+	emitter_id(GameObject::GenerateGameObjectID()),
+	max_particles(10000),
+	particles_amount_per_spawn(1),
+	spawn_rate(0.1f),
+	spawn_timer(0.0f),
+	texture_id(0),
+	texture_path(""),
+	characters(""),
+	font_path(""),
+	font(nullptr),
+	pixel_art(false),
+	particle_duration_min(1.0f),
+	particle_duration_max(1.0f),
+	init_color_min({ 100, 0, 0, 255 }),
+	init_color_max({ 255, 0, 0, 255 }),
+	init_position_min({0, 0}),
+	init_position_max({ 0, 0 }),
+	init_direction_min({ -2, 1 }),
+	init_direction_max({ 2, 3 }),
+	init_speed_min(1.0f),
+	init_speed_max(1.0f),
+	init_angle_speed_min(0.0f),
+	init_angle_speed_max(0.0f),
+	init_angle_min(0.0f),
+	init_angle_max(0.0f),
+	init_scale_min({0.1, 0.1 }),
+	init_scale_max({ 0.1, 0.1 }),
+	final_color_min({ 255, 255, 255, 255 }),
+	final_color_max({ 255, 255, 255, 255 }),
+	final_position_min({ 0, 0 }),
+	final_position_max({ 0, 0 }),
+	final_direction_min({ 0, 1 }),
+	final_direction_max({ 0, 1 }),
+	final_speed_min(1.0f),
+	final_speed_max(1.0f),
+	final_angle_speed_min(0.0f),
+	final_angle_speed_max(0.0f),
+	final_scale_min({ 0.2, 0.2 }),
+	final_scale_max({ 0.2, 0.2 }),
+	wind_effect_min({ 0, 0 }),
+	wind_effect_max({ 0, 0 })
 {
 	ResourceManager::GetInstance().LoadTexture("Config\\placeholder.png", tex_w, tex_h);//load placeholder
-	font = nullptr;
 
 	particle_pool.reserve(max_particles);
 	for (size_t i = 0; i < max_particles; ++i) {
@@ -30,9 +69,48 @@ Emitter::Emitter(const Emitter& emitter_to_copy, std::shared_ptr<GameObject> con
 	emitter_name(emitter_to_copy.emitter_name),
 	enabled(emitter_to_copy.enabled),
 	emitter_type_manager(new EmitterTypeManager(emitter_to_copy.emitter_type_manager)),
-	emitter_id(GameObject::GenerateGameObjectID())
+	emitter_id(GameObject::GenerateGameObjectID()),
+	max_particles(emitter_to_copy.max_particles),
+	particles_amount_per_spawn(emitter_to_copy.particles_amount_per_spawn),
+	spawn_rate(emitter_to_copy.spawn_rate),
+	spawn_timer(emitter_to_copy.spawn_timer),
+	texture_id(0),
+	texture_path(emitter_to_copy.texture_path),
+	characters(emitter_to_copy.characters),
+	font_path(emitter_to_copy.font_path),
+	font(nullptr),
+	pixel_art(emitter_to_copy.pixel_art),
+	particle_duration_min(emitter_to_copy.particle_duration_min),
+	particle_duration_max(emitter_to_copy.particle_duration_max),
+	init_color_min(emitter_to_copy.init_color_min),
+	init_color_max(emitter_to_copy.init_color_max),
+	init_position_min(emitter_to_copy.init_position_min),
+	init_position_max(emitter_to_copy.init_position_max),
+	init_direction_min(emitter_to_copy.init_direction_min),
+	init_direction_max(emitter_to_copy.init_direction_max),
+	init_speed_min(emitter_to_copy.init_speed_min),
+	init_speed_max(emitter_to_copy.init_speed_max),
+	init_angle_speed_min(emitter_to_copy.init_angle_speed_min),
+	init_angle_speed_max(emitter_to_copy.init_angle_speed_max),
+	init_angle_min(emitter_to_copy.init_angle_min),
+	init_angle_max(emitter_to_copy.init_angle_max),
+	init_scale_min(emitter_to_copy.init_scale_min),
+	init_scale_max(emitter_to_copy.init_scale_max),
+	final_color_min(emitter_to_copy.final_color_min),
+	final_color_max(emitter_to_copy.final_color_max),
+	final_position_min(emitter_to_copy.final_position_min),
+	final_position_max(emitter_to_copy.final_position_max),
+	final_direction_min(emitter_to_copy.final_direction_min),
+	final_direction_max(emitter_to_copy.final_direction_max),
+	final_speed_min(emitter_to_copy.final_speed_min),
+	final_speed_max(emitter_to_copy.final_speed_max),
+	final_angle_speed_min(emitter_to_copy.final_angle_speed_min),
+	final_angle_speed_max(emitter_to_copy.final_angle_speed_max),
+	final_scale_min(emitter_to_copy.final_scale_min),
+	final_scale_max(emitter_to_copy.final_scale_max),
+	wind_effect_min(emitter_to_copy.wind_effect_min),
+	wind_effect_max(emitter_to_copy.wind_effect_max)
 {
-	max_particles = emitter_to_copy.max_particles;
 
 	particle_pool.reserve(max_particles);
 	for (size_t i = 0; i < max_particles; ++i) {
@@ -40,13 +118,9 @@ Emitter::Emitter(const Emitter& emitter_to_copy, std::shared_ptr<GameObject> con
 		available_indices.push(i);
 	}
 
-	particles_amount_per_spawn = emitter_to_copy.particles_amount_per_spawn;
-	spawn_rate = emitter_to_copy.spawn_rate;
-	texture_id = emitter_to_copy.texture_id;
-	tex_w = emitter_to_copy.tex_w;
-	tex_h = emitter_to_copy.tex_h;
-
 	ResourceManager::GetInstance().LoadTexture("Config\\placeholder.png", tex_w, tex_h);//load placeholder
+	texture_id = ResourceManager::GetInstance().LoadTexture(texture_path, tex_w, tex_h);
+	if (!font_path.empty()) font = ResourceManager::GetInstance().LoadFont(font_path,512);
 }
 
 Emitter::~Emitter()
@@ -312,6 +386,215 @@ void Emitter::SafeAddParticle()
 	p.wind_effect = RandomRange(wind_effect_min, wind_effect_max);
 	p.Restart();
 	active_indices.insert(idx);
+}
+
+nlohmann::json Emitter::SaveComponent()
+{
+	nlohmann::json emitterJSON;
+
+	emitterJSON["EmitterName"] = emitter_name;
+	emitterJSON["EmitterID"] = emitter_id;
+	emitterJSON["Enabled"] = enabled;
+
+	emitterJSON["MaxParticles"] = max_particles;
+	emitterJSON["ParticlesPerSpawn"] = particles_amount_per_spawn;
+	emitterJSON["SpawnRate"] = spawn_rate;
+
+	emitterJSON["EmitterTypeManager"][0] = emitter_type_manager->spawn_type;
+	emitterJSON["EmitterTypeManager"][1][0] = emitter_type_manager->update_options_enabled.final_speed;
+	emitterJSON["EmitterTypeManager"][1][1] = emitter_type_manager->update_options_enabled.final_direction;
+	emitterJSON["EmitterTypeManager"][1][2] = emitter_type_manager->update_options_enabled.final_color;
+	emitterJSON["EmitterTypeManager"][1][3] = emitter_type_manager->update_options_enabled.final_scale;
+	emitterJSON["EmitterTypeManager"][1][4] = emitter_type_manager->update_options_enabled.wind_effect;
+	emitterJSON["EmitterTypeManager"][1][5] = emitter_type_manager->update_options_enabled.final_position;
+	emitterJSON["EmitterTypeManager"][1][6] = emitter_type_manager->update_options_enabled.final_angular_speed;
+	emitterJSON["EmitterTypeManager"][2] = emitter_type_manager->render_type;
+
+	emitterJSON["TexturePath"] = texture_path;
+	emitterJSON["Characters"] = characters;
+	emitterJSON["FontPath"] = font_path;
+	emitterJSON["PixelArt"] = pixel_art;
+
+	emitterJSON["ParticleDurationMin"] = particle_duration_min;
+	emitterJSON["ParticleDurationMax"] = particle_duration_max;
+	emitterJSON["InitColorMin"] = { init_color_min.r, init_color_min.g, init_color_min.b, init_color_min.a };
+	emitterJSON["InitColorMax"] = { init_color_max.r, init_color_max.g, init_color_max.b, init_color_max.a };
+	emitterJSON["InitPositionMin"] = { init_position_min.x, init_position_min.y };
+	emitterJSON["InitPositionMax"] = { init_position_max.x, init_position_max.y };
+	emitterJSON["InitDirectionMin"] = { init_direction_min.x, init_direction_min.y };
+	emitterJSON["InitDirectionMax"] = { init_direction_max.x, init_direction_max.y };
+	emitterJSON["InitSpeedMin"] = init_speed_min;
+	emitterJSON["InitSpeedMax"] = init_speed_max;
+	emitterJSON["InitAngleSpeedMin"] = init_angle_speed_min;
+	emitterJSON["InitAngleSpeedMax"] = init_angle_speed_max;
+	emitterJSON["InitAnglMin"] = init_angle_min;
+	emitterJSON["InitAnglMax"] = init_angle_max;
+	emitterJSON["InitScaleMin"] = { init_scale_min.x, init_scale_min.y };
+	emitterJSON["InitScaleMax"] = { init_scale_max.x, init_scale_max.y };
+
+	emitterJSON["FinalColorMin"] = { final_color_min.r, final_color_min.g, final_color_min.b, final_color_min.a };
+	emitterJSON["FinalColorMax"] = { final_color_max.r, final_color_max.g, final_color_max.b, final_color_max.a };
+	emitterJSON["FinalPositionMin"] = { final_position_min.x, final_position_min.y };
+	emitterJSON["FinalPositionMax"] = { final_position_max.x, final_position_max.y };
+	emitterJSON["FinalDirectionMin"] = { final_direction_min.x, final_direction_min.y };
+	emitterJSON["FinalDirectionMax"] = { final_direction_max.x, final_direction_max.y };
+	emitterJSON["FinalSpeedMin"] = final_speed_min;
+	emitterJSON["FinalSpeedMax"] = final_speed_max;
+	emitterJSON["FinalAngleSpeedMin"] = final_angle_speed_min;
+	emitterJSON["FinalAngleSpeedMax"] = final_angle_speed_max;
+	emitterJSON["FinalScaleMin"] = { final_scale_min.x, final_scale_min.y };
+	emitterJSON["FinalScaleMax"] = { final_scale_max.x, final_scale_max.y };
+	emitterJSON["WindEffectMin"] = { wind_effect_min.x, wind_effect_min.y };
+	emitterJSON["WindEffectMax"] = { wind_effect_max.x, wind_effect_max.y };
+
+	return emitterJSON;
+}
+
+void Emitter::LoadComponent(const nlohmann::json& emitterJSON)
+{
+	if (emitterJSON.contains("EmitterName")) emitter_name = emitterJSON["EmitterName"];
+	if (emitterJSON.contains("EmitterID")) emitter_id = emitterJSON["EmitterID"];
+	if (emitterJSON.contains("Enabled")) enabled = emitterJSON["Enabled"];
+
+	if (emitterJSON.contains("MaxParticles")) max_particles = emitterJSON["MaxParticles"];
+	if (emitterJSON.contains("ParticlesPerSpawn")) particles_amount_per_spawn = emitterJSON["ParticlesPerSpawn"];
+	if (emitterJSON.contains("SpawnRate")) spawn_rate = emitterJSON["SpawnRate"];
+
+	if (emitterJSON.contains("EmitterTypeManager"))
+	{
+		emitter_type_manager->spawn_type = emitterJSON["EmitterTypeManager"][0];
+		emitter_type_manager->update_options_enabled.final_speed = emitterJSON["EmitterTypeManager"][1][0];
+		emitter_type_manager->update_options_enabled.final_direction = emitterJSON["EmitterTypeManager"][1][1];
+		emitter_type_manager->update_options_enabled.final_color = emitterJSON["EmitterTypeManager"][1][2];
+		emitter_type_manager->update_options_enabled.final_scale = emitterJSON["EmitterTypeManager"][1][3];
+		emitter_type_manager->update_options_enabled.wind_effect = emitterJSON["EmitterTypeManager"][1][4];
+		emitter_type_manager->update_options_enabled.final_position = emitterJSON["EmitterTypeManager"][1][5];
+		emitter_type_manager->update_options_enabled.final_angular_speed = emitterJSON["EmitterTypeManager"][1][6];
+		emitter_type_manager->render_type = emitterJSON["EmitterTypeManager"][2];
+	}
+
+	if (emitterJSON.contains("TexturePath"))
+	{
+		texture_path = emitterJSON["TexturePath"];
+		textureLoading = true;
+		textureFuture = ResourceManager::GetInstance().LoadTextureAsync(texture_path, tex_w, tex_h);
+	}
+	if (emitterJSON.contains("Characters")) characters = emitterJSON["Characters"];
+	if (emitterJSON.contains("FontPath")) font_path = emitterJSON["FontPath"];
+	if (emitterJSON.contains("PixelArt")) pixel_art = emitterJSON["PixelArt"];
+
+	if (emitterJSON.contains("ParticleDurationMin")) particle_duration_min = emitterJSON["ParticleDurationMin"];
+	if (emitterJSON.contains("ParticleDurationMax")) particle_duration_max = emitterJSON["ParticleDurationMax"];
+	if (emitterJSON.contains("InitColorMin"))
+	{
+		init_color_min.r = emitterJSON["InitColorMin"][0];
+		init_color_min.g = emitterJSON["InitColorMin"][1];
+		init_color_min.b = emitterJSON["InitColorMin"][2];
+		init_color_min.a = emitterJSON["InitColorMin"][3];
+	}
+	if (emitterJSON.contains("InitColorMax"))
+	{
+		init_color_max.r = emitterJSON["InitColorMax"][0];
+		init_color_max.g = emitterJSON["InitColorMax"][1];
+		init_color_max.b = emitterJSON["InitColorMax"][2];
+		init_color_max.a = emitterJSON["InitColorMax"][3];
+	}
+	if (emitterJSON.contains("InitPositionMin"))
+	{
+		init_position_min.x = emitterJSON["InitPositionMin"][0];
+		init_position_min.y = emitterJSON["InitPositionMin"][1];
+	}
+	if (emitterJSON.contains("InitPositionMax"))
+	{
+		init_position_max.x = emitterJSON["InitPositionMax"][0];
+		init_position_max.y = emitterJSON["InitPositionMax"][1];
+	}
+	if (emitterJSON.contains("InitDirectionMin"))
+	{
+		init_direction_min.x = emitterJSON["InitDirectionMin"][0];
+		init_direction_min.y = emitterJSON["InitDirectionMin"][1];
+	}
+	if (emitterJSON.contains("InitDirectionMax"))
+	{
+		init_direction_max.x = emitterJSON["InitDirectionMax"][0];
+		init_direction_max.y = emitterJSON["InitDirectionMax"][1];
+	}
+	if (emitterJSON.contains("InitSpeedMin")) init_speed_min = emitterJSON["InitSpeedMin"];
+	if (emitterJSON.contains("InitSpeedMax")) init_speed_max = emitterJSON["InitSpeedMax"];
+	if (emitterJSON.contains("InitAngleSpeedMin")) init_angle_speed_min = emitterJSON["InitAngleSpeedMin"];
+	if (emitterJSON.contains("InitAngleSpeedMax")) init_angle_speed_max = emitterJSON["InitAngleSpeedMax"];
+	if (emitterJSON.contains("InitAngleMin")) init_angle_min = emitterJSON["InitSpeedMin"];
+	if (emitterJSON.contains("InitAngleMax")) init_angle_max = emitterJSON["InitSpeedMax"];
+
+	if (emitterJSON.contains("InitScaleMin"))
+	{
+		init_scale_min.x = emitterJSON["InitScaleMin"][0];
+		init_scale_min.y = emitterJSON["InitScaleMin"][1];
+	}
+	if (emitterJSON.contains("InitScaleMax"))
+	{
+		init_scale_max.x = emitterJSON["InitScaleMax"][0];
+		init_scale_max.y = emitterJSON["InitScaleMax"][1];
+	}
+	//
+	if (emitterJSON.contains("FinalColorMin"))
+	{
+		final_color_min.r = emitterJSON["FinalColorMin"][0];
+		final_color_min.g = emitterJSON["FinalColorMin"][1];
+		final_color_min.b = emitterJSON["FinalColorMin"][2];
+		final_color_min.a = emitterJSON["FinalColorMin"][3];
+	}
+	if (emitterJSON.contains("FinalColorMax"))
+	{
+		final_color_max.r = emitterJSON["FinalColorMax"][0];
+		final_color_max.g = emitterJSON["FinalColorMax"][1];
+		final_color_max.b = emitterJSON["FinalColorMax"][2];
+		final_color_max.a = emitterJSON["FinalColorMax"][3];
+	}
+	if (emitterJSON.contains("FinalPositionMin"))
+	{
+		final_position_min.x = emitterJSON["FinalPositionMin"][0];
+		final_position_min.y = emitterJSON["FinalPositionMin"][1];
+	}
+	if (emitterJSON.contains("FinalPositionMax"))
+	{
+		final_position_max.x = emitterJSON["FinalPositionMax"][0];
+		final_position_max.y = emitterJSON["FinalPositionMax"][1];
+	}
+	if (emitterJSON.contains("FinalDirectionMin"))
+	{
+		final_direction_min.x = emitterJSON["FinalDirectionMin"][0];
+		final_direction_min.y = emitterJSON["FinalDirectionMin"][1];
+	}
+	if (emitterJSON.contains("FinalDirectionMax"))
+	{
+		final_direction_max.x = emitterJSON["FinalDirectionMax"][0];
+		final_direction_max.y = emitterJSON["FinalDirectionMax"][1];
+	}
+	if (emitterJSON.contains("FinalSpeedMin")) final_speed_min = emitterJSON["FinalSpeedMin"];
+	if (emitterJSON.contains("FinalSpeedMax")) final_speed_max = emitterJSON["FinalSpeedMax"];
+	if (emitterJSON.contains("FinalAngleSpeedMin")) final_angle_speed_min = emitterJSON["FinalAngleSpeedMin"];
+	if (emitterJSON.contains("FinalAngleSpeedMax")) final_angle_speed_max = emitterJSON["FinalAngleSpeedMax"];
+	if (emitterJSON.contains("FinalScaleMin"))
+	{
+		final_scale_min.x = emitterJSON["FinalScaleMin"][0];
+		final_scale_min.y = emitterJSON["FinalScaleMin"][1];
+	}
+	if (emitterJSON.contains("FinalScaleMax"))
+	{
+		final_scale_max.x = emitterJSON["FinalScaleMax"][0];
+		final_scale_max.y = emitterJSON["FinalScaleMax"][1];
+	}
+	if (emitterJSON.contains("WindEffectMin"))
+	{
+		wind_effect_min.x = emitterJSON["WindEffectMin"][0];
+		wind_effect_min.y = emitterJSON["WindEffectMin"][1];
+	}
+	if (emitterJSON.contains("WindEffectMax"))
+	{
+		wind_effect_max.x = emitterJSON["WindEffectMax"][0];
+		wind_effect_max.y = emitterJSON["WindEffectMax"][1];
+	}
 }
 
 int Emitter::GetActiveParticlesCount()

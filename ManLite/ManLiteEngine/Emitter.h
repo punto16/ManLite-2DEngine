@@ -12,6 +12,7 @@
 #include <mutex>
 #include <thread>
 #include "unordered_set"
+#include "nlohmann/json.hpp"
 
 class GameObject;
 class Particle;
@@ -53,15 +54,11 @@ public:
         spawn_type = ref->spawn_type;
         update_options_enabled = ref->update_options_enabled;
         render_type = ref->render_type;
-        force_transform = ref->force_transform;
     }
 
     SpawnType spawn_type = SpawnType::CONSTANT_SPAWN;
     UpdateOptionsEnabled update_options_enabled;
     RenderType render_type = RenderType::SQUARE;
-
-    //Go transform affects already spawned particles, not only the ones about to spawn
-    bool force_transform = false;
 };
 
 class Emitter {
@@ -81,6 +78,10 @@ public:
 
     void SpawnParticles();
     void SafeAddParticle();
+
+    //serialization
+    nlohmann::json SaveComponent();
+    void LoadComponent(const nlohmann::json& emitterJSON);
 
     //getters // setters
 

@@ -10,6 +10,7 @@
 #include "AudioSource.h"
 #include "Collider2D.h"
 #include "Canvas.h"
+#include "ParticleSystem.h"
 
 #include "Log.h"
 #include "Defs.h"
@@ -258,6 +259,8 @@ void GameObject::CloneComponents(const std::shared_ptr<GameObject>& original, bo
         }
         case ComponentType::ParticleSystem:
         {
+            AddCopiedComponent<ParticleSystem>(*dynamic_cast<const ParticleSystem*>(item.get()));
+            if (same_id) GetComponent<ParticleSystem>()->SetID(item->GetID());
             break;
         }
         case ComponentType::Unkown:
@@ -469,8 +472,8 @@ void GameObject::LoadGameObject(const nlohmann::json& goJSON)
             }
             else if (componentJSON["ComponentType"] == (int)ComponentType::ParticleSystem)
             {
-                //this->AddComponent<ParticleSystem>();
-                //this->GetComponent<ParticleSystem>()->LoadComponent(componentJSON);
+                this->AddComponent<ParticleSystem>();
+                this->GetComponent<ParticleSystem>()->LoadComponent(componentJSON);
             }
         }
     }

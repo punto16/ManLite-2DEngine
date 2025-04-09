@@ -1,4 +1,4 @@
-#include "PanelInspector.h"
+ï»¿#include "PanelInspector.h"
 
 #include "App.h"
 
@@ -1439,7 +1439,7 @@ void PanelInspector::CanvasOptions(GameObject& go)
 	}
 }
 
-void PanelInspector::ParticleSystemOptions(GameObject& go) 
+void PanelInspector::ParticleSystemOptions(GameObject& go)
 {
 	uint treeFlags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_DefaultOpen;
 	ParticleSystem* psystem = go.GetComponent<ParticleSystem>();
@@ -1457,24 +1457,83 @@ void PanelInspector::ParticleSystemOptions(GameObject& go)
 			ImGui::EndPopup();
 		}
 		ImGui::Dummy(ImVec2(0, 4));
+		bool hasPath = !psystem->GetPath().empty();
+		if (hasPath && ImGui::Button("Save")) {
+			psystem->SaveParticleSystemToFile(psystem->GetPath());
+		}
+		if (ImGui::Button("Save As...")) {
+			std::string filePath = std::filesystem::relative(FileDialog::SaveFile("Save ManLite Particle System file (*.mlparticle)\0*.mlparticle\0")).string();
+			if (!filePath.empty()) {
+				psystem->SaveParticleSystemToFile(filePath.ends_with(".mlparticle") ? filePath : filePath + ".mlparticle");
+			}
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Load")) {
+			std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Open ManLite Particle System file (*.mlparticle)\0*.mlparticle\0")).string();
+			if (!filePath.empty() && filePath.ends_with(".mlparticle")) {
+				psystem->LoadParticleSystemToFile(filePath);
+			}
+		}
+
+		ImGui::Dummy(ImVec2(0, 4));
 
 		auto& emitters = psystem->GetEmitters();
-		for (size_t i = 0; i < emitters.size(); ++i) {
-			std::string emitterLabel = "Emitter " + std::to_string(i + 1) + "##" + std::to_string(go.GetID());
+		auto emitters_c = std::vector<std::shared_ptr<Emitter>>(psystem->GetEmitters());
 
-			if (ImGui::TreeNodeEx(emitterLabel.c_str(), treeFlags)) {
+
+		for (size_t i = 0; i < emitters_c.size(); ++i) {
+			std::shared_ptr<Emitter> emitter = emitters_c[i];
+			std::string emitterLabel = emitter->GetName() + "##" + std::to_string(emitter->GetID());
+
+			// Drag and Drop para reordenar
+			if (ImGui::ArrowButton(("##up" + std::to_string(emitter->GetID())).c_str(), ImGuiDir_Up)) {
+				if (i > 0) std::swap(emitters[i], emitters[i - 1]);
+			}
+			ImGui::SameLine();
+			if (ImGui::ArrowButton(("##down" + std::to_string(emitter->GetID())).c_str(), ImGuiDir_Down)) {
+				if (i < emitters.size() - 1) std::swap(emitters[i], emitters[i + 1]);
+			}
+			ImGui::SameLine();
+
+			bool node_open = ImGui::TreeNodeEx(emitterLabel.c_str(), treeFlags);
+			// Context menu para emitters
+			if (ImGui::BeginPopupContextItem()) {
+				if (ImGui::MenuItem("Duplicate")) {
+					auto newEmitter = std::make_shared<Emitter>(*emitter, psystem->GetContainerGO());
+					emitters.insert(emitters.begin() + i + 1, newEmitter);
+				}
+				if (ImGui::MenuItem("Delete")) {
+					emitters.erase(emitters.begin() + i);
+					ImGui::EndPopup();
+					if (node_open) ImGui::TreePop();
+					break;
+				}
+				ImGui::EndPopup();
+			}
+			if (node_open)
+			{
 				ImGui::SameLine(ImGui::GetWindowWidth() - 30);
-				if (ImGui::SmallButton(("X##" + std::to_string(i)).c_str())) {
+				if (ImGui::SmallButton(("X##" + std::to_string(emitter->GetID())).c_str())) {
 					emitters.erase(emitters.begin() + i);
 					ImGui::TreePop();
 					break;
 				}
 
-				Emitter* emitter = emitters[i].get();
+				// Editar nombre del emitter
+				ImGui::Dummy(ImVec2(0, 4));
+				ImGui::Text("Emitter Name:");
+				ImGui::SameLine();
+				char nameBuffer[32];
+				strcpy(nameBuffer, emitter->GetName().c_str());
+				if (ImGui::InputText(("##EmitterName" + std::to_string(emitter->GetID())).c_str(),
+					nameBuffer, sizeof(nameBuffer), ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_CharsNoBlank)) {
+					emitter->SetName(nameBuffer);
+				}
+
 				EmitterTypeManager* typeManager = emitter->GetEmitterTypeManager();
 				UpdateOptionsEnabled* updateOptions = &typeManager->update_options_enabled;
 
-				// Sección SPAWN
+				// SecciÃ³n SPAWN
 				if (ImGui::TreeNodeEx("Spawn Settings", ImGuiTreeNodeFlags_DefaultOpen)) {
 					if (ImGui::BeginTable("SpawnSettings", 2, ImGuiTableFlags_BordersInnerV)) {
 						ImGui::TableSetupColumn("Label", ImGuiTableColumnFlags_WidthFixed, 120.0f);
@@ -1538,7 +1597,7 @@ void PanelInspector::ParticleSystemOptions(GameObject& go)
 					ImGui::TreePop();
 				}
 
-				// Sección INIT
+				// SecciÃ³n INIT
 				if (ImGui::TreeNodeEx("Initial Settings", ImGuiTreeNodeFlags_DefaultOpen)) {
 					if (ImGui::BeginTable("InitSettings", 2, ImGuiTableFlags_BordersInnerV)) {
 						ImGui::TableSetupColumn("Label", ImGuiTableColumnFlags_WidthFixed, 120.0f);
@@ -1628,7 +1687,7 @@ void PanelInspector::ParticleSystemOptions(GameObject& go)
 					ImGui::TreePop();
 				}
 
-				// Sección UPDATE (FINAL)
+				// SecciÃ³n UPDATE (FINAL)
 				if (ImGui::TreeNodeEx("Update Settings", ImGuiTreeNodeFlags_DefaultOpen)) {
 					if (ImGui::BeginTable("UpdateSettings", 2, ImGuiTableFlags_BordersInnerV)) {
 						ImGui::TableSetupColumn("Label", ImGuiTableColumnFlags_WidthFixed, 120.0f);
@@ -1754,7 +1813,7 @@ void PanelInspector::ParticleSystemOptions(GameObject& go)
 					ImGui::TreePop();
 				}
 
-				// Sección RENDER
+				// SecciÃ³n RENDER
 				if (ImGui::TreeNodeEx("Render Settings", ImGuiTreeNodeFlags_DefaultOpen)) {
 					if (ImGui::BeginTable("RenderSettings", 2, ImGuiTableFlags_BordersInnerV)) {
 						ImGui::TableSetupColumn("Label", ImGuiTableColumnFlags_WidthFixed, 120.0f);
@@ -1776,14 +1835,23 @@ void PanelInspector::ParticleSystemOptions(GameObject& go)
 							ImGui::TableSetColumnIndex(0);
 							ImGui::Text("Texture");
 							ImGui::TableSetColumnIndex(1);
-							std::string change_font_label = "Change Texture: " + emitter->GetTexturePath();
-							if (ImGui::Button(change_font_label.c_str()))
+							ImGui::Text(emitter->GetTexturePath().c_str());
+							if (ImGui::Button("Change Texture"))
 							{
 								std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Open Texture file (*.png)\0*.png\0")).string();
 								if (!filePath.empty() && filePath.ends_with(".png"))
 								{
 									emitter->SwapTexture(filePath);
 								}
+							}
+							ImGui::TableNextRow();
+							ImGui::TableSetColumnIndex(0);
+							ImGui::Text("Pixel Art");
+							ImGui::TableSetColumnIndex(1);
+							bool pixel_art = emitter->IsPixelArt();
+							if (ImGui::Checkbox("##PixelArt", &pixel_art))
+							{
+								emitter->SetPixelArt(pixel_art);
 							}
 						}
 						else if (typeManager->render_type == RenderType::CHARACTER) {
@@ -1801,14 +1869,23 @@ void PanelInspector::ParticleSystemOptions(GameObject& go)
 							ImGui::TableSetColumnIndex(0);
 							ImGui::Text("Font");
 							ImGui::TableSetColumnIndex(1);
-							std::string change_font_label = "Change Font: " + emitter->GetFontPath();
-							if (ImGui::Button(change_font_label.c_str()))
+							ImGui::Text(emitter->GetFontPath().c_str());
+							if (ImGui::Button("Change Font"))
 							{
 								std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Open Font file (*.ttf)\0*.ttf\0")).string();
 								if (!filePath.empty() && filePath.ends_with(".ttf"))
 								{
 									emitter->SwapFont(filePath);
 								}
+							}
+							ImGui::TableNextRow();
+							ImGui::TableSetColumnIndex(0);
+							ImGui::Text("Pixel Art");
+							ImGui::TableSetColumnIndex(1);
+							bool pixel_art = emitter->IsPixelArt();
+							if (ImGui::Checkbox("##PixelArt", &pixel_art))
+							{
+								emitter->SetPixelArt(pixel_art);
 							}
 						}
 
@@ -1822,7 +1899,7 @@ void PanelInspector::ParticleSystemOptions(GameObject& go)
 		}
 
 		if (ImGui::Button("Add New Emitter")) {
-			psystem->GetEmitters().emplace_back(std::make_shared<Emitter>(go.weak_from_this()));
+			psystem->AddEmptyEmitter();
 		}
 
 		ImGui::Dummy(ImVec2(0, 4));
