@@ -44,7 +44,7 @@ void Particle::Reset()
 	final_scale = { 1.0f, 1.0f };
 	wind_effect = { 0.0f, 0.0f };
 
-	char_to_print = RandomCharacter(container_emitter->GetCharacters());
+	if (container_emitter != nullptr) char_to_print = RandomCharacter(container_emitter->GetCharacters());
 }
 
 void Particle::Restart()
@@ -69,6 +69,16 @@ bool Particle::Update(float dt)
 
 	float t = life_time / duration;
 	t = std::clamp(t, 0.0f, 1.0f);
+
+	if (container_emitter == nullptr)
+	{
+		position = {
+		position.x + direction.x * speed * dt,
+		position.y + direction.y * speed * dt
+		};
+		return true;
+	}
+
 	UpdateOptionsEnabled* update_type = &container_emitter->GetEmitterTypeManager()->update_options_enabled;
 
 	if (update_type->final_color)

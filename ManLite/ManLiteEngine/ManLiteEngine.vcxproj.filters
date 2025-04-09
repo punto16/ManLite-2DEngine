@@ -260,5 +260,8 @@
     <ClInclude Include="Particle.h">
       <Filter>GameObject\Components\ParticleSystem</Filter>
     </ClInclude>
+    <ClInclude Include="ThreadPool.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

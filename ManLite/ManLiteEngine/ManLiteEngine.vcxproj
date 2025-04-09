@@ -232,6 +232,7 @@ popd
     <ClInclude Include="SliderUI.h" />
     <ClInclude Include="Sprite2D.h" />
     <ClInclude Include="TextUI.h" />
+    <ClInclude Include="ThreadPool.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="Transform.h" />
     <ClInclude Include="UIElement.h" />

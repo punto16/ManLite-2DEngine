@@ -15,12 +15,12 @@ public:
 	/// </summary>
 	/// <param name="filter"></param>
 	/// <returns></returns>
-	static std::string OpenFile(const char* filter);
+	static std::string OpenFile(const char* filter, const char* initialDir = "");
 
 	/// <summary>
 	/// Opens a windows save file dialog
 	/// </summary>
 	/// <param name="filter"></param>
 	/// <returns></returns>
-	static std::string SaveFile(const char* filter);
+	static std::string SaveFile(const char* filter, const char* initialDir = "");
 };

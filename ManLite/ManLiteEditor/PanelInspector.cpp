@@ -315,16 +315,17 @@ void PanelInspector::CameraOptions(GameObject& go)
 
 void PanelInspector::SpriteOptions(GameObject& go)
 {
-	uint treeFlags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_DefaultOpen;
+	const uint treeFlags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_DefaultOpen;
 	Sprite2D* sprite = go.GetComponent<Sprite2D>();
-	if (sprite == nullptr) return;
-	std::string spriteLabel = std::string("Sprite2D##" + std::to_string(go.GetID()));
-	if (ImGui::CollapsingHeader(spriteLabel.c_str(), treeFlags))
+	if (!sprite) return;
+
+	const std::string headerLabel = "Sprite2D##" + std::to_string(go.GetID());
+
+	if (ImGui::CollapsingHeader(headerLabel.c_str(), treeFlags))
 	{
 		if (ImGui::BeginPopupContextItem())
 		{
-			std::string context_label = "Remove Component##" + spriteLabel;
-			if (ImGui::MenuItem(context_label.c_str()))
+			if (ImGui::MenuItem(("Remove Component##" + headerLabel).c_str()))
 			{
 				go.RemoveComponent(ComponentType::Sprite);
 				ImGui::EndPopup();
@@ -332,51 +333,97 @@ void PanelInspector::SpriteOptions(GameObject& go)
 			}
 			ImGui::EndPopup();
 		}
-		int w, h;
-		sprite->GetTextureSize(w, h);
-		if (w == 0) w = 1;
 
-		ImGui::Image(sprite->GetTextureID(),
-			ImVec2(100, 100 * h / w),
-			ImVec2(0, 1),
-			ImVec2(1, 0)
+		ImGui::Dummy(ImVec2(0, 4));
+
+		if (ImGui::BeginTable("SpriteSettings", 2, ImGuiTableFlags_BordersInnerV | ImGuiTableFlags_SizingFixedFit))
+		{
+			ImGui::TableSetupColumn("Label", ImGuiTableColumnFlags_WidthFixed, 100.0f);
+			ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthStretch);
+
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0);
+			ImGui::Text("Preview");
+			ImGui::TableSetColumnIndex(1);
+
+			int texWidth, texHeight;
+			sprite->GetTextureSize(texWidth, texHeight);
+			const float aspectRatio = static_cast<float>(texHeight) / texWidth;
+
+			ImGui::Image(
+				sprite->GetTextureID(),
+				ImVec2(100, 100 * aspectRatio),
+				ImVec2(0, 1),
+				ImVec2(1, 0),
+				ImVec4(1, 1, 1, 1),
+				ImVec4(0.9f, 0.9f, 0.9f, 0.5f)
 			);
 
-		ImGui::SameLine();
-		spriteLabel = "Change Image##" + spriteLabel;
-		if (ImGui::Button(spriteLabel.c_str()))
-		{
-			std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Open Sprite file (*.png)\0*.png\0")).string();
-			if (!filePath.empty() && filePath.ends_with(".png") && filePath != sprite->GetTexturePath())
+			ImGui::SameLine();
+			if (ImGui::Button(("Change##" + headerLabel).c_str(), ImVec2(60, 24)))
 			{
-				sprite->SwapTexture(filePath);
+				std::string filePath = std::filesystem::relative(
+					FileDialog::OpenFile("Open Sprite file (*.png)\0*.png\0", "Assets\\Textures")
+				).string();
+
+				if (!filePath.empty() && filePath.ends_with(".png"))
+				{
+					sprite->SwapTexture(filePath);
+				}
 			}
+
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0);
+			ImGui::Text("Texture Path");
+			ImGui::TableSetColumnIndex(1);
+			ImGui::TextColored(ImVec4(0.8f, 0.8f, 0.8f, 1.0f), "%s", sprite->GetTexturePath().c_str());
+
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0);
+			ImGui::Text("Texture Size");
+			ImGui::TableSetColumnIndex(1);
+			ImGui::Text("%d x %d", texWidth, texHeight);
+			ImGui::SameLine();
+			Gui::HelpMarker("Original texture dimensions");
+
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0);
+			ImGui::Text("Pixel Art");
+			ImGui::TableSetColumnIndex(1);
+			bool pixelArt = sprite->IsPixelArt();
+			if (ImGui::Checkbox(("##PixelArt" + headerLabel).c_str(), &pixelArt))
+			{
+				sprite->SetPixelArtRender(pixelArt);
+			}
+			ImGui::SameLine();
+			Gui::HelpMarker("Enable nearest neighbor filtering\nfor pixel-perfect rendering");
+
+			if (ImGui::TreeNodeEx("Texture Section", ImGuiTreeNodeFlags_DefaultOpen))
+			{
+				ML_Rect section = sprite->GetTextureSection();
+				int values[4] = { section.x, section.y, section.w, section.h };
+
+				ImGui::TableNextRow();
+				ImGui::TableSetColumnIndex(0);
+				ImGui::Text("Section (XYWH)");
+				ImGui::TableSetColumnIndex(1);
+
+				if (ImGui::DragInt4(("##Section" + headerLabel).c_str(), values, 1.0f, 0, 4096))
+				{
+					sprite->SetTextureSection(
+						std::clamp(values[0], 0, texWidth),
+						std::clamp(values[1], 0, texHeight),
+						std::clamp(values[2], 1, texWidth - values[0]),
+						std::clamp(values[3], 1, texHeight - values[1])
+					);
+				}
+				ImGui::TreePop();
+			}
+
+			ImGui::EndTable();
 		}
-		ImGui::Text(sprite->GetTexturePath().c_str());
-		ImGui::Dummy(ImVec2(0, 4));
 
-		bool pixel_art_rendering = sprite->IsPixelArt();
-		std::string sprite_section_label = std::string("Pixel Art Rendering##" + std::to_string(go.GetID()));
-		ImGui::Checkbox(sprite_section_label.c_str(), &pixel_art_rendering);
-		sprite->SetPixelArtRender(pixel_art_rendering);
-
-		ML_Rect section = sprite->GetTextureSection();
-		int section_x = section.x;
-		int section_y = section.y;
-		int section_w = section.w;
-		int section_h = section.h;
-
-		sprite_section_label = std::string("X Section##" + std::to_string(go.GetID()));
-		ImGui::DragInt(sprite_section_label.c_str(), &section_x, 1.0f);
-		sprite_section_label = std::string("Y Section##" + std::to_string(go.GetID()));
-		ImGui::DragInt(sprite_section_label.c_str(), &section_y, 1.0f);
-		sprite_section_label = std::string("Width Section##" + std::to_string(go.GetID()));
-		ImGui::DragInt(sprite_section_label.c_str(), &section_w, 1.0f);
-		sprite_section_label = std::string("Height Section##" + std::to_string(go.GetID()));
-		ImGui::DragInt(sprite_section_label.c_str(), &section_h, 1.0f);
-		sprite->SetTextureSection(section_x, section_y, section_w, section_h);
-		
-		ImGui::Dummy(ImVec2(0, 4));
+		ImGui::Dummy(ImVec2(0, 8));
 		ImGui::Separator();
 	}
 }
@@ -496,7 +543,7 @@ void PanelInspector::AnimatorOptions(GameObject& go)
 	
 		if (ImGui::Button(add_animation_label.c_str(), button_size_default))
 		{
-			std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Open Animation file (*.animation)\0*.animation\0")).string();
+			std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Open Animation file (*.animation)\0*.animation\0", "Assets\\Animations")).string();
 			if (!filePath.empty() && filePath.ends_with(".animation"))
 			{
 				std::string animName = fs::path(filePath).stem().string();
@@ -711,7 +758,7 @@ void PanelInspector::AudioSourceOptions(GameObject& go)
 
 		if (ImGui::Button(add_music_label.c_str(), button_size_default))
 		{
-			std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Open Music file (*.ogg)\0*.ogg\0")).string();
+			std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Open Music file (*.ogg)\0*.ogg\0", "Assets\\Audio\\Music")).string();
 			if (!filePath.empty() && filePath.ends_with(".ogg"))
 			{
 				std::string audioName = std::filesystem::path(filePath).stem().string();
@@ -722,7 +769,7 @@ void PanelInspector::AudioSourceOptions(GameObject& go)
 		ImGui::SameLine(0, 10);
 		if (ImGui::Button(add_sound_label.c_str(), button_size_default))
 		{
-			std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Open Sound Effect file (*.wav)\0*.wav\0")).string();
+			std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Open Sound Effect file (*.wav)\0*.wav\0", "Assets\\Audio\\SoundEffects")).string();
 			if (!filePath.empty() && filePath.ends_with(".wav"))
 			{
 				std::string audioName = std::filesystem::path(filePath).stem().string();
@@ -1041,7 +1088,7 @@ void PanelInspector::CanvasOptions(GameObject& go)
 						std::string changeTextureLabel = "Change Texture##" + std::to_string(ui_element->GetID());
 						if (ImGui::Button(changeTextureLabel.c_str()))
 						{
-							std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Open Sprite file (*.png)\0*.png\0")).string();
+							std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Open Sprite file (*.png)\0*.png\0", "Assets\\Textures")).string();
 							if (!filePath.empty() && filePath.ends_with(".png") && filePath != imageUI->GetTexturePath())
 							{
 								imageUI->SwapTexture(filePath);
@@ -1078,7 +1125,7 @@ void PanelInspector::CanvasOptions(GameObject& go)
 						std::string changeTextureLabel = "Change Texture##" + std::to_string(ui_element->GetID());
 						if (ImGui::Button(changeTextureLabel.c_str()))
 						{
-							std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Open Sprite file (*.png)\0*.png\0")).string();
+							std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Open Sprite file (*.png)\0*.png\0", "Assets\\Textures")).string();
 							if (!filePath.empty() && filePath.ends_with(".png") && filePath != buttonImage->GetTexturePath())
 							{
 								buttonImage->SwapTexture(filePath);
@@ -1132,7 +1179,7 @@ void PanelInspector::CanvasOptions(GameObject& go)
 						std::string changeTextureLabel = "Change Texture##" + std::to_string(ui_element->GetID());
 						if (ImGui::Button(changeTextureLabel.c_str()))
 						{
-							std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Open Sprite file (*.png)\0*.png\0")).string();
+							std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Open Sprite file (*.png)\0*.png\0", "Assets\\Textures")).string();
 							if (!filePath.empty() && filePath.ends_with(".png") && filePath != checkboxUI->GetTexturePath())
 							{
 								checkboxUI->SwapTexture(filePath);
@@ -1219,7 +1266,7 @@ void PanelInspector::CanvasOptions(GameObject& go)
 						std::string changeTextureLabel = "Change Texture##" + std::to_string(ui_element->GetID());
 						if (ImGui::Button(changeTextureLabel.c_str()))
 						{
-							std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Open Sprite file (*.png)\0*.png\0")).string();
+							std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Open Sprite file (*.png)\0*.png\0", "Assets\\Textures")).string();
 							if (!filePath.empty() && filePath.ends_with(".png") && filePath != sliderUI->GetTexturePath())
 							{
 								sliderUI->SwapTexture(filePath);
@@ -1335,7 +1382,7 @@ void PanelInspector::CanvasOptions(GameObject& go)
 						if (ImGui::Button(changeFontLabel.c_str()))
 						{
 							std::string filePath = std::filesystem::relative(
-								FileDialog::OpenFile("Font files (*.ttf)\0*.ttf\0")
+								FileDialog::OpenFile("Font files (*.ttf)\0*.ttf\0", "Assets\\Fonts")
 							).string();
 
 							if (!filePath.empty() && filePath.ends_with(".ttf") && filePath != textUI->GetFontPath())
@@ -1391,7 +1438,7 @@ void PanelInspector::CanvasOptions(GameObject& go)
 		{
 			if (ImGui::MenuItem("Image"))
 			{
-				std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Image file (*.png)\0*.png\0")).string();
+				std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Image file (*.png)\0*.png\0", "Assets\\Textures")).string();
 				if (!filePath.empty() && filePath.ends_with(".png"))
 				{
 					canvas->AddUIElement<ImageUI>(filePath);
@@ -1399,7 +1446,7 @@ void PanelInspector::CanvasOptions(GameObject& go)
 			}
 			if (ImGui::MenuItem("Button Image"))
 			{
-				std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Image file (*.png)\0*.png\0")).string();
+				std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Image file (*.png)\0*.png\0", "Assets\\Textures")).string();
 				if (!filePath.empty() && filePath.ends_with(".png"))
 				{
 					canvas->AddUIElement<ButtonImageUI>(filePath);
@@ -1407,7 +1454,7 @@ void PanelInspector::CanvasOptions(GameObject& go)
 			}
 			if (ImGui::MenuItem("CheckBox"))
 			{
-				std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Image file (*.png)\0*.png\0")).string();
+				std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Image file (*.png)\0*.png\0", "Assets\\Textures")).string();
 				if (!filePath.empty() && filePath.ends_with(".png"))
 				{
 					canvas->AddUIElement<CheckBoxUI>(filePath);
@@ -1415,7 +1462,7 @@ void PanelInspector::CanvasOptions(GameObject& go)
 			}
 			if (ImGui::MenuItem("Slider"))
 			{
-				std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Image file (*.png)\0*.png\0")).string();
+				std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Image file (*.png)\0*.png\0", "Assets\\Textures")).string();
 				if (!filePath.empty() && filePath.ends_with(".png"))
 				{
 					canvas->AddUIElement<SliderUI>(filePath);
@@ -1423,7 +1470,7 @@ void PanelInspector::CanvasOptions(GameObject& go)
 			}
 			if (ImGui::MenuItem("Text"))
 			{
-				std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Image file (*.ttf)\0*.ttf\0")).string();
+				std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Image file (*.ttf)\0*.ttf\0", "Assets\\Fonts")).string();
 				if (!filePath.empty() && filePath.ends_with(".ttf"))
 				{
 					canvas->AddUIElement<TextUI>(filePath);
@@ -1462,14 +1509,14 @@ void PanelInspector::ParticleSystemOptions(GameObject& go)
 			psystem->SaveParticleSystemToFile(psystem->GetPath());
 		}
 		if (ImGui::Button("Save As...")) {
-			std::string filePath = std::filesystem::relative(FileDialog::SaveFile("Save ManLite Particle System file (*.mlparticle)\0*.mlparticle\0")).string();
+			std::string filePath = std::filesystem::relative(FileDialog::SaveFile("Save ManLite Particle System file (*.mlparticle)\0*.mlparticle\0", "Assets\\Particles")).string();
 			if (!filePath.empty()) {
 				psystem->SaveParticleSystemToFile(filePath.ends_with(".mlparticle") ? filePath : filePath + ".mlparticle");
 			}
 		}
 		ImGui::SameLine();
 		if (ImGui::Button("Load")) {
-			std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Open ManLite Particle System file (*.mlparticle)\0*.mlparticle\0")).string();
+			std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Open ManLite Particle System file (*.mlparticle)\0*.mlparticle\0", "Assets\\Particles")).string();
 			if (!filePath.empty() && filePath.ends_with(".mlparticle")) {
 				psystem->LoadParticleSystemToFile(filePath);
 			}
@@ -1485,7 +1532,6 @@ void PanelInspector::ParticleSystemOptions(GameObject& go)
 			std::shared_ptr<Emitter> emitter = emitters_c[i];
 			std::string emitterLabel = emitter->GetName() + "##" + std::to_string(emitter->GetID());
 
-			// Drag and Drop para reordenar
 			if (ImGui::ArrowButton(("##up" + std::to_string(emitter->GetID())).c_str(), ImGuiDir_Up)) {
 				if (i > 0) std::swap(emitters[i], emitters[i - 1]);
 			}
@@ -1496,7 +1542,7 @@ void PanelInspector::ParticleSystemOptions(GameObject& go)
 			ImGui::SameLine();
 
 			bool node_open = ImGui::TreeNodeEx(emitterLabel.c_str(), treeFlags);
-			// Context menu para emitters
+
 			if (ImGui::BeginPopupContextItem()) {
 				if (ImGui::MenuItem("Duplicate")) {
 					auto newEmitter = std::make_shared<Emitter>(*emitter, psystem->GetContainerGO());
@@ -1519,7 +1565,6 @@ void PanelInspector::ParticleSystemOptions(GameObject& go)
 					break;
 				}
 
-				// Editar nombre del emitter
 				ImGui::Dummy(ImVec2(0, 4));
 				ImGui::Text("Emitter Name:");
 				ImGui::SameLine();
@@ -1533,7 +1578,6 @@ void PanelInspector::ParticleSystemOptions(GameObject& go)
 				EmitterTypeManager* typeManager = emitter->GetEmitterTypeManager();
 				UpdateOptionsEnabled* updateOptions = &typeManager->update_options_enabled;
 
-				// Sección SPAWN
 				if (ImGui::TreeNodeEx("Spawn Settings", ImGuiTreeNodeFlags_DefaultOpen)) {
 					if (ImGui::BeginTable("SpawnSettings", 2, ImGuiTableFlags_BordersInnerV)) {
 						ImGui::TableSetupColumn("Label", ImGuiTableColumnFlags_WidthFixed, 120.0f);
@@ -1597,7 +1641,6 @@ void PanelInspector::ParticleSystemOptions(GameObject& go)
 					ImGui::TreePop();
 				}
 
-				// Sección INIT
 				if (ImGui::TreeNodeEx("Initial Settings", ImGuiTreeNodeFlags_DefaultOpen)) {
 					if (ImGui::BeginTable("InitSettings", 2, ImGuiTableFlags_BordersInnerV)) {
 						ImGui::TableSetupColumn("Label", ImGuiTableColumnFlags_WidthFixed, 120.0f);
@@ -1687,7 +1730,6 @@ void PanelInspector::ParticleSystemOptions(GameObject& go)
 					ImGui::TreePop();
 				}
 
-				// Sección UPDATE (FINAL)
 				if (ImGui::TreeNodeEx("Update Settings", ImGuiTreeNodeFlags_DefaultOpen)) {
 					if (ImGui::BeginTable("UpdateSettings", 2, ImGuiTableFlags_BordersInnerV)) {
 						ImGui::TableSetupColumn("Label", ImGuiTableColumnFlags_WidthFixed, 120.0f);
@@ -1813,7 +1855,6 @@ void PanelInspector::ParticleSystemOptions(GameObject& go)
 					ImGui::TreePop();
 				}
 
-				// Sección RENDER
 				if (ImGui::TreeNodeEx("Render Settings", ImGuiTreeNodeFlags_DefaultOpen)) {
 					if (ImGui::BeginTable("RenderSettings", 2, ImGuiTableFlags_BordersInnerV)) {
 						ImGui::TableSetupColumn("Label", ImGuiTableColumnFlags_WidthFixed, 120.0f);
@@ -1838,7 +1879,7 @@ void PanelInspector::ParticleSystemOptions(GameObject& go)
 							ImGui::Text(emitter->GetTexturePath().c_str());
 							if (ImGui::Button("Change Texture"))
 							{
-								std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Open Texture file (*.png)\0*.png\0")).string();
+								std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Open Texture file (*.png)\0*.png\0", "Assets\\Textures")).string();
 								if (!filePath.empty() && filePath.ends_with(".png"))
 								{
 									emitter->SwapTexture(filePath);
@@ -1872,7 +1913,7 @@ void PanelInspector::ParticleSystemOptions(GameObject& go)
 							ImGui::Text(emitter->GetFontPath().c_str());
 							if (ImGui::Button("Change Font"))
 							{
-								std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Open Font file (*.ttf)\0*.ttf\0")).string();
+								std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Open Font file (*.ttf)\0*.ttf\0", "Assets\\Fonts")).string();
 								if (!filePath.empty() && filePath.ends_with(".ttf"))
 								{
 									emitter->SwapFont(filePath);
@@ -1910,7 +1951,7 @@ void PanelInspector::ParticleSystemOptions(GameObject& go)
 void PanelInspector::AddComponent(GameObject& go)
 {
 	const ImVec2 button_size_default = ImVec2(150, 0);
-	const ImVec2 panel_size_default = ImVec2(200, 150);
+	const ImVec2 panel_size_default = ImVec2(200, 200);
 	ImGui::Dummy(ImVec2(0, 10));
 	ImGui::Dummy(ImVec2((ImGui::GetWindowWidth() - button_size_default.x - 30) * 0.5, 0));
 	ImGui::SameLine();
@@ -1959,7 +2000,7 @@ void PanelInspector::AddComponent(GameObject& go)
 
 		if (ImGui::Selectable("Sprite"))
 		{
-			std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Open Sprite file (*.png)\0*.png\0")).string();
+			std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Open Sprite file (*.png)\0*.png\0", "Assets\\Textures")).string();
 			if (!filePath.empty() && filePath.ends_with(".png"))
 			{
 				go.AddComponent<Sprite2D>(filePath);

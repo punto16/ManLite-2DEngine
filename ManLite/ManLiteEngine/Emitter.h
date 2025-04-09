@@ -2,6 +2,8 @@
 #define __EMITTER_H__
 #pragma once
 
+#include "ThreadPool.h"
+
 #include "vector"
 #include "memory"
 #include "string"
@@ -11,7 +13,6 @@
 #include <atomic>
 #include <mutex>
 #include <thread>
-#include "unordered_set"
 #include "nlohmann/json.hpp"
 
 class GameObject;
@@ -190,10 +191,13 @@ public:
 private:
 
     std::vector<Particle> particle_pool;
-    std::unordered_set<size_t> active_indices;
+    std::vector<size_t> active_indices;
     std::queue<size_t> available_indices;
     std::mutex pool_mutex;
 
+    ThreadPool thread_pool;
+    std::mutex removal_mutex;
+    std::vector<size_t> to_remove_global;
 
     std::weak_ptr<GameObject> container_go;
     std::string emitter_name = "";

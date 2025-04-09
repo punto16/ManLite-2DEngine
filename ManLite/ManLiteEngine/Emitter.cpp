@@ -155,59 +155,49 @@ bool Emitter::Update(float dt)
 		}
 	}
 
+	std::vector<size_t> active_copy;
 	{
 		std::lock_guard<std::mutex> lock(pool_mutex);
-
 		if (active_indices.empty()) return true;
-
-		std::vector<size_t> active_copy(active_indices.begin(), active_indices.end());
-		const size_t num_active = active_copy.size();
-
-		const unsigned num_threads = std::min<unsigned>(
-			std::thread::hardware_concurrency(),
-			num_active
-		);
-
-		std::vector<std::thread> threads;
-		threads.reserve(num_threads);
-
-		const size_t chunk_size = num_active / num_threads;
-		size_t current_idx = 0;
-
-		for (unsigned t = 0; t < num_threads; ++t)
-		{
-			const size_t start = current_idx;
-			const size_t end = (t == num_threads - 1)
-				? num_active
-				: start + chunk_size;
-			current_idx = end;
-
-			threads.emplace_back([this, dt, &active_copy, start, end]() {
-				for (size_t i = start; i < end; ++i) {
-					particle_pool[active_copy[i]].Update(dt);
-				}
-				});
-		}
-
-		for (auto& thread : threads) {
-			if (thread.joinable()) thread.join();
-		}
+		active_copy.assign(active_indices.begin(), active_indices.end());
 	}
 
+	const size_t num_active = active_copy.size();
+	std::atomic<size_t> current_idx(0);
+	std::vector<std::future<void>> futures;
+	const size_t num_threads = thread_pool.GetThreadCount(); // Asegúrate de implementar esto
+
+	// Dividir el trabajo en tareas
+	for (size_t t = 0; t < num_threads; ++t) {
+		futures.emplace_back(thread_pool.enqueue([&, dt]() {
+			std::vector<size_t> local_to_remove;
+			while (true) {
+				size_t idx = current_idx.fetch_add(1, std::memory_order_relaxed);
+				if (idx >= num_active) break;
+				size_t particle_idx = active_copy[idx];
+				particle_pool[particle_idx].Update(dt);
+				if (particle_pool[particle_idx].finished) {
+					local_to_remove.push_back(particle_idx);
+				}
+			}
+			if (!local_to_remove.empty()) {
+				std::lock_guard<std::mutex> lock(removal_mutex);
+				to_remove_global.insert(to_remove_global.end(), local_to_remove.begin(), local_to_remove.end());
+			}
+			}));
+	}
+
+	// Esperar a que todas las tareas terminen
+	for (auto& future : futures) future.wait();
+
+	// Procesar partículas terminadas
 	{
 		std::lock_guard<std::mutex> lock(pool_mutex);
-
-		std::vector<size_t> to_remove;
-		for (const auto& idx : active_indices) {
-			if (particle_pool[idx].finished) {
-				available_indices.push(idx);
-				to_remove.push_back(idx);
-			}
+		for (auto idx : to_remove_global) {
+			active_indices.erase(std::remove(active_indices.begin(), active_indices.end(), idx), active_indices.end());
+			available_indices.push(idx);
 		}
-
-		for (const auto& idx : to_remove) {
-			active_indices.erase(idx);
-		}
+		to_remove_global.clear();
 	}
 
 	return true;
@@ -385,7 +375,7 @@ void Emitter::SafeAddParticle()
 	p.final_scale = RandomRange(final_scale_min, final_scale_max);
 	p.wind_effect = RandomRange(wind_effect_min, wind_effect_max);
 	p.Restart();
-	active_indices.insert(idx);
+	active_indices.push_back(idx);
 }
 
 nlohmann::json Emitter::SaveComponent()

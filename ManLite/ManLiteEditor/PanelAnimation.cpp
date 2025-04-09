@@ -57,7 +57,7 @@ void PanelAnimation::DrawTopBarControls()
 
 	if (ImGui::Button("Load Animation File", button_size_default))
 	{
-		std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Open Animation file (*.animation)\0*.animation\0")).string();
+		std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Open Animation file (*.animation)\0*.animation\0", "Assets\\Animations")).string();
 		if (!filePath.empty() && filePath.ends_with(".animation"))
 		{
 			SetAnimation(filePath);
@@ -67,7 +67,7 @@ void PanelAnimation::DrawTopBarControls()
 	ImGui::SameLine();
 	if (ImGui::Button("Save Animation As...", button_size_default))
 	{
-		std::string filePath = std::filesystem::relative(FileDialog::SaveFile("Save Animation file (*.animation)\0*.animation\0")).string();
+		std::string filePath = std::filesystem::relative(FileDialog::SaveFile("Save Animation file (*.animation)\0*.animation\0", "Assets\\Animations")).string();
 		if (!filePath.empty())
 		{
 			if (this->animation->SaveToFile(filePath.ends_with(".animation") ? filePath : filePath + ".animation"))
@@ -92,7 +92,7 @@ void PanelAnimation::DrawTopBarControls()
 
 	if (ImGui::Button("Choose Sprite", button_size_default))
 	{
-		std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Open Sprite file (*.png)\0*.png\0")).string();
+		std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Open Sprite file (*.png)\0*.png\0", "Assets\\Textures")).string();
 		if (!filePath.empty() && filePath.ends_with(".png"))
 		{
 			SetSprite(filePath);

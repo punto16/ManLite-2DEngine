@@ -16,8 +16,10 @@ ParticleSystem::ParticleSystem(const ParticleSystem& component_to_copy, std::sha
 	Component(component_to_copy, container_go),
     path(component_to_copy.path)
 {
-    //call load particle system from this path
-    LoadParticleSystemToFile(path);
+    for (const auto& emitter : component_to_copy.emitters)
+    {
+        AddDuplicatedEmitter(emitter.get());
+    }
 }
 
 ParticleSystem::~ParticleSystem()

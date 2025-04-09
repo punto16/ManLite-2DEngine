@@ -89,7 +89,7 @@ bool PanelSaveScene::Update()
 						return false;
 					else
 					{
-						std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Open ManLite Scene file (*.mlscene)\0*.mlscene\0")).string();
+						std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Open ManLite Scene file (*.mlscene)\0*.mlscene\0", "Assets\\Scenes")).string();
 						if (!filePath.empty() && filePath.ends_with(".mlscene"))
 						{
 							std::string sceneName = std::filesystem::path(filePath).stem().string();
@@ -141,7 +141,7 @@ bool PanelSaveScene::Update()
 							return false;
 						else
 						{
-							std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Open ManLite Scene file (*.mlscene)\0*.mlscene\0")).string();
+							std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Open ManLite Scene file (*.mlscene)\0*.mlscene\0", "Assets\\Scenes")).string();
 							if (!filePath.empty() && filePath.ends_with(".mlscene"))
 							{
 								std::string sceneName = std::filesystem::path(filePath).stem().string();
@@ -173,7 +173,7 @@ bool PanelSaveScene::Update()
 						return false;
 					else
 					{
-						std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Open ManLite Scene file (*.mlscene)\0*.mlscene\0")).string();
+						std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Open ManLite Scene file (*.mlscene)\0*.mlscene\0", "Assets\\Scenes")).string();
 						if (!filePath.empty() && filePath.ends_with(".mlscene"))
 						{
 							std::string sceneName = std::filesystem::path(filePath).stem().string();
