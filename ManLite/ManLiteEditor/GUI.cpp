@@ -487,7 +487,7 @@ void Gui::FileMenu()
 	}
 	if (ImGui::MenuItem("Save As...", 0))
 	{
-		std::string filePath = std::filesystem::relative(FileDialog::SaveFile("Save ManLite Scene file (*.mlscene)\0*.mlscene\0")).string();
+		std::string filePath = std::filesystem::relative(FileDialog::SaveFile("Save ManLite Scene file (*.mlscene)\0*.mlscene\0", "Assets\\Scenes")).string();
 		if (!filePath.empty())
 		{
 			std::filesystem::path fullPath(filePath);

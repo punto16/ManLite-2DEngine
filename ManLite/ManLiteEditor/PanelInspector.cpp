@@ -439,7 +439,6 @@ void PanelInspector::AnimatorOptions(GameObject& go)
 
 	if (ImGui::CollapsingHeader(animatorLabel.c_str(), treeFlags))
 	{
-		// Context menu para eliminar componente
 		if (ImGui::BeginPopupContextItem())
 		{
 			std::string context_label = "Remove Component##" + animatorLabel;

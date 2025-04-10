@@ -119,7 +119,7 @@ bool PanelSaveScene::Update()
 					//
 					engine->SetEngineState(EngineState::STOP);
 					//
-					std::string filePath = std::filesystem::relative(FileDialog::SaveFile("Save ManLite Scene file (*.mlscene)\0*.mlscene\0")).string();
+					std::string filePath = std::filesystem::relative(FileDialog::SaveFile("Save ManLite Scene file (*.mlscene)\0*.mlscene\0", "Assets\\Scenes")).string();
 					if (!filePath.empty())
 					{
 						std::filesystem::path fullPath(filePath);
