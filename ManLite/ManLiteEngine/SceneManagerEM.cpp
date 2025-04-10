@@ -51,16 +51,7 @@ bool SceneManagerEM::Update(double dt)
 {
 	bool ret = true;
 
-	//add pending gos
-	current_scene.get()->AddPengindGOs();
-	current_scene.get()->AddPengindLayers();
-
 	if (!current_scene.get()->Update(dt)) return false;
-
-	//delete pending gos
-	current_scene.get()->DeletePengindGOs();
-	current_scene.get()->DeletePengindLayers();
-
 
 	return ret;
 }
@@ -385,6 +376,10 @@ bool Scene::Init()
 bool Scene::Update(double dt)
 {
 	bool ret = true;
+	//
+	AddPengindGOs();
+	AddPengindLayers();
+	//
 
 	for (const auto& item : scene_root.get()->GetChildren())
 		if (item->IsEnabled() && engine->GetEngineState() == EngineState::PLAY)
@@ -396,6 +391,10 @@ bool Scene::Update(double dt)
 			if (!item->Update(dt))
 				return false;
 
+	//
+	DeletePengindGOs();
+	DeletePengindLayers();
+	//
 	return ret;
 }
 

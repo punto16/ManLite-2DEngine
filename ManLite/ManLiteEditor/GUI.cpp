@@ -765,6 +765,16 @@ void Gui::HandleShortcut()
 			scene.SelectGameObject(go, true);
 		}
 	}
+	else if (engine->input_em->GetKey(SDL_SCANCODE_BACKSPACE) == KEY_DOWN ||
+		engine->input_em->GetKey(SDL_SCANCODE_DELETE) == KEY_DOWN)
+	{
+		std::vector<std::weak_ptr<GameObject>> selected_gos = engine->scene_manager_em->GetCurrentScene().GetSelectedGOs();
+		for (const auto& go : selected_gos)
+		{
+			engine->scene_manager_em->GetCurrentScene().SafeDeleteGO(go.lock());
+		}
+		selected_gos.clear();
+	}
 }
 
 void Gui::HandleInput()

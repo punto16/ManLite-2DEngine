@@ -33,11 +33,11 @@ public:
 	std::shared_ptr<Layer> CreateEmptyLayer();
 	std::shared_ptr<Layer> DuplicateLayer(Layer& layer_to_copy);
 
-	//safely adds a game object to a pending to add list
+	//safely adds a game object to a pending to delete list
 	//whenever it is safe place, they will be added to scene root go
 	void SafeAddGO(std::shared_ptr<GameObject> object_to_add);
 
-	//safely deletes a game object to a pending to add list
+	//safely adds a game object to a pending to add list
 	//whenever it is safe place, they will be deleted scene
 	void SafeDeleteGO(std::shared_ptr<GameObject> object_to_delete);
 
@@ -45,10 +45,11 @@ public:
 	//whenever it is safe place, they will be added to scene
 	void SafeAddLayer(std::shared_ptr<Layer> layer_to_add);
 
-	//safely deletes a layer to a pending to add list
+	//safely adds a layer to a pending to delete list
 	//whenever it is safe place, they will be deleted scene
 	void SafeDeleteLayer(std::shared_ptr<Layer> layer_to_delete);
 
+private:
 	//this function will create game objects in a safe way
 	void AddPengindGOs();
 
@@ -60,7 +61,7 @@ public:
 
 	//this function will delete layers in a safe way
 	void DeletePengindLayers();
-
+public:
 	//
 	void ReparentToLayer(std::shared_ptr<GameObject> game_object, std::shared_ptr<Layer> target_layer);
 	void ReparentToLayer(std::shared_ptr<GameObject> game_object, uint32_t target_layer_id, int position);
