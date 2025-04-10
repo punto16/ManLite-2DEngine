@@ -52,7 +52,7 @@ bool WindowEM::Awake()
 	{
 		gl_context = SDL_GL_CreateContext(window);
 		SDL_GL_MakeCurrent(window, gl_context);
-		SDL_GL_SetSwapInterval(1);
+		SDL_GL_SetSwapInterval(vsync);
 	}
 
 	LOG(LogType::LOG_OK, "WindowEM: Initialization Success");
@@ -93,4 +93,10 @@ void WindowEM::GetWindowSize(unsigned int& w, unsigned int& h) const
 {
 	w = this->width;
 	h = this->height;
+}
+
+void WindowEM::SetVsync(bool vsync)
+{
+	this->vsync = vsync;
+	SDL_GL_SetSwapInterval(this->vsync ? 1 : 0);
 }

@@ -434,9 +434,12 @@ void PanelInspector::AnimatorOptions(GameObject& go)
 	Animator* animator = go.GetComponent<Animator>();
 	if (animator == nullptr) return;
 	Sprite2D* sprite = animator->GetContainerGO()->GetComponent<Sprite2D>();
+
 	std::string animatorLabel = std::string("Animator##" + std::to_string(go.GetID()));
+
 	if (ImGui::CollapsingHeader(animatorLabel.c_str(), treeFlags))
 	{
+		// Context menu para eliminar componente
 		if (ImGui::BeginPopupContextItem())
 		{
 			std::string context_label = "Remove Component##" + animatorLabel;
@@ -448,100 +451,140 @@ void PanelInspector::AnimatorOptions(GameObject& go)
 			}
 			ImGui::EndPopup();
 		}
-		//display animations
-		for (const auto& animation_map : animator->GetAnimations())
-		{
-			std::string animation_name = animation_map.first;
-			std::string animation_path = animation_map.second.filePath;
-			Animation* animation = animation_map.second.animation;
-			animatorLabel = animation_name + "##" + animatorLabel;
-			ImGui::CollapsingHeader(animatorLabel.c_str(), ImGuiTreeNodeFlags_Leaf);
-			if (ImGui::BeginPopupContextItem())
-			{
-				std::string context_label = "Remove Animation##" + animatorLabel;
-				if (ImGui::MenuItem(context_label.c_str()))
-				{
-					animator->RemoveAnimation(animation_name);
-					ImGui::EndPopup();
-					break;
-				}
-				ImGui::EndPopup();
-			}
-			if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
-			{
-				selected_animation = animation_name;
-				if (app->gui->animation_panel->IsAnimationEmpty())
-				{
-					app->gui->animation_panel->SetAnimation(animation_path);
-					app->gui->animation_panel->SetSprite(sprite->GetTexturePath());
-				}
-			}
-			if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
-			{
-				selected_animation = animation_name;
-				app->gui->animation_panel->SetAnimation(animation_path);
-				app->gui->animation_panel->SetSprite(sprite->GetTexturePath());
 
-			}
-			if (selected_animation == animation_name)
+		ImGui::Dummy(ImVec2(0, 5));
+
+		if (ImGui::BeginTable("AnimationsTable", 2, ImGuiTableFlags_BordersInnerV | ImGuiTableFlags_SizingStretchSame))
+		{
+			ImGui::TableSetupColumn("Header", ImGuiTableColumnFlags_WidthFixed, 100.0f);
+			ImGui::TableSetupColumn("Content", ImGuiTableColumnFlags_WidthStretch);
+
+			for (const auto& animation_map : animator->GetAnimations())
 			{
-				ImGui::SetNextItemWidth(ImGui::CalcItemWidth() * 0.4);
-				if (ImGui::Button("Edit Animation"))
+				std::string animation_name = animation_map.first;
+				std::string animation_path = animation_map.second.filePath;
+				Animation* animation = animation_map.second.animation;
+				bool is_selected = (selected_animation == animation_name);
+
+				ImGui::TableNextRow();
+				ImGui::TableSetColumnIndex(0);
+
+				ImGui::BeginGroup();
 				{
-					app->gui->animation_panel->RequestFocus();
+					const bool isPlaying = (animator->GetCurrentAnimationName() == animation_name);
+					ImGui::TextColored(isPlaying ? ImVec4(0, 1, 0, 1) : ImVec4(0.5f, 0.5f, 0.5f, 1),
+						isPlaying ? "Playing" : "Stopped");
+
+					ImGui::SameLine();
+					ImGui::TextDisabled("(%d fr)", animation->totalFrames);
+
+					if (ImGui::IsItemHovered())
+					{
+						ImGui::BeginTooltip();
+						ImGui::Text("Duration: %.1f", animation->totalFrames * animation->speed * app->GetDT() * 60);
+						ImGui::Text("Speed: %.1f", animation->speed);
+						ImGui::Text("Loop: %s", animation->loop ? "Yes" : "No");
+						ImGui::EndTooltip();
+					}
+				}
+				ImGui::EndGroup();
+
+				ImGui::TableSetColumnIndex(1);
+
+
+				ImGui::TableSetColumnIndex(1);
+
+				if (ImGui::Selectable(animation_name.c_str(), is_selected, ImGuiSelectableFlags_AllowDoubleClick))
+				{
+					selected_animation = animation_name;
+				}
+				if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
+				{
 					selected_animation = animation_name;
 					app->gui->animation_panel->SetAnimation(animation_path);
 					app->gui->animation_panel->SetSprite(sprite->GetTexturePath());
+
 				}
-				ImGui::SetNextItemWidth(ImGui::CalcItemWidth() * 0.4);
 
-				int w, h;
-				sprite->GetTextureSize(w, h);
-				ImGui::SameLine();
-				ImGui::DragFloat("Sprite Size##AnimationInspectorPanel", &image_animation_size, 3.0f, 10.0f, 2000.0f);
-				animation->Update(app->GetDT(), this->currentFrame);
-
-				ML_Rect section = animation->GetCurrentFrame(this->currentFrame);
-				if (animation->totalFrames <= 0)
+				if (ImGui::BeginPopupContextItem())
 				{
-					section.w = w;
-					section.h = h;
+					if (ImGui::MenuItem("Remove Animation"))
+					{
+						animator->RemoveAnimation(animation_name);
+						ImGui::EndPopup();
+						break;
+					}
+					ImGui::EndPopup();
 				}
-				ML_Rect uvs = PanelAnimation::GetUVs(section, w, h);
 
-				ImGui::Image(sprite->GetTextureID(),
-					ImVec2(image_animation_size, image_animation_size * section.h / section.w),
-					ImVec2(uvs.x, uvs.y),
-					ImVec2(uvs.w, uvs.h)
-				);
+				if (is_selected)
+				{
+					ImGui::Indent(10.0f);
+					ImGui::Spacing();
+
+					if (ImGui::Button("Play", ImVec2(60, 0))) animator->Play(selected_animation);
+					ImGui::SameLine();
+					if (ImGui::Button("Stop", ImVec2(60, 0))) if (animator->GetCurrentAnimationName() == selected_animation) animator->Stop();
+					ImGui::SameLine();
+					if (ImGui::Button("Edit", ImVec2(60, 0)))
+					{
+						app->gui->animation_panel->RequestFocus();
+						selected_animation = animation_name;
+						app->gui->animation_panel->SetAnimation(animation_path);
+						app->gui->animation_panel->SetSprite(sprite->GetTexturePath());
+					}
+
+					ImGui::Spacing();
+					ImGui::DragFloat("Preview Size", &image_animation_size, 3.0f, 10.0f, 2000.0f, "%.0f px");
+
+					if (sprite && sprite->GetTextureID() != 0)
+					{
+						int w, h;
+						sprite->GetTextureSize(w, h);
+
+						animation->Update(app->GetDT(), this->currentFrame);
+						ML_Rect section = animation->GetCurrentFrame(this->currentFrame);
+
+						if (animation->totalFrames <= 0 || section.w <= 0 || section.h <= 0)
+						{
+							section.w = w;
+							section.h = h;
+						}
+
+						ML_Rect uvs = PanelAnimation::GetUVs(section, w, h);
+
+						float aspectRatio = (section.h > 0) ? (float)section.w / section.h : 1.0f;
+						float previewHeight = image_animation_size / aspectRatio;
+
+						ImGui::Text("Texture: %dx%d | Section: %.0f,%.0f,%.0f,%.0f",
+							w, h, section.x, section.y, section.w, section.h);
+
+						ImGui::Image(
+							(ImTextureID)sprite->GetTextureID(),
+							ImVec2(image_animation_size, previewHeight),
+							ImVec2(uvs.x, uvs.y),
+							ImVec2(uvs.w, uvs.h),
+							ImVec4(1, 1, 1, 1),
+							ImVec4(0.8f, 0.8f, 0.8f, 0.5f)
+						);
+					}
+					else
+					{
+						ImGui::TextColored(ImVec4(1, 0, 0, 1), "No valid sprite/texture found!");
+					}
+
+					ImGui::Unindent(10.0f);
+				}
 			}
+			ImGui::EndTable();
 		}
-		
-		//seek animation
-		if (selected_animation.empty()) selected_animation = animator->GetCurrentAnimationName();
+
 		ImGui::Dummy(ImVec2(0, 10));
 		ImGui::Separator();
 		ImGui::Dummy(ImVec2(0, 5));
 
-		if (ImGui::Button("Play", ImVec2(60, 0)))
-		{
-			animator->Play(selected_animation);
-		}
-
-		ImGui::SameLine();
-		if (ImGui::Button("Stop", ImVec2(60, 0))) {
-			animator->Stop();
-		}
-
-		//add animation
-		const ImVec2 button_size_default = ImVec2(150, 0);
-		ImGui::Dummy(ImVec2(0, 10));
-		ImGui::Dummy(ImVec2((ImGui::GetWindowWidth() - (button_size_default.x * 2 + 10) - 30) * 0.5, 0));
-		ImGui::SameLine();
-	
-		std::string add_animation_label = "Add Animation##" + std::to_string(go.GetID());
-	
-		if (ImGui::Button(add_animation_label.c_str(), button_size_default))
+		float buttonWidth = (ImGui::GetContentRegionAvail().x - 10) * 0.5f;
+		if (ImGui::Button("Add Animation", ImVec2(buttonWidth, 0)))
 		{
 			std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Open Animation file (*.animation)\0*.animation\0", "Assets\\Animations")).string();
 			if (!filePath.empty() && filePath.ends_with(".animation"))
@@ -560,26 +603,27 @@ void PanelInspector::AnimatorOptions(GameObject& go)
 				else
 				{
 					LOG(LogType::LOG_WARNING, "Animation %s already exists!", animName.c_str());
+					if (animator->GetAnimations().size() == 1) animator->Play(filePath);
 				}
 			}
 		}
-		std::string create_animation_label = "Create Animation##" + std::to_string(go.GetID());
+
 		ImGui::SameLine(0, 10);
-		if (ImGui::Button(create_animation_label.c_str(), button_size_default))
+
+		if (ImGui::Button("Create New", ImVec2(buttonWidth, 0)))
 		{
-			std::string filePath = std::filesystem::relative(FileDialog::SaveFile("Save Animation file (*.animation)\0*.animation\0")).string();
+			std::string filePath = std::filesystem::relative(FileDialog::SaveFile("Save Animation file (*.animation)\0*.animation\0", "Assets\\Animations")).string();
 			if (!filePath.empty())
 			{
 				std::string animName = fs::path(filePath).stem().string();
 				if (!filePath.ends_with(".animation")) filePath += ".animation";
 				Animation a;
-				if (a.SaveToFile(filePath)) LOG(LogType::LOG_OK, "Animation file saved to: %s", filePath.c_str());
-				else LOG(LogType::LOG_ERROR, "ERROR on Animation file save to: %s", filePath.c_str());
+				if (a.SaveToFile(filePath))
+					LOG(LogType::LOG_OK, "Animation file saved to: %s", filePath.c_str());
 
 				animator->AddAnimation(animName, filePath);
 			}
 		}
-
 
 		ImGui::Dummy(ImVec2(0, 4));
 		ImGui::Separator();
