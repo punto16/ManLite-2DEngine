@@ -263,7 +263,7 @@ void PanelScene::ImGuizmoFunctionality(ImVec2 image_pos, ImVec2 scaled_size)
 				ImGuizmo::SetOrthographic(true);
 				ImGuizmo::SetDrawlist();
 				ImGuizmo::SetRect(image_pos.x, image_pos.y, scaled_size.x, scaled_size.y);
-				if (ImGui::IsWindowHovered() || ImGui::IsWindowFocused())
+				if (!ImGui::GetIO().WantTextInput && (ImGui::IsWindowHovered() || ImGui::IsWindowFocused()))
 				{
 					if (ImGui::IsKeyPressed(ImGuiKey_Q)) op = (ImGuizmo::OPERATION)-1;
 					if (ImGui::IsKeyPressed(ImGuiKey_W)) op = ImGuizmo::TRANSLATE;

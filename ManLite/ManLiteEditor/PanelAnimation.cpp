@@ -36,237 +36,339 @@ bool PanelAnimation::Update()
 	}
 
 	bool ret = true;
+	const float buttonWidth = 150.0f;
+	const ImVec4 accentColor = ImVec4(1.0f, 0.9f, 0.0f, 1.0f);
+	const ImVec4 warningColor = ImVec4(0.8f, 0.2f, 0.2f, 1.0f);
 
-	if (ImGui::Begin(name.c_str(), &enabled))
+	if (ImGui::Begin(name.c_str(), &enabled, ImGuiWindowFlags_MenuBar))
 	{
-		DrawTopBarControls();
-		DrawImportedSprite();
-		DrawAnimatorControls();
+		// Menu Bar
+		if (ImGui::BeginMenuBar())
+		{
+			if (ImGui::BeginMenu("File"))
+			{
+				if (ImGui::MenuItem("Load Animation"))
+				{
+					std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Open Animation file (*.animation)\0*.animation\0", "Assets\\Animations")).string();
+					if (!filePath.empty() && filePath.ends_with(".animation"))
+					{
+						SetAnimation(filePath);
+					}
+				}
+
+				if (animation_path != "" && !animation_path.empty())
+					if (ImGui::MenuItem("Save Animation"))
+					{
+						if (this->animation->SaveToFile(animation_path.ends_with(".animation") ? animation_path : animation_path + ".animation"))
+							LOG(LogType::LOG_OK, "Animation file saved to: %s", (animation_path.ends_with(".animation") ? animation_path : animation_path + ".animation").c_str());
+						else
+							LOG(LogType::LOG_ERROR, "ERROR on Animation file save to: %s", (animation_path.ends_with(".animation") ? animation_path : animation_path + ".animation").c_str());
+					}
+
+				if (ImGui::MenuItem("Save As..."))
+				{
+					std::string filePath = std::filesystem::relative(FileDialog::SaveFile("Save Animation file (*.animation)\0*.animation\0", "Assets\\Animations")).string();
+					if (!filePath.empty())
+					{
+						if (this->animation->SaveToFile(filePath.ends_with(".animation") ? filePath : filePath + ".animation"))
+							LOG(LogType::LOG_OK, "Animation file saved to: %s", (filePath.ends_with(".animation") ? filePath : filePath + ".animation").c_str());
+						else
+							LOG(LogType::LOG_ERROR, "ERROR on Animation file save to: %s", (filePath.ends_with(".animation") ? filePath : filePath + ".animation").c_str());
+					}
+				}
+
+				ImGui::Separator();
+
+				if (ImGui::MenuItem("Load Sprite"))
+				{
+					std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Open Sprite file (*.png)\0*.png\0", "Assets\\Textures")).string();
+					if (!filePath.empty() && filePath.ends_with(".png"))
+					{
+						SetSprite(filePath);
+					}
+				}
+
+				if (ImGui::MenuItem("Clear All"))
+				{
+					ResourceManager::GetInstance().ReleaseTexture(sprite_path);
+					sprite_path = "";
+					w = 0;
+					h = 0;
+					sprite = 0;
+
+					ResourceManager::GetInstance().ReleaseAnimation(animation_path);
+					animation_path = "";
+					selected_frame = -1;
+					animation = new Animation();
+				}
+
+				ImGui::EndMenu();
+			}
+
+			ImGui::EndMenuBar();
+		}
+
+		// Main Content
+		ImGui::BeginChild("AnimationWorkspace", ImVec2(0, -ImGui::GetFrameHeightWithSpacing()), true);
+		{
+			// Sprite Preview
+			DrawSpriteSection();
+		}
+		ImGui::EndChild();
+
+		// Status Bar
+		ImGui::Separator();
+		DrawStatusBar();
 	}
 	ImGui::End();
 
 	return ret;
 }
 
-void PanelAnimation::DrawTopBarControls()
+void PanelAnimation::DrawSpriteSection()
 {
-    ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(10, 5));
-    ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyle().Colors[ImGuiCol_FrameBg]);
+	const float buttonWidth = 150.0f;
+	const ImVec4 accentColor = ImVec4(1.0f, 0.9f, 0.0f, 1.0f);
+	const ImVec4 warningColor = ImVec4(0.8f, 0.2f, 0.2f, 1.0f);
 
-    const ImVec2 button_size_default = ImVec2(150, 0);
-
-	if (ImGui::Button("Load Animation File", button_size_default))
+	if (sprite == 0)
 	{
-		std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Open Animation file (*.animation)\0*.animation\0", "Assets\\Animations")).string();
-		if (!filePath.empty() && filePath.ends_with(".animation"))
-		{
-			SetAnimation(filePath);
-		}
+		ImGui::TextColored(warningColor, "No sprite loaded!");
+		return;
 	}
 
-	ImGui::SameLine();
-	if (ImGui::Button("Save Animation As...", button_size_default))
-	{
-		std::string filePath = std::filesystem::relative(FileDialog::SaveFile("Save Animation file (*.animation)\0*.animation\0", "Assets\\Animations")).string();
-		if (!filePath.empty())
-		{
-			if (this->animation->SaveToFile(filePath.ends_with(".animation") ? filePath : filePath + ".animation"))
-				LOG(LogType::LOG_OK, "Animation file saved to: %s", (filePath.ends_with(".animation") ? filePath : filePath + ".animation").c_str());
-			else
-				LOG(LogType::LOG_ERROR, "ERROR on Animation file save to: %s", (filePath.ends_with(".animation") ? filePath : filePath + ".animation").c_str());
+	const float availableWidth = ImGui::GetContentRegionAvail().x;
+	const float panelWidth = availableWidth * 0.4f;
 
-		}
-	}
-
-	if (animation_path != "" && !animation_path.empty())
+	// Left Panel - Sprite Sheet
+	ImGui::BeginChild("SpriteSheet", ImVec2(panelWidth, 0), true);
 	{
+		ImGui::Text("Current Sprite Sheet: ");
 		ImGui::SameLine();
-		if (ImGui::Button("Save Animation", button_size_default))
-		{
-			if (this->animation->SaveToFile(animation_path.ends_with(".animation") ? animation_path : animation_path + ".animation"))
-				LOG(LogType::LOG_OK, "Animation file saved to: %s", (animation_path.ends_with(".animation") ? animation_path : animation_path + ".animation").c_str());
-			else
-				LOG(LogType::LOG_ERROR, "ERROR on Animation file save to: %s", (animation_path.ends_with(".animation") ? animation_path : animation_path + ".animation").c_str());
-		}
-	}
-
-	if (ImGui::Button("Choose Sprite", button_size_default))
-	{
-		std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Open Sprite file (*.png)\0*.png\0", "Assets\\Textures")).string();
-		if (!filePath.empty() && filePath.ends_with(".png"))
-		{
-			SetSprite(filePath);
-		}
-	}
-
-	ImGui::SameLine();
-	if (ImGui::Button("Clear Panel", button_size_default))
-	{
-		ResourceManager::GetInstance().ReleaseTexture(sprite_path);
-		sprite_path = "";
-		w = 0;
-		h = 0;
-		sprite = 0;
-
-		ResourceManager::GetInstance().ReleaseAnimation(animation_path);
-		animation_path = "";
-		selected_frame = -1;
-		animation_frame_panel = false;
-		animation = new Animation();
-	}
-
-	ImGui::SameLine();
-	ImGui::Dummy(ImVec2(10, 0));
-	ImGui::SameLine();
-	if (ImGui::Button("Animator Panel##Button", button_size_default))
-	{
-		animator_panel = !animator_panel;
-	}
-
-    ImGui::Separator();
-
-    ImGui::PopStyleColor();
-    ImGui::PopStyleVar();
-}
-
-void PanelAnimation::DrawImportedSprite()
-{
-	if (sprite == 0) return;
-	ImGui::DragFloat("Sprite Size##AnimationPanel", &image_size, 3.0f, 10.0f, 2000.0f);
-	animation->Update(app->GetDT(), this->currentFrame);
-	ML_Rect section = animation->GetCurrentFrame(this->currentFrame);
-	if (animation->totalFrames <= 0)
-	{
-		section.w = this->w;
-		section.h = this->h;
-	}
-	ML_Rect uvs = GetUVs(section, w, h);
-
-	ImGui::Image(sprite,
-		ImVec2(image_size, image_size * section.h / section.w),
-		ImVec2(uvs.x, uvs.y),
-		ImVec2(uvs.w, uvs.h)
-	);
-}
-
-void PanelAnimation::DrawAnimatorControls()
-{
-	if (!animator_panel) return;
-	
-	ImGuiTreeNodeFlags treeFlags = ImGuiTreeNodeFlags_Leaf;
-	if (ImGui::Begin("Animator Panel##Panel", &animator_panel))
-	{
-		std::string speed_animation_label = std::string("Animation Speed##Animation_Config");
-		ImGui::SetNextItemWidth(ImGui::CalcItemWidth() * 0.8);
-		ImGui::DragFloat(speed_animation_label.c_str(), &animation->speed, 0.005f, 0.0f, 100.0f);
-		speed_animation_label = std::string("Animation Loop##Animation_Config");
-		ImGui::Checkbox(speed_animation_label.c_str(), &animation->loop);
-		speed_animation_label = std::string("Animation PingPong##Animation_Config");
-		ImGui::Checkbox(speed_animation_label.c_str(), &animation->pingpong);
-
+		ImGui::TextColored(accentColor, "%s", sprite_path.c_str());
+		ImGui::SameLine();
+		ImGui::Text("| Texture: %dx%d", w, h);
 		ImGui::Separator();
 
-		for (size_t i = 0; i < animation->totalFrames; i++)
+		// Sprite preview
+		animation->Update(app->GetDT(), this->currentFrame);
+		ML_Rect section = animation->GetCurrentFrame(currentFrame);
+		ML_Rect uvs = GetUVs(section, w, h);
+
+		// Calcular aspect ratio del frame actual
+		const float frameAspect = (section.h > 0) ? static_cast<float>(section.h) / section.w : 1.0f;
+
+		// Obtener espacio disponible en el panel
+		const ImVec2 availableSpace = ImGui::GetContentRegionAvail();
+		const float panelAspect = availableSpace.y / availableSpace.x;
+
+		// Calcular tamaño automático manteniendo aspect ratio
+		float imageWidth, imageHeight;
+
+		if (frameAspect > panelAspect) {
+			// Limit by height
+			imageHeight = availableSpace.y - 30.0f; // Margen vertical
+			imageWidth = imageHeight / frameAspect;
+		}
+		else {
+			// Limit by width
+			imageWidth = availableSpace.x - 30.0f; // Margen horizontal
+			imageHeight = imageWidth * frameAspect;
+		}
+
+		// Asegurar que no exceda el espacio disponible
+		imageWidth = std::min(imageWidth, availableSpace.x - 10.0f);
+		imageHeight = std::min(imageHeight, availableSpace.y - 10.0f);
+
+		// Centrado
+		ImGui::SetCursorPosX((availableSpace.x - imageWidth) * 0.5f);
+		ImGui::SetCursorPosY((availableSpace.y - imageHeight + 60) * 0.5f);
+
+		ImGui::Image(sprite,
+			ImVec2(imageWidth, imageHeight),
+			ImVec2(uvs.x, uvs.y),
+			ImVec2(uvs.w, uvs.h),
+			ImVec4(1, 1, 1, 1),
+			ImVec4(0.8f, 0.8f, 0.8f, 0.5f)
+		);
+	}
+	ImGui::EndChild();
+
+	ImGui::SameLine();
+
+	// Right Panel - Animation Frames
+	ImGui::BeginChild("AnimationFrames", ImVec2(0, 0), true);
+	{
+		ImGui::Text("Animation Frames");
+		ImGui::Separator();
+
+		if (ImGui::BeginTable("FrameControls", 2, ImGuiTableFlags_Resizable | ImGuiTableFlags_SizingStretchSame))
 		{
-			if (i == selected_frame) treeFlags |= ImGuiTreeNodeFlags_Selected;
+			ImGui::TableSetupColumn("Properties", ImGuiTableColumnFlags_WidthFixed, 200);
+			ImGui::TableSetupColumn("Preview");
 
-			std::string frame_label = "Frame_" + std::to_string(i);
-			if (ImGui::CollapsingHeader(frame_label.c_str(), treeFlags))
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0);
+
+			// Animation Properties
+			ImGui::Text("Animation Settings");
+			ImGui::Separator();
+
+			ImGui::SetNextItemWidth(150);
+			ImGui::DragFloat("Speed", &animation->speed, 0.005f, 0.0f, 100.0f, "%.2fx");
+			ImGui::Checkbox("Loop", &animation->loop);
+			ImGui::SameLine();
+			ImGui::Checkbox("Ping Pong", &animation->pingpong);
+
+			ImGui::Separator();
+			ImGui::Text("Frame List");
+
+			// Frame List
+			ImGui::BeginChild("FrameList", ImVec2(0, 200), true);
 			{
-				if (ImGui::BeginPopupContextItem())
+				for (size_t i = 0; i < animation->totalFrames; ++i)
 				{
-					frame_label = "Duplicate Frame##" + frame_label;
-					if (ImGui::MenuItem(frame_label.c_str()))
+					const bool isSelected = (selected_frame == static_cast<int>(i));
+					ImGui::PushID(static_cast<int>(i));
+
+					if (ImGui::Selectable(("Frame " + std::to_string(i)).c_str(), isSelected))
+						selected_frame = isSelected ? -1 : static_cast<int>(i);
+
+					if (ImGui::BeginPopupContextItem())
 					{
-						animation->PushBack(animation->frames[i]);
-						selected_frame = animation->totalFrames - 1;
-						animation_frame_panel = true;
+						if (ImGui::MenuItem("Duplicate"))
+						{
+							animation->PushBack(animation->frames[i]);
+							selected_frame = animation->totalFrames - 1;
+						}
+
+						if (ImGui::MenuItem("Delete"))
+						{
+							animation->PopFrame(i);
+							selected_frame = 0;
+						}
+
+						ImGui::EndPopup();
 					}
 
-					frame_label = "Delete Frame##" + frame_label;
-					if (ImGui::MenuItem(frame_label.c_str()))
-					{
-						animation->PopFrame(i);
-						selected_frame = 0;
-						animation_frame_panel = true;
-					}
-					ImGui::EndPopup();
+					ImGui::PopID();
 				}
 			}
-			if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+			ImGui::EndChild();
+
+			ImGui::SetNextItemWidth(100);
+			if (ImGui::Button("Add Frame"))
 			{
-				selected_frame = i;
-				animation_frame_panel = true;
+				animation->PushBack(ML_Rect(0, 0, w, h));
+				selected_frame = animation->totalFrames - 1;
 			}
-		}
 
-		//add frame
-		const ImVec2 button_size_default = ImVec2(150, 0);
-		ImGui::Dummy(ImVec2(0, 10));
-		ImGui::Dummy(ImVec2((ImGui::GetWindowWidth() - button_size_default.x - 30) * 0.5, 0));
-		ImGui::SameLine();
+			ImGui::TableSetColumnIndex(1);
 
-		if (ImGui::Button("Add Frame##Animator_Panel", button_size_default))
-		{
-			animation->PushBack(ML_Rect(0, 0, w, h));
-			selected_frame = animation->totalFrames - 1;
-			animation_frame_panel = true;
+			if (selected_frame != -1)
+			{
+				DrawFrameProperties();
+			}
+
+			ImGui::EndTable();
 		}
 	}
+	ImGui::EndChild();
+}
 
-	//frame configuration
-	std::string frame_panel_label = "Animation Frame##PanelFrame";
+void PanelAnimation::DrawStatusBar()
+{
+	const float buttonWidth = 150.0f;
+	const ImVec4 accentColor = ImVec4(1.0f, 0.9f, 0.0f, 1.0f);
+	const ImVec4 warningColor = ImVec4(0.8f, 0.2f, 0.2f, 1.0f);
+
+	ImGui::Text("Current Animation: ");
+	ImGui::SameLine();
+
+	if (!animation_path.empty())
+	{
+		ImGui::TextColored(accentColor, "%s", animation_path.c_str());
+		ImGui::SameLine();
+		ImGui::Text("| Frames: %d | Speed: %.2f", animation->totalFrames, animation->speed);
+	}
+	else
+	{
+		ImGui::TextColored(warningColor, "No animation loaded!");
+	}
+}
+
+void PanelAnimation::DrawFrameProperties()
+{
 	if (selected_frame != -1)
 	{
-		if (ImGui::Begin(frame_panel_label.c_str(), &animation_frame_panel))
+		ImGui::Text("Frame %d Settings", selected_frame);
+
+		// Contenedor principal dividido en 2 columnas
+		ImGui::BeginChild("FrameProperties", ImVec2(0, 0), true);
 		{
-			const ImVec2 button_size_default = ImVec2(150, 0);
-			ImGui::Dummy(ImVec2((ImGui::GetWindowWidth() - button_size_default.x - 30) * 0.5, 0));
-			ImGui::SameLine();
-			ImGui::Text(std::string("Animation Frame " + std::to_string(selected_frame)).c_str());
-			ImGui::Separator();
+			const float columnWidth = ImGui::GetContentRegionAvail().x * 0.4f;
 
-
-			ML_Rect frame_rect = animation->frames[selected_frame];
-
-			frame_panel_label = std::string("X    ##Section_Animation_frame");
-			ImGui::SetNextItemWidth(ImGui::CalcItemWidth() * 0.4);
-			ImGui::DragFloat(frame_panel_label.c_str(), &frame_rect.x, 1.0f);
-
-			ImGui::SameLine();
-			frame_panel_label = std::string("Y##Section_Animation_frame");
-			ImGui::SetNextItemWidth(ImGui::CalcItemWidth() * 0.4);
-			ImGui::DragFloat(frame_panel_label.c_str(), &frame_rect.y, 1.0f);
-
-			frame_panel_label = std::string("Width##Section_Animation_frame");
-			ImGui::SetNextItemWidth(ImGui::CalcItemWidth() * 0.4);
-			ImGui::DragFloat(frame_panel_label.c_str(), &frame_rect.w, 1.0f);
-
-			ImGui::SameLine();
-			frame_panel_label = std::string("Height##Section_Animation_frame");
-			ImGui::SetNextItemWidth(ImGui::CalcItemWidth() * 0.4);
-			ImGui::DragFloat(frame_panel_label.c_str(), &frame_rect.h, 1.0f);
-
-			animation->frames[selected_frame] = frame_rect;
-
-			ImGui::Separator();
-			ImGui::DragFloat("Sprite Size##AnimationPanelFrame", &image_frame_size, 3.0f, 10.0f, 2000.0f);
-
-			if (sprite != 0)
+			// Columna izquierda - Controles
+			ImGui::BeginChild("FrameControls", ImVec2(columnWidth, 0), true);
 			{
-				ML_Rect uvs = GetUVs(frame_rect, this->w, this->h);
+				ML_Rect& frame = animation->frames[selected_frame];
 
-				ImGui::Image(sprite,
-					ImVec2(image_frame_size, image_frame_size * frame_rect.h / frame_rect.w),
-					ImVec2(uvs.x, uvs.y),
-					ImVec2(uvs.w, uvs.h)
-				);
+				// Controles verticales
+				ImGui::SetNextItemWidth(columnWidth - 25);
+				ImGui::DragFloat("X", &frame.x, 1.0f, 0, w, "%.0f");
+
+				ImGui::SetNextItemWidth(columnWidth - 25);
+				ImGui::DragFloat("Y", &frame.y, 1.0f, 0, h, "%.0f");
+
+				ImGui::SetNextItemWidth(columnWidth - 25);
+				ImGui::DragFloat("W", &frame.w, 1.0f, 1, w - frame.x, "%.0f");
+
+				ImGui::SetNextItemWidth(columnWidth - 25);
+				ImGui::DragFloat("H", &frame.h, 1.0f, 1, h - frame.y, "%.0f");
 			}
+			ImGui::EndChild();
+
+			ImGui::SameLine();
+
+			// Columna derecha - Preview
+			ImGui::BeginChild("FramePreview", ImVec2(0, 0), true);
+			{
+				if (sprite != 0)
+				{
+					ML_Rect frame = animation->frames[selected_frame];
+					ML_Rect uvs = GetUVs(frame, w, h);
+
+					// Tamaño automático manteniendo aspect ratio
+					const float availableWidth = ImGui::GetContentRegionAvail().x - 10;
+					const float availableHeight = ImGui::GetContentRegionAvail().y - 10;
+					const float aspect = frame.h / frame.w;
+
+					float imageWidth = availableWidth;
+					float imageHeight = imageWidth * aspect;
+
+					if (imageHeight > availableHeight)
+					{
+						imageHeight = availableHeight;
+						imageWidth = imageHeight / aspect;
+					}
+
+					// Centrado
+					ImGui::SetCursorPosX((ImGui::GetContentRegionAvail().x - imageWidth) * 0.5f);
+					ImGui::SetCursorPosY((ImGui::GetContentRegionAvail().y - imageHeight) * 0.5f);
+
+					ImGui::Image(sprite,
+						ImVec2(imageWidth, imageHeight),
+						ImVec2(uvs.x, uvs.y),
+						ImVec2(uvs.w, uvs.h),
+						ImVec4(1, 1, 1, 1),
+						ImVec4(0.8f, 0.8f, 0.8f, 0.5f)
+					);
+				}
+			}
+			ImGui::EndChild();
 		}
-		ImGui::End();
+		ImGui::EndChild();
 	}
-	
-	ImGui::End();
 }
 
 bool PanelAnimation::IsAnimationEmpty()

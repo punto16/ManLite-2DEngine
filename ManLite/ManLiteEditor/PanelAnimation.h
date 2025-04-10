@@ -16,10 +16,9 @@ public:
 
 	bool Update();
 
-	void DrawTopBarControls();
-	void DrawImportedSprite();
-	void DrawAnimatorControls();
-
+	void DrawSpriteSection();
+	void DrawStatusBar();
+	void DrawFrameProperties();
 
 	bool IsAnimationEmpty();
 	void SetAnimation(std::string new_animation_PATH);
@@ -31,16 +30,12 @@ private:
 	std::string sprite_path = "";
 	unsigned int sprite = 0;
 	int w = 0, h = 0;
-	float image_size = 200.0f;
 
 	std::string animation_path = "";
 	Animation* animation = nullptr;
 	float currentFrame;
 
-	bool animator_panel = false;
-	bool animation_frame_panel = false;
 	int selected_frame = -1;
-	float image_frame_size = 200.0f;
 };
 
 #endif // !__PANEL_ANIMATION_H__

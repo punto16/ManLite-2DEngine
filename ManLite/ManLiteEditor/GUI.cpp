@@ -697,6 +697,8 @@ void Gui::HelpMenu()
 
 void Gui::HandleShortcut()
 {
+	if (ImGui::GetIO().WantTextInput) return;
+
 	if (engine->input_em->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT &&
 		engine->input_em->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT &&
 		engine->input_em->GetKey(SDL_SCANCODE_N) == KEY_DOWN)

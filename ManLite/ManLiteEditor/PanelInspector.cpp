@@ -631,16 +631,17 @@ void PanelInspector::AnimatorOptions(GameObject& go)
 
 void PanelInspector::AudioSourceOptions(GameObject& go)
 {
-	uint treeFlags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_DefaultOpen;
+	const uint treeFlags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_DefaultOpen;
 	AudioSource* audio = go.GetComponent<AudioSource>();
 	if (audio == nullptr) return;
-	std::string audioLabel = std::string("Audio Source##" + std::to_string(go.GetID()));
-	if (ImGui::CollapsingHeader(audioLabel.c_str(), treeFlags))
+
+	const std::string headerLabel = "Audio Source##" + std::to_string(go.GetID());
+
+	if (ImGui::CollapsingHeader(headerLabel.c_str(), treeFlags))
 	{
 		if (ImGui::BeginPopupContextItem())
 		{
-			std::string context_label = "Remove Component##" + audioLabel;
-			if (ImGui::MenuItem(context_label.c_str()))
+			if (ImGui::MenuItem(("Remove Component##" + headerLabel).c_str()))
 			{
 				go.RemoveComponent(ComponentType::AudioSource);
 				ImGui::EndPopup();
@@ -648,174 +649,167 @@ void PanelInspector::AudioSourceOptions(GameObject& go)
 			}
 			ImGui::EndPopup();
 		}
-		ImGui::Dummy(ImVec2(10, 0));
-		ImGui::SameLine();
-		if (ImGui::CollapsingHeader("Musics"))
-		{
-			for (auto& musics_map : audio->GetMusics())
+
+		ImGui::Dummy(ImVec2(0, 4));
+
+		// Helper function para dibujar elementos de audio
+		auto DrawAudioSection = [&](const char* sectionName, auto& audioMap, const char* type) {
+			const float indent = ImGui::GetStyle().IndentSpacing;
+			const ImVec4 headerColor = (strcmp(type, "Music") == 0) ?
+				ImVec4(0.2f, 0.6f, 1.0f, 1.0f) : ImVec4(0.8f, 0.4f, 0.1f, 1.0f);
+
+			ImGui::PushStyleColor(ImGuiCol_Header, headerColor);
+			if (ImGui::CollapsingHeader(sectionName, ImGuiTreeNodeFlags_DefaultOpen))
 			{
-				std::string audio_name = musics_map.first;
-				std::string audio_path = musics_map.second.filePath;
-				MusicRef* music = &(musics_map.second);
-
-				std::string audio_label = audio_name + "##" + audio_path + std::to_string(go.GetID());
-				ImGui::Dummy(ImVec2(30, 0));
-				ImGui::SameLine();
-				ImGui::CollapsingHeader(audio_label.c_str(), ImGuiTreeNodeFlags_Leaf);
-				if (ImGui::BeginPopupContextItem())
+				if (audioMap.empty())
 				{
-					std::string context_label = "Remove Music##" + audio_label;
-					if (ImGui::MenuItem(context_label.c_str()))
-					{
-						audio->RemoveMusic(audio_name);
-						ImGui::EndPopup();
-						break;
-					}
-					ImGui::EndPopup();
+					ImGui::Indent(indent);
+					ImGui::TextDisabled("No %s files loaded", type);
+					ImGui::Unindent(indent);
 				}
-				if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+				else
 				{
-					selected_audio = audio_name;
-				}
-				if (selected_audio == audio_name)
-				{
-					ImGui::Dummy(ImVec2(30, 0));
-					ImGui::SameLine();
-					ImGui::SetNextItemWidth(ImGui::CalcItemWidth() * 0.4);
-					ImGui::Checkbox("Loop##MusicInspectorPanel", &music->loop);
-					ImGui::SameLine();
-					ImGui::SetNextItemWidth(ImGui::CalcItemWidth() * 0.4);
-					ImGui::Checkbox("Play On Awake##MusicInspectorPanel", &music->play_on_awake);
-
-					ImGui::Dummy(ImVec2(30, 0));
-					ImGui::SameLine();
-					int volume = music->volume;
-					ImGui::DragInt("Volume##MusicInspectorPanel", &volume, 1.0f, 0, 100);
-					if (music->volume != volume) audio->SetMusicVolume(audio_name, volume);
-					ImGui::Dummy(ImVec2(30, 0));
-					ImGui::SameLine();
-					ImGui::Separator();
-
-					const ImVec2 button_size_default = ImVec2(60, 0);
-					ImGui::Dummy(ImVec2((ImGui::GetWindowWidth() - (button_size_default.x * 2 + 10) - 30) * 0.5, 0));
-					ImGui::SameLine();
-
-					if (ImGui::Button("Play", button_size_default))
+					for (auto& [name, audioRef] : audioMap)
 					{
-						audio->PlayMusic(audio_name);
-					}
+						const std::string label = name + "##" + std::to_string(audioRef.volume);
+						bool isSelected = (selected_audio == name);
 
-					ImGui::SameLine();
-					if (ImGui::Button("Stop", button_size_default))
-					{
-						audio->StopMusic(audio_name);
-					}
+						ImGui::Indent(indent);
+						ImGui::Selectable(label.c_str(), isSelected,
+							ImGuiSelectableFlags_AllowDoubleClick | ImGuiSelectableFlags_SpanAllColumns);
 
-					ImGui::Dummy(ImVec2(0, 5));
+						// Context menu para eliminar
+						if (ImGui::BeginPopupContextItem())
+						{
+							if (ImGui::MenuItem("Remove"))
+							{
+								if constexpr (std::is_same_v<decltype(audioRef), MusicRef>)
+									audio->RemoveMusic(name);
+								else
+									audio->RemoveSound(name);
+								selected_audio.clear();
+								ImGui::EndPopup();
+								ImGui::Unindent(indent);
+								return;
+							}
+							ImGui::EndPopup();
+						}
+
+						if (isSelected)
+						{
+							ImGui::Indent(indent);
+							if (ImGui::BeginTable("AudioSettings", 2,
+								ImGuiTableFlags_BordersInnerV | ImGuiTableFlags_SizingStretchSame))
+							{
+								ImGui::TableSetupColumn("Label", ImGuiTableColumnFlags_WidthFixed, 100.0f);
+								ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthStretch);
+
+								// Loop setting
+								ImGui::TableNextRow();
+								ImGui::TableSetColumnIndex(0);
+								ImGui::Text("Loop");
+								ImGui::TableSetColumnIndex(1);
+								ImGui::Checkbox("##Loop", &audioRef.loop);
+								ImGui::SameLine();
+								Gui::HelpMarker("Repeat audio continuously");
+
+								// Play on awake
+								ImGui::TableNextRow();
+								ImGui::TableSetColumnIndex(0);
+								ImGui::Text("Play On Awake");
+								ImGui::TableSetColumnIndex(1);
+								ImGui::Checkbox("##PlayAwake", &audioRef.play_on_awake);
+								ImGui::SameLine();
+								Gui::HelpMarker("Play automatically when scene starts");
+
+								// Volume control
+								ImGui::TableNextRow();
+								ImGui::TableSetColumnIndex(0);
+								ImGui::Text("Volume");
+								ImGui::TableSetColumnIndex(1);
+								int vol = audioRef.volume;
+								if (ImGui::SliderInt("##Vol", &vol, 0, 100, "%d%%",
+									ImGuiSliderFlags_AlwaysClamp))
+								{
+									if constexpr (std::is_same_v<decltype(audioRef), MusicRef>)
+										audio->SetMusicVolume(name, vol);
+									else
+										audio->SetSoundVolume(name, vol);
+								}
+
+								ImGui::EndTable();
+							}
+
+							// Playback controls
+							const float buttonWidth = (ImGui::GetContentRegionAvail().x -
+								ImGui::GetStyle().ItemSpacing.x) * 0.5f;
+
+							if (ImGui::Button("Play", ImVec2(buttonWidth, 0)))
+							{
+								if constexpr (std::is_same_v<decltype(audioRef), MusicRef>)
+									audio->PlayMusic(name);
+								else
+									audio->PlaySound(name);
+							}
+
+							ImGui::SameLine();
+
+							if (ImGui::Button("Stop", ImVec2(buttonWidth, 0)))
+							{
+								if constexpr (std::is_same_v<decltype(audioRef), MusicRef>)
+									audio->StopMusic(name);
+								else
+									audio->StopSound(name);
+							}
+
+							ImGui::Unindent(indent);
+							ImGui::Separator();
+						}
+
+						if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+							selected_audio = isSelected ? "" : name;
+
+						ImGui::Unindent(indent);
+					}
 				}
 			}
-			ImGui::Dummy(ImVec2(10, 0));
-			ImGui::SameLine();
-			ImGui::Separator();
-		}
+			ImGui::PopStyleColor();
+			};
 
-		ImGui::Dummy(ImVec2(10, 0));
-		ImGui::SameLine();
-		if (ImGui::CollapsingHeader("Sound Effects"))
+		// Sección de Música
+		DrawAudioSection("Music", audio->GetMusics(), "Music");
+		ImGui::Dummy(ImVec2(0, 5));
+
+		// Sección de Sound Effects
+		DrawAudioSection("Sound Effects", audio->GetSounds(), "Sound");
+		ImGui::Dummy(ImVec2(0, 5));
+
+		// Add buttons
+		const float buttonWidth = (ImGui::GetContentRegionAvail().x -
+			ImGui::GetStyle().ItemSpacing.x) * 0.5f;
+
+		if (ImGui::Button("Add Music", ImVec2(buttonWidth, 0)))
 		{
-			for (auto& sounds_map : audio->GetSounds())
-			{
-				std::string audio_name = sounds_map.first;
-				std::string audio_path = sounds_map.second.filePath;
-				SoundRef* sound = &(sounds_map.second);
+			std::string filePath = std::filesystem::relative(
+				FileDialog::OpenFile("Music Files (*.ogg)\0*.ogg\0", "Assets\\Audio\\Music")).string();
 
-				std::string audio_label = audio_name + "##" + audio_path + std::to_string(go.GetID());
-				ImGui::Dummy(ImVec2(30, 0));
-				ImGui::SameLine();
-				ImGui::CollapsingHeader(audio_label.c_str(), ImGuiTreeNodeFlags_Leaf);
-				if (ImGui::BeginPopupContextItem())
-				{
-					std::string context_label = "Remove Sound Effect##" + audio_label;
-					if (ImGui::MenuItem(context_label.c_str()))
-					{
-						audio->RemoveSound(audio_name);
-						ImGui::EndPopup();
-						break;
-					}
-					ImGui::EndPopup();
-				}
-				if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
-				{
-					selected_audio = audio_name;
-				}
-				if (selected_audio == audio_name)
-				{
-					ImGui::Dummy(ImVec2(30, 0));
-					ImGui::SameLine();
-					ImGui::SetNextItemWidth(ImGui::CalcItemWidth() * 0.5);
-					ImGui::Checkbox("Loop##MusicInspectorPanel", &sound->loop);
-					ImGui::SameLine();
-					ImGui::SetNextItemWidth(ImGui::CalcItemWidth() * 0.5);
-					ImGui::Checkbox("Play On Awake##MusicInspectorPanel", &sound->play_on_awake);
-
-					ImGui::Dummy(ImVec2(30, 0));
-					ImGui::SameLine();
-					int volume = sound->volume;
-					ImGui::DragInt("Volume##MusicInspectorPanel", &volume, 1.0f, 0, 100);
-					if (sound->volume != volume) audio->SetSoundVolume(audio_name, volume);
-
-					ImGui::Dummy(ImVec2(30, 0));
-					ImGui::SameLine();
-					ImGui::Separator();
-
-					const ImVec2 button_size_default = ImVec2(60, 0);
-					ImGui::Dummy(ImVec2((ImGui::GetWindowWidth() - (button_size_default.x * 2 + 10) - 30) * 0.5, 0));
-					ImGui::SameLine();
-
-					if (ImGui::Button("Play", button_size_default))
-					{
-						audio->PlaySound(audio_name);
-					}
-
-					ImGui::SameLine();
-					if (ImGui::Button("Stop", button_size_default))
-					{
-						audio->StopSound(audio_name);
-					}
-
-					ImGui::Dummy(ImVec2(0, 5));
-				}
-			}
-			ImGui::Dummy(ImVec2(10, 0));
-			ImGui::SameLine();
-			ImGui::Separator();
-		}
-
-		// add audio source
-		const ImVec2 button_size_default = ImVec2(150, 0);
-		ImGui::Dummy(ImVec2(0, 10));
-		ImGui::Dummy(ImVec2((ImGui::GetWindowWidth() - (button_size_default.x * 2 + 10) - 30) * 0.5, 0));
-		ImGui::SameLine();
-
-		std::string add_music_label = "Add Music##" + std::to_string(go.GetID());
-
-		if (ImGui::Button(add_music_label.c_str(), button_size_default))
-		{
-			std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Open Music file (*.ogg)\0*.ogg\0", "Assets\\Audio\\Music")).string();
 			if (!filePath.empty() && filePath.ends_with(".ogg"))
 			{
-				std::string audioName = std::filesystem::path(filePath).stem().string();
+				const std::string audioName = std::filesystem::path(filePath).stem().string();
 				audio->AddMusic(audioName, filePath);
 			}
 		}
-		std::string add_sound_label = "Add Sound Effect##" + std::to_string(go.GetID());
-		ImGui::SameLine(0, 10);
-		if (ImGui::Button(add_sound_label.c_str(), button_size_default))
+
+		ImGui::SameLine();
+
+		if (ImGui::Button("Add Sound", ImVec2(buttonWidth, 0)))
 		{
-			std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Open Sound Effect file (*.wav)\0*.wav\0", "Assets\\Audio\\SoundEffects")).string();
+			std::string filePath = std::filesystem::relative(
+				FileDialog::OpenFile("Sound Files (*.wav)\0*.wav\0", "Assets\\Audio\\SoundEffects")).string();
+
 			if (!filePath.empty() && filePath.ends_with(".wav"))
 			{
-				std::string audioName = std::filesystem::path(filePath).stem().string();
+				const std::string audioName = std::filesystem::path(filePath).stem().string();
 				audio->AddSound(audioName, filePath);
 			}
 		}

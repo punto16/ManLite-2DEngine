@@ -64,6 +64,7 @@ bool AudioSource::Unpause()
 
 void AudioSource::AddSound(const std::string& name, const std::string& filePath, int volume, bool loop, bool play_on_awake)
 {
+    if (HasSound(name)) return;
     if (Mix_Chunk* chunk = ResourceManager::GetInstance().LoadSound(filePath)) {
         sounds[name] = { chunk, filePath, volume, loop, play_on_awake };
     }
@@ -93,6 +94,7 @@ bool AudioSource::HasSound(const std::string& name)
 
 void AudioSource::AddMusic(const std::string& name, const std::string& filePath, int volume, bool loop, bool play_on_awake)
 {
+    if (HasMusic(name)) return;
     if (Mix_Music* music = ResourceManager::GetInstance().LoadMusic(filePath)) {
         musics[name] = { music, filePath, volume, loop, play_on_awake };
     }
