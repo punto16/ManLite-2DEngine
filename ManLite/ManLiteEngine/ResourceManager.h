@@ -10,7 +10,7 @@
 #include <GL/glew.h>
 #include "SDL2/SDL_mixer.h"
 
-#include <ft2build.h>
+#include "ft2build.h"
 #include FT_FREETYPE_H
 
 //thread management

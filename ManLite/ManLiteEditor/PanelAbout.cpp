@@ -9,7 +9,6 @@
 #include <SDL2/SDL_opengl.h>
 #include <gl/GL.h>
 #include <SDL2/SDL_mixer.h>
-#include <SDL2/SDL_ttf.h>
 #include <box2d/box2d.h>
 #include <ImGuizmo.h>
 
@@ -70,11 +69,6 @@ bool PanelAbout::Update()
 				const SDL_version* mixVersion = Mix_Linked_Version();
 				ImGui::Bullet(); ImGui::Text("SDL2_mixer %d.%d.%d",
 					mixVersion->major, mixVersion->minor, mixVersion->patch);
-
-				// SDL2_ttf
-				const SDL_version* ttfVersion = TTF_Linked_Version();
-				ImGui::Bullet(); ImGui::Text("SDL2_ttf %d.%d.%d",
-					ttfVersion->major, ttfVersion->minor, ttfVersion->patch);
 
 				// OpenGL
 				ImGui::Bullet(); ImGui::Text("OpenGL %s", glGetString(GL_VERSION));

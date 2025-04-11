@@ -111,9 +111,6 @@
     <ClCompile Include="AudioEM.cpp">
       <Filter>EngineModules\Audio</Filter>
     </ClCompile>
-    <ClCompile Include="PhysicsEM.cpp">
-      <Filter>EngineModules\Physics</Filter>
-    </ClCompile>
     <ClCompile Include="Collider2D.cpp">
       <Filter>GameObject\Components</Filter>
     </ClCompile>
@@ -152,6 +149,9 @@
     </ClCompile>
     <ClCompile Include="Particle.cpp">
       <Filter>GameObject\Components\ParticleSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysicsEM.cpp">
+      <Filter>EngineModules\Physics</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
