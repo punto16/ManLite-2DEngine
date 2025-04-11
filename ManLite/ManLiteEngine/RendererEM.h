@@ -169,7 +169,10 @@ public:
     //collider stuff
     GLuint debugShaderProgram;
     GLuint lineVAO, lineVBO;
-    std::vector<std::tuple<mat3f, ML_Color, bool, float, bool>> debugColliders;
+    std::vector<std::tuple<mat3f, ML_Color, float>> debugCollidersCircleFilled;
+    std::vector<std::tuple<mat3f, ML_Color>> debugCollidersRectFilled;
+    std::vector<std::tuple<mat3f, ML_Color, float>> debugCollidersCircleContorn;
+    std::vector<std::tuple<mat3f, ML_Color>> debugCollidersRectContorn;
 
     //text
     GLuint textShaderProgram;

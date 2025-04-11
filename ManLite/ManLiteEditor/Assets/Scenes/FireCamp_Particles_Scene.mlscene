@@ -1,0 +1,55 @@
+{
+  "game_objects": [
+    {
+      "Components": [
+        {
+          "AspectRatio": 1.0,
+          "ComponentID": 1506079869,
+          "ComponentName": "Transform",
+          "ComponentType": 0,
+          "ContainerGOID": 3801828782,
+          "Enabled": true,
+          "LockAspect": true,
+          "Position": [
+            0.0,
+            0.0
+          ],
+          "Rotation": 0.0,
+          "Scale": [
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "ComponentID": 2747246688,
+          "ComponentName": "ParticleSystem",
+          "ComponentType": 8,
+          "ContainerGOID": 3801828782,
+          "Enabled": true,
+          "ParticlePath": "Assets\\Particles\\FireCamp.mlparticle"
+        }
+      ],
+      "Enabled": true,
+      "ID": 3801828782,
+      "Name": "firecamp",
+      "ParentID": 4133520623,
+      "ParentLayerID": 0,
+      "Tag": "Default",
+      "Visible": true
+    }
+  ],
+  "layers": [
+    {
+      "Layer_children_go_id": [
+        3801828782
+      ],
+      "children_count": 1,
+      "layer_id": 0,
+      "layer_name": "DefaultLayer_0",
+      "visible": true
+    }
+  ],
+  "scene_id": 4133520623,
+  "scene_name": "Untitled_Scene",
+  "scene_path": "Assets\\Scenes\\FireCamp_Particles_Scene.mlscene"
+}
