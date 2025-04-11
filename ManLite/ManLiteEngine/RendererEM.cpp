@@ -494,17 +494,24 @@ void RendererEM::SubmitDebugCollider(const mat3f& modelMatrix, const ML_Color& c
 {
 	if (isCircle)
 	{
+		RenderCircleInfo i;
+		i.mat = modelMatrix;
+		i.color = color;
+		i.radius = radius;
 		if (filled)
-			debugCollidersCircleFilled.emplace_back(modelMatrix, color, radius);
+			debugCollidersCircleFilled.emplace_back(i);
 		else
-			debugCollidersCircleContorn.emplace_back(modelMatrix, color, radius);
+			debugCollidersCircleContorn.emplace_back(i);
 	}
 	else
 	{
+		RenderRectInfo i;
+		i.mat = modelMatrix;
+		i.color = color;
 		if (filled)
-			debugCollidersRectFilled.emplace_back(modelMatrix, color);
+			debugCollidersRectFilled.emplace_back(i);
 		else
-			debugCollidersRectContorn.emplace_back(modelMatrix, color);
+			debugCollidersRectContorn.emplace_back(i);
 	}
 }
 
@@ -540,7 +547,11 @@ void RendererEM::RenderDebugColliders()
 	glUniformMatrix4fv(uViewProj, 1, GL_FALSE, glm::value_ptr(viewProj));
 
 	// circles filled
-	for (const auto& [modelMat, color, radius] : debugCollidersCircleFilled) {
+	for (const auto& item : debugCollidersCircleFilled) {
+		const auto& modelMat = item.mat;
+		const auto& color = item.color;
+		const auto& radius = item.radius;
+
 		glm::mat4 glmModel = ConvertMat3fToGlmMat4(modelMat);
 		glUniformMatrix4fv(uModel, 1, GL_FALSE, glm::value_ptr(glmModel));
 		glUniform4f(uColor,
@@ -572,7 +583,11 @@ void RendererEM::RenderDebugColliders()
 	debugCollidersCircleFilled.clear();
 
 	// circles contorn
-	for (const auto& [modelMat, color, radius] : debugCollidersCircleContorn) {
+	for (const auto& item : debugCollidersCircleContorn) {
+		const auto& modelMat = item.mat;
+		const auto& color = item.color;
+		const auto& radius = item.radius;
+
 		glm::mat4 glmModel = ConvertMat3fToGlmMat4(modelMat);
 		glUniformMatrix4fv(uModel, 1, GL_FALSE, glm::value_ptr(glmModel));
 		glUniform4f(uColor,
@@ -601,7 +616,10 @@ void RendererEM::RenderDebugColliders()
 
 
 	// rect filled
-	for (const auto& [modelMat, color] : debugCollidersRectFilled) {
+	for (const auto& item : debugCollidersRectFilled) {
+		const auto& modelMat = item.mat;
+		const auto& color = item.color;
+
 		glm::mat4 glmModel = ConvertMat3fToGlmMat4(modelMat);
 		glUniformMatrix4fv(uModel, 1, GL_FALSE, glm::value_ptr(glmModel));
 		glUniform4f(uColor,
@@ -629,7 +647,10 @@ void RendererEM::RenderDebugColliders()
 	debugCollidersRectFilled.clear();
 
 	// rect contorn
-	for (const auto& [modelMat, color] : debugCollidersRectContorn) {
+	for (const auto& item : debugCollidersRectContorn) {
+		const auto& modelMat = item.mat;
+		const auto& color = item.color;
+
 		glm::mat4 glmModel = ConvertMat3fToGlmMat4(modelMat);
 		glUniformMatrix4fv(uModel, 1, GL_FALSE, glm::value_ptr(glmModel));
 		glUniform4f(uColor,
