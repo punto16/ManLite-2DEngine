@@ -19,6 +19,7 @@ enum class ComponentType
 	Canvas					= 6,
 	AudioSource				= 7,
 	ParticleSystem			= 8,
+	TileMap					= 9,
 
 
 	Unkown
@@ -49,6 +50,7 @@ public:
 		case ComponentType::Canvas:			return "Canvas"; break;
 		case ComponentType::AudioSource:	return "AudioSource"; break;
 		case ComponentType::ParticleSystem:	return "ParticleSystem"; break;
+		case ComponentType::TileMap:		return "TileMap"; break;
 		case ComponentType::Unkown:			return "Unknown"; break;
 		default:							return "Unknown"; break;
 		}

@@ -153,6 +153,7 @@
     <ClCompile Include="PhysicsEM.cpp">
       <Filter>EngineModules\Physics</Filter>
     </ClCompile>
+    <ClCompile Include="TileMap.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="EngineCore.h">
@@ -262,6 +263,9 @@
     </ClInclude>
     <ClInclude Include="ThreadPool.h">
       <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="TileMap.h">
+      <Filter>GameObject\Components</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
