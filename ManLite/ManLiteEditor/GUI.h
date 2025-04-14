@@ -21,6 +21,7 @@ class PanelAbout;
 class PanelLayer;
 class PanelSaveScene;
 class PanelLoading;
+class PanelTileMap;
 
 enum class Aspect
 {
@@ -83,6 +84,7 @@ public:
 	PanelLayer* layer_panel = nullptr;
 	PanelSaveScene* save_scene_panel = nullptr;
 	PanelLoading* loading_panel = nullptr;
+	PanelTileMap* tile_map_panel = nullptr;
 
 private:
 	std::list<Panel*> panels;

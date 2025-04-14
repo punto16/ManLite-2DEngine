@@ -171,6 +171,7 @@ popd
     <ClCompile Include="PanelProject.cpp" />
     <ClCompile Include="PanelSaveScene.cpp" />
     <ClCompile Include="PanelScene.cpp" />
+    <ClCompile Include="PanelTileMap.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.h" />
@@ -187,6 +188,7 @@ popd
     <ClInclude Include="PanelProject.h" />
     <ClInclude Include="PanelSaveScene.h" />
     <ClInclude Include="PanelScene.h" />
+    <ClInclude Include="PanelTileMap.h" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>

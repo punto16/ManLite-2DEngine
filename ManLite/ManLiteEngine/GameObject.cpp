@@ -11,6 +11,7 @@
 #include "Collider2D.h"
 #include "Canvas.h"
 #include "ParticleSystem.h"
+#include "TileMap.h"
 
 #include "Log.h"
 #include "Defs.h"
@@ -263,6 +264,12 @@ void GameObject::CloneComponents(const std::shared_ptr<GameObject>& original, bo
             if (same_id) GetComponent<ParticleSystem>()->SetID(item->GetID());
             break;
         }
+        case ComponentType::TileMap:
+        {
+            AddCopiedComponent<TileMap>(*dynamic_cast<const TileMap*>(item.get()));
+            if (same_id) GetComponent<TileMap>()->SetID(item->GetID());
+            break;
+        }
         case ComponentType::Unkown:
         {
             break;
@@ -474,6 +481,11 @@ void GameObject::LoadGameObject(const nlohmann::json& goJSON)
             {
                 this->AddComponent<ParticleSystem>();
                 this->GetComponent<ParticleSystem>()->LoadComponent(componentJSON);
+            }
+            else if (componentJSON["ComponentType"] == (int)ComponentType::TileMap)
+            {
+                this->AddComponent<TileMap>();
+                this->GetComponent<TileMap>()->LoadComponent(componentJSON);
             }
         }
     }

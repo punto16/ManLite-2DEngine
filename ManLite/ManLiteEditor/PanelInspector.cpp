@@ -4,6 +4,7 @@
 
 #include "GUI.h"
 #include "PanelAnimation.h"
+#include "PanelTileMap.h"
 #include "EngineCore.h"
 #include "SceneManagerEM.h"
 #include "GameObject.h"
@@ -24,6 +25,7 @@
 #include "TextUI.h"
 #include "ParticleSystem.h"
 #include "Emitter.h"
+#include "TileMap.h"
 
 #include "ResourceManager.h"
 
@@ -74,6 +76,7 @@ bool PanelInspector::Update()
 				Collider2DOptions(go);
 				CanvasOptions(go);
 				ParticleSystemOptions(go);
+				TileMapOptions(go);
 
 				//last
 				AddComponent(go);
@@ -280,19 +283,23 @@ void PanelInspector::CameraOptions(GameObject& go)
 	Camera* cam = go.GetComponent<Camera>();
 	if (cam == nullptr) return;
 	std::string camLabel = std::string("Camera##" + std::to_string(go.GetID()));
-	if (ImGui::CollapsingHeader(camLabel.c_str(), treeFlags))
+
+	bool header_open = ImGui::CollapsingHeader(camLabel.c_str(), treeFlags);
+
+	if (ImGui::BeginPopupContextItem())
 	{
-		if (ImGui::BeginPopupContextItem())
+		std::string context_label = "Remove Component##" + camLabel;
+		if (ImGui::MenuItem(context_label.c_str()))
 		{
-			std::string context_label = "Remove Component##" + camLabel;
-			if (ImGui::MenuItem(context_label.c_str()))
-			{
-				go.RemoveComponent(ComponentType::Camera);
-				ImGui::EndPopup();
-				return;
-			}
+			go.RemoveComponent(ComponentType::Camera);
 			ImGui::EndPopup();
+			return;
 		}
+		ImGui::EndPopup();
+	}
+
+	if (header_open)
+	{
 		int cam_width, cam_height;
 		cam->GetViewportSize(cam_width, cam_height);
 		std::string cam_width_label = std::string("Viewport Width##" + std::to_string(go.GetID()));
@@ -321,19 +328,21 @@ void PanelInspector::SpriteOptions(GameObject& go)
 
 	const std::string headerLabel = "Sprite2D##" + std::to_string(go.GetID());
 
-	if (ImGui::CollapsingHeader(headerLabel.c_str(), treeFlags))
-	{
-		if (ImGui::BeginPopupContextItem())
-		{
-			if (ImGui::MenuItem(("Remove Component##" + headerLabel).c_str()))
-			{
-				go.RemoveComponent(ComponentType::Sprite);
-				ImGui::EndPopup();
-				return;
-			}
-			ImGui::EndPopup();
-		}
+	bool header_open = ImGui::CollapsingHeader(headerLabel.c_str(), treeFlags);
 
+	if (ImGui::BeginPopupContextItem())
+	{
+		if (ImGui::MenuItem(("Remove Component##" + headerLabel).c_str()))
+		{
+			go.RemoveComponent(ComponentType::Sprite);
+			ImGui::EndPopup();
+			return;
+		}
+		ImGui::EndPopup();
+	}
+
+	if (header_open)
+	{
 		ImGui::Dummy(ImVec2(0, 4));
 
 		if (ImGui::BeginTable("SpriteSettings", 2, ImGuiTableFlags_BordersInnerV | ImGuiTableFlags_SizingFixedFit))
@@ -437,20 +446,22 @@ void PanelInspector::AnimatorOptions(GameObject& go)
 
 	std::string animatorLabel = std::string("Animator##" + std::to_string(go.GetID()));
 
-	if (ImGui::CollapsingHeader(animatorLabel.c_str(), treeFlags))
-	{
-		if (ImGui::BeginPopupContextItem())
-		{
-			std::string context_label = "Remove Component##" + animatorLabel;
-			if (ImGui::MenuItem(context_label.c_str()))
-			{
-				go.RemoveComponent(ComponentType::Animator);
-				ImGui::EndPopup();
-				return;
-			}
-			ImGui::EndPopup();
-		}
+	bool header_open = ImGui::CollapsingHeader(animatorLabel.c_str(), treeFlags);
 
+	if (ImGui::BeginPopupContextItem())
+	{
+		std::string context_label = "Remove Component##" + animatorLabel;
+		if (ImGui::MenuItem(context_label.c_str()))
+		{
+			go.RemoveComponent(ComponentType::Animator);
+			ImGui::EndPopup();
+			return;
+		}
+		ImGui::EndPopup();
+	}
+
+	if (header_open)
+	{
 		ImGui::Dummy(ImVec2(0, 5));
 
 		if (ImGui::BeginTable("AnimationsTable", 2, ImGuiTableFlags_BordersInnerV | ImGuiTableFlags_SizingStretchSame))
@@ -637,22 +648,23 @@ void PanelInspector::AudioSourceOptions(GameObject& go)
 
 	const std::string headerLabel = "Audio Source##" + std::to_string(go.GetID());
 
-	if (ImGui::CollapsingHeader(headerLabel.c_str(), treeFlags))
-	{
-		if (ImGui::BeginPopupContextItem())
-		{
-			if (ImGui::MenuItem(("Remove Component##" + headerLabel).c_str()))
-			{
-				go.RemoveComponent(ComponentType::AudioSource);
-				ImGui::EndPopup();
-				return;
-			}
-			ImGui::EndPopup();
-		}
+	bool header_open = ImGui::CollapsingHeader(headerLabel.c_str(), treeFlags);
 
+	if (ImGui::BeginPopupContextItem())
+	{
+		if (ImGui::MenuItem(("Remove Component##" + headerLabel).c_str()))
+		{
+			go.RemoveComponent(ComponentType::AudioSource);
+			ImGui::EndPopup();
+			return;
+		}
+		ImGui::EndPopup();
+	}
+
+	if (header_open)
+	{
 		ImGui::Dummy(ImVec2(0, 4));
 
-		// Helper function para dibujar elementos de audio
 		auto DrawAudioSection = [&](const char* sectionName, auto& audioMap, const char* type) {
 			const float indent = ImGui::GetStyle().IndentSpacing;
 			const ImVec4 headerColor = (strcmp(type, "Music") == 0) ?
@@ -678,7 +690,6 @@ void PanelInspector::AudioSourceOptions(GameObject& go)
 						ImGui::Selectable(label.c_str(), isSelected,
 							ImGuiSelectableFlags_AllowDoubleClick | ImGuiSelectableFlags_SpanAllColumns);
 
-						// Context menu para eliminar
 						if (ImGui::BeginPopupContextItem())
 						{
 							if (ImGui::MenuItem("Remove"))
@@ -776,15 +787,12 @@ void PanelInspector::AudioSourceOptions(GameObject& go)
 			ImGui::PopStyleColor();
 			};
 
-		// Sección de Música
 		DrawAudioSection("Music", audio->GetMusics(), "Music");
 		ImGui::Dummy(ImVec2(0, 5));
 
-		// Sección de Sound Effects
 		DrawAudioSection("Sound Effects", audio->GetSounds(), "Sound");
 		ImGui::Dummy(ImVec2(0, 5));
 
-		// Add buttons
 		const float buttonWidth = (ImGui::GetContentRegionAvail().x -
 			ImGui::GetStyle().ItemSpacing.x) * 0.5f;
 
@@ -826,19 +834,23 @@ void PanelInspector::Collider2DOptions(GameObject& go)
 	Collider2D* collider2d = go.GetComponent<Collider2D>();
 	if (collider2d == nullptr) return;
 	std::string collider2dLabel = std::string("Collider2D##" + std::to_string(go.GetID()));
-	if (ImGui::CollapsingHeader(collider2dLabel.c_str(), treeFlags))
+
+	bool header_open = ImGui::CollapsingHeader(collider2dLabel.c_str(), treeFlags);
+
+	if (ImGui::BeginPopupContextItem())
 	{
-		if (ImGui::BeginPopupContextItem())
+		std::string context_label = "Remove Component##" + collider2dLabel;
+		if (ImGui::MenuItem(context_label.c_str()))
 		{
-			std::string context_label = "Remove Component##" + collider2dLabel;
-			if (ImGui::MenuItem(context_label.c_str()))
-			{
-				go.RemoveComponent(ComponentType::Collider2D);
-				ImGui::EndPopup();
-				return;
-			}
+			go.RemoveComponent(ComponentType::Collider2D);
 			ImGui::EndPopup();
+			return;
 		}
+		ImGui::EndPopup();
+	}
+
+	if (header_open)
+	{
 		ImGui::Dummy(ImVec2(0, 4));
 
 		if (ImGui::BeginTable("Collider2DTable", 2, ImGuiTableFlags_BordersInnerV))
@@ -1000,20 +1012,23 @@ void PanelInspector::CanvasOptions(GameObject& go)
 	Canvas* canvas = go.GetComponent<Canvas>();
 	if (canvas == nullptr) return;
 	std::string canvasLabel = std::string("Canvas##" + std::to_string(go.GetID()));
-	if (ImGui::CollapsingHeader(canvasLabel.c_str(), treeFlags))
-	{
-		if (ImGui::BeginPopupContextItem())
-		{
-			std::string context_label = "Remove Component##" + canvasLabel;
-			if (ImGui::MenuItem(context_label.c_str()))
-			{
-				go.RemoveComponent(ComponentType::Canvas);
-				ImGui::EndPopup();
-				return;
-			}
-			ImGui::EndPopup();
-		}
 
+	bool header_open = ImGui::CollapsingHeader(canvasLabel.c_str(), treeFlags);
+
+	if (ImGui::BeginPopupContextItem())
+	{
+		std::string context_label = "Remove Component##" + canvasLabel;
+		if (ImGui::MenuItem(context_label.c_str()))
+		{
+			go.RemoveComponent(ComponentType::Canvas);
+			ImGui::EndPopup();
+			return;
+		}
+		ImGui::EndPopup();
+	}
+
+	if (header_open)
+	{
 		//ui elements
 		ImGui::Dummy(ImVec2(0, 4));
 		ImGui::TextColored(ImVec4(1, 1, 0, 1), "UI Elements:");
@@ -1530,16 +1545,19 @@ void PanelInspector::ParticleSystemOptions(GameObject& go)
 	if (psystem == nullptr) return;
 
 	std::string psystemLabel = std::string("Particle System##" + std::to_string(go.GetID()));
-	if (ImGui::CollapsingHeader(psystemLabel.c_str(), treeFlags)) {
-		if (ImGui::BeginPopupContextItem()) {
-			std::string context_label = "Remove Component##" + psystemLabel;
-			if (ImGui::MenuItem(context_label.c_str())) {
-				go.RemoveComponent(ComponentType::ParticleSystem);
-				ImGui::EndPopup();
-				return;
-			}
+	bool header_open = ImGui::CollapsingHeader(psystemLabel.c_str(), treeFlags);
+
+	if (ImGui::BeginPopupContextItem()) {
+		std::string context_label = "Remove Component##" + psystemLabel;
+		if (ImGui::MenuItem(context_label.c_str())) {
+			go.RemoveComponent(ComponentType::ParticleSystem);
 			ImGui::EndPopup();
+			return;
 		}
+		ImGui::EndPopup();
+	}
+
+	if (header_open) {
 		ImGui::Dummy(ImVec2(0, 4));
 		bool hasPath = !psystem->GetPath().empty();
 		if (hasPath && ImGui::Button("Save")) {
@@ -1985,6 +2003,142 @@ void PanelInspector::ParticleSystemOptions(GameObject& go)
 	}
 }
 
+void PanelInspector::TileMapOptions(GameObject& go)
+{
+	uint treeFlags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_DefaultOpen;
+	TileMap* tilemap = go.GetComponent<TileMap>();
+	if (tilemap == nullptr) return;
+	std::string tilemapLabel = std::string("TileMap##" + std::to_string(go.GetID()));
+	bool header_open = ImGui::CollapsingHeader(tilemapLabel.c_str(), treeFlags);
+
+	if (ImGui::BeginPopupContextItem())
+	{
+		std::string context_label = "Remove Component##" + tilemapLabel;
+		if (ImGui::MenuItem(context_label.c_str()))
+		{
+			app->gui->tile_map_panel->SetMap(nullptr);
+			go.RemoveComponent(ComponentType::TileMap);
+			ImGui::EndPopup();
+			return;
+		}
+		ImGui::EndPopup();
+	}
+	if (header_open)
+	{
+		ImGui::Dummy(ImVec2(0, 4));
+
+		if (ImGui::BeginTable("TileMapSettings", 2,
+			ImGuiTableFlags_BordersInnerV | ImGuiTableFlags_SizingFixedFit))
+		{
+			ImGui::TableSetupColumn("Label", ImGuiTableColumnFlags_WidthFixed, 100.0f);
+			ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthStretch);
+
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0);
+			ImGui::Text("Tileset");
+			ImGui::TableSetColumnIndex(1);
+
+			int texWidth, texHeight;
+			tilemap->GetTextureSize(texWidth, texHeight);
+			const float aspectRatio = static_cast<float>(texHeight) / texWidth;
+
+			ImGui::Image(
+				tilemap->GetTextureID(),
+				ImVec2(100, 100 * aspectRatio),
+				ImVec2(0, 1),
+				ImVec2(1, 0),
+				ImVec4(1, 1, 1, 1),
+				ImVec4(0.9f, 0.9f, 0.9f, 0.5f)
+			);
+		
+			ImGui::SameLine();
+			if (ImGui::Button(("Change##" + tilemapLabel).c_str(), ImVec2(60, 24)))
+			{
+				std::string filePath = std::filesystem::relative(
+					FileDialog::OpenFile("Open Tileset (*.png)\0*.png\0", "Assets\\TileMaps")
+				).string();
+
+				if (!filePath.empty() && filePath.ends_with(".png"))
+				{
+					tilemap->SwapTexture(filePath);
+				}
+			}
+
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0);
+			ImGui::Text("Texture Path");
+			ImGui::TableSetColumnIndex(1);
+			ImGui::TextColored(ImVec4(0.8f, 0.8f, 0.8f, 1.0f), "%s",
+				tilemap->GetTexturePath().c_str());
+
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0);
+			ImGui::Text("Texture Size");
+			ImGui::TableSetColumnIndex(1);
+			ImGui::Text("%d x %d", texWidth, texHeight);
+
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0);
+			ImGui::Text("Pixel Art");
+			ImGui::SameLine();
+			Gui::HelpMarker("Enable pixel-perfect filtering");
+			ImGui::TableSetColumnIndex(1);
+			bool pixelArt = tilemap->IsPixelArt();
+			if (ImGui::Checkbox(("##PixelArt" + tilemapLabel).c_str(), &pixelArt))
+			{
+				tilemap->SetPixelArtRender(pixelArt);
+			}
+
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0);
+			ImGui::Text("Grid Size");
+			ImGui::TableSetColumnIndex(1);
+			vec2f gridSize = tilemap->GetGridSize();
+			if (ImGui::DragFloat2(("##GridSize" + tilemapLabel).c_str(), &gridSize.x, 1.0f, 1.0f, 1000.0f))
+			{
+				tilemap->ResizeGrid(gridSize, -1);
+			}
+
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0);
+			ImGui::Text("Tile Size");
+			ImGui::TableSetColumnIndex(1);
+			vec2f tileSize = tilemap->GetTileSize();
+			if (ImGui::DragFloat2(("##TileSize" + tilemapLabel).c_str(), &tileSize.x, 1.0f, 1.0f, 1000.0f))
+			{
+				tilemap->SetTileSize(tileSize);
+			}
+
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0);
+			ImGui::Text("Tile Section");
+			ImGui::SameLine();
+			Gui::HelpMarker("Size of each tile in the tileset texture");
+			ImGui::TableSetColumnIndex(1);
+			vec2f sectionSize = tilemap->GetImageSectionSize();
+			if (ImGui::DragFloat2(("##TileSection" + tilemapLabel).c_str(), &sectionSize.x, 1.0f, 1.0f, 4096.0f))
+			{
+				tilemap->SetImageSectionSize(sectionSize);
+			}
+
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0);
+			ImGui::Text("Edit");
+			ImGui::TableSetColumnIndex(1);
+			if (ImGui::Button(("Edit TileMap##" + tilemapLabel).c_str(), ImVec2(120, 24)))
+			{
+				app->gui->tile_map_panel->RequestFocus();
+				app->gui->tile_map_panel->SetMap(tilemap);
+			}
+
+			ImGui::EndTable();
+		}
+
+		ImGui::Dummy(ImVec2(0, 4));
+		ImGui::Separator();
+	}
+}
+
 void PanelInspector::AddComponent(GameObject& go)
 {
 	const ImVec2 button_size_default = ImVec2(150, 0);
@@ -2084,6 +2238,17 @@ void PanelInspector::AddComponent(GameObject& go)
 		if (ImGui::Selectable("Particle System"))
 		{
 			go.AddComponent<ParticleSystem>();
+			show_component_window = false;
+		}
+
+		if (ImGui::Selectable("TileMap"))
+		{
+			std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Open TileSet (*.png)\0*.png\0", "Assets\\TileMaps")).string();
+			if (!filePath.empty() && filePath.ends_with(".png"))
+			{
+				go.AddComponent<TileMap>();
+				go.GetComponent<TileMap>()->SwapTexture(filePath);
+			}
 			show_component_window = false;
 		}
 

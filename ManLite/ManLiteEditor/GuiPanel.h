@@ -21,6 +21,7 @@ enum class PanelType
 	LAYER,
 	SAVE_SCENE,
 	LOADING,
+	TILEMAP,
 
 	UNKNOWN
 };

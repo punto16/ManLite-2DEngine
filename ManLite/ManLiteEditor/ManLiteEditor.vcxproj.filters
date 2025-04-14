@@ -60,6 +60,9 @@
     <ClCompile Include="PanelLoading.cpp">
       <Filter>Modules\GuiPanels</Filter>
     </ClCompile>
+    <ClCompile Include="PanelTileMap.cpp">
+      <Filter>Modules\GuiPanels</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.h">
@@ -103,6 +106,9 @@
       <Filter>Modules\GuiPanels</Filter>
     </ClInclude>
     <ClInclude Include="PanelSaveScene.h">
+      <Filter>Modules\GuiPanels</Filter>
+    </ClInclude>
+    <ClInclude Include="PanelTileMap.h">
       <Filter>Modules\GuiPanels</Filter>
     </ClInclude>
   </ItemGroup>

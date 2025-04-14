@@ -17,6 +17,7 @@
 #include "PanelLayer.h"
 #include "PanelSaveScene.h"
 #include "PanelLoading.h"
+#include "PanelTileMap.h"
 
 #include "FileDialog.h"
 #include "SceneManagerEM.h"
@@ -27,6 +28,7 @@
 #include "AudioSource.h"
 #include "Animator.h"
 #include "ParticleSystem.h"
+#include "TileMap.h"
 
 #if defined(_WIN32)
 #   define WIN32_LEAN_AND_MEAN
@@ -54,7 +56,8 @@ animation_panel(nullptr),
 about_panel(nullptr),
 layer_panel(nullptr),
 save_scene_panel(nullptr),
-loading_panel(nullptr)
+loading_panel(nullptr),
+tile_map_panel(nullptr)
 {
 }
 
@@ -103,6 +106,10 @@ bool Gui::Awake()
 	loading_panel = new PanelLoading(PanelType::LOADING, "Loading", false);
 	panels.push_back(loading_panel);
 	ret *= IsInitialized(loading_panel);
+
+	tile_map_panel = new PanelTileMap(PanelType::TILEMAP, "TileMap", true);
+	panels.push_back(tile_map_panel);
+	ret *= IsInitialized(tile_map_panel);
 
 	//"renders" last
 	game_panel = new PanelGame(PanelType::GAME, "Game", true);
@@ -670,13 +677,25 @@ void Gui::ComponentMenu()
 		for (const auto& item : engine->scene_manager_em->GetCurrentScene().GetSelectedGOs())
 			item.lock()->AddComponent<Animator>();
 	}
+
+	if (ImGui::MenuItem("TileMap"))
+	{
+		for (const auto& item : engine->scene_manager_em->GetCurrentScene().GetSelectedGOs())
+		{
+			item.lock()->AddComponent<TileMap>();
+			item.lock()->GetComponent<TileMap>()->SwapTexture("Assets\\TileMaps\\platformer_tileset.png");
+		}
+	}
 }
 
 void Gui::WindowMenu()
 {
 	for (auto panel : panels)
 	{
-		if (panel->GetType() == PanelType::ABOUT || panel->GetType() == PanelType::BUILD)
+		if (panel->GetType() == PanelType::ABOUT ||
+			panel->GetType() == PanelType::BUILD ||
+			panel->GetType() == PanelType::SAVE_SCENE ||
+			panel->GetType() == PanelType::LOADING)
 			continue;
 
 		if (ImGui::MenuItem(panel->GetName().c_str(), NULL, panel->GetState()))

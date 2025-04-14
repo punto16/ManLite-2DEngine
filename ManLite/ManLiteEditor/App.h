@@ -62,7 +62,7 @@ private:
 	Timer* start_timer;
 	float time_since_start;
 
-	int frameRate = 280;
+	int frameRate = 5000;
 	double dt = 0;
 	double dtCount = 0;
 	int frameCount = 0;
