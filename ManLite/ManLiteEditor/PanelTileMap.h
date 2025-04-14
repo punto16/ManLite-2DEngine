@@ -37,6 +37,11 @@ private:
 	vec2 selection_end = { -1, -1 };
 
 	bool ctrl_pressed_during_click = false;
+	bool show_numbers = true;
+
+	float zoom_level = 1.0f;
+	const float min_zoom = 0.2f;
+	const float max_zoom = 4.0f;
 };
 
 #endif // !__PANEL_TILEMAP_H__

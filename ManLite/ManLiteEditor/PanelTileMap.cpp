@@ -4,6 +4,10 @@
 #include "ResourceManager.h"
 #include "TileMap.h"
 #include "Log.h"
+#include "Canvas.h"
+
+#include "EngineCore.h"
+#include "InputEM.h"
 
 #include <imgui.h>
 #include "imgui_internal.h"
@@ -37,10 +41,8 @@ bool PanelTileMap::Update()
             return true;
         }
 
-        // Panel dividido
         ImGui::Columns(2, "TileMapEditor", true);
 
-        // --- Columna izquierda: Tileset ---
         ImGui::BeginChild("TilesetPanel", ImVec2(0, 0), true);
         {
             int tex_w, tex_h;
@@ -68,7 +70,6 @@ bool PanelTileMap::Update()
                 const int columns = static_cast<int>(texture_size.x / map->GetImageSectionSize().x);
                 const int rows = static_cast<int>(texture_size.y / map->GetImageSectionSize().y);
 
-                // Dibujar grid
                 for (int x = 0; x <= columns; ++x) {
                     const float x_pos = canvas_pos.x + x * tile_w;
                     draw_list->AddLine(ImVec2(x_pos, canvas_pos.y), ImVec2(x_pos, canvas_pos.y + canvas_size.y), IM_COL32(255, 255, 255, 100));
@@ -78,7 +79,6 @@ bool PanelTileMap::Update()
                     draw_list->AddLine(ImVec2(canvas_pos.x, y_pos), ImVec2(canvas_pos.x + canvas_size.x, y_pos), IM_COL32(255, 255, 255, 100));
                 }
 
-                // Selección de tile
                 const ImVec2 mouse_pos = ImGui::GetMousePos();
                 if (ImGui::IsMouseClicked(0))
                 {
@@ -87,7 +87,6 @@ bool PanelTileMap::Update()
                     selected_tile_id = static_cast<int>(rel_x / map->GetImageSectionSize().x) +
                         static_cast<int>(rel_y / map->GetImageSectionSize().y) * columns;
 
-                    // Aplicar a selección múltiple
                     if (!selected_tiles.empty()) {
                         for (const auto& [x, y] : selected_tiles) {
                             map->SetTile({ x, y }, selected_tile_id);
@@ -98,11 +97,9 @@ bool PanelTileMap::Update()
         }
         ImGui::EndChild();
 
-        // --- Columna derecha: Propiedades ---
         ImGui::NextColumn();
         ImGui::BeginChild("PropertiesPanel", ImVec2(0, 0), true);
         {
-            // Configuración
             if (ImGui::CollapsingHeader("Tile Settings", ImGuiTreeNodeFlags_DefaultOpen))
             {
                 vec2f section_size = map->GetImageSectionSize();
@@ -130,169 +127,197 @@ bool PanelTileMap::Update()
                         selected_tile_id % tiles_per_row,
                         selected_tile_id / tiles_per_row);
                 }
+
+                ImGui::Checkbox("Show Numbers", &show_numbers);
             }
 
-            // Vista previa del grid
             if (ImGui::CollapsingHeader("Grid Preview", ImGuiTreeNodeFlags_DefaultOpen))
             {
                 const float available_width = ImGui::GetContentRegionAvail().x;
-                const float available_height = ImGui::GetContentRegionAvail().y - 50; // Espacio para texto
-                const float preview_width = available_width;
-                const float preview_height = available_height;
+                const float available_height = ImGui::GetContentRegionAvail().y - 80;
 
-                ImGui::BeginChild("GridPreview", ImVec2(preview_width, preview_height), true);
+                ImGui::SetNextItemWidth(100);
+                ImGui::DragFloat("Zoom Level", &zoom_level, 0.1f, 0.1f, 10.0f, "%.1f");
+                ImGui::SameLine();
+                if (ImGui::Button("Reset")) {
+                    zoom_level = 1.0f;
+                    ImGui::SetScrollX(0);
+                    ImGui::SetScrollY(0);
+                }
+
+                if (ImGui::GetIO().KeyCtrl)
                 {
-                    ImDrawList* draw_list = ImGui::GetWindowDrawList();
-                    const ImVec2 p = ImGui::GetCursorScreenPos();
-                    const ImVec2 mouse_pos = ImGui::GetMousePos();
+                    float scroll_y = engine->input_em->GetMouseWheelMotion();
+                    zoom_level = CLAMP(zoom_level + 0.1 * scroll_y, 10, 0.1);
+                }
 
-                    // Tamaño adaptable
-                    const float cell_size = std::min(
-                        preview_width * 0.8f / map->GetGridSize().x,
-                        preview_height * 0.8f / map->GetGridSize().y
-                    );
-                    const float total_width = cell_size * map->GetGridSize().x;
-                    const float total_height = cell_size * map->GetGridSize().y;
-                    const float offset_x = 0.8f * (preview_width - total_width) * 0.5f;
-                    const float offset_y = 0.8f * (preview_height - total_height) * 0.5f;
+                ImGui::BeginChild("GridPreview", ImVec2(available_width, available_height), true,
+                    ImGuiWindowFlags_HorizontalScrollbar | ImGuiWindowFlags_AlwaysHorizontalScrollbar);
 
-                    auto pos_to_grid = [&](const ImVec2& pos) -> vec2 {
-                        const float grid_x = (pos.x - p.x - offset_x) / cell_size;
-                        const float grid_y = (pos.y - p.y - offset_y) / cell_size;
+                ImDrawList* draw_list = ImGui::GetWindowDrawList();
+                const ImVec2 p = ImGui::GetCursorScreenPos();
+                const ImVec2 mouse_pos = ImGui::GetMousePos();
 
-                        return {
-                            static_cast<int>(std::floor(grid_x)),
-                            static_cast<int>(std::floor(grid_y))
+                const float base_cell_size = 32.0f;
+                const float cell_size = base_cell_size * zoom_level;
+
+                const float total_width = cell_size * map->GetGridSize().x;
+                const float total_height = cell_size * map->GetGridSize().y;
+
+                ImGui::SetCursorPos(ImVec2(0, 0));
+                ImGui::Dummy(ImVec2(total_width, total_height));
+
+                const float scroll_x = ImGui::GetScrollX();
+                const float scroll_y = ImGui::GetScrollY();
+
+                auto pos_to_grid = [&](const ImVec2& pos) -> vec2 {
+                    const float grid_x = (pos.x - p.x + scroll_x) / cell_size;
+                    const float grid_y = (pos.y - p.y + scroll_y) / cell_size;
+
+                    return {
+                        static_cast<int>(std::floor(grid_x)),
+                        static_cast<int>(std::floor(grid_y))
+                    };
+                    };
+
+                if (ImGui::IsWindowHovered()) {
+                    if (ImGui::IsMouseClicked(0)) {
+                        const bool ctrl_pressed = ImGui::GetIO().KeyCtrl;
+                        ctrl_pressed_during_click = ctrl_pressed;
+                        if (!ctrl_pressed) selected_tiles.clear();
+                        is_selecting = true;
+                        selection_start = pos_to_grid(mouse_pos);
+                        selection_end = selection_start;
+                    }
+
+                    if (is_selecting) {
+                        selection_end = pos_to_grid(mouse_pos);
+
+                        const ImVec2 start = {
+                            p.x - scroll_x + (float)std::min(selection_start.x, selection_end.x) * cell_size,
+                            p.y - scroll_y + (float)std::min(selection_start.y, selection_end.y) * cell_size
                         };
+                        const ImVec2 end = {
+                            p.x - scroll_x + ((float)std::max(selection_start.x, selection_end.x) + 1) * cell_size,
+                            p.y - scroll_y + ((float)std::max(selection_start.y, selection_end.y) + 1) * cell_size
                         };
+                        draw_list->AddRectFilled(start, end, IM_COL32(100, 150, 255, 40));
+                    }
 
-                    if (ImGui::IsWindowHovered()) {
-                        if (ImGui::IsMouseClicked(0)) {
-                            const bool ctrl_pressed = ImGui::GetIO().KeyCtrl;
-                            ctrl_pressed_during_click = ctrl_pressed;
-                            if (!ctrl_pressed) selected_tiles.clear();
-                            is_selecting = true;
-                            selection_start = pos_to_grid(mouse_pos);
-                            selection_end = selection_start;
-                        }
+                    if (ImGui::IsMouseReleased(0)) {
+                        is_selecting = false;
 
-                        if (is_selecting) {
-                            selection_end = pos_to_grid(mouse_pos);
+                        const bool is_drag = (selection_start != selection_end);
 
-                            // Dibujar selección temporal
-                            const ImVec2 start = {
-                                p.x + offset_x + (float)std::min(selection_start.x, selection_end.x) * cell_size,
-                                p.y + offset_y + (float)std::min(selection_start.y, selection_end.y) * cell_size
-                            };
-                            const ImVec2 end = {
-                                p.x + offset_x + ((float)std::max(selection_start.x, selection_end.x) + 1) * cell_size,
-                                p.y + offset_y + ((float)std::max(selection_start.y, selection_end.y) + 1) * cell_size
-                            };
-                            draw_list->AddRectFilled(start, end, IM_COL32(100, 150, 255, 40));
-                        }
+                        if (is_drag)
+                        {
+                            const int x1 = CLAMP(static_cast<int>(std::min(selection_start.x, selection_end.x)), static_cast<int>(map->GetGridSize().x) - 1, 0);
+                            const int x2 = CLAMP(static_cast<int>(std::max(selection_start.x, selection_end.x)), static_cast<int>(map->GetGridSize().x) - 1, 0);
+                            const int y1 = CLAMP(static_cast<int>(std::min(selection_start.y, selection_end.y)), static_cast<int>(map->GetGridSize().y) - 1, 0);
+                            const int y2 = CLAMP(static_cast<int>(std::max(selection_start.y, selection_end.y)), static_cast<int>(map->GetGridSize().y) - 1, 0);
 
-                        if (ImGui::IsMouseReleased(0)) {
-                            is_selecting = false;
+                            const bool ctrl_now = ImGui::GetIO().KeyCtrl;
 
-                            const bool is_drag = (selection_start != selection_end);
-
-                            if (is_drag)
-                            {
-                                // Calcular límites con precisión
-                                const int x1 = CLAMP(static_cast<int>(std::min(selection_start.x, selection_end.x)), static_cast<int>(map->GetGridSize().x) - 1, 0);
-                                const int x2 = CLAMP(static_cast<int>(std::max(selection_start.x, selection_end.x)), static_cast<int>(map->GetGridSize().x) - 1, 0);
-                                const int y1 = CLAMP(static_cast<int>(std::min(selection_start.y, selection_end.y)), static_cast<int>(map->GetGridSize().y) - 1, 0);
-                                const int y2 = CLAMP(static_cast<int>(std::max(selection_start.y, selection_end.y)), static_cast<int>(map->GetGridSize().y) - 1, 0);
-
-                                // Estado actual de Ctrl al soltar
-                                const bool ctrl_now = ImGui::GetIO().KeyCtrl;
-
-                                for (int y = y1; y <= y2; ++y) {
-                                    for (int x = x1; x <= x2; ++x) {
-                                        auto tile = std::make_pair(x, y);
-                                        if (ctrl_now) {
-                                            if (selected_tiles.count(tile)) selected_tiles.erase(tile);
-                                            else selected_tiles.insert(tile);
-                                        }
-                                        else {
-                                            selected_tiles.insert(tile);
-                                        }
+                            for (int y = y1; y <= y2; ++y) {
+                                for (int x = x1; x <= x2; ++x) {
+                                    auto tile = std::make_pair(x, y);
+                                    if (ctrl_now) {
+                                        if (selected_tiles.count(tile)) selected_tiles.erase(tile);
+                                        else selected_tiles.insert(tile);
+                                    }
+                                    else {
+                                        selected_tiles.insert(tile);
                                     }
                                 }
                             }
-                            else if (ctrl_pressed_during_click)
-                            {
-                                auto tile = std::make_pair(selection_start.x, selection_start.y);
-                                if (selected_tiles.count(tile)) selected_tiles.erase(tile);
-                                else selected_tiles.insert(tile);
-                            }
-                            else
-                            {
-                                auto tile = std::make_pair(selection_start.x, selection_start.y);
-                                selected_tiles.insert(tile);
-                            }
                         }
-
-                        // Click derecho para borrar
-                        if (ImGui::IsMouseClicked(1)) {
-                            if (!selected_tiles.empty()) {
-                                // Borrar todos los tiles seleccionados
-                                for (const auto& [x, y] : selected_tiles) {
-                                    map->SetTile({ x, y }, -1);
-                                }
-                                selected_tiles.clear();
-                            }
-                            else {
-                                // Borrar solo el tile bajo el cursor
-                                vec2 grid_pos = pos_to_grid(mouse_pos);
-                                grid_pos.x = CLAMP(grid_pos.x, static_cast<int>(map->GetGridSize().x) - 1, 0);
-                                grid_pos.y = CLAMP(grid_pos.y, static_cast<int>(map->GetGridSize().y) - 1, 0);
-                                map->SetTile(grid_pos, -1);
-                                selected_tiles.erase({ grid_pos.x, grid_pos.y });
-                            }
+                        else if (ctrl_pressed_during_click)
+                        {
+                            auto tile = std::make_pair(selection_start.x, selection_start.y);
+                            if (selected_tiles.count(tile)) selected_tiles.erase(tile);
+                            else selected_tiles.insert(tile);
+                        }
+                        else
+                        {
+                            auto tile = std::make_pair(selection_start.x, selection_start.y);
+                            selected_tiles.insert(tile);
                         }
                     }
 
-                    // Dibujar celdas
-                    for (int y = 0; y < map->GetGridSize().y; ++y) {
-                        for (int x = 0; x < map->GetGridSize().x; ++x) {
-                            const ImVec2 rect_min(
-                                p.x + offset_x + x * cell_size,
-                                p.y + offset_y + y * cell_size
-                            );
-                            const ImVec2 rect_max(
-                                rect_min.x + cell_size,
-                                rect_min.y + cell_size
-                            );
+                    if (ImGui::IsMouseClicked(1)) {
+                        if (!selected_tiles.empty()) {
+                            for (const auto& [x, y] : selected_tiles) {
+                                map->SetTile({ x, y }, -1);
+                            }
+                            selected_tiles.clear();
+                        }
+                        else {
+                            vec2 grid_pos = pos_to_grid(mouse_pos);
+                            grid_pos.x = CLAMP(grid_pos.x, static_cast<int>(map->GetGridSize().x) - 1, 0);
+                            grid_pos.y = CLAMP(grid_pos.y, static_cast<int>(map->GetGridSize().y) - 1, 0);
+                            map->SetTile(grid_pos, -1);
+                            selected_tiles.erase({ grid_pos.x, grid_pos.y });
+                        }
+                    }
+                }
 
-                            // Resaltar selección
+                const ImVec2 visible_min = ImVec2(p.x - scroll_x, p.y - scroll_y);
+                const ImVec2 visible_max = ImVec2(p.x + available_width - scroll_x, p.y + available_height - scroll_y);
+
+                for (int y = 0; y < map->GetGridSize().y; ++y) {
+                    for (int x = 0; x < map->GetGridSize().x; ++x) {
+                        const ImVec2 rect_min(
+                            p.x + x * cell_size - scroll_x,
+                            p.y + y * cell_size - scroll_y
+                        );
+                        const ImVec2 rect_max(
+                            rect_min.x + cell_size,
+                            rect_min.y + cell_size
+                        );
+                        if (ImGui::IsRectVisible(rect_min, rect_max))
+                        {
                             if (selected_tiles.count({ x, y })) {
                                 draw_list->AddRectFilled(rect_min, rect_max, IM_COL32(100, 150, 255, 100));
                             }
 
-                            // Dibujar celda
                             draw_list->AddRect(rect_min, rect_max, IM_COL32(255, 255, 255, 50));
 
-                            // Mostrar ID del tile
                             const int tile_id = map->GetTileValue({ x, y });
                             if (tile_id >= 0) {
-                                const std::string label = std::to_string(tile_id);
-                                const ImVec2 text_size = ImGui::CalcTextSize(label.c_str());
-                                draw_list->AddText(
-                                    ImVec2(
-                                        rect_min.x + (cell_size - text_size.x) * 0.5f,
-                                        rect_min.y + (cell_size - text_size.y) * 0.5f
-                                    ),
-                                    IM_COL32(255, 255, 255, 255),
-                                    label.c_str()
-                                );
+                                if (show_numbers)
+                                {
+                                    const std::string label = std::to_string(tile_id);
+                                    const ImVec2 text_size = ImGui::CalcTextSize(label.c_str());
+                                    draw_list->AddText(
+                                        ImVec2(
+                                            rect_min.x + (cell_size - text_size.x) * 0.5f,
+                                            rect_min.y + (cell_size - text_size.y) * 0.5f
+                                        ),
+                                        IM_COL32(255, 255, 255, 255),
+                                        label.c_str()
+                                    );
+                                }
+                                else
+                                {
+                                    int tex_w, tex_h;
+                                    map->GetTextureSize(tex_w, tex_h);
+
+                                    ML_Rect uvs = Canvas::GetUVs(tilemap->GetTileSection({ x, y }), tex_w, tex_h);
+
+                                    draw_list->AddImage(
+                                        (ImTextureID)map->GetTextureID(),
+                                        rect_min,
+                                        rect_max,
+                                        { uvs.x, uvs.h },
+                                        { uvs.w, uvs.y }
+                                    );
+                                }
                             }
                         }
                     }
                 }
                 ImGui::EndChild();
 
-                // Texto DESPUÉS del grid
                 if (!selected_tiles.empty()) {
                     ImGui::Text("Selected Tiles: %d", (int)selected_tiles.size());
                     ImGui::SameLine();
