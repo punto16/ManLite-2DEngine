@@ -26,7 +26,6 @@ TileMap::TileMap(const TileMap& component_to_copy, std::shared_ptr<GameObject> c
 	Component(component_to_copy, container_go),
 	tile_size(component_to_copy.tile_size),
 	image_section_size(component_to_copy.image_section_size),
-	texturePath(component_to_copy.texturePath),
 	textureID(0),
 	tex_width(0),
 	tex_height(0),
@@ -35,6 +34,7 @@ TileMap::TileMap(const TileMap& component_to_copy, std::shared_ptr<GameObject> c
 	int x, y;
 	ResourceManager::GetInstance().LoadTexture("Config\\placeholder.png", x, y);
 	if (!texturePath.empty()) ResourceManager::GetInstance().ReleaseTexture(texturePath);
+	texturePath = component_to_copy.texturePath;
 	textureID = ResourceManager::GetInstance().LoadTexture(texturePath, tex_width, tex_height);
 	ResizeGrid(component_to_copy.GetGridSize(), -1);
 	grid_data = std::vector<int>(component_to_copy.grid_data);

@@ -5,6 +5,7 @@
 #include "TileMap.h"
 #include "Log.h"
 #include "Canvas.h"
+#include "GameObject.h"
 
 #include "EngineCore.h"
 #include "InputEM.h"
@@ -37,9 +38,14 @@ bool PanelTileMap::Update()
         if (!map) {
             ImGui::Text("No TileMap selected");
             ImGui::End();
-            this->enabled = false;
             return true;
         }
+        if (ImGui::BeginMenuBar())
+        {
+            ImGui::Text("Editing TileMap of game object <%s - id: %u>", map->GetContainerGO()->GetName().c_str(), map->GetContainerGO()->GetID());
+            ImGui::EndMenuBar();
+        }
+        HandleShortCuts();
 
         ImGui::Columns(2, "TileMapEditor", true);
 
@@ -70,7 +76,6 @@ bool PanelTileMap::Update()
                 const int columns = static_cast<int>(texture_size.x / map->GetImageSectionSize().x);
                 const int rows = static_cast<int>(texture_size.y / map->GetImageSectionSize().y);
 
-                // Dibujar grid de textura
                 for (int x = 0; x <= columns; ++x) {
                     const float x_pos = canvas_pos.x + x * tile_w;
                     draw_list->AddLine(ImVec2(x_pos, canvas_pos.y), ImVec2(x_pos, canvas_pos.y + canvas_size.y), IM_COL32(255, 255, 255, 100));
@@ -81,7 +86,6 @@ bool PanelTileMap::Update()
                 }
 
                     const ImVec2 mouse_pos = ImGui::GetMousePos();
-                // Manejar selección de textura para el pincel
                 if (paint_type == PaintType::SELECT_AND_PAINT)
                 {
                     const float rel_x = (mouse_pos.x - canvas_pos.x) / scale;
@@ -104,7 +108,6 @@ bool PanelTileMap::Update()
                             static_cast<int>(rel_y / map->GetImageSectionSize().y)
                         };
 
-                        // Dibujar selección actual
                         ImVec2 start_pos = {
                             canvas_pos.x + texture_selection_start.x * (float)map->GetImageSectionSize().x * scale,
                             canvas_pos.y + texture_selection_start.y * (float)map->GetImageSectionSize().y * scale
@@ -119,11 +122,10 @@ bool PanelTileMap::Update()
                     if (ImGui::IsMouseReleased(0))
                     {
                         is_texture_selecting = false;
-                        // Actualizar pincel
                         UpdateBrushTiles();
                     }
                 }
-                else // Modo de selección normal
+                else
                 {
                     if (ImGui::IsMouseClicked(0))
                     {
@@ -146,17 +148,26 @@ bool PanelTileMap::Update()
         ImGui::NextColumn();
         ImGui::BeginChild("PropertiesPanel", ImVec2(0, 0), true);
         {
-            // Selector de modo de pintado
             ImGui::Text("Paint Mode:");
+            ImGui::SameLine();
+            Gui::HelpMarker("Instructions:\n\n- Selection (Ctrl + M): Allows you to select tiles in your Grid Preview and then\n   select a tile from the TileSet and it will paint all selected tiles of the grid from that\n   tile\n- Brush (Ctrl + B): Allows you to select one or tile or a section of tiles from the\n   TileSet and paint your Grid Preview using the selected tiles as a brush\n- Bucket (Ctrl + G): Allows you to select one tile of the TileSet and bucket fill your\n   Grid Preview");
+            ImGui::SameLine();
+            Gui::HelpMarker("Left Click to Paint/Select\nRight Click to Erase\nCtrl + U to Deselect");
             int paint_mode = static_cast<int>(paint_type);
-            if (ImGui::RadioButton("Paint by Selection", &paint_mode, 0)) {
+            if (ImGui::RadioButton("Selection", &paint_mode, 0)) {
                 paint_type = PaintType::PAINT_BY_SELECTION;
                 selected_tiles.clear();
                 brush_tiles.clear();
             }
             ImGui::SameLine();
-            if (ImGui::RadioButton("Select and Paint", &paint_mode, 1)) {
+            if (ImGui::RadioButton("Brush", &paint_mode, 1)) {
                 paint_type = PaintType::SELECT_AND_PAINT;
+                selected_tiles.clear();
+                brush_tiles.clear();
+            }
+            ImGui::SameLine();
+            if (ImGui::RadioButton("Bucket", &paint_mode, 2)) {
+                paint_type = PaintType::BUCKET_PAINT;
                 selected_tiles.clear();
                 brush_tiles.clear();
             }
@@ -202,8 +213,6 @@ bool PanelTileMap::Update()
                             texture_selection_end.x, texture_selection_end.y);
                     }
                 }
-
-                ImGui::Checkbox("Show Numbers", &show_numbers);
             }
 
             if (ImGui::CollapsingHeader("Grid Preview", ImGuiTreeNodeFlags_DefaultOpen))
@@ -211,6 +220,10 @@ bool PanelTileMap::Update()
                 const float available_width = ImGui::GetContentRegionAvail().x;
                 const float available_height = ImGui::GetContentRegionAvail().y - 80;
 
+                ImGui::Checkbox("Show Numbers", &show_numbers);
+                ImGui::SameLine();
+                ImGui::Dummy({ 5, 0 });
+                ImGui::SameLine();
                 ImGui::SetNextItemWidth(100);
                 ImGui::DragFloat("Zoom Level", &zoom_level, 0.1f, 0.1f, 10.0f, "%.1f");
                 ImGui::SameLine();
@@ -256,8 +269,16 @@ bool PanelTileMap::Update()
                     };
 
                 if (ImGui::IsWindowHovered()) {
-                    // Manejar pintado con pincel
-                    if (paint_type == PaintType::SELECT_AND_PAINT && ImGui::IsMouseDown(0) && !brush_tiles.empty())
+                    if (paint_type == PaintType::BUCKET_PAINT && ImGui::IsMouseClicked(0)) {
+                        vec2 grid_pos = pos_to_grid(mouse_pos);
+                        grid_pos.x = CLAMP(grid_pos.x, static_cast<int>(map->GetGridSize().x) - 1, 0);
+                        grid_pos.y = CLAMP(grid_pos.y, static_cast<int>(map->GetGridSize().y) - 1, 0);
+
+                        if (selected_tile_id != -1) {
+                            BucketFill(grid_pos, selected_tile_id);
+                        }
+                    }
+                    else if (paint_type == PaintType::SELECT_AND_PAINT && ImGui::IsMouseDown(0) && !brush_tiles.empty())
                     {
                         vec2 grid_pos = pos_to_grid(mouse_pos);
                         grid_pos.x = CLAMP(grid_pos.x, static_cast<int>(map->GetGridSize().x) - brush_size.x, 0);
@@ -340,14 +361,12 @@ bool PanelTileMap::Update()
                         }
                     }
 
-                    // Click derecho para borrar
                     if (ImGui::IsMouseClicked(1)) {
                         vec2 grid_pos = pos_to_grid(mouse_pos);
                         grid_pos.x = CLAMP(grid_pos.x, static_cast<int>(map->GetGridSize().x) - 1, 0);
                         grid_pos.y = CLAMP(grid_pos.y, static_cast<int>(map->GetGridSize().y) - 1, 0);
 
                         if (paint_type == PaintType::SELECT_AND_PAINT) {
-                            // Borrar área del tamaño del pincel
                             for (int y = 0; y < brush_size.y; ++y) {
                                 for (int x = 0; x < brush_size.x; ++x) {
                                     int target_x = grid_pos.x + x;
@@ -357,6 +376,10 @@ bool PanelTileMap::Update()
                                     }
                                 }
                             }
+                        }
+                        else if (paint_type == PaintType::BUCKET_PAINT)
+                        {
+                            BucketFill(grid_pos, -1);
                         }
                         else {
                             if (!selected_tiles.empty()) {
@@ -373,7 +396,6 @@ bool PanelTileMap::Update()
                     }
                 }
 
-                // Dibujar grid
                 const ImVec2 visible_min = ImVec2(p.x - scroll_x, p.y - scroll_y);
                 const ImVec2 visible_max = ImVec2(p.x + available_width - scroll_x, p.y + available_height - scroll_y);
 
@@ -434,7 +456,7 @@ bool PanelTileMap::Update()
                 if (!selected_tiles.empty() && paint_type == PaintType::PAINT_BY_SELECTION) {
                     ImGui::Text("Selected Tiles: %d", (int)selected_tiles.size());
                     ImGui::SameLine();
-                    if (ImGui::SmallButton("Clear Selection")) {
+                    if (ImGui::SmallButton("Deselect")) {
                         selected_tiles.clear();
                     }
                 }
@@ -467,6 +489,82 @@ void PanelTileMap::UpdateBrushTiles()
         for (int x = start_x; x <= end_x; ++x) {
             brush_tiles.push_back(x + y * tiles_per_row);
         }
+    }
+}
+
+void PanelTileMap::BucketFill(vec2f start_pos, int new_id) {
+    if (!tilemap) return;
+
+    int original_id = tilemap->GetTileValue(start_pos);
+    if (original_id == new_id) return;
+
+    std::queue<vec2f> nodes;
+    std::set<std::pair<int, int>> visited;
+
+    nodes.push(start_pos);
+    visited.insert({ start_pos.x, start_pos.y });
+
+    vec2f grid_size = tilemap->GetGridSize();
+
+    while (!nodes.empty()) {
+        vec2f current = nodes.front();
+        nodes.pop();
+
+        tilemap->SetTile(current, new_id);
+
+        vec2f neighbors[4] = {
+            {current.x + 1, current.y},
+            {current.x - 1, current.y},
+            {current.x, current.y + 1},
+            {current.x, current.y - 1}
+        };
+
+        for (const auto& neighbor : neighbors) {
+            if (neighbor.x >= 0 && neighbor.x < grid_size.x &&
+                neighbor.y >= 0 && neighbor.y < grid_size.y)
+            {
+                auto key = std::make_pair(neighbor.x, neighbor.y);
+                if (visited.count(key) == 0 &&
+                    tilemap->GetTileValue(neighbor) == original_id)
+                {
+                    nodes.push(neighbor);
+                    visited.insert(key);
+                }
+            }
+        }
+    }
+}
+
+void PanelTileMap::HandleShortCuts()
+{
+    if (ImGui::GetIO().WantTextInput) return;
+
+    if (engine->input_em->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT &&
+        engine->input_em->GetKey(SDL_SCANCODE_M) == KEY_DOWN)
+    {
+        paint_type = PaintType::PAINT_BY_SELECTION;
+        selected_tiles.clear();
+        brush_tiles.clear();
+    }
+    else if (engine->input_em->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT &&
+        engine->input_em->GetKey(SDL_SCANCODE_B) == KEY_DOWN)
+    {
+        paint_type = PaintType::SELECT_AND_PAINT;
+        selected_tiles.clear();
+        brush_tiles.clear();
+    }
+    else if (engine->input_em->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT &&
+        engine->input_em->GetKey(SDL_SCANCODE_G) == KEY_DOWN)
+    {
+        paint_type = PaintType::BUCKET_PAINT;
+        selected_tiles.clear();
+        brush_tiles.clear();
+    }
+    else if (engine->input_em->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT &&
+        engine->input_em->GetKey(SDL_SCANCODE_U) == KEY_DOWN)
+    {
+        selected_tiles.clear();
+        brush_tiles.clear();
     }
 }
 

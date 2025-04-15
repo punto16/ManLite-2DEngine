@@ -14,7 +14,8 @@ class TileMap;
 enum class PaintType 
 {
 	PAINT_BY_SELECTION,
-	SELECT_AND_PAINT
+	SELECT_AND_PAINT,
+	BUCKET_PAINT
 };
 
 class PanelTileMap : public Panel
@@ -26,7 +27,10 @@ public:
 	bool Update();
 
 	void UpdateBrushTiles();
+	void BucketFill(vec2f start_pos, int new_id);
+	void HandleShortCuts();
 	void SetMap(TileMap* tilemap);
+	TileMap* GetMap() { return tilemap; }
 
 private:
 	TileMap* tilemap;

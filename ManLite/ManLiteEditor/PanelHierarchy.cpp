@@ -1,9 +1,13 @@
 #include "PanelHierarchy.h"
 
 #include "GUI.h"
+#include "App.h"
+#include "PanelTileMap.h"
 #include "ManLiteEngine/EngineCore.h"
 #include "ManLiteEngine/SceneManagerEM.h"
 #include "ManLiteEngine/GameObject.h"
+#include "ManLiteEngine/TileMap.h"
+
 
 #include "Defs.h"
 #include "algorithm"
@@ -176,6 +180,12 @@ void PanelHierarchy::Context(GameObject& parent)
 			if (ImGui::MenuItem(("Delete (" + std::to_string(selectedCount) + ")").c_str()))
 			{
 				for (const auto& weakGo : selected) {
+					if (auto map = weakGo.lock()->GetComponent<TileMap>())
+					{
+						if (map->GetID() == app->gui->tile_map_panel->GetMap()->GetID())
+							app->gui->tile_map_panel->SetMap(nullptr);
+					}
+
 					if (auto go = weakGo.lock()) go->Delete();
 				}
 				scene.SelectGameObject(nullptr, false, true);
@@ -198,6 +208,11 @@ void PanelHierarchy::Context(GameObject& parent)
 			}
 			if (ImGui::MenuItem("Delete"))
 			{
+				if (auto map = parent.GetComponent<TileMap>())
+				{
+					if (map->GetID() == app->gui->tile_map_panel->GetMap()->GetID())
+						app->gui->tile_map_panel->SetMap(nullptr);
+				}
 				parent.Delete();
 			}
 			if (ImGui::MenuItem("Create Empty"))

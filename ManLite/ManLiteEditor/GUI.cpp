@@ -792,6 +792,11 @@ void Gui::HandleShortcut()
 		std::vector<std::weak_ptr<GameObject>> selected_gos = engine->scene_manager_em->GetCurrentScene().GetSelectedGOs();
 		for (const auto& go : selected_gos)
 		{
+			if (auto map = go.lock()->GetComponent<TileMap>())
+			{
+				if (map->GetID() == tile_map_panel->GetMap()->GetID())
+					tile_map_panel->SetMap(nullptr);
+			}
 			engine->scene_manager_em->GetCurrentScene().SafeDeleteGO(go.lock());
 		}
 		selected_gos.clear();
