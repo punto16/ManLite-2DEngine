@@ -70,6 +70,7 @@ bool PanelTileMap::Update()
                 const int columns = static_cast<int>(texture_size.x / map->GetImageSectionSize().x);
                 const int rows = static_cast<int>(texture_size.y / map->GetImageSectionSize().y);
 
+                // Dibujar grid de textura
                 for (int x = 0; x <= columns; ++x) {
                     const float x_pos = canvas_pos.x + x * tile_w;
                     draw_list->AddLine(ImVec2(x_pos, canvas_pos.y), ImVec2(x_pos, canvas_pos.y + canvas_size.y), IM_COL32(255, 255, 255, 100));
@@ -79,17 +80,62 @@ bool PanelTileMap::Update()
                     draw_list->AddLine(ImVec2(canvas_pos.x, y_pos), ImVec2(canvas_pos.x + canvas_size.x, y_pos), IM_COL32(255, 255, 255, 100));
                 }
 
-                const ImVec2 mouse_pos = ImGui::GetMousePos();
-                if (ImGui::IsMouseClicked(0))
+                    const ImVec2 mouse_pos = ImGui::GetMousePos();
+                // Manejar selección de textura para el pincel
+                if (paint_type == PaintType::SELECT_AND_PAINT)
                 {
                     const float rel_x = (mouse_pos.x - canvas_pos.x) / scale;
                     const float rel_y = (mouse_pos.y - canvas_pos.y) / scale;
-                    selected_tile_id = static_cast<int>(rel_x / map->GetImageSectionSize().x) +
-                        static_cast<int>(rel_y / map->GetImageSectionSize().y) * columns;
 
-                    if (!selected_tiles.empty()) {
-                        for (const auto& [x, y] : selected_tiles) {
-                            map->SetTile({ x, y }, selected_tile_id);
+                    if (ImGui::IsMouseClicked(0))
+                    {
+                        is_texture_selecting = true;
+                        texture_selection_start = {
+                            static_cast<int>(rel_x / map->GetImageSectionSize().x),
+                            static_cast<int>(rel_y / map->GetImageSectionSize().y)
+                        };
+                        texture_selection_end = texture_selection_start;
+                    }
+
+                    if (is_texture_selecting)
+                    {
+                        texture_selection_end = {
+                            static_cast<int>(rel_x / map->GetImageSectionSize().x),
+                            static_cast<int>(rel_y / map->GetImageSectionSize().y)
+                        };
+
+                        // Dibujar selección actual
+                        ImVec2 start_pos = {
+                            canvas_pos.x + texture_selection_start.x * (float)map->GetImageSectionSize().x * scale,
+                            canvas_pos.y + texture_selection_start.y * (float)map->GetImageSectionSize().y * scale
+                        };
+                        ImVec2 end_pos = {
+                            canvas_pos.x + (texture_selection_end.x + 1) * (float)map->GetImageSectionSize().x * scale,
+                            canvas_pos.y + (texture_selection_end.y + 1) * (float)map->GetImageSectionSize().y * scale
+                        };
+                        draw_list->AddRect(start_pos, end_pos, IM_COL32(255, 0, 0, 255), 0.0f, 0, 2.0f);
+                    }
+
+                    if (ImGui::IsMouseReleased(0))
+                    {
+                        is_texture_selecting = false;
+                        // Actualizar pincel
+                        UpdateBrushTiles();
+                    }
+                }
+                else // Modo de selección normal
+                {
+                    if (ImGui::IsMouseClicked(0))
+                    {
+                        const float rel_x = (mouse_pos.x - canvas_pos.x) / scale;
+                        const float rel_y = (mouse_pos.y - canvas_pos.y) / scale;
+                        selected_tile_id = static_cast<int>(rel_x / map->GetImageSectionSize().x) +
+                            static_cast<int>(rel_y / map->GetImageSectionSize().y) * columns;
+
+                        if (!selected_tiles.empty()) {
+                            for (const auto& [x, y] : selected_tiles) {
+                                map->SetTile({ x, y }, selected_tile_id);
+                            }
                         }
                     }
                 }
@@ -100,6 +146,21 @@ bool PanelTileMap::Update()
         ImGui::NextColumn();
         ImGui::BeginChild("PropertiesPanel", ImVec2(0, 0), true);
         {
+            // Selector de modo de pintado
+            ImGui::Text("Paint Mode:");
+            int paint_mode = static_cast<int>(paint_type);
+            if (ImGui::RadioButton("Paint by Selection", &paint_mode, 0)) {
+                paint_type = PaintType::PAINT_BY_SELECTION;
+                selected_tiles.clear();
+                brush_tiles.clear();
+            }
+            ImGui::SameLine();
+            if (ImGui::RadioButton("Select and Paint", &paint_mode, 1)) {
+                paint_type = PaintType::SELECT_AND_PAINT;
+                selected_tiles.clear();
+                brush_tiles.clear();
+            }
+
             if (ImGui::CollapsingHeader("Tile Settings", ImGuiTreeNodeFlags_DefaultOpen))
             {
                 vec2f section_size = map->GetImageSectionSize();
@@ -118,14 +179,28 @@ bool PanelTileMap::Update()
                 }
 
                 ImGui::Separator();
-                ImGui::Text("Selected Tile: %d", selected_tile_id);
-                if (selected_tile_id >= 0) {
+                if (paint_type == PaintType::PAINT_BY_SELECTION) {
+                    ImGui::Text("Selected Tile: %d", selected_tile_id);
+                }
+                else {
+                    ImGui::Text("Brush Size: %dx%d", brush_size.x, brush_size.y);
+                }
+
+                if (selected_tile_id >= 0 || !brush_tiles.empty()) {
                     int tex_w, tex_h;
                     map->GetTextureSize(tex_w, tex_h);
                     int tiles_per_row = tex_w / map->GetImageSectionSize().x;
-                    ImGui::Text("Tile Position: (%d, %d)",
-                        selected_tile_id % tiles_per_row,
-                        selected_tile_id / tiles_per_row);
+
+                    if (paint_type == PaintType::PAINT_BY_SELECTION) {
+                        ImGui::Text("Tile Position: (%d, %d)",
+                            selected_tile_id % tiles_per_row,
+                            selected_tile_id / tiles_per_row);
+                    }
+                    else {
+                        ImGui::Text("Brush Region: (%d,%d) to (%d,%d)",
+                            texture_selection_start.x, texture_selection_start.y,
+                            texture_selection_end.x, texture_selection_end.y);
+                    }
                 }
 
                 ImGui::Checkbox("Show Numbers", &show_numbers);
@@ -181,86 +256,124 @@ bool PanelTileMap::Update()
                     };
 
                 if (ImGui::IsWindowHovered()) {
-                    if (ImGui::IsMouseClicked(0)) {
-                        const bool ctrl_pressed = ImGui::GetIO().KeyCtrl;
-                        ctrl_pressed_during_click = ctrl_pressed;
-                        if (!ctrl_pressed) selected_tiles.clear();
-                        is_selecting = true;
-                        selection_start = pos_to_grid(mouse_pos);
-                        selection_end = selection_start;
+                    // Manejar pintado con pincel
+                    if (paint_type == PaintType::SELECT_AND_PAINT && ImGui::IsMouseDown(0) && !brush_tiles.empty())
+                    {
+                        vec2 grid_pos = pos_to_grid(mouse_pos);
+                        grid_pos.x = CLAMP(grid_pos.x, static_cast<int>(map->GetGridSize().x) - brush_size.x, 0);
+                        grid_pos.y = CLAMP(grid_pos.y, static_cast<int>(map->GetGridSize().y) - brush_size.y, 0);
+
+                        int brush_index = 0;
+                        for (int y = 0; y < brush_size.y; ++y) {
+                            for (int x = 0; x < brush_size.x; ++x) {
+                                int target_x = grid_pos.x + x;
+                                int target_y = grid_pos.y + y;
+                                if (target_x < map->GetGridSize().x && target_y < map->GetGridSize().y) {
+                                    map->SetTile({ target_x, target_y }, brush_tiles[brush_index++]);
+                                }
+                            }
+                        }
                     }
+                    else if (paint_type == PaintType::PAINT_BY_SELECTION)
+                    {
+                        if (ImGui::IsMouseClicked(0)) {
+                            const bool ctrl_pressed = ImGui::GetIO().KeyCtrl;
+                            ctrl_pressed_during_click = ctrl_pressed;
+                            if (!ctrl_pressed) selected_tiles.clear();
+                            is_selecting = true;
+                            selection_start = pos_to_grid(mouse_pos);
+                            selection_end = selection_start;
+                        }
 
-                    if (is_selecting) {
-                        selection_end = pos_to_grid(mouse_pos);
+                        if (is_selecting) {
+                            selection_end = pos_to_grid(mouse_pos);
 
-                        const ImVec2 start = {
-                            p.x - scroll_x + (float)std::min(selection_start.x, selection_end.x) * cell_size,
-                            p.y - scroll_y + (float)std::min(selection_start.y, selection_end.y) * cell_size
-                        };
-                        const ImVec2 end = {
-                            p.x - scroll_x + ((float)std::max(selection_start.x, selection_end.x) + 1) * cell_size,
-                            p.y - scroll_y + ((float)std::max(selection_start.y, selection_end.y) + 1) * cell_size
-                        };
-                        draw_list->AddRectFilled(start, end, IM_COL32(100, 150, 255, 40));
-                    }
+                            const ImVec2 start = {
+                                p.x - scroll_x + (float)std::min(selection_start.x, selection_end.x) * cell_size,
+                                p.y - scroll_y + (float)std::min(selection_start.y, selection_end.y) * cell_size
+                            };
+                            const ImVec2 end = {
+                                p.x - scroll_x + ((float)std::max(selection_start.x, selection_end.x) + 1) * cell_size,
+                                p.y - scroll_y + ((float)std::max(selection_start.y, selection_end.y) + 1) * cell_size
+                            };
+                            draw_list->AddRectFilled(start, end, IM_COL32(100, 150, 255, 40));
+                        }
 
-                    if (ImGui::IsMouseReleased(0)) {
-                        is_selecting = false;
+                        if (ImGui::IsMouseReleased(0)) {
+                            is_selecting = false;
 
-                        const bool is_drag = (selection_start != selection_end);
+                            const bool is_drag = (selection_start != selection_end);
 
-                        if (is_drag)
-                        {
-                            const int x1 = CLAMP(static_cast<int>(std::min(selection_start.x, selection_end.x)), static_cast<int>(map->GetGridSize().x) - 1, 0);
-                            const int x2 = CLAMP(static_cast<int>(std::max(selection_start.x, selection_end.x)), static_cast<int>(map->GetGridSize().x) - 1, 0);
-                            const int y1 = CLAMP(static_cast<int>(std::min(selection_start.y, selection_end.y)), static_cast<int>(map->GetGridSize().y) - 1, 0);
-                            const int y2 = CLAMP(static_cast<int>(std::max(selection_start.y, selection_end.y)), static_cast<int>(map->GetGridSize().y) - 1, 0);
+                            if (is_drag)
+                            {
+                                const int x1 = CLAMP(static_cast<int>(std::min(selection_start.x, selection_end.x)), static_cast<int>(map->GetGridSize().x) - 1, 0);
+                                const int x2 = CLAMP(static_cast<int>(std::max(selection_start.x, selection_end.x)), static_cast<int>(map->GetGridSize().x) - 1, 0);
+                                const int y1 = CLAMP(static_cast<int>(std::min(selection_start.y, selection_end.y)), static_cast<int>(map->GetGridSize().y) - 1, 0);
+                                const int y2 = CLAMP(static_cast<int>(std::max(selection_start.y, selection_end.y)), static_cast<int>(map->GetGridSize().y) - 1, 0);
 
-                            const bool ctrl_now = ImGui::GetIO().KeyCtrl;
+                                const bool ctrl_now = ImGui::GetIO().KeyCtrl;
 
-                            for (int y = y1; y <= y2; ++y) {
-                                for (int x = x1; x <= x2; ++x) {
-                                    auto tile = std::make_pair(x, y);
-                                    if (ctrl_now) {
-                                        if (selected_tiles.count(tile)) selected_tiles.erase(tile);
-                                        else selected_tiles.insert(tile);
+                                for (int y = y1; y <= y2; ++y) {
+                                    for (int x = x1; x <= x2; ++x) {
+                                        auto tile = std::make_pair(x, y);
+                                        if (ctrl_now) {
+                                            if (selected_tiles.count(tile)) selected_tiles.erase(tile);
+                                            else selected_tiles.insert(tile);
+                                        }
+                                        else {
+                                            selected_tiles.insert(tile);
+                                        }
                                     }
-                                    else {
-                                        selected_tiles.insert(tile);
+                                }
+                            }
+                            else if (ctrl_pressed_during_click)
+                            {
+                                auto tile = std::make_pair(selection_start.x, selection_start.y);
+                                if (selected_tiles.count(tile)) selected_tiles.erase(tile);
+                                else selected_tiles.insert(tile);
+                            }
+                            else
+                            {
+                                auto tile = std::make_pair(selection_start.x, selection_start.y);
+                                selected_tiles.insert(tile);
+                            }
+                        }
+                    }
+
+                    // Click derecho para borrar
+                    if (ImGui::IsMouseClicked(1)) {
+                        vec2 grid_pos = pos_to_grid(mouse_pos);
+                        grid_pos.x = CLAMP(grid_pos.x, static_cast<int>(map->GetGridSize().x) - 1, 0);
+                        grid_pos.y = CLAMP(grid_pos.y, static_cast<int>(map->GetGridSize().y) - 1, 0);
+
+                        if (paint_type == PaintType::SELECT_AND_PAINT) {
+                            // Borrar área del tamaño del pincel
+                            for (int y = 0; y < brush_size.y; ++y) {
+                                for (int x = 0; x < brush_size.x; ++x) {
+                                    int target_x = grid_pos.x + x;
+                                    int target_y = grid_pos.y + y;
+                                    if (target_x < map->GetGridSize().x && target_y < map->GetGridSize().y) {
+                                        map->SetTile({ target_x, target_y }, -1);
                                     }
                                 }
                             }
                         }
-                        else if (ctrl_pressed_during_click)
-                        {
-                            auto tile = std::make_pair(selection_start.x, selection_start.y);
-                            if (selected_tiles.count(tile)) selected_tiles.erase(tile);
-                            else selected_tiles.insert(tile);
-                        }
-                        else
-                        {
-                            auto tile = std::make_pair(selection_start.x, selection_start.y);
-                            selected_tiles.insert(tile);
-                        }
-                    }
-
-                    if (ImGui::IsMouseClicked(1)) {
-                        if (!selected_tiles.empty()) {
-                            for (const auto& [x, y] : selected_tiles) {
-                                map->SetTile({ x, y }, -1);
-                            }
-                            selected_tiles.clear();
-                        }
                         else {
-                            vec2 grid_pos = pos_to_grid(mouse_pos);
-                            grid_pos.x = CLAMP(grid_pos.x, static_cast<int>(map->GetGridSize().x) - 1, 0);
-                            grid_pos.y = CLAMP(grid_pos.y, static_cast<int>(map->GetGridSize().y) - 1, 0);
-                            map->SetTile(grid_pos, -1);
-                            selected_tiles.erase({ grid_pos.x, grid_pos.y });
+                            if (!selected_tiles.empty()) {
+                                for (const auto& [x, y] : selected_tiles) {
+                                    map->SetTile({ x, y }, -1);
+                                }
+                                selected_tiles.clear();
+                            }
+                            else {
+                                map->SetTile(grid_pos, -1);
+                                selected_tiles.erase({ grid_pos.x, grid_pos.y });
+                            }
                         }
                     }
                 }
 
+                // Dibujar grid
                 const ImVec2 visible_min = ImVec2(p.x - scroll_x, p.y - scroll_y);
                 const ImVec2 visible_max = ImVec2(p.x + available_width - scroll_x, p.y + available_height - scroll_y);
 
@@ -302,7 +415,7 @@ bool PanelTileMap::Update()
                                     int tex_w, tex_h;
                                     map->GetTextureSize(tex_w, tex_h);
 
-                                    ML_Rect uvs = Canvas::GetUVs(tilemap->GetTileSection({ x, y }), tex_w, tex_h);
+                                    ML_Rect uvs = Canvas::GetUVs(map->GetTileSection({ x, y }), tex_w, tex_h);
 
                                     draw_list->AddImage(
                                         (ImTextureID)map->GetTextureID(),
@@ -318,15 +431,15 @@ bool PanelTileMap::Update()
                 }
                 ImGui::EndChild();
 
-                if (!selected_tiles.empty()) {
+                if (!selected_tiles.empty() && paint_type == PaintType::PAINT_BY_SELECTION) {
                     ImGui::Text("Selected Tiles: %d", (int)selected_tiles.size());
                     ImGui::SameLine();
                     if (ImGui::SmallButton("Clear Selection")) {
                         selected_tiles.clear();
                     }
                 }
-                if (selected_tile_id >= 0) {
-                    ImGui::Text("Last Selected Tile ID: %d", selected_tile_id);
+                if (paint_type == PaintType::SELECT_AND_PAINT && !brush_tiles.empty()) {
+                    ImGui::Text("Brush Size: %dx%d", brush_size.x, brush_size.y);
                 }
             }
         }
@@ -337,6 +450,24 @@ bool PanelTileMap::Update()
     ImGui::End();
 
     return ret;
+}
+
+void PanelTileMap::UpdateBrushTiles()
+{
+    brush_tiles.clear();
+    int start_x = std::min(texture_selection_start.x, texture_selection_end.x);
+    int end_x = std::max(texture_selection_start.x, texture_selection_end.x);
+    int start_y = std::min(texture_selection_start.y, texture_selection_end.y);
+    int end_y = std::max(texture_selection_start.y, texture_selection_end.y);
+
+    int tiles_per_row = texture_size.x / tilemap->GetImageSectionSize().x;
+    brush_size = { end_x - start_x + 1, end_y - start_y + 1 };
+
+    for (int y = start_y; y <= end_y; ++y) {
+        for (int x = start_x; x <= end_x; ++x) {
+            brush_tiles.push_back(x + y * tiles_per_row);
+        }
+    }
 }
 
 void PanelTileMap::SetMap(TileMap* tilemap)

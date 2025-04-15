@@ -11,6 +11,12 @@
 
 class TileMap;
 
+enum class PaintType 
+{
+	PAINT_BY_SELECTION,
+	SELECT_AND_PAINT
+};
+
 class PanelTileMap : public Panel
 {
 public:
@@ -19,6 +25,7 @@ public:
 
 	bool Update();
 
+	void UpdateBrushTiles();
 	void SetMap(TileMap* tilemap);
 
 private:
@@ -42,6 +49,13 @@ private:
 	float zoom_level = 1.0f;
 	const float min_zoom = 0.2f;
 	const float max_zoom = 4.0f;
+
+	PaintType paint_type = PaintType::PAINT_BY_SELECTION;
+	vec2f texture_selection_start;
+	vec2f texture_selection_end;
+	bool is_texture_selecting = false;
+	std::vector<int> brush_tiles; // Tiles del pincel (IDs)
+	vec2f brush_size = { 1,1 };
 };
 
 #endif // !__PANEL_TILEMAP_H__
