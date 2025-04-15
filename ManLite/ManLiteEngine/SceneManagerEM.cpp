@@ -6,6 +6,8 @@
 #include "EngineCore.h"
 #include "PhysicsEM.h"
 #include "AudioEM.h"
+#include "TileMap.h"
+#include "Collider2D.h"
 
 #include "Defs.h"
 #include "Log.h"
@@ -292,6 +294,173 @@ void SceneManagerEM::LoadSceneToScene(const std::string& file_name, Scene& scene
 	if (sceneJSON.contains("CurrentCamID")) scene.SetCurrentCameraGO(scene.FindGameObjectByID(sceneJSON["CurrentCamID"]));
 
 	LOG(LogType::LOG_OK, "Succesfully Loaded Scene %s", file_name.c_str());
+}
+
+void SceneManagerEM::ImportTiledFile(const std::string& file_name)
+{
+	std::string tiledName = std::filesystem::path(file_name).stem().string();
+	std::string directory_path;
+	size_t last_slash_pos = file_name.find_last_of("\\");
+	if (last_slash_pos != std::string::npos) {
+		directory_path = file_name.substr(0, last_slash_pos);
+	}
+	else {
+		directory_path = file_name;
+	}
+
+	if (!fs::exists(file_name))
+	{
+		LOG(LogType::LOG_ERROR, "Tiled file does not exist: %s", file_name.c_str());
+		return;
+	}
+
+	std::ifstream file(file_name);
+	if (!file.is_open())
+	{
+		LOG(LogType::LOG_ERROR, "Failed Opening file: %s", file_name.c_str());
+		return;
+	}
+
+	nlohmann::json tiledJSON;
+	try
+	{
+		file >> tiledJSON;
+	}
+	catch (const nlohmann::json::parse_error& e)
+	{
+		LOG(LogType::LOG_ERROR, "Failed to parse Tiled JSON: %s", e.what());
+		return;
+	}
+	file.close();
+
+	if (tiledJSON["orientation"] != "orthogonal" || tiledJSON["type"] != "map" || tiledJSON.count("tilesets") != 1 || tiledJSON["infinite"] != false)
+	{
+		LOG(LogType::LOG_ERROR, "Tiled Incompatible Format: %s\nCorrect format uses:\n - orientation: orthogonal\n - type : map\n - tilesets size must be 1\n - infinite : false\n", file_name.c_str());
+		return;
+	}
+	std::shared_ptr<GameObject> parent = current_scene->CreateEmptyGO(current_scene->GetSceneRoot());
+	parent->SetName(tiledName);
+
+	std::shared_ptr<Layer> container_layer = current_scene->CreateEmptyLayer();
+	container_layer->SetLayerName(tiledName);
+
+	int tile_width, tile_height, grid_width, grid_height;
+	tile_width = tiledJSON["tilewidth"];
+	tile_height = tiledJSON["tileheight"];
+	grid_width = tiledJSON["width"];
+	grid_height = tiledJSON["height"];
+
+	int firstgid, image_section_w, image_section_h;
+	firstgid = tiledJSON["tilesets"][0]["firstgid"];
+	image_section_w = tiledJSON["tilesets"][0]["tilewidth"];
+	image_section_h = tiledJSON["tilesets"][0]["tileheight"];
+	std::string tex_path = tiledJSON["tilesets"][0]["image"];
+
+	if (tiledJSON.contains("layers"))
+	{
+		const nlohmann::json& layersJSON = tiledJSON["layers"];
+
+		for (const auto& layerJSON : layersJSON)
+		{
+			if (layerJSON["type"] == "tilelayer")
+			{
+				std::shared_ptr<GameObject> layer_go = current_scene->CreateEmptyGO(*parent);
+				layer_go->SetName(layerJSON["name"]);
+				layer_go->SetVisible(layerJSON["visible"]);
+
+				container_layer->AddChild(layer_go);
+				layer_go->GetParentLayer().lock()->RemoveChild(layer_go);
+				layer_go->SetParentLayer(container_layer);
+
+				layer_go->AddComponent<TileMap>();
+				TileMap* tile_map = layer_go->GetComponent<TileMap>();
+
+				tile_map->SwapTexture(directory_path + "\\" + tex_path);
+				tile_map->ResizeGrid({ grid_width, grid_height });
+				tile_map->SetImageSectionSize({ image_section_w, image_section_h });
+				auto& dataArray = layerJSON["data"];
+				for (size_t i = 0; i < dataArray.size(); i++)
+				{
+					int value = layerJSON["data"][i];
+					tile_map->SetTile(tile_map->GetTile(i), value == 0 ? -1 : value - firstgid);
+				}
+			}
+			else if (layerJSON["type"] == "objectgroup")
+			{
+				std::shared_ptr<GameObject> layer_go = current_scene->CreateEmptyGO(*parent);
+				layer_go->SetName(layerJSON["name"]);
+				bool parent_visible = layerJSON["visible"];
+				layer_go->SetVisible(parent_visible);
+
+				container_layer->AddChild(layer_go);
+				layer_go->GetParentLayer().lock()->RemoveChild(layer_go);
+				layer_go->SetParentLayer(container_layer);
+
+				ML_Color color = ML_Color(0, 0, 0, 255);
+
+				if (layerJSON.contains("color"))
+				{
+					color = ML_Color(layerJSON["color"]);
+				}
+
+				bool sensor = false;
+
+				if (layerJSON.contains("properties"))
+				{
+					const nlohmann::json& propertiesJSON = layerJSON["properties"];
+
+					for (const auto& propertyJSON : propertiesJSON)
+					{
+						if (propertyJSON.contains("name"))
+							if (propertyJSON["name"] == "sensor")
+								if (propertyJSON.contains("value"))
+									sensor = propertyJSON["value"];
+					}
+				}
+				auto& objectsArray = layerJSON["objects"];
+				for (size_t i = 0; i < objectsArray.size(); i++)
+				{
+					const nlohmann::json& objectJSON = layerJSON["objects"][i];
+
+					std::shared_ptr<GameObject> object_go = current_scene->CreateEmptyGO(*layer_go);
+
+					if (objectJSON.contains("name"))
+						if (objectJSON["name"] != "")
+							object_go->SetName(objectJSON["name"]);
+						else
+							object_go->SetName("Object");
+					else
+						object_go->SetName("Object");
+
+					object_go->SetVisible(parent_visible);
+
+					container_layer->AddChild(object_go);
+					object_go->GetParentLayer().lock()->RemoveChild(object_go);
+					object_go->SetParentLayer(container_layer);
+
+					object_go->AddComponent<Collider2D>();
+					Collider2D* collider = object_go->GetComponent<Collider2D>();
+
+					collider->SetShapeType(ShapeType::RECTANGLE);
+					collider->SetDynamic(false);
+					collider->SetSensor(sensor);
+					collider->SetColor(color);
+					ML_Rect section = { 0,0,0,0 };
+					if (objectJSON.contains("x"))		section.x = PIXEL_TO_METERS(objectJSON["x"]);
+					if (objectJSON.contains("y"))		section.y = PIXEL_TO_METERS(objectJSON["y"]);
+					if (objectJSON.contains("width"))	section.w = PIXEL_TO_METERS(objectJSON["width"]);
+					if (objectJSON.contains("height"))	section.h = PIXEL_TO_METERS(objectJSON["height"]);
+					collider->SetSize(section.w == 0 ? 0.01 : section.w, section.h == 0 ? 0.01 : section.h);
+
+					Transform* t = object_go->GetComponent<Transform>();
+					t->SetPosition({ section.x + section.w / 2, -section.y - section.h / 2 });
+				}
+			}
+		}
+	}
+
+	//
+	LOG(LogType::LOG_OK, "Success Importing Tiled file <%s> from <%s>", tiledName.c_str(), file_name.c_str());
 }
 
 void SceneManagerEM::StartSession()

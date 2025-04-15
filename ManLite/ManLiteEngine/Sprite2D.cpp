@@ -11,18 +11,18 @@
 
 Sprite2D::Sprite2D(std::weak_ptr<GameObject> container_go, const std::string& texture_path, std::string name, bool enable)
     : Component(container_go, ComponentType::Sprite, name, enable),
-    texturePath(texture_path), pixel_art(false)
+    texturePath(texture_path), pixel_art(false), offset({0.0f, 0.0f})
 {
     ResourceManager::GetInstance().LoadTexture("Config\\placeholder.png", tex_width, tex_height);//load placeholder
     textureID = ResourceManager::GetInstance().LoadTexture(texturePath, tex_width, tex_height);
     SetTextureSection(0, 0, tex_width, tex_height);
-
 }
 
 Sprite2D::Sprite2D(const Sprite2D& component_to_copy, std::shared_ptr<GameObject> container_go)
     : Component(component_to_copy, container_go),
     texturePath(component_to_copy.texturePath),
-    pixel_art(component_to_copy.pixel_art)
+    pixel_art(component_to_copy.pixel_art),
+    offset(component_to_copy.offset)
 {
     textureID = ResourceManager::GetInstance().LoadTexture(texturePath, tex_width, tex_height);
     this->tex_width = component_to_copy.tex_width;
@@ -64,16 +64,28 @@ void Sprite2D::Draw()
     {
         vec2f scale = transform->GetScale();
         bool a_lock = transform->IsAspectRatioLocked();
+
         transform->SetAspectRatioLock(false);
         transform->SetScale({ scale.x * sectionW / sectionH, scale.y });
+
+        mat3f model_mat = transform->GetWorldMatrix();
+
+        transform->SetScale(scale);
+        transform->SetAspectRatioLock(a_lock);
+
+        mat3f local_mat = mat3f::CreateTransformMatrix(
+            offset,
+            0,
+            {1.0f, 1.0f}
+        );
+
+        model_mat = model_mat * local_mat;
         engine->renderer_em->SubmitSprite(
             textureID,
-            transform->GetWorldMatrix(),
+            model_mat,
             u1, v1, u2, v2,
             pixel_art
         );
-        transform->SetScale(scale);
-        transform->SetAspectRatioLock(a_lock);
     }
 }
 
@@ -101,6 +113,7 @@ nlohmann::json Sprite2D::SaveComponent()
     componentJSON["TextureSize"] = { tex_width, tex_height };
     componentJSON["TextureSection"] = { sectionX, sectionY,sectionW, sectionH };
     componentJSON["TextureUVs"] = { u1, v1, u2, v2 };
+    componentJSON["Offset"] = { offset.x, offset.y };
 
     return componentJSON;
 }
@@ -129,6 +142,8 @@ void Sprite2D::LoadComponent(const nlohmann::json& componentJSON)
     if (componentJSON.contains("TextureUVs")) v1 = componentJSON["TextureUVs"][1];
     if (componentJSON.contains("TextureUVs")) u2 = componentJSON["TextureUVs"][2];
     if (componentJSON.contains("TextureUVs")) v2 = componentJSON["TextureUVs"][3];
+    if (componentJSON.contains("Offset")) offset.x = componentJSON["Offset"][0];
+    if (componentJSON.contains("Offset")) offset.y = componentJSON["Offset"][1];
 }
 
 void Sprite2D::SetTextureSection(int x, int y, int w, int h) {

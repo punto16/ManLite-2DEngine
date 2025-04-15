@@ -37,12 +37,16 @@ public:
     void SetPixelArtRender(bool pixel_art) { this->pixel_art = pixel_art; }
     bool IsPixelArt() { return pixel_art; }
 
+    void SetOffset(vec2f offset) { this->offset = offset; }
+    vec2f GetOffset() { return offset; }
+
 private:
     std::string texturePath;
     GLuint textureID = 0;
     int tex_width, tex_height;
     bool pixel_art;
 
+    vec2f offset = { 0.0f, 0.0f };
     int sectionX = 0, sectionY = 0, sectionW = 0, sectionH = 0;
 
     float u1 = 0.0f, v1 = 0.0f, u2 = 1.0f, v2 = 1.0f;

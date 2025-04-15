@@ -429,6 +429,20 @@ void PanelInspector::SpriteOptions(GameObject& go)
 				ImGui::TreePop();
 			}
 
+
+
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0);
+			ImGui::Text("Offset");
+			ImGui::TableSetColumnIndex(1);
+			vec2f offset = sprite->GetOffset();
+			if (ImGui::DragFloat("X##OffsetSprite", &offset.x, 0.001f, -10000.0f, 10000.0f)) {
+				sprite->SetOffset(offset);
+			}
+			if (ImGui::DragFloat("Y##OffsetSprite", &offset.y, 0.001f, -10000.0f, 10000.0f)) {
+				sprite->SetOffset(offset);
+			}
+
 			ImGui::EndTable();
 		}
 

@@ -507,6 +507,21 @@ void Gui::FileMenu()
 			engine->scene_manager_em->SaveScene(directory, sceneName);
 		}
 	}
+	if (ImGui::BeginMenu("Import"))
+	{
+		bool tiled_file = ImGui::MenuItem("Tiled File");
+		ImGui::SameLine();
+		Gui::HelpMarker("Import a tiled file exported as .json\nIMPORTANT: the tiled file must contain only 1 TileSet and Orthogonal");
+		if (tiled_file)
+		{
+			std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Open Tiled file (*.json)\0*.json\0", "Assets\\TileMaps\\Tiled")).string();
+			if (!filePath.empty() && filePath.ends_with(".json"))
+			{
+				engine->scene_manager_em->ImportTiledFile(filePath);
+			}
+		}
+		ImGui::EndMenu();
+	}
 
 	ImGui::Separator();
 

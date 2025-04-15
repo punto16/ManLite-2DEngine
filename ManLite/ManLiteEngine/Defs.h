@@ -157,6 +157,28 @@ public:
 		this->b = 0;
 		this->a = 0;
 	}
+
+	ML_Color(const std::string& hex) {
+		std::string clean_hex = hex;
+		if (!clean_hex.empty() && clean_hex[0] == '#') {
+			clean_hex.erase(0, 1);
+		}
+
+		if (clean_hex.length() != 6 && clean_hex.length() != 8) {
+			r = g = b = a = 0;
+			return;
+		}
+
+		auto hex_to_int = [](const std::string& hex) -> int {
+			return static_cast<int>(strtol(hex.c_str(), nullptr, 16));
+			};
+
+		r = hex_to_int(clean_hex.substr(0, 2));
+		g = hex_to_int(clean_hex.substr(2, 2));
+		b = hex_to_int(clean_hex.substr(4, 2));
+		a = (clean_hex.length() == 8) ? hex_to_int(clean_hex.substr(6, 2)) : 255;
+	}
+
 	~ML_Color()
 	{
 	}

@@ -1,0 +1,225 @@
+{
+  "game_objects": [
+    {
+      "Components": [
+        {
+          "AspectRatio": 1.0,
+          "ComponentID": 2307029504,
+          "ComponentName": "Transform",
+          "ComponentType": 0,
+          "ContainerGOID": 1347331140,
+          "Enabled": true,
+          "LockAspect": true,
+          "Position": [
+            0.0,
+            -6.0
+          ],
+          "Rotation": 336.0,
+          "Scale": [
+            0.9999992251396179,
+            0.9999992251396179
+          ]
+        },
+        {
+          "Color": {
+            "A": 255,
+            "B": 0,
+            "G": 255,
+            "R": 0
+          },
+          "ComponentID": 2689056485,
+          "ComponentName": "Collider2D",
+          "ComponentType": 5,
+          "ContainerGOID": 1347331140,
+          "Enabled": true,
+          "Friction": 0.30000001192092896,
+          "Height": 1.0,
+          "IsDynamic": false,
+          "IsSensor": false,
+          "LinearDamping": 0.0,
+          "LockRotation": false,
+          "Mass": 0.0,
+          "Radius": 0.5,
+          "Restitution": 0.0,
+          "ShapeType": "RECTANGLE",
+          "UseGravity": true,
+          "Width": 12.199999809265137
+        }
+      ],
+      "Enabled": true,
+      "ID": 1347331140,
+      "Name": "EmptyGameObject",
+      "ParentID": 4018205084,
+      "ParentLayerID": 0,
+      "Tag": "Default",
+      "Visible": true
+    },
+    {
+      "Components": [
+        {
+          "AspectRatio": 1.0,
+          "ComponentID": 3673309047,
+          "ComponentName": "Transform",
+          "ComponentType": 0,
+          "ContainerGOID": 3839558901,
+          "Enabled": true,
+          "LockAspect": true,
+          "Position": [
+            7.0,
+            -3.0
+          ],
+          "Rotation": 63.0,
+          "Scale": [
+            0.9999973177909851,
+            0.9999973177909851
+          ]
+        },
+        {
+          "Color": {
+            "A": 255,
+            "B": 0,
+            "G": 255,
+            "R": 0
+          },
+          "ComponentID": 3888519877,
+          "ComponentName": "Collider2D",
+          "ComponentType": 5,
+          "ContainerGOID": 3839558901,
+          "Enabled": true,
+          "Friction": 0.30000001192092896,
+          "Height": 1.0,
+          "IsDynamic": false,
+          "IsSensor": false,
+          "LinearDamping": 0.0,
+          "LockRotation": false,
+          "Mass": 0.0,
+          "Radius": 0.5,
+          "Restitution": 0.0,
+          "ShapeType": "RECTANGLE",
+          "UseGravity": true,
+          "Width": 12.199999809265137
+        }
+      ],
+      "Enabled": true,
+      "ID": 3839558901,
+      "Name": "EmptyGameObject_(1)",
+      "ParentID": 4018205084,
+      "ParentLayerID": 0,
+      "Tag": "Default",
+      "Visible": true
+    },
+    {
+      "Components": [
+        {
+          "AspectRatio": 1.0,
+          "ComponentID": 221987548,
+          "ComponentName": "Transform",
+          "ComponentType": 0,
+          "ContainerGOID": 611948391,
+          "Enabled": true,
+          "LockAspect": true,
+          "Position": [
+            0.0,
+            0.0
+          ],
+          "Rotation": 0.0,
+          "Scale": [
+            4.050000190734863,
+            4.050000190734863
+          ]
+        },
+        {
+          "Color": {
+            "A": 255,
+            "B": 0,
+            "G": 255,
+            "R": 0
+          },
+          "ComponentID": 3834633061,
+          "ComponentName": "Collider2D",
+          "ComponentType": 5,
+          "ContainerGOID": 611948391,
+          "Enabled": true,
+          "Friction": 0.30000001192092896,
+          "Height": 3.450000047683716,
+          "IsDynamic": true,
+          "IsSensor": false,
+          "LinearDamping": 0.0,
+          "LockRotation": false,
+          "Mass": 0.0,
+          "Radius": 0.5,
+          "Restitution": 0.0,
+          "ShapeType": "RECTANGLE",
+          "UseGravity": true,
+          "Width": 1.25
+        },
+        {
+          "ComponentID": 3127544172,
+          "ComponentName": "Sprite2D",
+          "ComponentType": 2,
+          "ContainerGOID": 611948391,
+          "Enabled": true,
+          "Offset": [
+            0.0,
+            0.04699999839067459
+          ],
+          "PixelArtRender": true,
+          "TexturePath": "Assets\\Textures\\IDLE.png",
+          "TextureSection": [
+            35,
+            43,
+            26,
+            39
+          ],
+          "TextureSize": [
+            960,
+            96
+          ],
+          "TextureUVs": [
+            0.0364583320915699,
+            0.1458333283662796,
+            0.06354166567325592,
+            0.5520833134651184
+          ]
+        },
+        {
+          "Animations": [
+            {
+              "name": "samurai_idle_animation_test1",
+              "path": "Assets\\Animations\\samurai_idle_animation_test1.animation"
+            }
+          ],
+          "ComponentID": 143528365,
+          "ComponentName": "Animator",
+          "ComponentType": 3,
+          "ContainerGOID": 611948391,
+          "CurrentAnimation": "samurai_idle_animation_test1",
+          "Enabled": true
+        }
+      ],
+      "Enabled": true,
+      "ID": 611948391,
+      "Name": "EmptyGameObject_(2)",
+      "ParentID": 4018205084,
+      "ParentLayerID": 0,
+      "Tag": "Default",
+      "Visible": true
+    }
+  ],
+  "layers": [
+    {
+      "Layer_children_go_id": [
+        1347331140,
+        3839558901,
+        611948391
+      ],
+      "children_count": 3,
+      "layer_id": 0,
+      "layer_name": "DefaultLayer_0",
+      "visible": true
+    }
+  ],
+  "scene_id": 4018205084,
+  "scene_name": "Untitled_Scene",
+  "scene_path": "Assets\\Scenes\\Physics_Scene_Test3.mlscene"
+}

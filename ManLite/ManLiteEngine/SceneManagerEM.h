@@ -137,6 +137,7 @@ public:
 	void SaveScene(std::string directory, std::string scene_name);
 	void LoadSceneFromJson(const std::string& file_name);
 	void LoadSceneToScene(const std::string& file_name, Scene& scene);
+	void ImportTiledFile(const std::string& file_name);
 
 	//engine state scene manager
 	void StartSession();
