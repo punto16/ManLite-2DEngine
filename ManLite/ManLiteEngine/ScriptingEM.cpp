@@ -18,6 +18,7 @@ ScriptingEM::MonoData ScriptingEM::mono_data = { nullptr, nullptr, nullptr, null
 bool ScriptingEM::Awake()
 {
 	bool ret = true;
+    mono_set_assemblies_path(GetMonoAssembliesPath().c_str());
 
     //esta linea crashea el programa :D
 	mono_data.monoDomain = mono_jit_init("ManLiteScripting");
@@ -27,7 +28,6 @@ bool ScriptingEM::Awake()
 		return false;
 	}
 
-    mono_set_assemblies_path(GetMonoAssembliesPath().c_str());
 
     //register internal calls here
     MonoRegisterer::RegisterFunctions();
