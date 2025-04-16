@@ -4,6 +4,8 @@
 #include "mono/metadata/assembly.h"
 #include "mono/metadata/attrdefs.h"
 
+#include "ScriptingEM.h"
+
 #include "string"
 #include "vector"
 

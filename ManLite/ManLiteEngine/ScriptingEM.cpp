@@ -13,10 +13,13 @@ ScriptingEM::~ScriptingEM()
 {
 }
 
+ScriptingEM::MonoData ScriptingEM::mono_data = { nullptr, nullptr, nullptr, nullptr };
+
 bool ScriptingEM::Awake()
 {
 	bool ret = true;
 
+    //esta linea crashea el programa :D
 	mono_data.monoDomain = mono_jit_init("ManLiteScripting");
 	if (!mono_data.monoDomain)
 	{
@@ -44,7 +47,7 @@ bool ScriptingEM::Start()
         return false;
     }
 
-    mono_data.coreAssemblyImage = mono_assembly_get_image(coreAssembly);
+    mono_data.coreAssemblyImage = mono_assembly_get_image(mono_data.coreAssembly);
 
 
 

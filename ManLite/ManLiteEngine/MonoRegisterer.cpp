@@ -440,7 +440,7 @@ static void SetAspectRatioLock(GameObject* go, bool lock)
 
 static vec2f GetViewportSize(GameObject* go)
 {
-	int w, h = 0;
+	int w = 0, h = 0;
 	if (!go) return { w, h };
 	if (auto c = go->GetComponent<Camera>())
 		c->GetViewportSize(w, h);
@@ -470,7 +470,7 @@ static void SetZoom(GameObject* go, float zoom)
 
 static vec2f GetTextureSize(GameObject* go)
 {
-	int w, h = 0;
+	int w = 0, h = 0;
 	if (!go) return { w, h };
 	if (auto c = go->GetComponent<Sprite2D>())
 		c->GetTextureSize(w, h);
@@ -492,7 +492,7 @@ static void SetTextureSection(GameObject* go, vec4f section)
 }
 static vec2f GetOffset(GameObject* go)
 {
-	int w, h = 0;
+	int w = 0, h = 0;
 	if (!go) return { w, h };
 	if (auto c = go->GetComponent<Sprite2D>())
 		return c->GetOffset();
@@ -573,7 +573,7 @@ static void SetShapeType(GameObject* go, int shapeType)
 }
 static vec2f GetColliderSize(GameObject* go)
 {
-	int w, h = 0;
+	int w = 0, h = 0;
 	if (!go) return { w, h };
 	if (auto c = go->GetComponent<Collider2D>())
 	{

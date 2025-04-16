@@ -11,18 +11,19 @@
 
 class GameObject;
 
-struct MonoData
-{
-	MonoDomain* monoDomain = nullptr;
-	MonoAssembly* coreAssembly = nullptr;
-	MonoImage* coreAssemblyImage = nullptr;
-
-	GameObject* currentGOPtr = nullptr;
-};
-
 class ScriptingEM : public EngineModule
 {
 public:
+	struct MonoData
+	{
+		MonoDomain* monoDomain = nullptr;
+		MonoAssembly* coreAssembly = nullptr;
+		MonoImage* coreAssemblyImage = nullptr;
+
+		GameObject* currentGOPtr = nullptr;
+	};
+
+
 	ScriptingEM(EngineCore* parent);
 	virtual ~ScriptingEM();
 
@@ -33,6 +34,7 @@ public:
 
 	static GameObject* GetGOPtr() { return mono_data.currentGOPtr; }
 	static MonoDomain* GetAppDomain() { return mono_data.monoDomain; }
+
 
 private:
 	std::string GetAssemblyPath();
