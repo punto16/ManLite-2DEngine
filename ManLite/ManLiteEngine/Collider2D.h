@@ -42,6 +42,7 @@ public:
     // Physics control
     void ApplyForce(float x, float y);
     void SetVelocity(float x, float y);
+    vec2f GetVelocity();
     b2Body* GetBody() const { return m_body; }
 
     // Collision events

@@ -227,6 +227,22 @@ void AudioSource::UnpauseMusic(const std::string& name)
     }
 }
 
+int AudioSource::GetSoundVolume(const std::string& name)
+{
+    auto it = sounds.find(name);
+    if (it != sounds.end()) {
+        return it->second.volume;
+    }
+}
+
+int AudioSource::GetMusicVolume(const std::string& name)
+{
+    auto it = musics.find(name);
+    if (it != musics.end()) {
+        return it->second.volume;
+    }
+}
+
 void AudioSource::SetSoundVolume(const std::string& name, int volume)
 {
     auto it = sounds.find(name);

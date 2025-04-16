@@ -23,6 +23,8 @@ public:
     bool Pause();
     bool Unpause();
 
+    void Stop();
+
     std::shared_ptr<Emitter> AddEmptyEmitter();
     std::shared_ptr<Emitter> AddDuplicatedEmitter(Emitter* ref);
 
@@ -39,10 +41,15 @@ public:
     std::string GetPath() { return path; }
     void SetPath(std::string p) { path = p; }
 
+    bool IsStop() { return stop; }
+
 private:
     std::vector<std::shared_ptr<Emitter>> emitters;
 
     std::string path;
+
+    bool paused = false;
+    bool stop = false;
 };
 
 #endif // !__PARTICLE_SYSTEM_H__

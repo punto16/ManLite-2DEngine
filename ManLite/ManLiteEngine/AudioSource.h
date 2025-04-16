@@ -62,6 +62,8 @@ public:
     void UnpauseSound(const std::string& name);
     void UnpauseMusic(const std::string& name);
 
+    int GetSoundVolume(const std::string& name);
+    int GetMusicVolume(const std::string& name);
     void SetSoundVolume(const std::string& name, int volume);
     void SetMusicVolume(const std::string& name, int volume);
 

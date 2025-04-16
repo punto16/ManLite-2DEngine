@@ -78,6 +78,7 @@ public:
 		TraverseRecursive(scene_root, func);
 	}
 	std::shared_ptr<GameObject> FindGameObjectByID(uint32_t id);
+	std::shared_ptr<GameObject> FindGameObjectByName(std::string name);
 
 
 	//getters // setters

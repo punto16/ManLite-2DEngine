@@ -857,6 +857,17 @@ std::shared_ptr<GameObject> Scene::FindGameObjectByID(uint32_t id)
 	return found;
 }
 
+std::shared_ptr<GameObject> Scene::FindGameObjectByName(std::string name)
+{
+	std::shared_ptr<GameObject> found = nullptr;
+
+	TraverseHierarchy([&](std::shared_ptr<GameObject> go) {
+		if (go->GetName() == name) { found = go; }
+		});
+
+	return found;
+}
+
 void Scene::SetSceneName(std::string name)
 {
 	this->scene_name = name;

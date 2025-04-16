@@ -109,7 +109,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\vcpkg\installed\x64-windows\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\vcpkg\installed\x64-windows\include\;$(SolutionDir)..\mono\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>false</MultiProcessorCompilation>
     </ClCompile>
     <Link>
@@ -117,10 +117,10 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalDependencies>box2d.lib;freetyped.lib;glew32d.lib;glm.lib;SDL2d.lib;SDL2_imaged.lib;SDL2_mixerd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>box2d.lib;freetyped.lib;glew32d.lib;glm.lib;SDL2d.lib;SDL2_imaged.lib;SDL2_mixerd.lib;mono-2.0-sgen.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
     <Lib>
-      <AdditionalLibraryDirectories>$(SolutionDir)..\vcpkg\installed\x64-windows\debug\lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)..\vcpkg\installed\x64-windows\debug\lib\;$(SolutionDir)..\mono\lib\Debug\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
     <PreBuildEvent>
       <Command>pushd "$(SolutionDir).."
@@ -141,7 +141,7 @@ popd
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\vcpkg\installed\x64-windows\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\vcpkg\installed\x64-windows\include\;$(SolutionDir)..\mono\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -150,10 +150,10 @@ popd
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalDependencies>box2d.lib;freetype.lib;glew32.lib;glm.lib;SDL2.lib;SDL2_image.lib;SDL2_mixer.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>box2d.lib;freetype.lib;glew32.lib;glm.lib;SDL2.lib;SDL2_image.lib;SDL2_mixer.lib;mono-2.0-sgen.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
     <Lib>
-      <AdditionalLibraryDirectories>$(SolutionDir)..\vcpkg\installed\x64-windows\lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)..\vcpkg\installed\x64-windows\lib\;$(SolutionDir)..\mono\lib\Release\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
     <PreBuildEvent>
       <Command>pushd "$(SolutionDir).."
@@ -186,12 +186,14 @@ popd
     <ClCompile Include="Layer.cpp" />
     <ClCompile Include="Log.cpp" />
     <ClCompile Include="mat3f.cpp" />
+    <ClCompile Include="MonoRegisterer.cpp" />
     <ClCompile Include="Particle.cpp" />
     <ClCompile Include="ParticleSystem.cpp" />
     <ClCompile Include="PhysicsEM.cpp" />
     <ClCompile Include="RendererEM.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="SceneManagerEM.cpp" />
+    <ClCompile Include="ScriptingEM.cpp" />
     <ClCompile Include="SliderUI.cpp" />
     <ClCompile Include="Sprite2D.cpp" />
     <ClCompile Include="TextUI.cpp" />
@@ -224,12 +226,14 @@ popd
     <ClInclude Include="Layer.h" />
     <ClInclude Include="Log.h" />
     <ClInclude Include="mat3f.h" />
+    <ClInclude Include="MonoRegisterer.h" />
     <ClInclude Include="Particle.h" />
     <ClInclude Include="ParticleSystem.h" />
     <ClInclude Include="PhysicsEM.h" />
     <ClInclude Include="RendererEM.h" />
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="SceneManagerEM.h" />
+    <ClInclude Include="ScriptingEM.h" />
     <ClInclude Include="SliderUI.h" />
     <ClInclude Include="Sprite2D.h" />
     <ClInclude Include="TextUI.h" />

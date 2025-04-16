@@ -264,6 +264,12 @@ void Collider2D::SetVelocity(float x, float y)
     m_body->SetLinearVelocity(b2Vec2(x, y));
 }
 
+vec2f Collider2D::GetVelocity()
+{
+    if (!m_body) RecreateBody();
+    return { m_body->GetLinearVelocity().x, m_body->GetLinearVelocity().y };
+}
+
 nlohmann::json Collider2D::SaveComponent()
 {
     nlohmann::json componentJSON;

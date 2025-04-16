@@ -49,6 +49,9 @@
     <Filter Include="GameObject\Components\ParticleSystem">
       <UniqueIdentifier>{ceab878b-97a5-4bb4-acd2-bb0b74b5c1e3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="EngineModules\Scripting">
+      <UniqueIdentifier>{a80cd834-76a0-4813-8519-f8495191a08e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EngineCore.cpp">
@@ -154,6 +157,12 @@
       <Filter>EngineModules\Physics</Filter>
     </ClCompile>
     <ClCompile Include="TileMap.cpp" />
+    <ClCompile Include="ScriptingEM.cpp">
+      <Filter>EngineModules\Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="MonoRegisterer.cpp">
+      <Filter>EngineModules\Scripting</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="EngineCore.h">
@@ -266,6 +275,12 @@
     </ClInclude>
     <ClInclude Include="TileMap.h">
       <Filter>GameObject\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptingEM.h">
+      <Filter>EngineModules\Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="MonoRegisterer.h">
+      <Filter>EngineModules\Scripting</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -8,13 +8,17 @@
 
 ParticleSystem::ParticleSystem(std::weak_ptr<GameObject> container_go, std::string name, bool enable) :
     Component(container_go, ComponentType::ParticleSystem, name, enable),
-    path("")
+    path(""),
+    paused(false),
+    stop(true)
 {
 }
 
 ParticleSystem::ParticleSystem(const ParticleSystem& component_to_copy, std::shared_ptr<GameObject> container_go) :
 	Component(component_to_copy, container_go),
-    path(component_to_copy.path)
+    path(component_to_copy.path),
+    paused(component_to_copy.paused),
+    stop(component_to_copy.stop)
 {
     for (const auto& emitter : component_to_copy.emitters)
     {
@@ -31,6 +35,9 @@ bool ParticleSystem::Init()
 {
     bool ret = true;
 
+    stop = false;
+    paused = false;
+
     for (const auto& emitter : emitters)
         if (!emitter->Init()) return false;
 
@@ -40,6 +47,8 @@ bool ParticleSystem::Init()
 bool ParticleSystem::Update(float dt)
 {
     bool ret = true;
+
+    if (paused) return ret;
 
     for (const auto& emitter : emitters)
         if (!emitter->Update(dt)) return false;
@@ -60,6 +69,8 @@ bool ParticleSystem::Pause()
     for (const auto& emitter : emitters)
         if (!emitter->Pause()) return false;
 
+    paused = true;
+
     return ret;
 }
 
@@ -70,7 +81,15 @@ bool ParticleSystem::Unpause()
     for (const auto& emitter : emitters)
         if (!emitter->Unpause()) return false;
 
+    paused = false;
+
     return ret;
+}
+
+void ParticleSystem::Stop()
+{
+    stop = true;
+    paused = false;
 }
 
 std::shared_ptr<Emitter> ParticleSystem::AddEmptyEmitter()

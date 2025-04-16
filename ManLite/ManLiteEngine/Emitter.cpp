@@ -337,10 +337,9 @@ bool Emitter::Unpause()
 
 void Emitter::SpawnParticles()
 {
-	for (size_t i = 0; i < particles_amount_per_spawn; i++)
-	{
-		SafeAddParticle();
-	}
+	if (!container_go.lock()->GetComponent<ParticleSystem>()->IsStop())
+		for (size_t i = 0; i < particles_amount_per_spawn; i++)
+			SafeAddParticle();
 
 	spawn_timer = 0.0f;
 }
