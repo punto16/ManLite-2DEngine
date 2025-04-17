@@ -145,6 +145,8 @@ std::vector<LogInfo> EngineCore::GetLogs()
 
 void EngineCore::AddLog(LogType type, const char* entry)
 {
+	if (stop_logs) return;
+
 	if (logs.size() > MAX_LOGS_CONSOLE)
 		logs.erase(logs.begin());
 

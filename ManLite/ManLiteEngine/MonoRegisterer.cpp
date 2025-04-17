@@ -213,6 +213,20 @@ static float GetDT()
 	return (float)engine->GetDT();
 }
 
+void ScriptingLog(MonoString* log, ...)
+{
+	std::string format = MonoRegisterer::ToCppString(log);
+
+	va_list args;
+	va_start(args, log);
+
+	char formattedMsg[BUFFER_SIZE];
+	vsnprintf(formattedMsg, sizeof(formattedMsg), format.c_str(), args);
+	va_end(args);
+
+	LOG(LogType::LOG_MONO, "%s", formattedMsg);
+}
+
 static bool IsComponentEnabled(GameObject* go, int component_type)
 {
 	if (!go) return false;
@@ -1268,6 +1282,7 @@ void MonoRegisterer::RegisterFunctions()
 
 	//utils
 	mono_add_internal_call("InternalCalls::GetDT", GetDT);
+	mono_add_internal_call("InternalCalls::ScriptingLog", ScriptingLog);
 
 	//components
 	mono_add_internal_call("InternalCalls::IsComponentEnabled", IsComponentEnabled);

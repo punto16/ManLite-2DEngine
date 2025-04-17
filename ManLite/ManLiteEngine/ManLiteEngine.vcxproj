@@ -246,6 +246,11 @@ popd
     <ClInclude Include="UIElement.h" />
     <ClInclude Include="WindowEM.h" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ManLiteScripting\ManLiteScripting.csproj">
+      <Project>{d65dbec1-6387-4cf3-b658-5a1ca073df36}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

@@ -469,6 +469,7 @@ void SceneManagerEM::StartSession()
 	{
 		if (engine->GetEditorOrBuild()) // if we are in build mode, we dont need to save scene, duplicate scene, etc...
 		{
+			engine->StopLogs(true);
 			//save scene
 			if (!current_scene->GetScenePath().empty() && current_scene->GetScenePath() != "")
 			{
@@ -481,6 +482,7 @@ void SceneManagerEM::StartSession()
 			}
 			//copy the scene in memory
 			pre_play_scene.reset(DuplicateScene(*current_scene.get()));
+			engine->StopLogs(false);
 		}
 		//init all
 		current_scene->Init();
@@ -491,8 +493,10 @@ void SceneManagerEM::StopSession()
 {
 	if (pre_play_scene)
 	{
+		engine->StopLogs(true);
 		current_scene->CleanUp();
 		if (engine->GetEditorOrBuild()) current_scene = std::move(pre_play_scene);
+		engine->StopLogs(false);
 	}
 }
 

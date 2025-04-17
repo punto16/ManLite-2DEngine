@@ -3,7 +3,6 @@
 #include "MonoRegisterer.h"
 
 #include "Log.h"
-#include <filesystem>
 
 ScriptingEM::ScriptingEM(EngineCore* parent) : EngineModule(parent)
 {
@@ -49,8 +48,6 @@ bool ScriptingEM::Start()
 
     mono_data.coreAssemblyImage = mono_assembly_get_image(mono_data.coreAssembly);
 
-
-
 	return ret;
 }
 
@@ -69,8 +66,29 @@ bool ScriptingEM::CleanUp()
 
 std::string ScriptingEM::GetAssemblyPath()
 {
-    std::string exePath = std::filesystem::current_path().string();
-    return exePath + "/Scripts/ManLiteScripting.dll";
+    std::string resultingAssembly;
+
+    char* vsVersion = nullptr;
+    size_t len = 0;
+    errno_t err = _dupenv_s(&vsVersion, &len, "VisualStudioVersion");
+
+    if (err == 0 && vsVersion != nullptr)
+    {
+#ifdef _DEBUG
+
+        resultingAssembly = "..\\x64\\Debug\\ManLiteScripting.dll";
+
+#else
+
+        resultingAssembly = "..\\x64\\Release\\ManLiteScripting.dll";
+
+#endif
+    }
+    else
+        resultingAssembly = "ManLiteScripting.dll";
+
+    free(vsVersion);
+    return resultingAssembly;
 }
 
 std::string ScriptingEM::GetMonoAssembliesPath()

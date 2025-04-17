@@ -67,6 +67,8 @@ public:
 
 	float GetGameTime() { return game_time; }
 
+	void StopLogs(bool b) { stop_logs = b; }
+
 private:
 
 
@@ -97,6 +99,7 @@ private:
 	std::list<EngineModule*> engine_modules;
 
 	std::vector<LogInfo> logs;
+	bool stop_logs = false;
 };
 
 extern EngineCore* engine;
