@@ -163,6 +163,9 @@
     <ClCompile Include="MonoRegisterer.cpp">
       <Filter>EngineModules\Scripting</Filter>
     </ClCompile>
+    <ClCompile Include="Script.cpp">
+      <Filter>GameObject\Components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="EngineCore.h">
@@ -281,6 +284,9 @@
     </ClInclude>
     <ClInclude Include="MonoRegisterer.h">
       <Filter>EngineModules\Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="Script.h">
+      <Filter>GameObject\Components</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

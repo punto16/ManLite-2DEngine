@@ -85,6 +85,7 @@ public:
 	GameObject& GetSceneRoot() const { return *scene_root; }
 	std::vector<std::shared_ptr<Layer>>& GetSceneLayers() { return scene_layers; }
 	const std::vector<std::weak_ptr<GameObject>>& GetSelectedGOs() const { return selected_gos; }
+	void UnselectAll() { selected_gos.clear(); }
 
 	std::string GetSceneName() const { return this->scene_name; }
 	void SetSceneName(std::string name);

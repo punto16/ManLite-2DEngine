@@ -188,7 +188,7 @@ void PanelHierarchy::Context(GameObject& parent)
 
 					if (auto go = weakGo.lock()) go->Delete();
 				}
-				scene.SelectGameObject(nullptr, false, true);
+				scene.UnselectAll();
 			}
 
 			if (ImGui::MenuItem("Create Parent for Selected"))

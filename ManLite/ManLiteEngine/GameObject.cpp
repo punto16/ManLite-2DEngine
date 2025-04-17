@@ -12,6 +12,7 @@
 #include "Canvas.h"
 #include "ParticleSystem.h"
 #include "TileMap.h"
+#include "Script.h"
 
 #include "Log.h"
 #include "Defs.h"
@@ -58,6 +59,7 @@ bool GameObject::Awake()
 
     //all game objects must have transform component
     AddComponent<Transform>();
+    AddComponent<Script>("TestScript_1");
 
     return ret;
 }

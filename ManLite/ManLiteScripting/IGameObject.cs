@@ -8,7 +8,7 @@ namespace ManLiteScripting
 {
     public class IGameObject
     {
-        private IntPtr game_object_ptr;
+        public IntPtr game_object_ptr;
 
         public bool IsValid => game_object_ptr != IntPtr.Zero;
 

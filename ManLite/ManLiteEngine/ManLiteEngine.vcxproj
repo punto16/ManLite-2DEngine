@@ -195,6 +195,7 @@ popd
     <ClCompile Include="RendererEM.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="SceneManagerEM.cpp" />
+    <ClCompile Include="Script.cpp" />
     <ClCompile Include="ScriptingEM.cpp" />
     <ClCompile Include="SliderUI.cpp" />
     <ClCompile Include="Sprite2D.cpp" />
@@ -235,6 +236,7 @@ popd
     <ClInclude Include="RendererEM.h" />
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="SceneManagerEM.h" />
+    <ClInclude Include="Script.h" />
     <ClInclude Include="ScriptingEM.h" />
     <ClInclude Include="SliderUI.h" />
     <ClInclude Include="Sprite2D.h" />

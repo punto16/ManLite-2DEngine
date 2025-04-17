@@ -52,6 +52,10 @@
           "ComponentType": 2,
           "ContainerGOID": 4138794320,
           "Enabled": true,
+          "Offset": [
+            0.0,
+            0.0
+          ],
           "PixelArtRender": false,
           "TexturePath": "Assets\\Textures\\image.png",
           "TextureSection": [
@@ -131,6 +135,10 @@
           "ComponentType": 2,
           "ContainerGOID": 1220738609,
           "Enabled": true,
+          "Offset": [
+            0.0,
+            0.0
+          ],
           "PixelArtRender": true,
           "TexturePath": "Assets\\Textures\\IDLE.png",
           "TextureSection": [

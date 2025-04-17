@@ -1,9 +1,12 @@
 #include "Collider2D.h"
+
 #include "PhysicsEM.h"
 #include "GameObject.h"
 #include "Transform.h"
 #include "EngineCore.h"
 #include "RendererEM.h"
+#include "Script.h"
+#include "ScriptingEM.h"
 
 Collider2D::Collider2D(std::weak_ptr<GameObject> container_go,
     bool isDynamic,
@@ -268,6 +271,86 @@ vec2f Collider2D::GetVelocity()
 {
     if (!m_body) RecreateBody();
     return { m_body->GetLinearVelocity().x, m_body->GetLinearVelocity().y };
+}
+
+void Collider2D::OnTriggerCollision(GameObject* other)
+{
+    auto container = container_go.lock();
+    if (!container) return;
+    if (!other) return;
+
+    auto scripts = container->GetComponents<Script>();
+    for (auto& script : scripts)
+    {
+        MonoObject* scriptInstance = script->GetMonoObject();
+        if (!scriptInstance) continue;
+
+        void* params[] = {
+            other
+        };
+
+        engine->scripting_em->CallScriptFunction(scriptInstance, "OnTriggerCollision", params, 1);
+    }
+}
+
+void Collider2D::OnTriggerSensor(GameObject* other)
+{
+    auto container = container_go.lock();
+    if (!container) return;
+    if (!other) return;
+
+    auto scripts = container->GetComponents<Script>();
+    for (auto& script : scripts)
+    {
+        MonoObject* scriptInstance = script->GetMonoObject();
+        if (!scriptInstance) continue;
+
+        void* params[] = {
+            other
+        };
+
+        engine->scripting_em->CallScriptFunction(scriptInstance, "OnTriggerSensor", params, 1);
+    }
+}
+
+void Collider2D::OnExitCollision(GameObject* other)
+{
+    auto container = container_go.lock();
+    if (!container) return;
+    if (!other) return;
+
+    auto scripts = container->GetComponents<Script>();
+    for (auto& script : scripts)
+    {
+        MonoObject* scriptInstance = script->GetMonoObject();
+        if (!scriptInstance) continue;
+
+        void* params[] = {
+            other
+        };
+
+        engine->scripting_em->CallScriptFunction(scriptInstance, "OnExitCollision", params, 1);
+    }
+}
+
+void Collider2D::OnExitSensor(GameObject* other)
+{
+    auto container = container_go.lock();
+    if (!container) return;
+    if (!other) return;
+
+    auto scripts = container->GetComponents<Script>();
+    for (auto& script : scripts)
+    {
+        MonoObject* scriptInstance = script->GetMonoObject();
+        if (!scriptInstance) continue;
+
+        void* params[] = {
+            other
+        };
+
+        engine->scripting_em->CallScriptFunction(scriptInstance, "OnExitSensor", params, 1);
+    }
 }
 
 nlohmann::json Collider2D::SaveComponent()

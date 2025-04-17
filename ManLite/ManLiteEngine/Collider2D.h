@@ -46,10 +46,10 @@ public:
     b2Body* GetBody() const { return m_body; }
 
     // Collision events
-    virtual void OnTriggerCollision(GameObject* other) {}
-    virtual void OnTriggerSensor(GameObject* other) {}
-    virtual void OnExitCollision(GameObject* other) {}
-    virtual void OnExitSensor(GameObject* other) {}
+    void OnTriggerCollision(GameObject* other);
+    void OnTriggerSensor(GameObject* other);
+    void OnExitCollision(GameObject* other);
+    void OnExitSensor(GameObject* other);
 
     //serialization
     nlohmann::json SaveComponent() override;

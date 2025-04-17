@@ -72,11 +72,11 @@ public:
 	bool IsEnabled() const { return this->enabled; }
 	void SetEnabled(bool enable)
 	{
-		if (this->enabled)
+		if (!enable)
 		{
 			this->enabled = false;
 		}
-		else if (!this->enabled)
+		else if (enable)
 		{
 			this->enabled = true;
 		}

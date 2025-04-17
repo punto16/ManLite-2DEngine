@@ -1238,166 +1238,175 @@ static void StopParticleSystem(GameObject* go)
 }
 
 
+void MonoBehaviour_Ctor(MonoObject* self)
+{
+
+}
+
+
 void MonoRegisterer::RegisterFunctions()
 {
 	//go
-	mono_add_internal_call("InternalCalls::GetGOPtr", GetGOPtr);
-	mono_add_internal_call("InternalCalls::GetGOName", GetGOName);
-	mono_add_internal_call("InternalCalls::SetGOName", SetGOName);
-	mono_add_internal_call("InternalCalls::GetGOTag", GetGOTag);
-	mono_add_internal_call("InternalCalls::SetGOTag", SetGOTag);
-	mono_add_internal_call("InternalCalls::GetGOID", GetGOID);
-	mono_add_internal_call("InternalCalls::GetGOParent", GetGOParent);
-	mono_add_internal_call("InternalCalls::GetGOEnabled", GetGOEnabled);
-	mono_add_internal_call("InternalCalls::SetGOEnabled", SetGOEnabled);
-	mono_add_internal_call("InternalCalls::SwitchGOEnabled", SwitchGOEnabled);
-	mono_add_internal_call("InternalCalls::GetGOVisible", GetGOVisible);
-	mono_add_internal_call("InternalCalls::SetGOVisible", SetGOVisible);
-	mono_add_internal_call("InternalCalls::SwitchGOVisible", SwitchGOVisible);
-	mono_add_internal_call("InternalCalls::ReparentGO", ReparentGO);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::GetGOPtr", (void*)GetGOPtr);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::GetGOName", (void*)GetGOName);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::SetGOName", (void*)SetGOName);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::GetGOTag", (void*)GetGOTag);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::SetGOTag", (void*)SetGOTag);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::GetGOID", (void*)GetGOID);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::GetGOParent", (void*)GetGOParent);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::GetGOEnabled", (void*)GetGOEnabled);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::SetGOEnabled", (void*)SetGOEnabled);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::SwitchGOEnabled", (void*)SwitchGOEnabled);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::GetGOVisible", (void*)GetGOVisible);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::SetGOVisible", (void*)SetGOVisible);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::SwitchGOVisible", (void*)SwitchGOVisible);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::ReparentGO", (void*)ReparentGO);
 
 	//input
-	mono_add_internal_call("InternalCalls::GetKeyboardKeyDown", GetKeyboardKeyDown);
-	mono_add_internal_call("InternalCalls::GetKeyboardKeyRepeat", GetKeyboardKeyRepeat);
-	mono_add_internal_call("InternalCalls::GetKeyboardKeyUp", GetKeyboardKeyUp);
-	mono_add_internal_call("InternalCalls::GetKeyboardKeyIdle", GetKeyboardKeyIdle);
-	mono_add_internal_call("InternalCalls::GetMouseButtonDown", GetMouseButtonDown);
-	mono_add_internal_call("InternalCalls::GetMouseButtonRepeat", GetMouseButtonRepeat);
-	mono_add_internal_call("InternalCalls::GetMouseButtonUp", GetMouseButtonUp);
-	mono_add_internal_call("InternalCalls::GetMouseButtonIdle", GetMouseButtonIdle);
-	mono_add_internal_call("InternalCalls::GetMousePosition", GetMousePosition);
-	mono_add_internal_call("InternalCalls::GetMouseMotion", GetMouseMotion);
-	mono_add_internal_call("InternalCalls::GetMouseWheelMotion", GetMouseWheelMotion);
-	mono_add_internal_call("InternalCalls::CloseApp", CloseApp);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::GetKeyboardKeyDown", (void*)GetKeyboardKeyDown);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::GetKeyboardKeyRepeat", (void*)GetKeyboardKeyRepeat);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::GetKeyboardKeyUp", (void*)GetKeyboardKeyUp);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::GetKeyboardKeyIdle", (void*)GetKeyboardKeyIdle);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::GetMouseButtonDown", (void*)GetMouseButtonDown);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::GetMouseButtonRepeat", (void*)GetMouseButtonRepeat);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::GetMouseButtonUp", (void*)GetMouseButtonUp);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::GetMouseButtonIdle", (void*)GetMouseButtonIdle);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::GetMousePosition", (void*)GetMousePosition);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::GetMouseMotion", (void*)GetMouseMotion);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::GetMouseWheelMotion", (void*)GetMouseWheelMotion);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::CloseApp", (void*)CloseApp);
 
 	//scene manager and scene
-	mono_add_internal_call("InternalCalls::LoadScene", LoadScene);
-	mono_add_internal_call("InternalCalls::CreateEmptyGO", CreateEmptyGO);
-	mono_add_internal_call("InternalCalls::DeleteGO", DeleteGO);
-	mono_add_internal_call("InternalCalls::FindGameObjectByID", FindGameObjectByID);
-	mono_add_internal_call("InternalCalls::FindGameObjectByName", FindGameObjectByName);
-	mono_add_internal_call("InternalCalls::GetSceneRoot", GetSceneRoot);
-	mono_add_internal_call("InternalCalls::GetCurrentCameraGO", GetCurrentCameraGO);
-	mono_add_internal_call("InternalCalls::SetCurrentCameraGO", SetCurrentCameraGO);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::LoadScene", (void*)LoadScene);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::CreateEmptyGO", (void*)CreateEmptyGO);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::DeleteGO", (void*)DeleteGO);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::FindGameObjectByID", (void*)FindGameObjectByID);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::FindGameObjectByName", (void*)FindGameObjectByName);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::GetSceneRoot", (void*)GetSceneRoot);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::GetCurrentCameraGO", (void*)GetCurrentCameraGO);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::SetCurrentCameraGO", (void*)SetCurrentCameraGO);
 
 	//utils
-	mono_add_internal_call("InternalCalls::GetDT", GetDT);
-	mono_add_internal_call("InternalCalls::ScriptingLog", ScriptingLog);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::GetDT", (void*)GetDT);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::ScriptingLog", (void*)ScriptingLog);
 
 	//components
-	mono_add_internal_call("InternalCalls::IsComponentEnabled", IsComponentEnabled);
-	mono_add_internal_call("InternalCalls::SetEnableComponent", SetEnableComponent);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::IsComponentEnabled", (void*)IsComponentEnabled);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::SetEnableComponent", (void*)SetEnableComponent);
 	//transform
-	mono_add_internal_call("InternalCalls::GetLocalPosition", GetLocalPosition);
-	mono_add_internal_call("InternalCalls::SetLocalPosition", SetLocalPosition);
-	mono_add_internal_call("InternalCalls::GetLocalAngle", GetLocalAngle);
-	mono_add_internal_call("InternalCalls::SetLocalAngle", SetLocalAngle);
-	mono_add_internal_call("InternalCalls::GetLocalScale", GetLocalScale);
-	mono_add_internal_call("InternalCalls::SetLocalScale", SetLocalScale);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::GetLocalPosition", (void*)GetLocalPosition);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::SetLocalPosition", (void*)SetLocalPosition);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::GetLocalAngle", (void*)GetLocalAngle);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::SetLocalAngle", (void*)SetLocalAngle);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::GetLocalScale", (void*)GetLocalScale);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::SetLocalScale", (void*)SetLocalScale);
 
-	mono_add_internal_call("InternalCalls::GetWorldPosition", GetWorldPosition);
-	mono_add_internal_call("InternalCalls::SetWorldPosition", SetWorldPosition);
-	mono_add_internal_call("InternalCalls::GetWorldAngle", GetWorldAngle);
-	mono_add_internal_call("InternalCalls::SetWorldAngle", SetWorldAngle);
-	mono_add_internal_call("InternalCalls::GetWorldScale", GetWorldScale);
-	mono_add_internal_call("InternalCalls::SetWorldScale", SetWorldScale);
-	mono_add_internal_call("InternalCalls::IsAspectRatioLocked", IsAspectRatioLocked);
-	mono_add_internal_call("InternalCalls::SetAspectRatioLock", SetAspectRatioLock);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::GetWorldPosition", (void*)GetWorldPosition);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::SetWorldPosition", (void*)SetWorldPosition);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::GetWorldAngle", (void*)GetWorldAngle);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::SetWorldAngle", (void*)SetWorldAngle);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::GetWorldScale", (void*)GetWorldScale);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::SetWorldScale", (void*)SetWorldScale);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::IsAspectRatioLocked", (void*)IsAspectRatioLocked);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::SetAspectRatioLock", (void*)SetAspectRatioLock);
 	
 	//camera
-	mono_add_internal_call("InternalCalls::GetViewportSize", GetViewportSize);
-	mono_add_internal_call("InternalCalls::SetViewportSize", SetViewportSize);
-	mono_add_internal_call("InternalCalls::GetZoom", GetZoom);
-	mono_add_internal_call("InternalCalls::SetZoom", SetZoom);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::GetViewportSize", (void*)GetViewportSize);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::SetViewportSize", (void*)SetViewportSize);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::GetZoom", (void*)GetZoom);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::SetZoom", (void*)SetZoom);
 
 	//sprite
-	mono_add_internal_call("InternalCalls::GetTextureSize", GetTextureSize);
-	mono_add_internal_call("InternalCalls::GetTextureSection", GetTextureSection);
-	mono_add_internal_call("InternalCalls::SetTextureSection", SetTextureSection);
-	mono_add_internal_call("InternalCalls::GetOffset", GetOffset);
-	mono_add_internal_call("InternalCalls::IsPixelArt", IsPixelArt);
-	mono_add_internal_call("InternalCalls::SetPixelArtRender", SetPixelArtRender);
-	mono_add_internal_call("InternalCalls::SwapTexture", SwapTexture);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::GetTextureSize", (void*)GetTextureSize);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::GetTextureSection", (void*)GetTextureSection);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::SetTextureSection", (void*)SetTextureSection);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::GetOffset", (void*)GetOffset);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::IsPixelArt", (void*)IsPixelArt);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::SetPixelArtRender", (void*)SetPixelArtRender);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::SwapTexture", (void*)SwapTexture);
 
 	//animator
-	mono_add_internal_call("InternalCalls::PlayAnimation", PlayAnimation);
-	mono_add_internal_call("InternalCalls::PlayAnimation", StopAnimation);
-	mono_add_internal_call("InternalCalls::PlayAnimation", IsAnimaitonPlaying);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::PlayAnimation", (void*)PlayAnimation);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::PlayAnimation", (void*)StopAnimation);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::PlayAnimation", (void*)IsAnimaitonPlaying);
 
 	//collider2d
-	mono_add_internal_call("InternalCalls::PauseCollider2D", PauseCollider2D);
-	mono_add_internal_call("InternalCalls::UnpauseCollider2D", UnpauseCollider2D);
-	mono_add_internal_call("InternalCalls::GetShapeType", GetShapeType);
-	mono_add_internal_call("InternalCalls::SetShapeType", SetShapeType);
-	mono_add_internal_call("InternalCalls::GetColliderSize", GetColliderSize);
-	mono_add_internal_call("InternalCalls::SetColliderSize", SetColliderSize);
-	mono_add_internal_call("InternalCalls::GetColliderRadius", GetColliderRadius);
-	mono_add_internal_call("InternalCalls::SetColliderRadius", SetColliderRadius);
-	mono_add_internal_call("InternalCalls::IsCollierDynamic", IsCollierDynamic);
-	mono_add_internal_call("InternalCalls::SetColliderDynamic", SetColliderDynamic);
-	mono_add_internal_call("InternalCalls::IsCollierSensor", IsCollierSensor);
-	mono_add_internal_call("InternalCalls::SetColliderSensor", SetColliderSensor);
-	mono_add_internal_call("InternalCalls::IsCollierRotationLocked", IsCollierRotationLocked);
-	mono_add_internal_call("InternalCalls::SetCollierRotationLocked", SetCollierRotationLocked);
-	mono_add_internal_call("InternalCalls::IsCollierUsingGravity", IsCollierUsingGravity);
-	mono_add_internal_call("InternalCalls::SetCollierUsingGravity", SetCollierUsingGravity);
-	mono_add_internal_call("InternalCalls::ApplyForceCollider", ApplyForceCollider);
-	mono_add_internal_call("InternalCalls::GetSpeedCollider", GetSpeedCollider);
-	mono_add_internal_call("InternalCalls::SetSpeedCollider", SetSpeedCollider);
-	mono_add_internal_call("InternalCalls::GetColliderFriction", GetColliderFriction);
-	mono_add_internal_call("InternalCalls::SetColliderFriction", SetColliderFriction);
-	mono_add_internal_call("InternalCalls::GetColliderLinearDamping", GetColliderLinearDamping);
-	mono_add_internal_call("InternalCalls::SetColliderLinearDamping", SetColliderLinearDamping);
-	mono_add_internal_call("InternalCalls::GetColliderMass", GetColliderMass);
-	mono_add_internal_call("InternalCalls::SetColliderMass", SetColliderMass);
-	mono_add_internal_call("InternalCalls::GetColliderRestitution", GetColliderRestitution);
-	mono_add_internal_call("InternalCalls::SetColliderRestitution", SetColliderRestitution);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::PauseCollider2D", (void*)PauseCollider2D);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::UnpauseCollider2D", (void*)UnpauseCollider2D);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::GetShapeType", (void*)GetShapeType);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::SetShapeType", (void*)SetShapeType);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::GetColliderSize", (void*)GetColliderSize);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::SetColliderSize", (void*)SetColliderSize);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::GetColliderRadius", (void*)GetColliderRadius);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::SetColliderRadius", (void*)SetColliderRadius);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::IsCollierDynamic", (void*)IsCollierDynamic);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::SetColliderDynamic", (void*)SetColliderDynamic);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::IsCollierSensor", (void*)IsCollierSensor);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::SetColliderSensor", (void*)SetColliderSensor);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::IsCollierRotationLocked", (void*)IsCollierRotationLocked);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::SetCollierRotationLocked", (void*)SetCollierRotationLocked);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::IsCollierUsingGravity", (void*)IsCollierUsingGravity);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::SetCollierUsingGravity", (void*)SetCollierUsingGravity);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::ApplyForceCollider", (void*)ApplyForceCollider);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::GetSpeedCollider", (void*)GetSpeedCollider);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::SetSpeedCollider", (void*)SetSpeedCollider);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::GetColliderFriction", (void*)GetColliderFriction);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::SetColliderFriction", (void*)SetColliderFriction);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::GetColliderLinearDamping", (void*)GetColliderLinearDamping);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::SetColliderLinearDamping", (void*)SetColliderLinearDamping);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::GetColliderMass", (void*)GetColliderMass);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::SetColliderMass", (void*)SetColliderMass);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::GetColliderRestitution", (void*)GetColliderRestitution);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::SetColliderRestitution", (void*)SetColliderRestitution);
 
 	//canvas
 	//button
-	mono_add_internal_call("InternalCalls::GetStateButtonUI", GetStateButtonUI);
-	mono_add_internal_call("InternalCalls::SetStateButtonUI", SetStateButtonUI);
-	mono_add_internal_call("InternalCalls::GetStateCheckboxUI", GetStateCheckboxUI);
-	mono_add_internal_call("InternalCalls::SetStateCheckboxUI", SetStateCheckboxUI);
-	mono_add_internal_call("InternalCalls::GetValueCheckboxUI", GetValueCheckboxUI);
-	mono_add_internal_call("InternalCalls::SetValueCheckboxUI", SetValueCheckboxUI);
-	mono_add_internal_call("InternalCalls::GetStateSliderUI", GetStateSliderUI);
-	mono_add_internal_call("InternalCalls::SetStateSliderUI", SetStateSliderUI);
-	mono_add_internal_call("InternalCalls::GetValueSliderUI", GetValueSliderUI);
-	mono_add_internal_call("InternalCalls::SetValueSliderUI", SetValueSliderUI);
-	mono_add_internal_call("InternalCalls::GetTextTextUI", GetTextTextUI);
-	mono_add_internal_call("InternalCalls::SetTextTextUI", SetTextTextUI);
-	mono_add_internal_call("InternalCalls::GetItemUIPosition", GetItemUIPosition);
-	mono_add_internal_call("InternalCalls::SetItemUIPosition", SetItemUIPosition);
-	mono_add_internal_call("InternalCalls::GetItemUIAngle", GetItemUIAngle);
-	mono_add_internal_call("InternalCalls::SetItemUIAngle", SetItemUIAngle);
-	mono_add_internal_call("InternalCalls::GetItemUIScale", GetItemUIScale);
-	mono_add_internal_call("InternalCalls::SetItemUIScale", SetItemUIScale);
-	mono_add_internal_call("InternalCalls::GetItemUIAspectLock", GetItemUIAspectLock);
-	mono_add_internal_call("InternalCalls::SetItemUIAspectLock", SetItemUIAspectLock);
-	mono_add_internal_call("InternalCalls::IsEnabledItemUI", IsEnabledItemUI);
-	mono_add_internal_call("InternalCalls::EnableItemUI", EnableItemUI);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::GetStateButtonUI", (void*)GetStateButtonUI);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::SetStateButtonUI", (void*)SetStateButtonUI);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::GetStateCheckboxUI", (void*)GetStateCheckboxUI);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::SetStateCheckboxUI", (void*)SetStateCheckboxUI);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::GetValueCheckboxUI", (void*)GetValueCheckboxUI);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::SetValueCheckboxUI", (void*)SetValueCheckboxUI);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::GetStateSliderUI", (void*)GetStateSliderUI);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::SetStateSliderUI", (void*)SetStateSliderUI);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::GetValueSliderUI", (void*)GetValueSliderUI);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::SetValueSliderUI", (void*)SetValueSliderUI);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::GetTextTextUI", (void*)GetTextTextUI);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::SetTextTextUI", (void*)SetTextTextUI);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::GetItemUIPosition", (void*)GetItemUIPosition);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::SetItemUIPosition", (void*)SetItemUIPosition);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::GetItemUIAngle", (void*)GetItemUIAngle);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::SetItemUIAngle", (void*)SetItemUIAngle);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::GetItemUIScale", (void*)GetItemUIScale);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::SetItemUIScale", (void*)SetItemUIScale);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::GetItemUIAspectLock", (void*)GetItemUIAspectLock);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::SetItemUIAspectLock", (void*)SetItemUIAspectLock);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::IsEnabledItemUI", (void*)IsEnabledItemUI);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::EnableItemUI", (void*)EnableItemUI);
 
 	//audio
-	mono_add_internal_call("InternalCalls::PauseAudioSource", PauseAudioSource);
-	mono_add_internal_call("InternalCalls::UnpauseAudioSource", UnpauseAudioSource);
-	mono_add_internal_call("InternalCalls::StopAudioSource", StopAudioSource);
-	mono_add_internal_call("InternalCalls::PlayMusic", PlayMusic);
-	mono_add_internal_call("InternalCalls::PlaySound", PlaySound);
-	mono_add_internal_call("InternalCalls::PauseMusic", PauseMusic);
-	mono_add_internal_call("InternalCalls::PauseSound", PauseSound);
-	mono_add_internal_call("InternalCalls::StopMusic", StopMusic);
-	mono_add_internal_call("InternalCalls::StopSound", StopSound);
-	mono_add_internal_call("InternalCalls::GetMusicVolume", GetMusicVolume);
-	mono_add_internal_call("InternalCalls::GetSoundVolume", GetSoundVolume);
-	mono_add_internal_call("InternalCalls::SetMusicVolume", SetMusicVolume);
-	mono_add_internal_call("InternalCalls::SetSoundVolume", SetSoundVolume);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::PauseAudioSource", (void*)PauseAudioSource);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::UnpauseAudioSource", (void*)UnpauseAudioSource);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::StopAudioSource", (void*)StopAudioSource);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::PlayMusic", (void*)PlayMusic);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::PlaySound", (void*)PlaySound);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::PauseMusic", (void*)PauseMusic);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::PauseSound", (void*)PauseSound);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::StopMusic", (void*)StopMusic);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::StopSound", (void*)StopSound);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::GetMusicVolume", (void*)GetMusicVolume);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::GetSoundVolume", (void*)GetSoundVolume);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::SetMusicVolume", (void*)SetMusicVolume);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::SetSoundVolume", (void*)SetSoundVolume);
 
 	//particles
-	mono_add_internal_call("InternalCalls::PlayParticleSystem", PlayParticleSystem);
-	mono_add_internal_call("InternalCalls::PauseParticleSystem", PauseParticleSystem);
-	mono_add_internal_call("InternalCalls::UnpauseParticleSystem", UnpauseParticleSystem);
-	mono_add_internal_call("InternalCalls::StopParticleSystem", StopParticleSystem);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::PlayParticleSystem", (void*)PlayParticleSystem);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::PauseParticleSystem", (void*)PauseParticleSystem);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::UnpauseParticleSystem", (void*)UnpauseParticleSystem);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::StopParticleSystem", (void*)StopParticleSystem);
+
+	//others
+	mono_add_internal_call("ManLiteScripting.ManLiteScripting.MonoBehaviour::.ctor", (void*)MonoBehaviour_Ctor);
 }
 
 MonoString* MonoRegisterer::ToMonoString(const std::string& str)

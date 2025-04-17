@@ -18,6 +18,7 @@
 #include "PanelSaveScene.h"
 #include "PanelLoading.h"
 #include "PanelTileMap.h"
+//#include "Script.h"
 
 #include "FileDialog.h"
 #include "SceneManagerEM.h"
@@ -814,7 +815,7 @@ void Gui::HandleShortcut()
 			}
 			engine->scene_manager_em->GetCurrentScene().SafeDeleteGO(go.lock());
 		}
-		selected_gos.clear();
+		engine->scene_manager_em->GetCurrentScene().UnselectAll();
 	}
 }
 
