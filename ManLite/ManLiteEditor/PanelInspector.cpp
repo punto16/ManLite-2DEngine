@@ -26,6 +26,7 @@
 #include "ParticleSystem.h"
 #include "Emitter.h"
 #include "TileMap.h"
+#include "Script.h"
 
 #include "ResourceManager.h"
 
@@ -77,6 +78,7 @@ bool PanelInspector::Update()
 				CanvasOptions(go);
 				ParticleSystemOptions(go);
 				TileMapOptions(go);
+				ScriptsOptions(go);
 
 				//last
 				AddComponent(go);
@@ -2153,10 +2155,40 @@ void PanelInspector::TileMapOptions(GameObject& go)
 	}
 }
 
+void PanelInspector::ScriptsOptions(GameObject& go)
+{
+	uint treeFlags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_DefaultOpen;
+	std::vector<Script*> scripts = std::vector<Script*>(go.GetComponents<Script>());
+	if (scripts.empty()) return;
+	for (auto& script : scripts)
+	{
+		std::string scriptLabel = std::string("Script: " + script->GetName() + "##" + std::to_string(script->GetID()));
+		
+		bool header_open = ImGui::CollapsingHeader(scriptLabel.c_str(), treeFlags);
+
+		if (ImGui::BeginPopupContextItem())
+		{
+			std::string context_label = "Remove Component##" + scriptLabel;
+			if (ImGui::MenuItem(context_label.c_str()))
+			{
+				go.RemoveComponent(script);
+				ImGui::EndPopup();
+				return;
+			}
+			ImGui::EndPopup();
+		}
+
+		if (header_open)
+		{
+
+		}
+	}
+}
+
 void PanelInspector::AddComponent(GameObject& go)
 {
 	const ImVec2 button_size_default = ImVec2(150, 0);
-	const ImVec2 panel_size_default = ImVec2(200, 200);
+	const ImVec2 panel_size_default = ImVec2(200, 212);
 	ImGui::Dummy(ImVec2(0, 10));
 	ImGui::Dummy(ImVec2((ImGui::GetWindowWidth() - button_size_default.x - 30) * 0.5, 0));
 	ImGui::SameLine();
@@ -2262,6 +2294,19 @@ void PanelInspector::AddComponent(GameObject& go)
 			{
 				go.AddComponent<TileMap>();
 				go.GetComponent<TileMap>()->SwapTexture(filePath);
+			}
+			show_component_window = false;
+		}
+
+		if (ImGui::Selectable("Script"))
+		{
+			std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Open ManLite Script file (*.cs)\0*.cs\0")).string();
+			if (!filePath.empty() && filePath.ends_with(".cs"))
+			{
+				std::string script_name = std::filesystem::path(filePath).stem().string();
+				go.AddComponent<Script>(script_name);
+				if (!go.GetComponents<Script>()[go.GetComponents<Script>().size() - 1]->GetMonoObject())
+					go.RemoveComponent(go.GetComponents<Script>()[go.GetComponents<Script>().size() - 1]);
 			}
 			show_component_window = false;
 		}

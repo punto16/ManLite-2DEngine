@@ -85,7 +85,9 @@ bool PanelScene::Update()
 			ImVec2(1, 0)
 		);
 
-		ImGuizmoFunctionality(image_pos, scaled_size);
+		if (engine->GetEngineState() != EngineState::PLAY)
+			ImGuizmoFunctionality(image_pos, scaled_size);
+
 	}
 	ImGui::End();
 

@@ -10,7 +10,7 @@
 
 class Script : public Component {
 public:
-    Script(std::weak_ptr<GameObject> container_go, std::string name = "Script", bool enable = false);
+    Script(std::weak_ptr<GameObject> container_go, std::string name = "Null Script", bool enable = false);
     Script(const Script& component_to_copy, std::shared_ptr<GameObject> container_go);
     ~Script();
 

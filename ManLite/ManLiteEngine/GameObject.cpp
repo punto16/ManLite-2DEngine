@@ -59,7 +59,6 @@ bool GameObject::Awake()
 
     //all game objects must have transform component
     AddComponent<Transform>();
-    AddComponent<Script>("TestScript_1");
 
     return ret;
 }
@@ -240,6 +239,8 @@ void GameObject::CloneComponents(const std::shared_ptr<GameObject>& original, bo
         }
         case ComponentType::Script:
         {
+            AddCopiedComponent<Script>(*dynamic_cast<const Script*>(item.get()));
+            if (same_id) GetComponent<Script>()->SetID(item->GetID());
             break;
         }
         case ComponentType::Collider2D:
@@ -461,8 +462,8 @@ void GameObject::LoadGameObject(const nlohmann::json& goJSON)
             }
             else if (componentJSON["ComponentType"] == (int)ComponentType::Script)
             {
-                //this->AddComponent<Script>(componentJSON["ScriptName"]);
-                //this->GetComponent<Script>()->LoadComponent(componentJSON);
+                this->AddComponent<Script>(componentJSON["ScriptName"]);
+                this->GetComponent<Script>()->LoadComponent(componentJSON);
             }
             else if (componentJSON["ComponentType"] == (int)ComponentType::Collider2D)
             {

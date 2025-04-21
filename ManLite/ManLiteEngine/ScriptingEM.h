@@ -39,8 +39,10 @@ public:
 
 	//
 	MonoObject* InstantiateClass(const std::string& class_name, GameObject* container_go);
-	void CallScriptFunction(MonoObject* mono_object, const std::string& function_name, void** params = nullptr, int num_params = 0);
+	void CallScriptFunction(GameObject* container_go, MonoObject* mono_object, const std::string& function_name, void** params = nullptr, int num_params = 0);
 	void ReleaseMonoObject(MonoObject* mono_object);
+
+	//
 
 private:
 	std::string GetAssemblyPath();

@@ -18,7 +18,7 @@
 #include "PanelSaveScene.h"
 #include "PanelLoading.h"
 #include "PanelTileMap.h"
-//#include "Script.h"
+#include "Script.h"
 
 #include "FileDialog.h"
 #include "SceneManagerEM.h"
@@ -657,14 +657,25 @@ void Gui::ComponentMenu()
 		for (const auto& item : engine->scene_manager_em->GetCurrentScene().GetSelectedGOs())
 			item.lock()->AddComponent<Collider2D>();
 	}
-	if (ImGui::MenuItem("Script", 0, false, false))
+	if (ImGui::MenuItem("Script"))
 	{
+		std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Open ManLite Script file (*.cs)\0*.cs\0")).string();
+		if (!filePath.empty() && filePath.ends_with(".cs"))
+		{
+			std::string script_name = std::filesystem::path(filePath).stem().string();
 
+			for (const auto& item : engine->scene_manager_em->GetCurrentScene().GetSelectedGOs())
+			{
+				item.lock()->AddComponent<Script>(script_name);
+				if (!item.lock()->GetComponents<Script>()[item.lock()->GetComponents<Script>().size() - 1]->GetMonoObject())
+					item.lock()->RemoveComponent(item.lock()->GetComponents<Script>()[item.lock()->GetComponents<Script>().size() - 1]);
+			}
+		}
 	}
 
 	ImGui::Separator();
 
-	if (ImGui::MenuItem("Canvas", 0))
+	if (ImGui::MenuItem("Canvas"))
 	{
 		for (const auto& item : engine->scene_manager_em->GetCurrentScene().GetSelectedGOs())
 			item.lock()->AddComponent<Canvas>();
@@ -763,12 +774,6 @@ void Gui::HandleShortcut()
 	else if (engine->input_em->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT &&
 		engine->input_em->GetKey(SDL_SCANCODE_S) == KEY_DOWN)
 	{
-		//test
-		if (!loading_panel->GetState()) loading_panel->RequestFocus();
-		else loading_panel->SwitchState();
-		//
-
-
 		std::string filePath = engine->scene_manager_em->GetCurrentScene().GetScenePath();
 		if (!filePath.empty() && filePath != "")
 		{

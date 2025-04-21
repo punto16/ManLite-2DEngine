@@ -28,7 +28,7 @@ bool Script::Init()
     bool ret = true;
     
     //call script start here
-    engine->scripting_em->CallScriptFunction(mono_object, "Start");
+    engine->scripting_em->CallScriptFunction(container_go.lock().get(), mono_object, "Start");
 
     return ret;
 }
@@ -38,7 +38,7 @@ bool Script::Update(float dt)
     bool ret = true;
 
     //call script update here
-    engine->scripting_em->CallScriptFunction(mono_object, "Update");
+    engine->scripting_em->CallScriptFunction(container_go.lock().get(), mono_object, "Update");
 
     return ret;
 }
@@ -53,7 +53,7 @@ void Script::SetEnabled(bool enable)
     {
         this->enabled = true;
         //call script start
-        engine->scripting_em->CallScriptFunction(mono_object, "Start");
+        engine->scripting_em->CallScriptFunction(container_go.lock().get(), mono_object, "Start");
     }
 }
 

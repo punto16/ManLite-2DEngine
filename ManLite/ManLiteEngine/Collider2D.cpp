@@ -289,7 +289,7 @@ void Collider2D::OnTriggerCollision(GameObject* other)
             other
         };
 
-        engine->scripting_em->CallScriptFunction(scriptInstance, "OnTriggerCollision", params, 1);
+        engine->scripting_em->CallScriptFunction(container_go.lock().get(), scriptInstance, "OnTriggerCollision", params, 1);
     }
 }
 
@@ -309,7 +309,7 @@ void Collider2D::OnTriggerSensor(GameObject* other)
             other
         };
 
-        engine->scripting_em->CallScriptFunction(scriptInstance, "OnTriggerSensor", params, 1);
+        engine->scripting_em->CallScriptFunction(container_go.lock().get(), scriptInstance, "OnTriggerSensor", params, 1);
     }
 }
 
@@ -329,7 +329,7 @@ void Collider2D::OnExitCollision(GameObject* other)
             other
         };
 
-        engine->scripting_em->CallScriptFunction(scriptInstance, "OnExitCollision", params, 1);
+        engine->scripting_em->CallScriptFunction(container_go.lock().get(), scriptInstance, "OnExitCollision", params, 1);
     }
 }
 
@@ -349,7 +349,7 @@ void Collider2D::OnExitSensor(GameObject* other)
             other
         };
 
-        engine->scripting_em->CallScriptFunction(scriptInstance, "OnExitSensor", params, 1);
+        engine->scripting_em->CallScriptFunction(container_go.lock().get(), scriptInstance, "OnExitSensor", params, 1);
     }
 }
 

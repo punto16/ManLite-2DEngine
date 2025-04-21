@@ -72,7 +72,6 @@ bool ScriptingEM::CleanUp()
 MonoObject* ScriptingEM::InstantiateClass(const std::string& class_name, GameObject* container_go)
 {
     if (!mono_data.coreAssemblyImage) return nullptr;
-    mono_data.currentGOPtr = container_go;
 
     MonoClass* klass = mono_class_from_name(
         mono_data.coreAssemblyImage,
@@ -93,16 +92,17 @@ MonoObject* ScriptingEM::InstantiateClass(const std::string& class_name, GameObj
         return nullptr;
     }
 
+    mono_data.currentGOPtr = container_go;
     mono_runtime_object_init(instance);
+    mono_data.currentGOPtr = nullptr;
 
     uint32_t gc_handle = mono_gchandle_new(instance, false);
     mono_gc_handles[instance] = gc_handle;
 
-    mono_data.currentGOPtr = nullptr;
     return instance;
 }
 
-void ScriptingEM::CallScriptFunction(MonoObject* mono_object, const std::string& function_name, void** params, int num_params)
+void ScriptingEM::CallScriptFunction(GameObject* container_go, MonoObject* mono_object, const std::string& function_name, void** params, int num_params)
 {
     if (!mono_object) return;
 
@@ -115,6 +115,7 @@ void ScriptingEM::CallScriptFunction(MonoObject* mono_object, const std::string&
         return;
     }
 
+    mono_data.currentGOPtr = container_go;
     MonoObject* exception = nullptr;
     mono_runtime_invoke(
         method,
@@ -122,6 +123,7 @@ void ScriptingEM::CallScriptFunction(MonoObject* mono_object, const std::string&
         params,
         &exception
     );
+    mono_data.currentGOPtr = nullptr;
 
     if (exception)
     {
