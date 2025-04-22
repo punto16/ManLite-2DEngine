@@ -2157,31 +2157,131 @@ void PanelInspector::TileMapOptions(GameObject& go)
 
 void PanelInspector::ScriptsOptions(GameObject& go)
 {
-	uint treeFlags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_DefaultOpen;
-	std::vector<Script*> scripts = std::vector<Script*>(go.GetComponents<Script>());
+	std::vector<Script*> scripts = go.GetComponents<Script>();
 	if (scripts.empty()) return;
+
 	for (auto& script : scripts)
 	{
-		std::string scriptLabel = std::string("Script: " + script->GetName() + "##" + std::to_string(script->GetID()));
-		
-		bool header_open = ImGui::CollapsingHeader(scriptLabel.c_str(), treeFlags);
+		ImGui::PushID(script->GetID());
+
+		std::string scriptLabel = "Script: " + script->GetName() + "##" + std::to_string(script->GetID());
+		bool headerOpen = ImGui::CollapsingHeader(scriptLabel.c_str(), ImGuiTreeNodeFlags_DefaultOpen);
 
 		if (ImGui::BeginPopupContextItem())
 		{
-			std::string context_label = "Remove Component##" + scriptLabel;
-			if (ImGui::MenuItem(context_label.c_str()))
+			if (ImGui::MenuItem("Remove Component"))
 			{
 				go.RemoveComponent(script);
 				ImGui::EndPopup();
+				ImGui::PopID();
 				return;
 			}
 			ImGui::EndPopup();
 		}
 
-		if (header_open)
+		if (headerOpen)
 		{
+			if (ImGui::BeginTable("ScriptFields", 2,
+				ImGuiTableFlags_BordersInnerV | ImGuiTableFlags_SizingStretchSame))
+			{
+				ImGui::TableSetupColumn("Property", ImGuiTableColumnFlags_WidthFixed, 100.0f);
+				ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthStretch);
 
+				for (auto& [fieldName, field] : script->GetScriptFields())
+				{
+					ImGui::TableNextRow();
+					ImGui::TableSetColumnIndex(0);
+					ImGui::AlignTextToFramePadding();
+					ImGui::Text("%s", fieldName.c_str());
+
+					ImGui::TableSetColumnIndex(1);
+					ImGui::PushItemWidth(-FLT_MIN);
+					ImGui::PushID(fieldName.c_str());
+
+					// Widgets según tipo
+					switch (field.type)
+					{
+					case ScriptFieldType::Float:
+					{
+						float value = std::get<float>(field.value);
+						if (ImGui::DragFloat("##Float", &value, 0.1f))
+						{
+							field.value = value;
+							script->ApplyFieldValues();
+						}
+						break;
+					}
+					case ScriptFieldType::Int:
+					{
+						int value = std::get<int>(field.value);
+						if (ImGui::DragInt("##Int", &value))
+						{
+							field.value = value;
+							script->ApplyFieldValues();
+						}
+						break;
+					}
+					case ScriptFieldType::Bool:
+					{
+						bool value = std::get<bool>(field.value);
+						if (ImGui::Checkbox("##Bool", &value))
+						{
+							field.value = value;
+							script->ApplyFieldValues();
+						}
+						break;
+					}
+					case ScriptFieldType::String:
+					{
+						std::string strValue = std::get<std::string>(field.value);
+						char buffer[256];
+						strcpy_s(buffer, strValue.c_str());
+						if (ImGui::InputText("##String", buffer, IM_ARRAYSIZE(buffer)))
+						{
+							field.value = std::string(buffer);
+							script->ApplyFieldValues();
+						}
+						break;
+					}
+					case ScriptFieldType::GameObjectPtr:
+					{
+						GameObject* goPtr = std::get<GameObject*>(field.value);
+						std::string label = goPtr ?
+							goPtr->GetName() + " (" + std::to_string(goPtr->GetID()) + ")" :
+							"None";
+
+						// Botón para mostrar/editar
+						if (ImGui::Button(label.c_str(), ImVec2(-FLT_MIN, 0)))
+						{
+							// Podrías abrir un selector de GameObjects aquí
+						}
+
+						// Drag and Drop
+						if (ImGui::BeginDragDropTarget())
+						{
+							if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("HIERARCHY_ITEM"))
+							{
+								GameObject* droppedGo = *(GameObject**)payload->Data;
+								field.value = droppedGo;
+								script->ApplyFieldValues();
+							}
+							ImGui::EndDragDropTarget();
+						}
+						break;
+					}
+					}
+
+					ImGui::PopID();
+					ImGui::PopItemWidth();
+				}
+
+				ImGui::EndTable();
+			}
+
+			ImGui::Separator();
 		}
+
+		ImGui::PopID();
 	}
 }
 

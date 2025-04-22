@@ -73,4 +73,18 @@ public:
 
         return vec;
     }
+
+    //void* to C# IntPtr
+    static void* BoxPointer(void* ptr) {
+        return mono_value_box(
+            ScriptingEM::GetAppDomain(),
+            mono_get_intptr_class(),
+            &ptr
+        );
+    }
+
+    //C# IntPtr to void*
+    static void* UnboxPointer(void* monoBoxedPtr) {
+        return *(void**)mono_object_unbox((MonoObject*)monoBoxedPtr);
+    }
 };

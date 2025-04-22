@@ -7,7 +7,14 @@ using System.Threading.Tasks;
 
 public class TestScript_1 : MonoBehaviour
 {
-    IGameObject game_object;
+    private IGameObject game_object;
+	
+    public int ForceX = 10;
+    public int ForceY = 10;
+    public float float_example = 0.420f;
+    public bool AllowUpdate = true;
+    //public IGameObject go_example;
+    public string string_example = "test";
 
     public override void Start()
     {
@@ -18,23 +25,28 @@ public class TestScript_1 : MonoBehaviour
     public override void Update()
     {
         float dt = InternalCalls.GetDT();
+        if (!AllowUpdate) return;
+        InternalCalls.Vec2f force;
+        force.X = 0;
+        force.Y = 0;
+        if (InternalCalls.GetKeyboardKeyRepeat((int)KeyboardKey.SDL_SCANCODE_W))
+        {
+            force.Y += ForceY;
+        }
+        if (InternalCalls.GetKeyboardKeyRepeat((int)KeyboardKey.SDL_SCANCODE_S))
+        {
+            force.Y = -ForceY;
+        }
+        if (InternalCalls.GetKeyboardKeyRepeat((int)KeyboardKey.SDL_SCANCODE_D))
+        {
+            force.X += ForceX;
+        }
+        if (InternalCalls.GetKeyboardKeyRepeat((int)KeyboardKey.SDL_SCANCODE_A))
+        {
+            force.X = -ForceX;
+        }
 
-        if (InternalCalls.GetKeyboardKeyDown((int)KeyboardKey.SDL_SCANCODE_W))
-        {
-            InternalCalls.Vec2f force;
-            force.X = 0;
-            force.Y = 10;
-            InternalCalls.SetSpeedCollider(attached_game_object.game_object_ptr, force);
-            InternalCalls.ScriptingLog("Key W Pressed from script!", __arglist());
-        }
-        if (InternalCalls.GetKeyboardKeyDown((int)KeyboardKey.SDL_SCANCODE_S))
-        {
-            InternalCalls.Vec2f force;
-            force.X = 0;
-            force.Y = -10;
-            InternalCalls.SetSpeedCollider(attached_game_object.game_object_ptr, force);
-            InternalCalls.ScriptingLog("Key S Pressed from script!", __arglist());
-        }
+        InternalCalls.SetSpeedCollider(attached_game_object.game_object_ptr, force);
     }
 
     public override void OnTriggerCollision(IGameObject other)

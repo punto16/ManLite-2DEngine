@@ -39,7 +39,7 @@ bool ScriptingEM::Awake()
     mono_data.monoDomain = mono_domain_create_appdomain(appDomainName, nullptr);
     mono_domain_set(mono_data.monoDomain, true);
 
-    //register internal calls here
+    //register internal calls
     MonoRegisterer::RegisterFunctions();
 
 	return ret;
@@ -133,12 +133,20 @@ void ScriptingEM::CallScriptFunction(GameObject* container_go, MonoObject* mono_
 {
     if (!mono_object) return;
 
-    MonoClass* klass = mono_object_get_class(mono_object);
-    MonoMethod* method = mono_class_get_method_from_name(klass, function_name.c_str(), num_params);
+    MonoClass* current_class = mono_object_get_class(mono_object);
+    MonoMethod* method = nullptr;
 
-    if (!method)
-    {
-        LOG(LogType::LOG_ERROR, "Method %s not found", function_name.c_str());
+    // Busca el método en la jerarquía de clases
+    while (current_class != nullptr && method == nullptr) {
+        method = mono_class_get_method_from_name(current_class, function_name.c_str(), num_params);
+        if (!method) {
+            // Avanza a la clase padre
+            current_class = mono_class_get_parent(current_class);
+        }
+    }
+
+    if (!method) {
+        LOG(LogType::LOG_ERROR, "Method %s not found in class hierarchy", function_name.c_str());
         return;
     }
 
@@ -152,8 +160,7 @@ void ScriptingEM::CallScriptFunction(GameObject* container_go, MonoObject* mono_
     );
     mono_data.currentGOPtr = nullptr;
 
-    if (exception)
-    {
+    if (exception) {
         MonoString* exc_str = mono_object_to_string(exception, nullptr);
         char* exc_msg = mono_string_to_utf8(exc_str);
         LOG(LogType::LOG_ERROR, "Script Exception: %s", exc_msg);
@@ -217,6 +224,7 @@ bool ScriptingEM::CompileUserScripts()
     compileCommand += " > compilation_log.txt 2>&1";
 
     LOG(LogType::LOG_INFO, "Compiling scripts... Command:\n%s", compileCommand.c_str());
+
     //execute command without creating cmd window
     STARTUPINFOA si = { sizeof(STARTUPINFOA) };
     PROCESS_INFORMATION pi;
@@ -381,7 +389,6 @@ void* ScriptingEM::ToMonoStringParam(const std::string& str)
 void* ScriptingEM::ToMonoGameObjectParam(GameObject* go, const std::string& script_name) {
     if (!go) return nullptr;
 
-    // Buscar el componente Script por nombre
     auto scripts = go->GetComponents<Script>();
     for (auto& script : scripts) {
         if (script->GetName() == script_name) {
