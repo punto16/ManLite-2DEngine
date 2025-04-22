@@ -6,6 +6,11 @@
 
 #include "Log.h"
 
+#include "filesystem"
+#include "fstream"
+
+namespace fs = std::filesystem;
+
 ScriptingEM::ScriptingEM(EngineCore* parent) : EngineModule(parent)
 {
 }
@@ -50,8 +55,21 @@ bool ScriptingEM::Start()
         CleanUp();
         return false;
     }
-
     mono_data.coreAssemblyImage = mono_assembly_get_image(mono_data.coreAssembly);
+
+
+    if (CompileUserScripts())
+    {
+
+        mono_data.userAssembly = mono_domain_assembly_open(mono_data.monoDomain, GetUserAssemblyPath().c_str());
+        if (!mono_data.userAssembly)
+        {
+            LOG(LogType::LOG_ERROR, "ScriptingEM: Start error, user assembly failed to initialize");
+            CleanUp();
+            return false;
+        }
+        mono_data.userAssemblyImage = mono_assembly_get_image(mono_data.userAssembly);
+    }
 
 	return ret;
 }
@@ -71,17 +89,26 @@ bool ScriptingEM::CleanUp()
 
 MonoObject* ScriptingEM::InstantiateClass(const std::string& class_name, GameObject* container_go)
 {
-    if (!mono_data.coreAssemblyImage) return nullptr;
+    MonoClass* klass = nullptr;
 
-    MonoClass* klass = mono_class_from_name(
-        mono_data.coreAssemblyImage,
-        "",
-        class_name.c_str()
-    );
+    if (mono_data.userAssemblyImage) {
+        klass = mono_class_from_name(
+            mono_data.userAssemblyImage,
+            "",
+            class_name.c_str()
+        );
+    }
 
-    if (!klass)
-    {
-        LOG(LogType::LOG_ERROR, "Class %s not found", class_name.c_str());
+    if (!klass && mono_data.coreAssemblyImage) {
+        klass = mono_class_from_name(
+            mono_data.coreAssemblyImage,
+            "",
+            class_name.c_str()
+        );
+    }
+
+    if (!klass) {
+        LOG(LogType::LOG_ERROR, "Class %s not found in any assembly", class_name.c_str());
         return nullptr;
     }
 
@@ -147,6 +174,75 @@ void ScriptingEM::ReleaseMonoObject(MonoObject* mono_object)
     }
 }
 
+bool ScriptingEM::CompileUserScripts()
+{
+    std::vector<std::string> csFiles;
+    try {
+        for (const auto& entry : fs::recursive_directory_iterator("Assets")) {
+            if (entry.is_regular_file() && entry.path().extension() == ".cs") {
+                csFiles.push_back(entry.path().string());
+            }
+        }
+    }
+    catch (...) {
+        LOG(LogType::LOG_ERROR, "Error searching .cs files in directory");
+    }
+
+    if (csFiles.empty()) return false;
+
+    std::string outputDll = fs::absolute(GetUserAssemblyPath()).string();
+    std::string referenceDll = fs::absolute(GetAssemblyPath()).string();
+    std::string mcs_path = fs::absolute(GetMCSPath() + "\\mcs.bat").string();
+
+    if (fs::exists(outputDll)) {
+        fs::remove(outputDll);
+    }
+
+    std::string compileCommand;
+    compileCommand += mcs_path + " -target:library -out:\"" + outputDll + "\" ";
+    compileCommand += "-r:\"" + referenceDll + "\" ";
+    compileCommand += "-r:Microsoft.CSharp.dll ";
+    compileCommand += "-r:System.dll ";
+    compileCommand += "-r:System.Core.dll ";
+    compileCommand += "-r:System.Data.dll ";
+    compileCommand += "-r:System.Data.DataSetExtensions.dll ";
+    compileCommand += "-r:System.Net.Http.dll ";
+    compileCommand += "-r:System.Xml.dll ";
+    compileCommand += "-r:System.Xml.Linq.dll ";
+
+    for (const auto& file : csFiles) {
+        compileCommand += " \"" + file + "\"";
+    }
+
+    compileCommand += " > compilation_log.txt 2>&1";
+
+    LOG(LogType::LOG_INFO, "Compiling scripts... Command:\n%s", compileCommand.c_str());
+    int result = system(compileCommand.c_str());
+
+    // Leer y mostrar el log de compilación
+    std::ifstream logFile("compilation_log.txt");
+    if (logFile.is_open()) {
+        std::string line;
+        LOG(LogType::LOG_INFO, "[MCS] -----------------------------------------", line.c_str());
+        while (std::getline(logFile, line)) {
+            LOG(LogType::LOG_INFO, "[MCS] %s", line.c_str());
+        }
+        LOG(LogType::LOG_INFO, "[MCS] -----------------------------------------", line.c_str());
+        logFile.close();
+        if (fs::exists("compilation_log.txt")) {
+            fs::remove("compilation_log.txt");
+        }
+    }
+
+    if (result != 0) {
+        LOG(LogType::LOG_ERROR, "Script compilation failed! Error code: %d", result);
+        return false;
+    }
+
+    LOG(LogType::LOG_OK, "Scripts compiled successfully!");
+    return true;
+}
+
 std::string ScriptingEM::GetAssemblyPath()
 {
     std::string resultingAssembly;
@@ -174,6 +270,33 @@ std::string ScriptingEM::GetAssemblyPath()
     return resultingAssembly;
 }
 
+std::string ScriptingEM::GetUserAssemblyPath()
+{
+    std::string resultingAssembly;
+
+    char* vsVersion = nullptr;
+    size_t len = 0;
+    errno_t err = _dupenv_s(&vsVersion, &len, "VisualStudioVersion");
+
+    if (err == 0 && vsVersion != nullptr)
+    {
+#ifdef _DEBUG
+
+        resultingAssembly = "..\\x64\\Debug\\ManLiteUserScripts.dll";
+
+#else
+
+        resultingAssembly = "..\\x64\\Release\\ManLiteUserScripts.dll";
+
+#endif
+    }
+    else
+        resultingAssembly = "ManLiteUserScripts.dll";
+
+    free(vsVersion);
+    return resultingAssembly;
+}
+
 std::string ScriptingEM::GetMonoAssembliesPath()
 {
     std::string resultingPath;
@@ -184,11 +307,31 @@ std::string ScriptingEM::GetMonoAssembliesPath()
 
     if (err == 0 && vsVersion != nullptr)
     {
-        resultingPath = "../../mono/lib/4.5";
+        resultingPath = "..\\..\\mono\\lib\\mono\\4.5";
     }
     else
     {
-        resultingPath = "mono/lib/4.5";
+        resultingPath = "mono\\lib\\mono\\4.5";
+    }
+    free(vsVersion);
+    return resultingPath;
+}
+
+std::string ScriptingEM::GetMCSPath()
+{
+    std::string resultingPath;
+
+    char* vsVersion = nullptr;
+    size_t len = 0;
+    errno_t err = _dupenv_s(&vsVersion, &len, "VisualStudioVersion");
+
+    if (err == 0 && vsVersion != nullptr)
+    {
+        resultingPath = "..\\..\\mono\\bin";
+    }
+    else
+    {
+        resultingPath = "mono\\bin";
     }
     free(vsVersion);
     return resultingPath;

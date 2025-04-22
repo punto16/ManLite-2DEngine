@@ -30,187 +30,187 @@ namespace ManLiteScripting
 
 
         #region GameObject
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static IntPtr GetGOPtr();
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static string GetGOName(IntPtr go);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void SetGOName(IntPtr go, string name);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static string GetGOTag(IntPtr go);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void SetGOTag(IntPtr go, string tag);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static uint GetGOID(IntPtr go);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static IntPtr GetGOParent(IntPtr go);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static bool GetGOEnabled(IntPtr go);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void SetGOEnabled(IntPtr go, bool enable);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void SwitchGOEnabled(IntPtr go);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static bool GetGOVisible(IntPtr go);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void SetGOVisible(IntPtr go, bool visible);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void SwitchGOVisible(IntPtr go);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void ReparentGO(IntPtr go, IntPtr newParent);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static IntPtr GetGOPtr();
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static string GetGOName(IntPtr go);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void SetGOName(IntPtr go, string name);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static string GetGOTag(IntPtr go);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void SetGOTag(IntPtr go, string tag);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static uint GetGOID(IntPtr go);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static IntPtr GetGOParent(IntPtr go);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static bool GetGOEnabled(IntPtr go);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void SetGOEnabled(IntPtr go, bool enable);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void SwitchGOEnabled(IntPtr go);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static bool GetGOVisible(IntPtr go);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void SetGOVisible(IntPtr go, bool visible);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void SwitchGOVisible(IntPtr go);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void ReparentGO(IntPtr go, IntPtr newParent);
         #endregion
 
 
         #region Input
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static bool GetKeyboardKeyDown(int id);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static bool GetKeyboardKeyRepeat(int id);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static bool GetKeyboardKeyUp(int id);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static bool GetKeyboardKeyIdle(int id);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static bool GetMouseButtonDown(int id);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static bool GetMouseButtonRepeat(int id);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static bool GetMouseButtonUp(int id);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static bool GetMouseButtonIdle(int id);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static Vec2f GetMousePosition();
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static Vec2f GetMouseMotion();
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static int GetMouseWheelMotion();
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void CloseApp();
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static bool GetKeyboardKeyDown(int id);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static bool GetKeyboardKeyRepeat(int id);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static bool GetKeyboardKeyUp(int id);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static bool GetKeyboardKeyIdle(int id);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static bool GetMouseButtonDown(int id);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static bool GetMouseButtonRepeat(int id);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static bool GetMouseButtonUp(int id);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static bool GetMouseButtonIdle(int id);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static Vec2f GetMousePosition();
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static Vec2f GetMouseMotion();
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static int GetMouseWheelMotion();
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void CloseApp();
         #endregion
 
 
         #region Scene Management
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void LoadScene(string path);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void CreateEmptyGO(IntPtr parent);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void DeleteGO(IntPtr go);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static IntPtr FindGameObjectByID(uint id);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static IntPtr FindGameObjectByName(string name);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static IntPtr GetSceneRoot();
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static IntPtr GetCurrentCameraGO();
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void SetCurrentCameraGO(IntPtr cameraGO);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void LoadScene(string path);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void CreateEmptyGO(IntPtr parent);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void DeleteGO(IntPtr go);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static IntPtr FindGameObjectByID(uint id);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static IntPtr FindGameObjectByName(string name);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static IntPtr GetSceneRoot();
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static IntPtr GetCurrentCameraGO();
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void SetCurrentCameraGO(IntPtr cameraGO);
         #endregion
 
 
         #region Utils
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static float GetDT();
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void ScriptingLog(string format, __arglist);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static float GetDT();
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void ScriptingLog(string format, __arglist);
         #endregion
 
 
         #region Components
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static bool IsComponentEnabled(IntPtr go, int componentType);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void SetEnableComponent(IntPtr go, int componentType, bool enable);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static bool IsComponentEnabled(IntPtr go, int componentType);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void SetEnableComponent(IntPtr go, int componentType, bool enable);
         #endregion
 
 
         #region Transform
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static Vec2f GetLocalPosition(IntPtr go);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void SetLocalPosition(IntPtr go, Vec2f pos);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static float GetLocalAngle(IntPtr go);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void SetLocalAngle(IntPtr go, float angle);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static Vec2f GetLocalScale(IntPtr go);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void SetLocalScale(IntPtr go, Vec2f scale);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static Vec2f GetWorldPosition(IntPtr go);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void SetWorldPosition(IntPtr go, Vec2f pos);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static float GetWorldAngle(IntPtr go);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void SetWorldAngle(IntPtr go, float angle);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static Vec2f GetWorldScale(IntPtr go);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void SetWorldScale(IntPtr go, Vec2f scale);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static bool IsAspectRatioLocked(IntPtr go);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void SetAspectRatioLock(IntPtr go, bool enable);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static Vec2f GetLocalPosition(IntPtr go);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void SetLocalPosition(IntPtr go, Vec2f pos);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static float GetLocalAngle(IntPtr go);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void SetLocalAngle(IntPtr go, float angle);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static Vec2f GetLocalScale(IntPtr go);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void SetLocalScale(IntPtr go, Vec2f scale);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static Vec2f GetWorldPosition(IntPtr go);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void SetWorldPosition(IntPtr go, Vec2f pos);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static float GetWorldAngle(IntPtr go);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void SetWorldAngle(IntPtr go, float angle);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static Vec2f GetWorldScale(IntPtr go);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void SetWorldScale(IntPtr go, Vec2f scale);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static bool IsAspectRatioLocked(IntPtr go);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void SetAspectRatioLock(IntPtr go, bool enable);
         #endregion
 
 
         #region Camera
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static Vec2f GetViewportSize(IntPtr cameraGO);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void SetViewportSize(IntPtr cameraGO, Vec2f size);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static float GetZoom(IntPtr cameraGO);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void SetZoom(IntPtr cameraGO, float zoom);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static Vec2f GetViewportSize(IntPtr cameraGO);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void SetViewportSize(IntPtr cameraGO, Vec2f size);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static float GetZoom(IntPtr cameraGO);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void SetZoom(IntPtr cameraGO, float zoom);
         #endregion
 
 
         #region Sprite
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static Vec2f GetTextureSize(IntPtr go);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static Vec4f GetTextureSection(IntPtr go);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void SetTextureSection(IntPtr go, Vec4f section);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static Vec2f GetOffset(IntPtr go);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void SetOffset(IntPtr go, Vec2f offset);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static bool IsPixelArt(IntPtr go);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void SetPixelArtRender(IntPtr go, bool enable);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void SwapTexture(IntPtr go, string path);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static Vec2f GetTextureSize(IntPtr go);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static Vec4f GetTextureSection(IntPtr go);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void SetTextureSection(IntPtr go, Vec4f section);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static Vec2f GetOffset(IntPtr go);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void SetOffset(IntPtr go, Vec2f offset);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static bool IsPixelArt(IntPtr go);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void SetPixelArtRender(IntPtr go, bool enable);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void SwapTexture(IntPtr go, string path);
         #endregion
 
 
         #region Animator
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void PlayAnimation(IntPtr go, string animation);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void StopAnimation(IntPtr go);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static bool IsAnimaitonPlaying(IntPtr go, string animation);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void PlayAnimation(IntPtr go, string animation);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void StopAnimation(IntPtr go);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static bool IsAnimaitonPlaying(IntPtr go, string animation);
         #endregion
 
 
         #region Collider2D
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void PauseCollider2D(IntPtr go);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void UnpauseCollider2D(IntPtr go);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static int GetShapeType(IntPtr go);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void SetShapeType(IntPtr go, int shapeType);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static Vec2f GetColliderSize(IntPtr go);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void SetColliderSize(IntPtr go, Vec2f size);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static float GetColliderRadius(IntPtr go);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void SetColliderRadius(IntPtr go, float radius);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static bool IsCollierDynamic(IntPtr go);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void SetColliderDynamic(IntPtr go, bool dynamic);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static bool IsCollierSensor(IntPtr go);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void SetColliderSensor(IntPtr go, bool sensor);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static bool IsCollierRotationLocked(IntPtr go);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void SetCollierRotationLocked(IntPtr go, bool locked);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static bool IsCollierUsingGravity(IntPtr go);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void SetCollierUsingGravity(IntPtr go, bool useGravity);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void ApplyForceCollider(IntPtr go, Vec2f force);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static Vec2f GetSpeedCollider(IntPtr go);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void SetSpeedCollider(IntPtr go, Vec2f speed);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static float GetColliderFriction(IntPtr go);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void SetColliderFriction(IntPtr go, float friction);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static float GetColliderLinearDamping(IntPtr go);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void SetColliderLinearDamping(IntPtr go, float damping);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static float GetColliderMass(IntPtr go);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void SetColliderMass(IntPtr go, float mass);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static float GetColliderRestitution(IntPtr go);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void SetColliderRestitution(IntPtr go, float restitution);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void PauseCollider2D(IntPtr go);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void UnpauseCollider2D(IntPtr go);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static int GetShapeType(IntPtr go);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void SetShapeType(IntPtr go, int shapeType);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static Vec2f GetColliderSize(IntPtr go);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void SetColliderSize(IntPtr go, Vec2f size);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static float GetColliderRadius(IntPtr go);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void SetColliderRadius(IntPtr go, float radius);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static bool IsCollierDynamic(IntPtr go);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void SetColliderDynamic(IntPtr go, bool dynamic);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static bool IsCollierSensor(IntPtr go);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void SetColliderSensor(IntPtr go, bool sensor);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static bool IsCollierRotationLocked(IntPtr go);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void SetCollierRotationLocked(IntPtr go, bool locked);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static bool IsCollierUsingGravity(IntPtr go);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void SetCollierUsingGravity(IntPtr go, bool useGravity);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void ApplyForceCollider(IntPtr go, Vec2f force);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static Vec2f GetSpeedCollider(IntPtr go);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void SetSpeedCollider(IntPtr go, Vec2f speed);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static float GetColliderFriction(IntPtr go);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void SetColliderFriction(IntPtr go, float friction);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static float GetColliderLinearDamping(IntPtr go);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void SetColliderLinearDamping(IntPtr go, float damping);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static float GetColliderMass(IntPtr go);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void SetColliderMass(IntPtr go, float mass);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static float GetColliderRestitution(IntPtr go);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void SetColliderRestitution(IntPtr go, float restitution);
         #endregion
 
 
         #region Canvas
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static int GetStateButtonUI(IntPtr go, string itemUI);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void SetStateButtonUI(IntPtr go, string itemUI, int state);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static int GetStateCheckboxUI(IntPtr go, string itemUI);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void SetStateCheckboxUI(IntPtr go, string itemUI, int state);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static bool GetValueCheckboxUI(IntPtr go, string itemUI);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void SetValueCheckboxUI(IntPtr go, string itemUI, bool value);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static int GetStateSliderUI(IntPtr go, string itemUI);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void SetStateSliderUI(IntPtr go, string itemUI, int state);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static int GetValueSliderUI(IntPtr go, string itemUI);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void SetValueSliderUI(IntPtr go, string itemUI, int value);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static string GetTextTextUI(IntPtr go, string itemUI);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void SetTextTextUI(IntPtr go, string itemUI, string text);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static Vec2f GetItemUIPosition(IntPtr go, string itemUI);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void SetItemUIPosition(IntPtr go, string itemUI, Vec2f position);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static float GetItemUIAngle(IntPtr go, string itemUI);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void SetItemUIAngle(IntPtr go, string itemUI, float angle);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static Vec2f GetItemUIScale(IntPtr go, string itemUI);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void SetItemUIScale(IntPtr go, string itemUI, Vec2f scale);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static bool GetItemUIAspectLock(IntPtr go, string itemUI);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void SetItemUIAspectLock(IntPtr go, string itemUI, bool locked);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static bool IsEnabledItemUI(IntPtr go, string itemUI);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void EnableItemUI(IntPtr go, string itemUI, bool enabled);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static int GetStateButtonUI(IntPtr go, string itemUI);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void SetStateButtonUI(IntPtr go, string itemUI, int state);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static int GetStateCheckboxUI(IntPtr go, string itemUI);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void SetStateCheckboxUI(IntPtr go, string itemUI, int state);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static bool GetValueCheckboxUI(IntPtr go, string itemUI);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void SetValueCheckboxUI(IntPtr go, string itemUI, bool value);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static int GetStateSliderUI(IntPtr go, string itemUI);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void SetStateSliderUI(IntPtr go, string itemUI, int state);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static int GetValueSliderUI(IntPtr go, string itemUI);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void SetValueSliderUI(IntPtr go, string itemUI, int value);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static string GetTextTextUI(IntPtr go, string itemUI);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void SetTextTextUI(IntPtr go, string itemUI, string text);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static Vec2f GetItemUIPosition(IntPtr go, string itemUI);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void SetItemUIPosition(IntPtr go, string itemUI, Vec2f position);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static float GetItemUIAngle(IntPtr go, string itemUI);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void SetItemUIAngle(IntPtr go, string itemUI, float angle);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static Vec2f GetItemUIScale(IntPtr go, string itemUI);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void SetItemUIScale(IntPtr go, string itemUI, Vec2f scale);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static bool GetItemUIAspectLock(IntPtr go, string itemUI);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void SetItemUIAspectLock(IntPtr go, string itemUI, bool locked);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static bool IsEnabledItemUI(IntPtr go, string itemUI);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void EnableItemUI(IntPtr go, string itemUI, bool enabled);
         #endregion
 
 
         #region Audio
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void PauseAudioSource(IntPtr go);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void UnpauseAudioSource(IntPtr go);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void StopAudioSource(IntPtr go);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void PlayMusic(IntPtr go, string audio);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void PlaySound(IntPtr go, string audio);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void PauseMusic(IntPtr go, string audio);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void PauseSound(IntPtr go, string audio);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void StopMusic(IntPtr go, string audio);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void StopSound(IntPtr go, string audio);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static int GetMusicVolume(IntPtr go, string audio);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static int GetSoundVolume(IntPtr go, string audio);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void SetMusicVolume(IntPtr go, string audio, int volume);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void SetSoundVolume(IntPtr go, string audio, int volume);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void PauseAudioSource(IntPtr go);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void UnpauseAudioSource(IntPtr go);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void StopAudioSource(IntPtr go);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void PlayMusic(IntPtr go, string audio);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void PlaySound(IntPtr go, string audio);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void PauseMusic(IntPtr go, string audio);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void PauseSound(IntPtr go, string audio);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void StopMusic(IntPtr go, string audio);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void StopSound(IntPtr go, string audio);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static int GetMusicVolume(IntPtr go, string audio);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static int GetSoundVolume(IntPtr go, string audio);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void SetMusicVolume(IntPtr go, string audio, int volume);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void SetSoundVolume(IntPtr go, string audio, int volume);
         #endregion
 
 
         #region Particles
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void PlayParticleSystem(IntPtr go);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void PauseParticleSystem(IntPtr go);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void UnpauseParticleSystem(IntPtr go);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void StopParticleSystem(IntPtr go);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void PlayParticleSystem(IntPtr go);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void PauseParticleSystem(IntPtr go);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void UnpauseParticleSystem(IntPtr go);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void StopParticleSystem(IntPtr go);
         #endregion
     }
 

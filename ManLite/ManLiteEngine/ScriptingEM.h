@@ -19,9 +19,13 @@ public:
 	{
 		MonoDomain* monoDomain = nullptr;
 		MonoDomain* monoRootDomain = nullptr;
+		//core
 		MonoAssembly* coreAssembly = nullptr;
 		MonoImage* coreAssemblyImage = nullptr;
-
+		//user
+		MonoAssembly* userAssembly = nullptr;
+		MonoImage* userAssemblyImage = nullptr;
+		//utils
 		GameObject* currentGOPtr = nullptr;
 	};
 
@@ -43,10 +47,13 @@ public:
 	void ReleaseMonoObject(MonoObject* mono_object);
 
 	//
+	bool CompileUserScripts();
 
 private:
 	std::string GetAssemblyPath();
+	std::string GetUserAssemblyPath();
 	std::string GetMonoAssembliesPath();
+	std::string GetMCSPath();
 
 	static MonoData mono_data;
 
