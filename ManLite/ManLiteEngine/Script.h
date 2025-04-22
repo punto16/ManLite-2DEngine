@@ -10,7 +10,6 @@
 
 #include "string"
 #include "variant"
-#include "unordered_map"
 
 enum class ScriptFieldType {
     None = 0,
@@ -23,7 +22,7 @@ enum class ScriptFieldType {
 
 struct ScriptField {
     ScriptFieldType type;
-    std::variant<float, int, bool, std::string, GameObject*> value;
+    std::variant<float, int, bool, std::string, uint> value;
 };
 
 class Script : public Component {
@@ -45,21 +44,22 @@ public:
 
     //getters // setters
     MonoObject* GetMonoObject() { return mono_object; }
-    std::unordered_map<std::string, ScriptField>& GetScriptFields() { return scriptFields; }
+    void SetMonoObject(MonoObject* obj) { mono_object = obj; }
+    std::vector<std::pair<std::string, ScriptField>>& GetScriptFields() { return scriptFields; }
 
     void RetrieveScriptFields();
     void ApplyFieldValues();
     ScriptFieldType GetScriptFieldType(MonoType* monoType);
     void GetCurrentFieldValue(MonoClassField* field, ScriptField& sf);
 
-
+    void FinishLoad();
 
 private:
 
     MonoObject* mono_object = nullptr;
 
     //variables
-    std::unordered_map<std::string, ScriptField> scriptFields;
+    std::vector<std::pair<std::string, ScriptField>> scriptFields;
 };
 
 #endif // !__SCRIPT_H__

@@ -11,6 +11,7 @@
 #include "unordered_map"
 
 class GameObject;
+class Script;
 
 class ScriptingEM : public EngineModule
 {
@@ -29,11 +30,19 @@ public:
 		GameObject* currentGOPtr = nullptr;
 	};
 
+	struct InstantiateQueueData
+	{
+		std::string class_name = "";
+		GameObject* container_go = nullptr;
+		Script* script = nullptr;
+	};
+
 
 	ScriptingEM(EngineCore* parent);
 	virtual ~ScriptingEM();
 
 	bool Awake();
+	bool PreUpdate();
 	bool Start();
 
 	bool CleanUp();
@@ -44,6 +53,7 @@ public:
 
 	//
 	MonoObject* InstantiateClass(const std::string& class_name, GameObject* container_go);
+	MonoObject* InstantiateClassAsync(const std::string& class_name, GameObject* container_go, Script* script);
 	void CallScriptFunction(GameObject* container_go, MonoObject* mono_object, const std::string& function_name, void** params = nullptr, int num_params = 0);
 	void ReleaseMonoObject(MonoObject* mono_object);
 
@@ -62,6 +72,9 @@ private:
 	//
 	std::unordered_map<MonoObject*, uint32_t> mono_gc_handles;
 
+	//to load async
+	std::vector<InstantiateQueueData> instantiate_queue;
+	void ProcessInstantiateQueue();
 
 public:
 	// Helpers para conversión de tipos

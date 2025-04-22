@@ -75,6 +75,8 @@ void PhysicsEM::Shutdown()
 
 void ContactListener::HandleContact(b2Contact* contact, bool begin)
 {
+    if (engine->GetEngineState() != EngineState::PLAY) return;
+
     b2Fixture* fixA = contact->GetFixtureA();
     b2Fixture* fixB = contact->GetFixtureB();
 
@@ -82,29 +84,31 @@ void ContactListener::HandleContact(b2Contact* contact, bool begin)
     auto* physB = reinterpret_cast<Collider2D*>(fixB->GetUserData().pointer);
 
     if (physA && physB) {
-        GameObject* goA = physA->GetContainerGO().get();
-        GameObject* goB = physB->GetContainerGO().get();
+        std::shared_ptr<GameObject> goA = physA->GetContainerGO();
+        std::shared_ptr<GameObject> goB = physB->GetContainerGO();
+
+        if (goA == nullptr || goB == nullptr) return;
 
         bool sensorContact = fixA->IsSensor() || fixB->IsSensor();
 
         if (begin) {
             if (sensorContact) {
-                physA->OnTriggerSensor(goB);
-                physB->OnTriggerSensor(goA);
+                physA->OnTriggerSensor(goB.get());
+                physB->OnTriggerSensor(goA.get());
             }
             else {
-                physA->OnTriggerCollision(goB);
-                physB->OnTriggerCollision(goA);
+                physA->OnTriggerCollision(goB.get());
+                physB->OnTriggerCollision(goA.get());
             }
         }
         else {
             if (sensorContact) {
-                physA->OnExitSensor(goB);
-                physB->OnExitSensor(goA);
+                physA->OnExitSensor(goB.get());
+                physB->OnExitSensor(goA.get());
             }
             else {
-                physA->OnExitCollision(goB);
-                physB->OnExitCollision(goA);
+                physA->OnExitCollision(goB.get());
+                physB->OnExitCollision(goA.get());
             }
         }
     }

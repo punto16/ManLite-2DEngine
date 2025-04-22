@@ -1,0 +1,501 @@
+{
+  "game_objects": [
+    {
+      "Components": [
+        {
+          "AspectRatio": 1.0,
+          "ComponentID": 448656229,
+          "ComponentName": "Transform",
+          "ComponentType": 0,
+          "ContainerGOID": 4094621133,
+          "Enabled": true,
+          "LockAspect": true,
+          "Position": [
+            -10.0,
+            0.0
+          ],
+          "Rotation": 0.0,
+          "Scale": [
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "Color": {
+            "A": 255,
+            "B": 0,
+            "G": 255,
+            "R": 0
+          },
+          "ComponentID": 3809101963,
+          "ComponentName": "Collider2D",
+          "ComponentType": 5,
+          "ContainerGOID": 4094621133,
+          "Enabled": true,
+          "Friction": 0.0,
+          "Height": 3.0,
+          "IsDynamic": true,
+          "IsSensor": false,
+          "LinearDamping": 0.0,
+          "LockRotation": true,
+          "Mass": 500.0,
+          "Radius": 0.5,
+          "Restitution": 1.0,
+          "ShapeType": "RECTANGLE",
+          "UseGravity": false,
+          "Width": 1.0
+        }
+      ],
+      "Enabled": true,
+      "ID": 4094621133,
+      "Name": "player_1",
+      "ParentID": 3070202266,
+      "ParentLayerID": 0,
+      "Tag": "Default",
+      "Visible": true
+    },
+    {
+      "Components": [
+        {
+          "AspectRatio": 1.0,
+          "ComponentID": 511497007,
+          "ComponentName": "Transform",
+          "ComponentType": 0,
+          "ContainerGOID": 1460323834,
+          "Enabled": true,
+          "LockAspect": true,
+          "Position": [
+            10.0,
+            0.0
+          ],
+          "Rotation": 0.0,
+          "Scale": [
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "Color": {
+            "A": 255,
+            "B": 0,
+            "G": 255,
+            "R": 0
+          },
+          "ComponentID": 1283744943,
+          "ComponentName": "Collider2D",
+          "ComponentType": 5,
+          "ContainerGOID": 1460323834,
+          "Enabled": true,
+          "Friction": 0.0,
+          "Height": 3.0,
+          "IsDynamic": true,
+          "IsSensor": false,
+          "LinearDamping": 0.0,
+          "LockRotation": true,
+          "Mass": 500.0,
+          "Radius": 0.5,
+          "Restitution": 1.0,
+          "ShapeType": "RECTANGLE",
+          "UseGravity": false,
+          "Width": 1.0
+        }
+      ],
+      "Enabled": true,
+      "ID": 1460323834,
+      "Name": "player_2",
+      "ParentID": 3070202266,
+      "ParentLayerID": 0,
+      "Tag": "Default",
+      "Visible": true
+    },
+    {
+      "Components": [
+        {
+          "AspectRatio": 1.0,
+          "ComponentID": 3217063385,
+          "ComponentName": "Transform",
+          "ComponentType": 0,
+          "ContainerGOID": 1273013404,
+          "Enabled": true,
+          "LockAspect": true,
+          "Position": [
+            0.0,
+            0.0
+          ],
+          "Rotation": 0.0,
+          "Scale": [
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "Color": {
+            "A": 255,
+            "B": 0,
+            "G": 255,
+            "R": 0
+          },
+          "ComponentID": 3916841136,
+          "ComponentName": "Collider2D",
+          "ComponentType": 5,
+          "ContainerGOID": 1273013404,
+          "Enabled": true,
+          "Friction": 0.0,
+          "Height": 1.0,
+          "IsDynamic": true,
+          "IsSensor": false,
+          "LinearDamping": 0.0,
+          "LockRotation": false,
+          "Mass": 5.0,
+          "Radius": 0.5,
+          "Restitution": 0.0,
+          "ShapeType": "CIRCLE",
+          "UseGravity": false,
+          "Width": 1.0
+        }
+      ],
+      "Enabled": true,
+      "ID": 1273013404,
+      "Name": "ball",
+      "ParentID": 3070202266,
+      "ParentLayerID": 0,
+      "Tag": "Default",
+      "Visible": true
+    },
+    {
+      "Components": [
+        {
+          "AspectRatio": 1.0,
+          "ComponentID": 2579289398,
+          "ComponentName": "Transform",
+          "ComponentType": 0,
+          "ContainerGOID": 2646209119,
+          "Enabled": true,
+          "LockAspect": true,
+          "Position": [
+            0.0,
+            0.0
+          ],
+          "Rotation": 0.0,
+          "Scale": [
+            1.0,
+            1.0
+          ]
+        }
+      ],
+      "Enabled": true,
+      "GameObjects": [
+        {
+          "Components": [
+            {
+              "AspectRatio": 1.0,
+              "ComponentID": 1866283306,
+              "ComponentName": "Transform",
+              "ComponentType": 0,
+              "ContainerGOID": 3855638551,
+              "Enabled": true,
+              "LockAspect": true,
+              "Position": [
+                0.0,
+                -10.0
+              ],
+              "Rotation": 0.0,
+              "Scale": [
+                1.0,
+                1.0
+              ]
+            },
+            {
+              "Color": {
+                "A": 255,
+                "B": 0,
+                "G": 255,
+                "R": 0
+              },
+              "ComponentID": 3405314283,
+              "ComponentName": "Collider2D",
+              "ComponentType": 5,
+              "ContainerGOID": 3855638551,
+              "Enabled": true,
+              "Friction": 0.0,
+              "Height": 1.0,
+              "IsDynamic": false,
+              "IsSensor": false,
+              "LinearDamping": 0.0,
+              "LockRotation": false,
+              "Mass": 0.0,
+              "Radius": 0.5,
+              "Restitution": 1.0,
+              "ShapeType": "RECTANGLE",
+              "UseGravity": false,
+              "Width": 30.0
+            }
+          ],
+          "Enabled": true,
+          "ID": 3855638551,
+          "Name": "bottom",
+          "ParentID": 2646209119,
+          "ParentLayerID": 0,
+          "Tag": "Default",
+          "Visible": true
+        },
+        {
+          "Components": [
+            {
+              "AspectRatio": 1.0,
+              "ComponentID": 1615543476,
+              "ComponentName": "Transform",
+              "ComponentType": 0,
+              "ContainerGOID": 430060878,
+              "Enabled": true,
+              "LockAspect": true,
+              "Position": [
+                0.0,
+                10.0
+              ],
+              "Rotation": 0.0,
+              "Scale": [
+                1.0,
+                1.0
+              ]
+            },
+            {
+              "Color": {
+                "A": 255,
+                "B": 0,
+                "G": 255,
+                "R": 0
+              },
+              "ComponentID": 3661870064,
+              "ComponentName": "Collider2D",
+              "ComponentType": 5,
+              "ContainerGOID": 430060878,
+              "Enabled": true,
+              "Friction": 0.0,
+              "Height": 1.0,
+              "IsDynamic": false,
+              "IsSensor": false,
+              "LinearDamping": 0.0,
+              "LockRotation": false,
+              "Mass": 0.0,
+              "Radius": 0.5,
+              "Restitution": 1.0,
+              "ShapeType": "RECTANGLE",
+              "UseGravity": false,
+              "Width": 30.0
+            }
+          ],
+          "Enabled": true,
+          "ID": 430060878,
+          "Name": "top",
+          "ParentID": 2646209119,
+          "ParentLayerID": 0,
+          "Tag": "Default",
+          "Visible": true
+        },
+        {
+          "Components": [
+            {
+              "AspectRatio": 1.0,
+              "ComponentID": 2014502980,
+              "ComponentName": "Transform",
+              "ComponentType": 0,
+              "ContainerGOID": 1680177011,
+              "Enabled": true,
+              "LockAspect": true,
+              "Position": [
+                -15.0,
+                0.0
+              ],
+              "Rotation": 0.0,
+              "Scale": [
+                1.0,
+                1.0
+              ]
+            },
+            {
+              "Color": {
+                "A": 255,
+                "B": 0,
+                "G": 255,
+                "R": 0
+              },
+              "ComponentID": 3150777724,
+              "ComponentName": "Collider2D",
+              "ComponentType": 5,
+              "ContainerGOID": 1680177011,
+              "Enabled": true,
+              "Friction": 0.0,
+              "Height": 19.0,
+              "IsDynamic": false,
+              "IsSensor": false,
+              "LinearDamping": 0.0,
+              "LockRotation": false,
+              "Mass": 0.0,
+              "Radius": 0.5,
+              "Restitution": 1.0,
+              "ShapeType": "RECTANGLE",
+              "UseGravity": false,
+              "Width": 1.0
+            }
+          ],
+          "Enabled": true,
+          "ID": 1680177011,
+          "Name": "left",
+          "ParentID": 2646209119,
+          "ParentLayerID": 0,
+          "Tag": "Default",
+          "Visible": true
+        },
+        {
+          "Components": [
+            {
+              "AspectRatio": 1.0,
+              "ComponentID": 3775189389,
+              "ComponentName": "Transform",
+              "ComponentType": 0,
+              "ContainerGOID": 1878005950,
+              "Enabled": true,
+              "LockAspect": true,
+              "Position": [
+                15.0,
+                0.0
+              ],
+              "Rotation": 0.0,
+              "Scale": [
+                1.0,
+                1.0
+              ]
+            },
+            {
+              "Color": {
+                "A": 255,
+                "B": 0,
+                "G": 255,
+                "R": 0
+              },
+              "ComponentID": 225560019,
+              "ComponentName": "Collider2D",
+              "ComponentType": 5,
+              "ContainerGOID": 1878005950,
+              "Enabled": true,
+              "Friction": 0.0,
+              "Height": 19.0,
+              "IsDynamic": false,
+              "IsSensor": false,
+              "LinearDamping": 0.0,
+              "LockRotation": false,
+              "Mass": 0.0,
+              "Radius": 0.5,
+              "Restitution": 1.0,
+              "ShapeType": "RECTANGLE",
+              "UseGravity": false,
+              "Width": 1.0
+            }
+          ],
+          "Enabled": true,
+          "ID": 1878005950,
+          "Name": "right",
+          "ParentID": 2646209119,
+          "ParentLayerID": 0,
+          "Tag": "Default",
+          "Visible": true
+        }
+      ],
+      "ID": 2646209119,
+      "Name": "map",
+      "ParentID": 3070202266,
+      "ParentLayerID": 0,
+      "Tag": "Default",
+      "Visible": true
+    },
+    {
+      "Components": [
+        {
+          "AspectRatio": 1.0,
+          "ComponentID": 1798818178,
+          "ComponentName": "Transform",
+          "ComponentType": 0,
+          "ContainerGOID": 2375290383,
+          "Enabled": true,
+          "LockAspect": true,
+          "Position": [
+            0.0,
+            0.0
+          ],
+          "Rotation": 0.0,
+          "Scale": [
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "ComponentID": 2612309690,
+          "ComponentName": "TestScript_1",
+          "ComponentType": 4,
+          "ContainerGOID": 2375290383,
+          "Enabled": true,
+          "ScriptFields": {
+            "AllowUpdate": {
+              "type": 3,
+              "value": true
+            },
+            "ball": {
+              "type": 5,
+              "value": 1273013404
+            },
+            "ball_speed": {
+              "type": 1,
+              "value": 5.0
+            },
+            "player_1": {
+              "type": 5,
+              "value": 4094621133
+            },
+            "player_2": {
+              "type": 5,
+              "value": 1460323834
+            },
+            "players_speed": {
+              "type": 2,
+              "value": 10
+            },
+            "string_example": {
+              "type": 4,
+              "value": "test"
+            }
+          }
+        }
+      ],
+      "Enabled": true,
+      "ID": 2375290383,
+      "Name": "game_manager",
+      "ParentID": 3070202266,
+      "ParentLayerID": 0,
+      "Tag": "Default",
+      "Visible": true
+    }
+  ],
+  "layers": [
+    {
+      "Layer_children_go_id": [
+        4094621133,
+        1460323834,
+        1273013404,
+        2646209119,
+        2375290383,
+        3855638551,
+        430060878,
+        1680177011,
+        1878005950
+      ],
+      "children_count": 9,
+      "layer_id": 0,
+      "layer_name": "DefaultLayer_0",
+      "visible": true
+    }
+  ],
+  "scene_id": 3070202266,
+  "scene_name": "Untitled_Scene",
+  "scene_path": "Assets\\Scenes\\Pong_Scene_test.mlscene"
+}

@@ -8,6 +8,7 @@
 #include "AudioEM.h"
 #include "TileMap.h"
 #include "Collider2D.h"
+#include "Script.h"
 
 #include "Defs.h"
 #include "Log.h"

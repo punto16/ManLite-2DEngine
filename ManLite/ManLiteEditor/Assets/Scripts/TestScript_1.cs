@@ -9,44 +9,62 @@ public class TestScript_1 : MonoBehaviour
 {
     private IGameObject game_object;
 	
-    public int ForceX = 10;
-    public int ForceY = 10;
-    public float float_example = 0.420f;
+    public int players_speed = 10;
+    public float ball_speed = 0.420f;
     public bool AllowUpdate = true;
-    //public IGameObject go_example;
+    public IGameObject player_1;
+    public IGameObject player_2;
+    public IGameObject ball;
     public string string_example = "test";
 
     public override void Start()
     {
         game_object = attached_game_object;
         InternalCalls.ScriptingLog("Start TestScript_1", __arglist());
+
+        InternalCalls.Vec2f forceball;
+        forceball.X = ball_speed;
+        forceball.Y = ball_speed;
+        InternalCalls.SetSpeedCollider(ball.game_object_ptr, forceball);
     }
 
     public override void Update()
     {
         float dt = InternalCalls.GetDT();
-        if (!AllowUpdate) return;
         InternalCalls.Vec2f force;
         force.X = 0;
         force.Y = 0;
+        InternalCalls.Vec2f force2;
+        force2.X = 0;
+        force2.Y = 0;
         if (InternalCalls.GetKeyboardKeyRepeat((int)KeyboardKey.SDL_SCANCODE_W))
         {
-            force.Y += ForceY;
+            force.Y += players_speed;
         }
         if (InternalCalls.GetKeyboardKeyRepeat((int)KeyboardKey.SDL_SCANCODE_S))
         {
-            force.Y = -ForceY;
+            force.Y = -players_speed;
         }
-        if (InternalCalls.GetKeyboardKeyRepeat((int)KeyboardKey.SDL_SCANCODE_D))
+        if (InternalCalls.GetKeyboardKeyRepeat((int)KeyboardKey.SDL_SCANCODE_UP))
         {
-            force.X += ForceX;
+            force2.Y += players_speed;
         }
-        if (InternalCalls.GetKeyboardKeyRepeat((int)KeyboardKey.SDL_SCANCODE_A))
+        if (InternalCalls.GetKeyboardKeyRepeat((int)KeyboardKey.SDL_SCANCODE_DOWN))
         {
-            force.X = -ForceX;
+            force2.Y = -players_speed;
         }
 
-        InternalCalls.SetSpeedCollider(attached_game_object.game_object_ptr, force);
+
+        if (!AllowUpdate)
+        {
+            InternalCalls.Vec2f forceball;
+            forceball.X = ball_speed;
+            forceball.Y = ball_speed;
+            InternalCalls.SetSpeedCollider(ball.game_object_ptr, forceball);
+        }
+
+        InternalCalls.SetSpeedCollider(player_1.game_object_ptr, force);
+        InternalCalls.SetSpeedCollider(player_2.game_object_ptr, force2);
     }
 
     public override void OnTriggerCollision(IGameObject other)

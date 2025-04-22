@@ -4,6 +4,7 @@
 #include "GameObject.h"
 #include "ScriptingEM.h"
 #include "MonoRegisterer.h"
+#include "SceneManagerEM.h"
 
 Script::Script(std::weak_ptr<GameObject> container_go, std::string name, bool enable)
     : Component(container_go, ComponentType::Script, name, true)
@@ -16,7 +17,13 @@ Script::Script(const Script& component_to_copy, std::shared_ptr<GameObject> cont
     : Component(component_to_copy, container_go)
 {
     mono_object = engine->scripting_em->InstantiateClass(name, container_go.get());
-    this->SetEnabled(component_to_copy.enabled);
+    enabled = component_to_copy.enabled;
+    RetrieveScriptFields();
+    for (const auto& [fieldName, field] : component_to_copy.scriptFields) {
+        scriptFields.emplace_back(fieldName, field);
+    }
+
+    ApplyFieldValues();
     RetrieveScriptFields();
 }
 
@@ -24,12 +31,14 @@ Script::~Script()
 {
     //unregister and delete script
     engine->scripting_em->ReleaseMonoObject(mono_object);
+    scriptFields.clear();
 }
 
 bool Script::Init()
 {
     bool ret = true;
-    
+    ApplyFieldValues();
+
     //call script start here
     engine->scripting_em->CallScriptFunction(container_go.lock().get(), mono_object, "Start");
     return ret;
@@ -55,6 +64,7 @@ void Script::SetEnabled(bool enable)
     {
         this->enabled = true;
         //call script start
+        //ApplyFieldValues();
         engine->scripting_em->CallScriptFunction(container_go.lock().get(), mono_object, "Start");
     }
 }
@@ -70,6 +80,36 @@ nlohmann::json Script::SaveComponent()
     componentJSON["Enabled"] = enabled;
 
     //component spcecific
+    nlohmann::json scriptFieldsJSON;
+    for (const auto& [fieldName, field] : scriptFields) {
+        nlohmann::json fieldJSON;
+        fieldJSON["type"] = static_cast<int>(field.type);
+
+        switch (field.type) {
+        case ScriptFieldType::Float:
+            fieldJSON["value"] = std::get<float>(field.value);
+            break;
+        case ScriptFieldType::Int:
+            fieldJSON["value"] = std::get<int>(field.value);
+            break;
+        case ScriptFieldType::Bool:
+            fieldJSON["value"] = std::get<bool>(field.value);
+            break;
+        case ScriptFieldType::String:
+            fieldJSON["value"] = std::get<std::string>(field.value);
+            break;
+        case ScriptFieldType::GameObjectPtr: {
+            uint go_id = std::get<uint>(field.value);
+            fieldJSON["value"] = go_id;
+            break;
+        }
+        default:
+            break;
+        }
+        scriptFieldsJSON[fieldName] = fieldJSON;
+    }
+
+    componentJSON["ScriptFields"] = scriptFieldsJSON;
 
     return componentJSON;
 }
@@ -82,13 +122,51 @@ void Script::LoadComponent(const nlohmann::json& componentJSON)
     if (componentJSON.contains("Enabled")) enabled = componentJSON["Enabled"];
 
     //register here script
-    mono_object = engine->scripting_em->InstantiateClass(name, container_go.lock().get());
-    this->SetEnabled(enabled);
+    mono_object = engine->scripting_em->InstantiateClassAsync(name, container_go.lock().get(), this);
+    
+    RetrieveScriptFields();
+
+    if (componentJSON.contains("ScriptFields")) {
+        auto fieldsJSON = componentJSON["ScriptFields"];
+
+        for (auto& [fieldName, fieldData] : fieldsJSON.items()) {
+            ScriptField field;
+            field.type = static_cast<ScriptFieldType>(fieldData["type"].get<int>());
+
+            switch (field.type) {
+            case ScriptFieldType::Float:
+                field.value = fieldData["value"].get<float>();
+                break;
+            case ScriptFieldType::Int:
+                field.value = fieldData["value"].get<int>();
+                break;
+            case ScriptFieldType::Bool:
+                field.value = fieldData["value"].get<bool>();
+                break;
+            case ScriptFieldType::String:
+                field.value = fieldData["value"].get<std::string>();
+                break;
+            case ScriptFieldType::GameObjectPtr: {
+                uint32_t goID = fieldData["value"].get<uint32_t>();
+                field.value = goID;
+                break;
+            }
+            default:
+                break;
+            }
+
+            scriptFields.emplace_back(fieldName, field);
+        }
+    }
+
+    ApplyFieldValues();
 }
 
 void Script::RetrieveScriptFields()
 {
     scriptFields.clear();
+    if (!mono_object) return;
+
     MonoClass* klass = mono_object_get_class(mono_object);
     void* iter = nullptr;
     MonoClassField* field = nullptr;
@@ -105,13 +183,15 @@ void Script::RetrieveScriptFields()
 
         ScriptField sf;
         sf.type = sfType;
-        GetCurrentFieldValue(field, sf); // Obtener valor actual
-        scriptFields[name] = sf;
+        GetCurrentFieldValue(field, sf);
+
+        scriptFields.emplace_back(name, sf);
     }
 }
 
 void Script::ApplyFieldValues()
 {
+    if (!mono_object) return;
     MonoClass* klass = mono_object_get_class(mono_object);
     for (auto& [name, field] : scriptFields) {
         MonoClassField* monoField = mono_class_get_field_from_name(klass, name.c_str());
@@ -139,12 +219,41 @@ void Script::ApplyFieldValues()
             mono_field_set_value(mono_object, monoField, monoStr);
             break;
         }
-        case ScriptFieldType::GameObjectPtr: {
-            GameObject* goPtr = std::get<GameObject*>(field.value);
+        case ScriptFieldType::GameObjectPtr:
+        {
+            uint go_id = std::get<uint>(field.value);
+            GameObject* go = engine->scene_manager_em->GetCurrentScene().FindGameObjectByID(go_id).get();
+            if (!go) break;
 
-            // Convertir a IntPtr para C#
-            void* boxedPtr = MonoRegisterer::BoxPointer(goPtr);
-            mono_field_set_value(mono_object, monoField, boxedPtr);
+            MonoClass* iGameObjectClass = mono_class_from_name(
+                engine->scripting_em->GetCoreAssemblyImage(),
+                "ManLiteScripting",
+                "IGameObject"
+            );
+
+            MonoObject* monoIGameObject = mono_object_new(
+                engine->scripting_em->GetAppDomain(),
+                iGameObjectClass
+            );
+            mono_runtime_object_init(monoIGameObject);
+
+            MonoClassField* ptrField = mono_class_get_field_from_name(
+                iGameObjectClass,
+                "game_object_ptr"
+            );
+
+            void* goPtr = reinterpret_cast<void*>(go);
+            mono_field_set_value(
+                monoIGameObject,
+                ptrField,
+                &goPtr
+            );
+
+            mono_field_set_value(
+                mono_object,
+                monoField,
+                monoIGameObject
+            );
             break;
         }
         default: break;
@@ -160,16 +269,16 @@ ScriptFieldType Script::GetScriptFieldType(MonoType* monoType)
     case MONO_TYPE_I4: return ScriptFieldType::Int;
     case MONO_TYPE_BOOLEAN: return ScriptFieldType::Bool;
     case MONO_TYPE_STRING: return ScriptFieldType::String;
-    case MONO_TYPE_CLASS: {
+    case MONO_TYPE_CLASS: 
+    {
         MonoClass* fieldClass = mono_type_get_class(monoType);
-
         MonoClass* iGameObjectClass = mono_class_from_name(
             engine->scripting_em->GetCoreAssemblyImage(),
             "ManLiteScripting",
             "IGameObject"
         );
 
-        if (fieldClass == iGameObjectClass) {
+        if (mono_class_is_assignable_from(fieldClass, iGameObjectClass)) {
             return ScriptFieldType::GameObjectPtr;
         }
         break;
@@ -179,7 +288,9 @@ ScriptFieldType Script::GetScriptFieldType(MonoType* monoType)
 }
 
 void Script::GetCurrentFieldValue(MonoClassField* field, ScriptField& sf) {
-    switch (sf.type) {
+    if (!mono_object) return;
+    switch (sf.type)
+    {
     case ScriptFieldType::Float:
     {
         float value;
@@ -208,19 +319,53 @@ void Script::GetCurrentFieldValue(MonoClassField* field, ScriptField& sf) {
         if (monoStr) sf.value = std::string(MonoRegisterer::ToCppString(monoStr));
         break;
     }
-    case ScriptFieldType::GameObjectPtr: {
-        void* ptr;
-        mono_field_get_value(mono_object, field, &ptr);
+    case ScriptFieldType::GameObjectPtr:
+    {
+        MonoObject* monoIGameObject = nullptr;
+        mono_field_get_value(mono_object, field, &monoIGameObject);
 
-        GameObject* goPtr = nullptr;
-        if (ptr != nullptr) {
-            goPtr = reinterpret_cast<GameObject*>(
-                MonoRegisterer::UnboxPointer(ptr)
-                );
+        if (monoIGameObject)
+        {
+            MonoClass* iGameObjectClass = mono_class_from_name(
+                engine->scripting_em->GetCoreAssemblyImage(),
+                "ManLiteScripting",
+                "IGameObject"
+            );
+
+            MonoClassField* ptrField = mono_class_get_field_from_name(
+                iGameObjectClass,
+                "game_object_ptr"
+            );
+
+            void* goPtr = nullptr;
+            mono_field_get_value(monoIGameObject, ptrField, &goPtr);
+
+            GameObject* go = reinterpret_cast<GameObject*>(goPtr);
+            sf.value = (uint)go->GetID();
         }
-        sf.value = goPtr;
+        else {
+            sf.value = (uint)0;
+        }
         break;
     }
     default: break;
     }
+}
+
+void Script::FinishLoad()
+{
+    std::unordered_map<std::string, ScriptField> savedFields;
+    for (auto& [name, field] : scriptFields) {
+        savedFields[name] = field;
+    }
+
+    RetrieveScriptFields();
+
+    for (auto& [currentName, currentField] : scriptFields) {
+        if (savedFields.count(currentName) && savedFields[currentName].type == currentField.type) {
+            currentField.value = savedFields[currentName].value;
+        }
+    }
+
+    ApplyFieldValues();
 }

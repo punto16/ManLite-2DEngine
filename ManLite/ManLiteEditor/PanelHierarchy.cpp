@@ -157,8 +157,7 @@ void PanelHierarchy::Context(GameObject& parent)
 		const auto& selected = scene.GetSelectedGOs();
 		int selectedCount = selected.size();
 
-		if (!IsSelected(parent.GetSharedPtr())) scene.SelectGameObject(parent.GetSharedPtr());
-		if (selectedCount > 1)
+		if (selectedCount > 1 && !IsSelected(parent.GetSharedPtr()))
 		{
 			if (ImGui::MenuItem(("Duplicate (" + std::to_string(selectedCount) + ")").c_str()))
 			{
@@ -249,6 +248,14 @@ void PanelHierarchy::DragAndDrop(GameObject& parent)
 			if (draggedItems.size() <= 1) ImGui::Text("Moving <%s>", parent.GetName().c_str());
 			else ImGui::Text("Moving %d Objects", draggedItems.size());
 		}
+		else
+		{
+			std::vector<std::shared_ptr<GameObject>> draggedItems;
+			draggedItems.push_back(parent.GetSharedPtr());
+			ImGui::SetDragDropPayload("DND_MULTI_NODE", draggedItems.data(), draggedItems.size() * sizeof(std::shared_ptr<GameObject>));
+			if (draggedItems.size() <= 1) ImGui::Text("Moving <%s>", parent.GetName().c_str());
+			else ImGui::Text("Moving %d Objects", draggedItems.size());
+		}
 		ImGui::EndDragDropSource();
 	}
 
@@ -297,7 +304,9 @@ void PanelHierarchy::DropZone(GameObject& parent, int position)
 
 void PanelHierarchy::GameObjectSelection(GameObject& go)
 {
-	if (ImGui::IsItemClicked(ImGuiMouseButton_Left) && !ImGui::IsMouseDragging(ImGuiMouseButton_Left))
+	if (ImGui::IsItemHovered(ImGuiMouseButton_Left) &&
+		ImGui::IsMouseReleased(ImGuiMouseButton_Left)
+		&& !ImGui::IsMouseDragging(ImGuiMouseButton_Left))
 	{
 		auto& scene = engine->scene_manager_em->GetCurrentScene();
 		auto itemShared = go.GetSharedPtr();

@@ -4,64 +4,10 @@
       "Components": [
         {
           "AspectRatio": 1.0,
-          "ComponentID": 3231719921,
+          "ComponentID": 398817664,
           "ComponentName": "Transform",
           "ComponentType": 0,
-          "ContainerGOID": 4217402029,
-          "Enabled": true,
-          "LockAspect": true,
-          "Position": [
-            0.0,
-            -4.0
-          ],
-          "Rotation": 0.0,
-          "Scale": [
-            1.0,
-            1.0
-          ]
-        },
-        {
-          "Color": {
-            "A": 255,
-            "B": 0,
-            "G": 255,
-            "R": 0
-          },
-          "ComponentID": 3771712951,
-          "ComponentName": "Collider2D",
-          "ComponentType": 5,
-          "ContainerGOID": 4217402029,
-          "Enabled": true,
-          "Friction": 0.30000001192092896,
-          "Height": 1.0,
-          "IsDynamic": false,
-          "IsSensor": false,
-          "LinearDamping": 0.0,
-          "LockRotation": false,
-          "Mass": 0.0,
-          "Radius": 0.5,
-          "Restitution": 0.0,
-          "ShapeType": "RECTANGLE",
-          "UseGravity": false,
-          "Width": 1.0
-        }
-      ],
-      "Enabled": true,
-      "ID": 4217402029,
-      "Name": "EmptyGameObject",
-      "ParentID": 1904502581,
-      "ParentLayerID": 0,
-      "Tag": "NICE",
-      "Visible": true
-    },
-    {
-      "Components": [
-        {
-          "AspectRatio": 1.0,
-          "ComponentID": 3162554838,
-          "ComponentName": "Transform",
-          "ComponentType": 0,
-          "ContainerGOID": 3686586328,
+          "ContainerGOID": 2095014100,
           "Enabled": true,
           "LockAspect": true,
           "Position": [
@@ -81,10 +27,10 @@
             "G": 255,
             "R": 0
           },
-          "ComponentID": 438193993,
+          "ComponentID": 2430274876,
           "ComponentName": "Collider2D",
           "ComponentType": 5,
-          "ContainerGOID": 3686586328,
+          "ContainerGOID": 2095014100,
           "Enabled": true,
           "Friction": 0.30000001192092896,
           "Height": 1.0,
@@ -98,29 +44,84 @@
           "ShapeType": "RECTANGLE",
           "UseGravity": false,
           "Width": 1.0
-        },
-        {
-          "ComponentID": 508425597,
-          "ComponentName": "TestScript_1",
-          "ComponentType": 4,
-          "ContainerGOID": 3686586328,
-          "Enabled": true
         }
       ],
       "Enabled": true,
-      "ID": 3686586328,
-      "Name": "EmptyGameObject_(1)",
-      "ParentID": 1904502581,
+      "ID": 2095014100,
+      "Name": "collider",
+      "ParentID": 1704231809,
       "ParentLayerID": 0,
-      "Tag": "CLOSE",
+      "Tag": "Default",
+      "Visible": true
+    },
+    {
+      "Components": [
+        {
+          "AspectRatio": 1.0,
+          "ComponentID": 653569889,
+          "ComponentName": "Transform",
+          "ComponentType": 0,
+          "ContainerGOID": 2523101478,
+          "Enabled": true,
+          "LockAspect": true,
+          "Position": [
+            0.0,
+            0.0
+          ],
+          "Rotation": 0.0,
+          "Scale": [
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "ComponentID": 3505445261,
+          "ComponentName": "TestScript_1",
+          "ComponentType": 4,
+          "ContainerGOID": 2523101478,
+          "Enabled": true,
+          "ScriptFields": {
+            "AllowUpdate": {
+              "type": 3,
+              "value": true
+            },
+            "ForceX": {
+              "type": 2,
+              "value": 10
+            },
+            "ForceY": {
+              "type": 2,
+              "value": 10
+            },
+            "float_example": {
+              "type": 1,
+              "value": 0.41999998688697815
+            },
+            "go_example": {
+              "type": 5,
+              "value": 2095014100
+            },
+            "string_example": {
+              "type": 4,
+              "value": "test"
+            }
+          }
+        }
+      ],
+      "Enabled": true,
+      "ID": 2523101478,
+      "Name": "script",
+      "ParentID": 1704231809,
+      "ParentLayerID": 0,
+      "Tag": "Default",
       "Visible": true
     }
   ],
   "layers": [
     {
       "Layer_children_go_id": [
-        4217402029,
-        3686586328
+        2095014100,
+        2523101478
       ],
       "children_count": 2,
       "layer_id": 0,
@@ -128,7 +129,7 @@
       "visible": true
     }
   ],
-  "scene_id": 1904502581,
+  "scene_id": 1704231809,
   "scene_name": "Untitled_Scene",
-  "scene_path": "Assets\\Scenes\\Script_Scene_Test1.mlscene"
+  "scene_path": "Assets\\Scenes\\Script_Scene_Test.mlscene"
 }

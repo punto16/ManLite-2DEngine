@@ -2198,7 +2198,6 @@ void PanelInspector::ScriptsOptions(GameObject& go)
 					ImGui::PushItemWidth(-FLT_MIN);
 					ImGui::PushID(fieldName.c_str());
 
-					// Widgets según tipo
 					switch (field.type)
 					{
 					case ScriptFieldType::Float:
@@ -2245,7 +2244,8 @@ void PanelInspector::ScriptsOptions(GameObject& go)
 					}
 					case ScriptFieldType::GameObjectPtr:
 					{
-						GameObject* goPtr = std::get<GameObject*>(field.value);
+						uint go_id = std::get<uint>(field.value);
+						GameObject* goPtr = engine->scene_manager_em->GetCurrentScene().FindGameObjectByID(go_id).get();
 						std::string label = goPtr ?
 							goPtr->GetName() + " (" + std::to_string(goPtr->GetID()) + ")" :
 							"None";
@@ -2253,18 +2253,20 @@ void PanelInspector::ScriptsOptions(GameObject& go)
 						// Botón para mostrar/editar
 						if (ImGui::Button(label.c_str(), ImVec2(-FLT_MIN, 0)))
 						{
-							// Podrías abrir un selector de GameObjects aquí
+
 						}
 
 						// Drag and Drop
 						if (ImGui::BeginDragDropTarget())
 						{
-							if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("HIERARCHY_ITEM"))
+							ImGui::PushStyleColor(ImGuiCol_DragDropTarget, IM_COL32(45, 85, 230, 255));
+							if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_MULTI_NODE"))
 							{
 								GameObject* droppedGo = *(GameObject**)payload->Data;
-								field.value = droppedGo;
+								field.value = droppedGo->GetID();
 								script->ApplyFieldValues();
 							}
+							ImGui::PopStyleColor();
 							ImGui::EndDragDropTarget();
 						}
 						break;

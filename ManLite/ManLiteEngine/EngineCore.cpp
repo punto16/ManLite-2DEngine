@@ -163,7 +163,11 @@ void EngineCore::CleanLogs()
 
 void EngineCore::SetEngineState(EngineState new_state)
 {
-	switch (engine_state)
+	EngineState old_state = engine_state;
+	//update to new state
+	engine_state = new_state;
+
+	switch (old_state)
 	{
 	case PLAY:
 	{
@@ -265,7 +269,4 @@ void EngineCore::SetEngineState(EngineState new_state)
 	default:
 		break;
 	}
-
-	//update to new state
-	engine_state = new_state;
 }

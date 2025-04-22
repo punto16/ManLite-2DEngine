@@ -45,6 +45,15 @@ bool ScriptingEM::Awake()
 	return ret;
 }
 
+bool ScriptingEM::PreUpdate()
+{
+    bool ret = true;
+
+    ProcessInstantiateQueue();
+
+    return ret;
+}
+
 bool ScriptingEM::Start()
 {
 	bool ret = true;
@@ -127,6 +136,12 @@ MonoObject* ScriptingEM::InstantiateClass(const std::string& class_name, GameObj
     mono_gc_handles[instance] = gc_handle;
 
     return instance;
+}
+
+MonoObject* ScriptingEM::InstantiateClassAsync(const std::string& class_name, GameObject* container_go, Script* script)
+{
+    instantiate_queue.emplace_back(InstantiateQueueData{ class_name, container_go, script });
+    return nullptr;
 }
 
 void ScriptingEM::CallScriptFunction(GameObject* container_go, MonoObject* mono_object, const std::string& function_name, void** params, int num_params)
@@ -371,6 +386,17 @@ std::string ScriptingEM::GetMCSPath()
     }
     free(vsVersion);
     return resultingPath;
+}
+
+void ScriptingEM::ProcessInstantiateQueue()
+{
+    for (auto& data : instantiate_queue)
+    {
+        MonoObject* mono_obj = InstantiateClass(data.class_name, data.container_go);
+        data.script->SetMonoObject(mono_obj);
+        data.script->FinishLoad();
+    }
+    instantiate_queue.clear();
 }
 
 void* ScriptingEM::ToMonoParam(const auto& value)

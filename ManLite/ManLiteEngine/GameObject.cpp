@@ -462,8 +462,8 @@ void GameObject::LoadGameObject(const nlohmann::json& goJSON)
             }
             else if (componentJSON["ComponentType"] == (int)ComponentType::Script)
             {
-                this->AddComponent<Script>(componentJSON["ScriptName"]);
-                this->GetComponent<Script>()->LoadComponent(componentJSON);
+                this->AddComponent<Script>();
+                this->GetComponents<Script>()[this->GetComponents<Script>().size() - 1]->LoadComponent(componentJSON);
             }
             else if (componentJSON["ComponentType"] == (int)ComponentType::Collider2D)
             {

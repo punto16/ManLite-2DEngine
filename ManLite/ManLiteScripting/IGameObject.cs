@@ -8,7 +8,7 @@ namespace ManLiteScripting
 {
     public class IGameObject
     {
-        public IntPtr game_object_ptr;
+        public IntPtr game_object_ptr = IntPtr.Zero;
 
         public bool IsValid => game_object_ptr != IntPtr.Zero;
 
@@ -76,6 +76,16 @@ namespace ManLiteScripting
         public IGameObject(IntPtr go)
         {
             game_object_ptr = go;
+        }
+
+        public static implicit operator bool(IGameObject go)
+        {
+            return go?.IsValid ?? false;
+        }
+
+        public bool Exists()
+        {
+            return (bool)this;
         }
 
         public static bool operator ==(IGameObject a, IGameObject b) => a?.game_object_ptr == b?.game_object_ptr;
