@@ -67,6 +67,7 @@ public:
 
 	float GetGameTime() { return game_time; }
 
+	bool AreLogsStopped() { return stop_logs; }
 	void StopLogs(bool b) { stop_logs = b; }
 
 private:

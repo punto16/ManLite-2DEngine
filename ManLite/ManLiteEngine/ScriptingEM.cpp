@@ -8,6 +8,7 @@
 
 #include "filesystem"
 #include "fstream"
+#include "Windows.h"
 
 namespace fs = std::filesystem;
 
@@ -60,7 +61,6 @@ bool ScriptingEM::Start()
 
     if (CompileUserScripts())
     {
-
         mono_data.userAssembly = mono_domain_assembly_open(mono_data.monoDomain, GetUserAssemblyPath().c_str());
         if (!mono_data.userAssembly)
         {
@@ -217,9 +217,37 @@ bool ScriptingEM::CompileUserScripts()
     compileCommand += " > compilation_log.txt 2>&1";
 
     LOG(LogType::LOG_INFO, "Compiling scripts... Command:\n%s", compileCommand.c_str());
-    int result = system(compileCommand.c_str());
+    //execute command without creating cmd window
+    STARTUPINFOA si = { sizeof(STARTUPINFOA) };
+    PROCESS_INFORMATION pi;
+    si.dwFlags = STARTF_USESHOWWINDOW;
+    si.wShowWindow = SW_HIDE;
 
-    // Leer y mostrar el log de compilación
+    BOOL success = CreateProcessA(
+        NULL,
+        (LPSTR)compileCommand.c_str(),
+        NULL,
+        NULL,
+        FALSE,
+        CREATE_NO_WINDOW,
+        NULL,
+        NULL,
+        &si,
+        &pi
+    );
+
+    if (!success) {
+        LOG(LogType::LOG_ERROR, "Failed to start compiler process");
+        return false;
+    }
+
+    WaitForSingleObject(pi.hProcess, INFINITE);
+
+    DWORD exitCode;
+    GetExitCodeProcess(pi.hProcess, &exitCode);
+    CloseHandle(pi.hProcess);
+    CloseHandle(pi.hThread);
+
     std::ifstream logFile("compilation_log.txt");
     if (logFile.is_open()) {
         std::string line;
@@ -234,8 +262,8 @@ bool ScriptingEM::CompileUserScripts()
         }
     }
 
-    if (result != 0) {
-        LOG(LogType::LOG_ERROR, "Script compilation failed! Error code: %d", result);
+    if (exitCode != 0) {
+        LOG(LogType::LOG_ERROR, "Script compilation failed! Error code: %u", exitCode);
         return false;
     }
 

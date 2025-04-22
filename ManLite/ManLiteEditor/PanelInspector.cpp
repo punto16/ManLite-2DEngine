@@ -2300,7 +2300,7 @@ void PanelInspector::AddComponent(GameObject& go)
 
 		if (ImGui::Selectable("Script"))
 		{
-			std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Open ManLite Script file (*.cs)\0*.cs\0")).string();
+			std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Open ManLite Script file (*.cs)\0*.cs\0", "Assets\\Scripts")).string();
 			if (!filePath.empty() && filePath.ends_with(".cs"))
 			{
 				std::string script_name = std::filesystem::path(filePath).stem().string();

@@ -54,6 +54,7 @@ private:
 	std::string GetUserAssemblyPath();
 	std::string GetMonoAssembliesPath();
 	std::string GetMCSPath();
+	//
 
 	static MonoData mono_data;
 

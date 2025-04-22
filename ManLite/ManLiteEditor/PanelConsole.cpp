@@ -34,10 +34,12 @@ bool PanelConsole::Update()
 	{
 		if (app->gui->save_scene_panel->is_loading)
 		{
-			engine->CleanLogs();
+			engine->StopLogs(true);
 			ImGui::End();
 			return true;
 		}
+		else engine->StopLogs(false);
+
 		if (ImGui::Button("Clear"))
 			engine->CleanLogs();
 
@@ -117,7 +119,8 @@ bool PanelConsole::Update()
 		}
 		ImGui::EndChild();
 
-		if (clearOnPlay) engine->CleanLogs();
+		if (clearOnPlay) engine->StopLogs(true);
+		else engine->StopLogs(false);
 	}
 	ImGui::End();
 
