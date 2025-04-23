@@ -10,6 +10,7 @@
 #include "PhysicsEM.h"
 #include "FontEM.h"
 #include "ScriptingEM.h"
+#include "FilesManager.h"
 
 #include "Defs.h"
 #include "Log.h"
@@ -61,6 +62,8 @@ void EngineCore::AddEngineModule(EngineModule* engine_module, bool activate)
 
 void EngineCore::Awake()
 {
+	FilesManager::GetInstance().ProcessFromRoot();
+
 	for (auto& item : engine_modules)
 	{
 		if (!item->active) continue;

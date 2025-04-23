@@ -181,6 +181,7 @@ popd
     <ClCompile Include="Emitter.cpp" />
     <ClCompile Include="EngineCore.cpp" />
     <ClCompile Include="FileDialog.cpp" />
+    <ClCompile Include="FilesManager.cpp" />
     <ClCompile Include="FontEM.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="ImageUI.cpp" />
@@ -221,6 +222,7 @@ popd
     <ClInclude Include="EngineCore.h" />
     <ClInclude Include="EngineModule.h" />
     <ClInclude Include="FileDialog.h" />
+    <ClInclude Include="FilesManager.h" />
     <ClInclude Include="FontEM.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="ButtonImageUI.h" />

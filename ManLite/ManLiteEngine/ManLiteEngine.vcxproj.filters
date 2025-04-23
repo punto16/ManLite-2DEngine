@@ -52,6 +52,9 @@
     <Filter Include="EngineModules\Scripting">
       <UniqueIdentifier>{a80cd834-76a0-4813-8519-f8495191a08e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Utils\FilesManager">
+      <UniqueIdentifier>{cd712b57-97bb-47e4-9dd6-2352b21a25a1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EngineCore.cpp">
@@ -165,6 +168,9 @@
     </ClCompile>
     <ClCompile Include="Script.cpp">
       <Filter>GameObject\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="FilesManager.cpp">
+      <Filter>Utils\FilesManager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -287,6 +293,9 @@
     </ClInclude>
     <ClInclude Include="Script.h">
       <Filter>GameObject\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="FilesManager.h">
+      <Filter>Utils\FilesManager</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
