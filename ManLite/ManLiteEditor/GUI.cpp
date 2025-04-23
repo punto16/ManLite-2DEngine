@@ -22,6 +22,7 @@
 
 #include "FileDialog.h"
 #include "SceneManagerEM.h"
+#include "ScriptingEM.h"
 #include "GameObject.h"
 #include "Canvas.h"
 #include "Camera.h"
@@ -420,17 +421,35 @@ void Gui::MainMenuBar()
 
 		//manage engine state
 		ImGui::Dummy(ImVec2(ImGui::GetContentRegionAvail().x / 2 - 255, 0.0f));
-		if (ImGui::Button(">"))
+		if (engine->scripting_em->ScriptsCompiledSuccessfully())
 		{
-			engine->SetEngineState(EngineState::PLAY);
+			if (ImGui::Button(">"))
+			{
+				engine->SetEngineState(EngineState::PLAY);
+			}
+			if (ImGui::Button("l l"))
+			{
+				engine->SetEngineState(EngineState::PAUSE);
+			}
+			if (ImGui::Button("[]"))
+			{
+				engine->SetEngineState(EngineState::STOP);
+			}
 		}
-		if (ImGui::Button("l l"))
+		else
 		{
-			engine->SetEngineState(EngineState::PAUSE);
-		}
-		if (ImGui::Button("[]"))
-		{
-			engine->SetEngineState(EngineState::STOP);
+			ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 0, 0, 255)); // red
+			if (ImGui::Button(">"))
+			{
+			}
+			if (ImGui::Button("l l"))
+			{
+			}
+			if (ImGui::Button("[]"))
+			{
+			}
+			ImGui::PopStyleColor();
+			Gui::HelpMarker("Fix Scripts Errors Before Playing the Scene");
 		}
 
 		//show engine state
@@ -458,6 +477,11 @@ void Gui::MainMenuBar()
 		Timer::SecondsToFormat(engine->GetGameTime(), h, m, s, ms);
 		ImGui::Text("Game Duration: %02d:%02d:%02d:%03d", h, m, s, ms);
 
+		ImGui::Dummy(ImVec2(40.0f, 0.0f));
+		if (engine->GetEngineState() == EngineState::STOP && ImGui::Button("Reload Scripts"))
+		{
+			engine->scripting_em->RecompileScripts();
+		}
 		//
 		ImGui::EndMainMenuBar();
 	}

@@ -53,6 +53,7 @@ public:
     void GetCurrentFieldValue(MonoClassField* field, ScriptField& sf);
 
     void FinishLoad();
+    void ReloadScript();
 
 private:
 

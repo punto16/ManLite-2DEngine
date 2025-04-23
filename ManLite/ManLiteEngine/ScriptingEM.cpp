@@ -68,7 +68,7 @@ bool ScriptingEM::Start()
     mono_data.coreAssemblyImage = mono_assembly_get_image(mono_data.coreAssembly);
 
 
-    if (CompileUserScripts())
+    if (script_ready = CompileUserScripts())
     {
         mono_data.userAssembly = mono_domain_assembly_open(mono_data.monoDomain, GetUserAssemblyPath().c_str());
         if (!mono_data.userAssembly)
@@ -96,7 +96,7 @@ bool ScriptingEM::CleanUp()
 	return ret;
 }
 
-MonoObject* ScriptingEM::InstantiateClass(const std::string& class_name, GameObject* container_go)
+MonoObject* ScriptingEM::InstantiateClass(const std::string& class_name, Script* container_script)
 {
     MonoClass* klass = nullptr;
 
@@ -128,34 +128,33 @@ MonoObject* ScriptingEM::InstantiateClass(const std::string& class_name, GameObj
         return nullptr;
     }
 
-    mono_data.currentGOPtr = container_go;
+    mono_data.currentGOPtr = container_script->GetContainerGO().get();
     mono_runtime_object_init(instance);
     mono_data.currentGOPtr = nullptr;
 
     uint32_t gc_handle = mono_gchandle_new(instance, false);
     mono_gc_handles[instance] = gc_handle;
+    active_scripts.emplace_back(container_script);
 
     return instance;
 }
 
-MonoObject* ScriptingEM::InstantiateClassAsync(const std::string& class_name, GameObject* container_go, Script* script)
+MonoObject* ScriptingEM::InstantiateClassAsync(const std::string& class_name, Script* container_script)
 {
-    instantiate_queue.emplace_back(InstantiateQueueData{ class_name, container_go, script });
+    instantiate_queue.emplace_back(InstantiateQueueData{ class_name, container_script->GetContainerGO().get(), container_script});
     return nullptr;
 }
 
-void ScriptingEM::CallScriptFunction(GameObject* container_go, MonoObject* mono_object, const std::string& function_name, void** params, int num_params)
+void ScriptingEM::CallScriptFunction(Script* container_script, MonoObject* mono_object, const std::string& function_name, void** params, int num_params)
 {
     if (!mono_object) return;
 
     MonoClass* current_class = mono_object_get_class(mono_object);
     MonoMethod* method = nullptr;
 
-    // Busca el método en la jerarquía de clases
     while (current_class != nullptr && method == nullptr) {
         method = mono_class_get_method_from_name(current_class, function_name.c_str(), num_params);
         if (!method) {
-            // Avanza a la clase padre
             current_class = mono_class_get_parent(current_class);
         }
     }
@@ -165,7 +164,7 @@ void ScriptingEM::CallScriptFunction(GameObject* container_go, MonoObject* mono_
         return;
     }
 
-    mono_data.currentGOPtr = container_go;
+    mono_data.currentGOPtr = container_script->GetContainerGO().get();
     MonoObject* exception = nullptr;
     mono_runtime_invoke(
         method,
@@ -186,6 +185,15 @@ void ScriptingEM::CallScriptFunction(GameObject* container_go, MonoObject* mono_
 void ScriptingEM::ReleaseMonoObject(MonoObject* mono_object)
 {
     if (!mono_object) return;
+
+    for (auto& script : active_scripts)
+    {
+        if (script->GetMonoObject() == mono_object)
+        {
+            active_scripts.erase(std::find(active_scripts.begin(), active_scripts.end(), script));
+            break;
+        }
+    }
 
     auto it = mono_gc_handles.find(mono_object);
     if (it != mono_gc_handles.end())
@@ -294,6 +302,53 @@ bool ScriptingEM::CompileUserScripts()
     return true;
 }
 
+void ScriptingEM::RecompileScripts()
+{
+    // free all before reload
+    for (auto& pair : mono_gc_handles) {
+        mono_gchandle_free(pair.second);
+    }
+    mono_gc_handles.clear();
+
+    mono_data.coreAssembly = nullptr;
+    mono_data.coreAssemblyImage = nullptr;
+    mono_data.userAssembly = nullptr;
+    mono_data.userAssemblyImage = nullptr;
+    if (mono_data.monoDomain)
+    {
+        mono_domain_set(mono_data.monoRootDomain, true);
+        mono_domain_unload(mono_data.monoDomain);
+        mono_data.monoDomain = nullptr;
+    }
+
+    // reload all
+    char appDomainName[] = "MyAppDomain";
+    mono_data.monoDomain = mono_domain_create_appdomain(appDomainName, nullptr);
+    mono_domain_set(mono_data.monoDomain, true);
+
+    MonoRegisterer::RegisterFunctions();
+
+    mono_data.coreAssembly = mono_domain_assembly_open(mono_data.monoDomain, GetAssemblyPath().c_str());
+    if (!mono_data.coreAssembly) {
+        LOG(LogType::LOG_ERROR, "Failed to reload core assembly!");
+        return;
+    }
+    mono_data.coreAssemblyImage = mono_assembly_get_image(mono_data.coreAssembly);
+
+    script_ready = CompileUserScripts();
+
+    mono_data.userAssembly = mono_domain_assembly_open(mono_data.monoDomain, GetUserAssemblyPath().c_str());
+    if (!mono_data.userAssembly) {
+        LOG(LogType::LOG_ERROR, "Failed to reload user assembly!");
+        return;
+    }
+    mono_data.userAssemblyImage = mono_assembly_get_image(mono_data.userAssembly);
+
+    for (Script* script : active_scripts) {
+        script->ReloadScript();
+    }
+}
+
 std::string ScriptingEM::GetAssemblyPath()
 {
     std::string resultingAssembly;
@@ -392,7 +447,7 @@ void ScriptingEM::ProcessInstantiateQueue()
 {
     for (auto& data : instantiate_queue)
     {
-        MonoObject* mono_obj = InstantiateClass(data.class_name, data.container_go);
+        MonoObject* mono_obj = InstantiateClass(data.class_name, data.script);
         data.script->SetMonoObject(mono_obj);
         data.script->FinishLoad();
     }

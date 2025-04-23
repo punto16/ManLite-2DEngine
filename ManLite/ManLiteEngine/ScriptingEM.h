@@ -52,13 +52,18 @@ public:
 	static MonoImage* GetCoreAssemblyImage() { return mono_data.coreAssemblyImage; }
 
 	//
-	MonoObject* InstantiateClass(const std::string& class_name, GameObject* container_go);
-	MonoObject* InstantiateClassAsync(const std::string& class_name, GameObject* container_go, Script* script);
-	void CallScriptFunction(GameObject* container_go, MonoObject* mono_object, const std::string& function_name, void** params = nullptr, int num_params = 0);
+	MonoObject* InstantiateClass(const std::string& class_name, Script* container_script);
+	MonoObject* InstantiateClassAsync(const std::string& class_name, Script* container_script);
+	void CallScriptFunction(Script* container_script, MonoObject* mono_object, const std::string& function_name, void** params = nullptr, int num_params = 0);
 	void ReleaseMonoObject(MonoObject* mono_object);
 
 	//
 	bool CompileUserScripts();
+	//
+	void RecompileScripts();
+
+	//
+	bool ScriptsCompiledSuccessfully() { return script_ready; }
 
 private:
 	std::string GetAssemblyPath();
@@ -71,6 +76,9 @@ private:
 
 	//
 	std::unordered_map<MonoObject*, uint32_t> mono_gc_handles;
+	std::vector<Script*> active_scripts;
+
+	bool script_ready = true;
 
 	//to load async
 	std::vector<InstantiateQueueData> instantiate_queue;

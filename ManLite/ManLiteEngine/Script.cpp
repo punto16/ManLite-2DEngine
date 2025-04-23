@@ -9,14 +9,14 @@
 Script::Script(std::weak_ptr<GameObject> container_go, std::string name, bool enable)
     : Component(container_go, ComponentType::Script, name, true)
 {
-    mono_object = engine->scripting_em->InstantiateClass(name, container_go.lock().get());
+    mono_object = engine->scripting_em->InstantiateClass(name, this);
     RetrieveScriptFields();
 }
 
 Script::Script(const Script& component_to_copy, std::shared_ptr<GameObject> container_go)
     : Component(component_to_copy, container_go)
 {
-    mono_object = engine->scripting_em->InstantiateClass(name, container_go.get());
+    mono_object = engine->scripting_em->InstantiateClass(name, this);
     enabled = component_to_copy.enabled;
     RetrieveScriptFields();
     for (const auto& [fieldName, field] : component_to_copy.scriptFields) {
@@ -30,7 +30,7 @@ Script::Script(const Script& component_to_copy, std::shared_ptr<GameObject> cont
 Script::~Script()
 {
     //unregister and delete script
-    engine->scripting_em->ReleaseMonoObject(mono_object);
+    if (mono_object) engine->scripting_em->ReleaseMonoObject(mono_object);
     scriptFields.clear();
 }
 
@@ -40,7 +40,7 @@ bool Script::Init()
     ApplyFieldValues();
 
     //call script start here
-    engine->scripting_em->CallScriptFunction(container_go.lock().get(), mono_object, "Start");
+    engine->scripting_em->CallScriptFunction(this, mono_object, "Start");
     return ret;
 }
 
@@ -49,7 +49,7 @@ bool Script::Update(float dt)
     bool ret = true;
 
     //call script update here
-    engine->scripting_em->CallScriptFunction(container_go.lock().get(), mono_object, "Update");
+    engine->scripting_em->CallScriptFunction(this, mono_object, "Update");
 
     return ret;
 }
@@ -65,7 +65,7 @@ void Script::SetEnabled(bool enable)
         this->enabled = true;
         //call script start
         //ApplyFieldValues();
-        engine->scripting_em->CallScriptFunction(container_go.lock().get(), mono_object, "Start");
+        engine->scripting_em->CallScriptFunction(this, mono_object, "Start");
     }
 }
 
@@ -122,7 +122,7 @@ void Script::LoadComponent(const nlohmann::json& componentJSON)
     if (componentJSON.contains("Enabled")) enabled = componentJSON["Enabled"];
 
     //register here script
-    mono_object = engine->scripting_em->InstantiateClassAsync(name, container_go.lock().get(), this);
+    mono_object = engine->scripting_em->InstantiateClassAsync(name, this);
     
     RetrieveScriptFields();
 
@@ -368,4 +368,11 @@ void Script::FinishLoad()
     }
 
     ApplyFieldValues();
+}
+
+void Script::ReloadScript()
+{
+    if (mono_object) engine->scripting_em->ReleaseMonoObject(mono_object);
+    mono_object = engine->scripting_em->InstantiateClass(name, this);
+    FinishLoad();
 }

@@ -248,7 +248,7 @@ void EngineCore::SetEngineState(EngineState new_state)
 		}
 		case PAUSE: //stop to pause do nothing
 		{
-			
+			engine_state = old_state;
 			break;
 		}
 		case STOP: //stop to stop do nothing
