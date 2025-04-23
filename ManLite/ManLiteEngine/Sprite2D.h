@@ -18,6 +18,7 @@ public:
     void Draw() override;
 
     void SwapTexture(std::string new_path);
+    void ReloadTexture();
 
     //serialization
     nlohmann::json SaveComponent() override;

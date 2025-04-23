@@ -9,6 +9,8 @@
 
 PanelProject::PanelProject(PanelType type, std::string name, bool enabled) : Panel(type, name, enabled)
 {
+    current_path.push_back("Assets");
+    current_directory = &FilesManager::GetInstance().GetFileData();
 }
 
 PanelProject::~PanelProject()
@@ -147,7 +149,7 @@ void PanelProject::RenderContentGrid()
                 }
                 else
                 {
-                    LOG(LogType::LOG_INFO, "File %s Clicked", item.name.c_str());
+                    //LOG(LogType::LOG_INFO, "File %s Clicked", item.name.c_str());
                 }
             }
             ImGui::PopID();

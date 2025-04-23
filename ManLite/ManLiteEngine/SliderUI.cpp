@@ -235,6 +235,11 @@ void SliderUI::Draw() {
     }
 }
 
+void SliderUI::ReloadTexture()
+{
+    ResourceManager::GetInstance().GetTexture(texture_path, tex_width, tex_height);
+}
+
 nlohmann::json SliderUI::SaveUIElement() {
     nlohmann::json uielementJSON;
 

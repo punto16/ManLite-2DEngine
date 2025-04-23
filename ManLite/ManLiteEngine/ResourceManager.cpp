@@ -2,6 +2,11 @@
 
 #include "EngineCore.h"
 #include "FontEM.h"
+#include "SceneManagerEM.h"
+#include "GameObject.h"
+#include "Sprite2D.h"
+#include "Canvas.h"
+#include "UIElement.h"
 
 #include "Log.h"
 #define STB_IMAGE_IMPLEMENTATION
@@ -59,6 +64,19 @@ GLuint ResourceManager::GetTexture(const std::string& path) const
     if (path == "") return 0;
     auto it = textures.find(path);
     return (it != textures.end()) ? it->second.id : 0;
+}
+
+GLuint ResourceManager::GetTexture(const std::string& path, int& tex_width, int& tex_height)
+{
+    if (path == "") return 0;
+    auto it = textures.find(path);
+    if (it != textures.end())
+    {
+        tex_width = it->second.w;
+        tex_height = it->second.h;
+        return it->second.id;
+    }
+    return 0;
 }
 
 void ResourceManager::ReleaseTexture(const std::string& path)
@@ -367,6 +385,72 @@ void ResourceManager::ProcessTextures()
 
         task.promise.set_value(textureID);
     }
+}
+
+void ResourceManager::ReloadAll()
+{
+    for (auto& [path, texData] : textures) {
+        int w, h, channels;
+        stbi_set_flip_vertically_on_load(true);
+        unsigned char* data = stbi_load(path.c_str(), &w, &h, &channels, 0);
+        if (!data) {
+            LOG(LogType::LOG_ERROR, "Failed to reload texture: %s", path.c_str());
+            continue;
+        }
+
+        glBindTexture(GL_TEXTURE_2D, texData.id);
+        GLenum format = (channels == 4) ? GL_RGBA : GL_RGB;
+        glTexImage2D(GL_TEXTURE_2D, 0, format, w, h, 0, format, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+        stbi_image_free(data);
+
+        texData.w = w;
+        texData.h = h;
+    }
+
+    for (auto& [path, animData] : animations) {
+        Animation newAnim;
+        if (newAnim.LoadFromFile(path)) {
+            animData.animation = std::move(newAnim);
+        }
+    }
+
+    for (auto& [path, soundData] : sounds) {
+        Mix_Chunk* newChunk = Mix_LoadWAV(path.c_str());
+        if (newChunk) {
+            Mix_FreeChunk(soundData.chunk);
+            soundData.chunk = newChunk;
+        }
+    }
+
+    for (auto& [path, musicData] : musics) {
+        Mix_Music* newMusic = Mix_LoadMUS(path.c_str());
+        if (newMusic) {
+            Mix_FreeMusic(musicData.music);
+            musicData.music = newMusic;
+        }
+    }
+
+    for (auto& [path, fontData] : fonts)
+    {
+        FT_Face newFace;
+        if (FT_New_Face(engine->font_em->GetFreeType(), path.c_str(), 0, &newFace)) continue;
+
+        for (auto& [charCode, ch] : fontData.characters) {
+            glDeleteTextures(1, &ch.textureID);
+        }
+
+        FT_Done_Face(fontData.face);
+        fontData.face = newFace;
+        fontData.characters.clear();
+    }
+
+
+    engine->scene_manager_em->GetCurrentScene().TraverseHierarchy([&](std::shared_ptr<GameObject> go) {
+        if (auto sprite_component = go->GetComponent<Sprite2D>()) sprite_component->ReloadTexture();
+        if (auto canvas_component = go->GetComponent<Canvas>())
+            for (auto& ui_element : canvas_component->GetUIElements()) ui_element->ReloadTexture();
+        });
 }
 
 void ResourceManager::CleanUnusedResources()

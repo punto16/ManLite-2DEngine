@@ -482,6 +482,11 @@ void Gui::MainMenuBar()
 		{
 			engine->scripting_em->RecompileScripts();
 		}
+		ImGui::Dummy(ImVec2(40.0f, 0.0f));
+		if (engine->GetEngineState() == EngineState::STOP && ImGui::Button("Reload Resources"))
+		{
+			ResourceManager::GetInstance().ReloadAll();
+		}
 		//
 		ImGui::EndMainMenuBar();
 	}

@@ -419,13 +419,13 @@ void PanelInspector::SpriteOptions(GameObject& go)
 				ImGui::Text("Section (XYWH)");
 				ImGui::TableSetColumnIndex(1);
 
-				if (ImGui::DragInt4(("##Section" + headerLabel).c_str(), values, 1.0f, 0, 4096))
+				if (ImGui::DragInt4(("##Section" + headerLabel).c_str(), values, 1.0f))
 				{
 					sprite->SetTextureSection(
-						std::clamp(values[0], 0, texWidth),
-						std::clamp(values[1], 0, texHeight),
-						std::clamp(values[2], 1, texWidth - values[0]),
-						std::clamp(values[3], 1, texHeight - values[1])
+						values[0],
+						values[1],
+						values[2],
+						values[3]
 					);
 				}
 				ImGui::TreePop();
@@ -687,7 +687,8 @@ void PanelInspector::AudioSourceOptions(GameObject& go)
 				ImVec4(0.2f, 0.6f, 1.0f, 1.0f) : ImVec4(0.8f, 0.4f, 0.1f, 1.0f);
 
 			ImGui::PushStyleColor(ImGuiCol_Header, headerColor);
-			if (ImGui::CollapsingHeader(sectionName, ImGuiTreeNodeFlags_DefaultOpen))
+			bool audio_type_header_open = ImGui::CollapsingHeader(sectionName, ImGuiTreeNodeFlags_DefaultOpen);
+			if (audio_type_header_open)
 			{
 				if (audioMap.empty())
 				{
@@ -717,6 +718,7 @@ void PanelInspector::AudioSourceOptions(GameObject& go)
 								selected_audio.clear();
 								ImGui::EndPopup();
 								ImGui::Unindent(indent);
+								ImGui::PopStyleColor();
 								return;
 							}
 							ImGui::EndPopup();
@@ -1049,12 +1051,28 @@ void PanelInspector::CanvasOptions(GameObject& go)
 		ImGui::Dummy(ImVec2(0, 4));
 		ImGui::TextColored(ImVec4(1, 1, 0, 1), "UI Elements:");
 
+		//auto ui_elements = std::move(canvas->GetUIElements());
 		for (auto& ui_element : canvas->GetUIElements())
 		{
 			std::string elementLabel = ui_element->GetName() +
 				"##" + std::to_string(ui_element->GetID());
 
-			if (ImGui::TreeNodeEx(elementLabel.c_str(), treeFlags))
+			bool ui_element_header_open = ImGui::TreeNodeEx(elementLabel.c_str(), treeFlags);
+
+			if (ImGui::BeginPopupContextItem())
+			{
+				std::string context_label = "Remove UIElement##" + elementLabel;
+				if (ImGui::MenuItem(context_label.c_str()))
+				{
+					canvas->RemoveItemUI(ui_element->GetID());
+					ImGui::EndPopup();
+					if (ui_element_header_open) ImGui::TreePop();
+					return;
+				}
+				ImGui::EndPopup();
+			}
+
+			if (ui_element_header_open)
 			{
 				std::string nameLabel = "Name##" + std::to_string(ui_element->GetID());
 				char nameBuffer[32];
@@ -1168,7 +1186,7 @@ void PanelInspector::CanvasOptions(GameObject& go)
 
 						ML_Rect section = imageUI->GetSection();
 						std::string sectionLabel = "Section##" + std::to_string(ui_element->GetID());
-						if (ImGui::DragFloat4(sectionLabel.c_str(), &section.x, 1.0f, 0, 4096))
+						if (ImGui::DragFloat4(sectionLabel.c_str(), &section.x, 1.0f))
 						{
 							imageUI->SetSection(section);
 						}
@@ -1221,7 +1239,7 @@ void PanelInspector::CanvasOptions(GameObject& go)
 							if (ImGui::TreeNodeEx(headerLabel.c_str(), treeFlags))
 							{
 								std::string dragLabel = "Section##" + std::string(label) + std::to_string(ui_element->GetID());
-								ImGui::DragFloat4(dragLabel.c_str(), &section.x, 1.0f, 0, buttonImage->GetTextureSize().x);
+								ImGui::DragFloat4(dragLabel.c_str(), &section.x, 1.0f);
 								ImGui::TreePop();
 							}
 							};
@@ -1302,7 +1320,7 @@ void PanelInspector::CanvasOptions(GameObject& go)
 									if (ImGui::TreeNodeEx(subLabel.c_str(), treeFlags))
 									{
 										std::string dragLabel = "Section##" + std::string(subStates[i]) + std::to_string(ui_element->GetID());
-										ImGui::DragFloat4(dragLabel.c_str(), &sections[i]->x, 1.0f, 0, checkboxUI->GetTextureSize().x);
+										ImGui::DragFloat4(dragLabel.c_str(), &sections[i]->x, 1.0f);
 										ImGui::TreePop();
 									}
 								}

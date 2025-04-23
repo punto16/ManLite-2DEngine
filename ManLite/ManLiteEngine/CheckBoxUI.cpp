@@ -117,6 +117,11 @@ void CheckBoxUI::Draw() {
     }
 }
 
+void CheckBoxUI::ReloadTexture()
+{
+    ResourceManager::GetInstance().GetTexture(texture_path, tex_width, tex_height);
+}
+
 nlohmann::json CheckBoxUI::SaveUIElement() {
     nlohmann::json uielementJSON;
 

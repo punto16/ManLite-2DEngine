@@ -97,6 +97,14 @@ void Sprite2D::SwapTexture(std::string new_path)
     SetTextureSection(0, 0, tex_width, tex_height);
 }
 
+void Sprite2D::ReloadTexture()
+{
+    bool resize_section = (sectionW == tex_width && sectionH == tex_height);
+    ResourceManager::GetInstance().GetTexture(texturePath, tex_width, tex_height);
+    if (resize_section) SetTextureSection(sectionX, sectionY, tex_width, tex_height);
+    else SetTextureSection(sectionX, sectionY, sectionW, sectionH);
+}
+
 nlohmann::json Sprite2D::SaveComponent()
 {
     nlohmann::json componentJSON;

@@ -89,6 +89,18 @@ void ImageUI::Draw()
     }
 }
 
+void ImageUI::ReloadTexture()
+{
+    bool resize_section = (section_idle.w == tex_width && section_idle.h == tex_height);
+    ResourceManager::GetInstance().GetTexture(texture_path, tex_width, tex_height);
+
+    if (resize_section) 
+    {
+        section_idle.w = tex_width;
+        section_idle.h = tex_height;
+    }
+}
+
 nlohmann::json ImageUI::SaveUIElement()
 {
     nlohmann::json uielementJSON;

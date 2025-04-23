@@ -36,6 +36,8 @@ public:
 	virtual bool Pause() { return true; }
 	virtual bool Unpause() { return true; }
 
+	virtual void ReloadTexture() {}
+
 	static std::string UIElementTypeToString(UIElementType type)
 	{
 		switch (type)

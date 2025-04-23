@@ -21,6 +21,7 @@ public:
 	virtual void Draw();
 
 	void SwapFont(std::string new_font);
+	void ReloadTexture();
 
 	//serialization
 	virtual nlohmann::json SaveUIElement();

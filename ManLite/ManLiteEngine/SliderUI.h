@@ -74,6 +74,8 @@ public:
 
     virtual void Draw() override;
 
+    void ReloadTexture();
+
     // Serialization
     virtual nlohmann::json SaveUIElement() override;
     virtual void LoadUIElement(const nlohmann::json& uielementJSON) override;

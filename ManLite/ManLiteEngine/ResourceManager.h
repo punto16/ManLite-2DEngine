@@ -72,6 +72,7 @@ public:
     //textures
     GLuint LoadTexture(const std::string& path, int& tex_width, int& tex_height);
     GLuint GetTexture(const std::string& path) const;
+    GLuint GetTexture(const std::string& path, int& tex_width, int& tex_height);
     void ReleaseTexture(const std::string& path);
 
     //animations
@@ -94,6 +95,9 @@ public:
     //thread management
     std::future<GLuint> LoadTextureAsync(const std::string& path, int& tex_width, int& tex_height);
     void ProcessTextures();
+
+    //
+    void ReloadAll();
 
 private:
     ResourceManager() = default;

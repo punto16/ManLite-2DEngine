@@ -83,6 +83,11 @@ void TextUI::SwapFont(std::string new_font)
     font = ResourceManager::GetInstance().LoadFont(font_path, 512);
 }
 
+void TextUI::ReloadTexture()
+{
+    SwapFont(font_path);
+}
+
 nlohmann::json TextUI::SaveUIElement()
 {
     nlohmann::json uielementJSON;

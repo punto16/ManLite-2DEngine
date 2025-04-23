@@ -43,6 +43,8 @@ public:
 
 	virtual void Draw();
 
+	void ReloadTexture();
+
 	//serialization
 	virtual nlohmann::json SaveUIElement();
 	virtual void LoadUIElement(const nlohmann::json& uielementJSON);

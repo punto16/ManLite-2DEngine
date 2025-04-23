@@ -106,6 +106,11 @@ void ButtonImageUI::Draw()
     }
 }
 
+void ButtonImageUI::ReloadTexture()
+{
+    ResourceManager::GetInstance().GetTexture(texture_path, tex_width, tex_height);
+}
+
 nlohmann::json ButtonImageUI::SaveUIElement()
 {
     nlohmann::json uielementJSON;
