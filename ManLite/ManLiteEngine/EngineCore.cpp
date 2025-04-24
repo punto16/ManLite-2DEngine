@@ -63,6 +63,7 @@ void EngineCore::AddEngineModule(EngineModule* engine_module, bool activate)
 void EngineCore::Awake()
 {
 	FilesManager::GetInstance().ProcessFromRoot();
+	FilesManager::GetInstance().StartWatching();
 
 	for (auto& item : engine_modules)
 	{
@@ -86,6 +87,7 @@ bool EngineCore::PreUpdate()
 	bool ret = true;
 
 	ResourceManager::GetInstance().ProcessTextures();
+	FilesManager::GetInstance().Update(dt);
 
 	for (auto& item : engine_modules)
 	{
@@ -130,7 +132,8 @@ bool EngineCore::PostUpdate()
 
 void EngineCore::CleanUp()
 {
-	RELEASE(game_timer)
+	RELEASE(game_timer);
+	FilesManager::GetInstance().StopWatching();
 
 	for (auto item = engine_modules.rbegin(); item != engine_modules.rend(); ++item)
 	{
@@ -193,6 +196,7 @@ void EngineCore::SetEngineState(EngineState new_state)
 		{
 			game_time = 0.0f;
 			scene_manager_em->StopSession();
+			FilesManager::GetInstance().StartWatching();
 			LOG(LogType::LOG_INFO, "EngineCore: State from Play to Stop");
 			break;
 		}
@@ -225,6 +229,7 @@ void EngineCore::SetEngineState(EngineState new_state)
 		{
 			game_time = 0.0f;
 			scene_manager_em->StopSession();
+			FilesManager::GetInstance().StartWatching();
 			LOG(LogType::LOG_INFO, "EngineCore: State from Pause to Stop");
 			break;
 		}
@@ -243,6 +248,7 @@ void EngineCore::SetEngineState(EngineState new_state)
 		{
 		case PLAY: //stop to play init things and resume updates
 		{
+			FilesManager::GetInstance().StopWatching();
 			game_time = 0.0f;
 			game_timer->Start();
 			scene_manager_em->StartSession();

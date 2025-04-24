@@ -148,6 +148,8 @@ public:
 	//getters // setters
 	Scene& GetCurrentScene() { return *current_scene; }
 
+	bool CurrentSceneAvailable() { return current_scene.get(); }
+
 private:
 	std::unique_ptr<Scene> current_scene;
 

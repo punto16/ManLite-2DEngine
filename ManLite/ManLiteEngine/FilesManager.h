@@ -5,6 +5,7 @@
 #include "string"
 #include "vector"
 #include "filesystem"
+#include "unordered_map"
 
 enum FileType
 {
@@ -39,17 +40,39 @@ class FilesManager
 public:
 	static FilesManager& GetInstance();
 
+	bool Update(float dt);
+
+	//reload filedata
 	void ProcessFromRoot();
 
+	//file watcher
+	void StartWatching();
+	void StopWatching();
+
 	FileData& GetFileData() { return assets_folder; }
+
+	void ProcessChanges();
 
 private:
 	FilesManager() = default;
 
+	void CheckForRemovals(const std::unordered_map<std::string, std::filesystem::file_time_type>& current_files);
+	void UpdateStructure();
+	void HandleDeletedItem(const std::string& path);
+
+	void WatchFiles();
 	void ProcessDirectory(const std::filesystem::path& path, FileData& parent);
 	FileType DetermineFileType(const std::string& extension);
 
+	std::unordered_map<std::string, std::filesystem::file_time_type> file_timestamps;
+	bool watching = true;
+	//in seconds
+	float watch_timer = 0.0f;
+	//in seconds
+	float watch_frequency = 1.5;
+
 	FileData assets_folder;
+	std::vector<std::string> changed_files;
 };
 
 #endif // !__FILES_MANAGER_EM_H__

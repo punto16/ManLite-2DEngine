@@ -445,12 +445,14 @@ void ResourceManager::ReloadAll()
         fontData.characters.clear();
     }
 
-
-    engine->scene_manager_em->GetCurrentScene().TraverseHierarchy([&](std::shared_ptr<GameObject> go) {
-        if (auto sprite_component = go->GetComponent<Sprite2D>()) sprite_component->ReloadTexture();
-        if (auto canvas_component = go->GetComponent<Canvas>())
-            for (auto& ui_element : canvas_component->GetUIElements()) ui_element->ReloadTexture();
-        });
+    if (engine->scene_manager_em->CurrentSceneAvailable())
+    {
+        engine->scene_manager_em->GetCurrentScene().TraverseHierarchy([&](std::shared_ptr<GameObject> go) {
+            if (auto sprite_component = go->GetComponent<Sprite2D>()) sprite_component->ReloadTexture();
+            if (auto canvas_component = go->GetComponent<Canvas>())
+                for (auto& ui_element : canvas_component->GetUIElements()) ui_element->ReloadTexture();
+            });
+    }
 }
 
 void ResourceManager::CleanUnusedResources()
