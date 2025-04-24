@@ -3,20 +3,12 @@
 #pragma once
 
 #include "GuiPanel.h"
+
+#include "Defs.h"
+
 #include "imgui_internal.h"
 #include "vector"
 #include "string"
-
-#define FOLDER_ICON		"[FOL] "
-#define IMAGE_ICON		"[IMG] "
-#define ANIMATION_ICON	"[ANI] "
-#define AUDIO_ICON		"[AUD] "
-#define FONT_ICON		"[FNT] "
-#define PARTICLES_ICON  "[PRT] "
-#define SCENE_ICON		"[SCN] "
-#define SCRIPT_ICON		"[SCR] "
-#define TILED_ICON		"[TLD] "
-#define UNKNOWN_ICON	"[???] "
 
 class FileData;
 
@@ -37,6 +29,18 @@ public:
     std::vector<std::string> current_path;
 
 private:
+
+    uint unknown_icon = 0;
+    uint folder_icon = 0;
+    uint image_icon = 0;
+    uint animation_icon = 0;
+    uint audio_icon = 0;
+    uint font_icon = 0;
+    uint particles_icon = 0;
+    uint scene_icon = 0;
+    uint script_icon = 0;
+    uint tiled_icon = 0;
+    uint prefab_icon = 0;
 
 };
 

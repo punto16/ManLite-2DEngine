@@ -2,19 +2,42 @@
 
 #include "GUI.h"
 #include "Log.h"
+#include "ResourceManager.h"
+#include "FilesManager.h"
 
 #include <imgui.h>
-#include "FilesManager.h"
 
 
 PanelProject::PanelProject(PanelType type, std::string name, bool enabled) : Panel(type, name, enabled)
 {
     current_path.push_back("Assets");
     current_directory = &FilesManager::GetInstance().GetFileData();
+
+    int w = 0, h = 0;
+    unknown_icon        = ResourceManager::GetInstance().LoadTexture("Config\\Icons\\unknown_icon.png"      , w, h);
+    folder_icon         = ResourceManager::GetInstance().LoadTexture("Config\\Icons\\folder_icon.png"       , w, h);
+    image_icon          = ResourceManager::GetInstance().LoadTexture("Config\\Icons\\image_icon.png"        , w, h);
+    animation_icon      = ResourceManager::GetInstance().LoadTexture("Config\\Icons\\animation_icon.png"    , w, h);
+    audio_icon          = ResourceManager::GetInstance().LoadTexture("Config\\Icons\\audio_icon.png"        , w, h);
+    font_icon           = ResourceManager::GetInstance().LoadTexture("Config\\Icons\\font_icon.png"         , w, h);
+    particles_icon      = ResourceManager::GetInstance().LoadTexture("Config\\Icons\\particles_icon.png"    , w, h);
+    scene_icon          = ResourceManager::GetInstance().LoadTexture("Config\\Icons\\icon.png"              , w, h);
+    script_icon         = ResourceManager::GetInstance().LoadTexture("Config\\Icons\\script_icon.png"       , w, h);
+    tiled_icon          = ResourceManager::GetInstance().LoadTexture("Config\\Icons\\tiled_icon.png"        , w, h);
 }
 
 PanelProject::~PanelProject()
 {
+    if (unknown_icon    != 0) ResourceManager::GetInstance().ReleaseTexture("Config\\Icons\\unknown_icon.png"   );
+    if (folder_icon     != 0) ResourceManager::GetInstance().ReleaseTexture("Config\\Icons\\folder_icon.png"    );
+    if (image_icon      != 0) ResourceManager::GetInstance().ReleaseTexture("Config\\Icons\\image_icon.png"     );
+    if (animation_icon  != 0) ResourceManager::GetInstance().ReleaseTexture("Config\\Icons\\animation_icon.png" );
+    if (audio_icon      != 0) ResourceManager::GetInstance().ReleaseTexture("Config\\Icons\\audio_icon.png"     );
+    if (font_icon       != 0) ResourceManager::GetInstance().ReleaseTexture("Config\\Icons\\font_icon.png"      );
+    if (particles_icon  != 0) ResourceManager::GetInstance().ReleaseTexture("Config\\Icons\\particles_icon.png" );
+    if (scene_icon      != 0) ResourceManager::GetInstance().ReleaseTexture("Config\\Icons\\icon.png"           );
+    if (script_icon     != 0) ResourceManager::GetInstance().ReleaseTexture("Config\\Icons\\script_icon.png"    );
+    if (tiled_icon      != 0) ResourceManager::GetInstance().ReleaseTexture("Config\\Icons\\tiled_icon.png"     );
 }
 
 bool PanelProject::Update()
@@ -49,45 +72,48 @@ bool PanelProject::Update()
 
 void PanelProject::RenderFileTree(const FileData& file_data, int depth)
 {
-    const ImVec4 folder_color = ImVec4(0.8f, 0.8f, 0.0f, 1.0f);
-    const ImVec4 file_color = ImVec4(0.9f, 0.9f, 0.9f, 1.0f);
-
-    // Determinar icono
-    const char* icon = UNKNOWN_ICON;
+    uint texture_id = unknown_icon;
     switch (file_data.type) {
-    case FOLDER:        icon = FOLDER_ICON; break;
-    case IMAGE:         icon = IMAGE_ICON; break;
-    case ANIMATION:     icon = ANIMATION_ICON; break;
-    case AUDIO:         icon = AUDIO_ICON; break;
-    case FONT:          icon = FONT_ICON; break;
-    case PARTICLES:     icon = PARTICLES_ICON; break;
-    case SCENE:         icon = SCENE_ICON; break;
-    case SCRIPT:        icon = SCRIPT_ICON; break;
-    case TILED:         icon = TILED_ICON; break;
+    case FOLDER:        texture_id = folder_icon;       break;
+    case IMAGE:         texture_id = image_icon;        break;
+    case ANIMATION:     texture_id = animation_icon;    break;
+    case AUDIO:         texture_id = audio_icon;        break;
+    case FONT:          texture_id = font_icon;         break;
+    case PARTICLES:     texture_id = particles_icon;    break;
+    case SCENE:         texture_id = scene_icon;        break;
+    case SCRIPT:        texture_id = script_icon;       break;
+    case TILED:         texture_id = tiled_icon;        break;
+    case PREFAB:        texture_id = prefab_icon;       break;
+    default:            texture_id = unknown_icon;      break;
     }
 
-    ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow;
-    if (depth == 0) {
-        flags |= ImGuiTreeNodeFlags_DefaultOpen;
+    ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth;
+    if (depth == 0) flags |= ImGuiTreeNodeFlags_DefaultOpen;
+    if (file_data.type != FOLDER) flags |= ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
+
+    ImGui::PushID(file_data.relative_path.c_str());
+
+    bool is_open = ImGui::TreeNodeEx("##node", flags, "");
+
+    if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen()) {
+        if (file_data.type == FOLDER) {
+            UpdateCurrentDirectory(&file_data);
+        }
     }
 
-    if (file_data.type != FOLDER) {
-        flags |= ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
-    }
+    ImGui::SameLine();
 
-    if (file_data.type == FOLDER) {
-        ImGui::PushStyleColor(ImGuiCol_Text, folder_color);
-    }
-    else {
-        ImGui::PushStyleColor(ImGuiCol_Text, file_color);
-    }
+    const float icon_size = ImGui::GetTextLineHeight() * 1.2f;
+    ImGui::Image(
+        (ImTextureID)(intptr_t)texture_id,
+        ImVec2(icon_size, icon_size),
+        ImVec2(0, 1),
+        ImVec2(1, 0),
+        ImVec4(1, 1, 1, 1)
+    );
 
-    bool is_open = ImGui::TreeNodeEx(file_data.name.c_str(), flags, "%s%s", icon, file_data.name.c_str());
-    ImGui::PopStyleColor();
-
-    if (ImGui::IsItemClicked() && file_data.type == FOLDER) {
-        UpdateCurrentDirectory(&file_data);
-    }
+    ImGui::SameLine();
+    ImGui::TextUnformatted(file_data.name.c_str());
 
     if (is_open && file_data.type == FOLDER) {
         for (const auto& child : file_data.children) {
@@ -95,6 +121,8 @@ void PanelProject::RenderFileTree(const FileData& file_data, int depth)
         }
         ImGui::TreePop();
     }
+
+    ImGui::PopID();
 }
 
 void PanelProject::RenderBreadcrumbs()
@@ -135,26 +163,47 @@ void PanelProject::RenderContentGrid()
     ImGui::Columns(columns, NULL, false);
 
     if (current_directory) {
-        for (const auto& item : current_directory->children) {
-            // Icono
+        for (const auto& item : current_directory->children)
+        {
+            uint texture_id = unknown_icon;
+            switch (item.type) {
+            case FOLDER:        texture_id = folder_icon;       break;
+            case IMAGE:         texture_id = image_icon;        break;
+            case ANIMATION:     texture_id = animation_icon;    break;
+            case AUDIO:         texture_id = audio_icon;        break;
+            case FONT:          texture_id = font_icon;         break;
+            case PARTICLES:     texture_id = particles_icon;    break;
+            case SCENE:         texture_id = scene_icon;        break;
+            case SCRIPT:        texture_id = script_icon;       break;
+            case TILED:         texture_id = tiled_icon;        break;
+            case PREFAB:        texture_id = prefab_icon;       break;
+            default:            texture_id = unknown_icon;      break;
+            }
+
             ImGui::PushID(item.relative_path.c_str());
 
-            ImGui::Button(item.type == FOLDER ? FOLDER_ICON : IMAGE_ICON,
-                ImVec2(icon_size, icon_size));
+            ImGui::ImageButton("",
+                (ImTextureID)(intptr_t)texture_id,
+                ImVec2(icon_size - padding, icon_size - padding),
+                ImVec2(0, 1),
+                ImVec2(1, 0)
+            );
 
-            // Manejar clicks
             if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0)) {
                 if (item.type == FOLDER) {
                     UpdateCurrentDirectory(&item);
                 }
                 else
                 {
-                    //LOG(LogType::LOG_INFO, "File %s Clicked", item.name.c_str());
+
                 }
             }
-            ImGui::PopID();
-            // Texto
+
+            ImGui::PushTextWrapPos(ImGui::GetCursorPosX() + icon_size);
             ImGui::TextWrapped("%s", item.name.c_str());
+            ImGui::PopTextWrapPos();
+
+            ImGui::PopID();
             ImGui::NextColumn();
         }
     }

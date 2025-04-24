@@ -19,6 +19,7 @@ enum FileType
 	SCENE			= 7,
 	SCRIPT			= 8,
 	TILED			= 9,
+	PREFAB			= 10,
 
 	//
 	COUNT_FILE_TYPE
