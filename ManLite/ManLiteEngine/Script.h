@@ -23,6 +23,9 @@ enum class ScriptFieldType {
 struct ScriptField {
     ScriptFieldType type;
     std::variant<float, int, bool, std::string, uint> value;
+
+    bool first_time = true;
+    std::variant<float, int, bool, std::string, uint> default_value;
 };
 
 class Script : public Component {
@@ -51,6 +54,7 @@ public:
     void ApplyFieldValues();
     ScriptFieldType GetScriptFieldType(MonoType* monoType);
     void GetCurrentFieldValue(MonoClassField* field, ScriptField& sf);
+    void SetValueDefault(std::string variable);
 
     void FinishLoad();
     void ReloadScript();

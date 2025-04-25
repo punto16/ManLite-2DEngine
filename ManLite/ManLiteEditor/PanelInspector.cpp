@@ -2291,6 +2291,16 @@ void PanelInspector::ScriptsOptions(GameObject& go)
 					}
 					}
 
+					if (ImGui::BeginPopupContextItem())
+					{
+						std::string temp_label = "Set Default Value##" + std::to_string(script->GetID()) + fieldName;
+						if (ImGui::MenuItem(temp_label.c_str()))
+						{
+							script->SetValueDefault(fieldName);
+						}
+						ImGui::EndPopup();
+					}
+
 					ImGui::PopID();
 					ImGui::PopItemWidth();
 				}

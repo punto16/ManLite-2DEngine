@@ -164,14 +164,14 @@ void Script::LoadComponent(const nlohmann::json& componentJSON)
 
 void Script::RetrieveScriptFields()
 {
-    scriptFields.clear();
     if (!mono_object) return;
 
     MonoClass* klass = mono_object_get_class(mono_object);
     void* iter = nullptr;
     MonoClassField* field = nullptr;
 
-    while ((field = mono_class_get_fields(klass, &iter))) {
+    while ((field = mono_class_get_fields(klass, &iter)))
+    {
         uint32_t flags = mono_field_get_flags(field);
         if (!(flags & MONO_FIELD_ATTR_PUBLIC)) continue;
 
@@ -181,11 +181,24 @@ void Script::RetrieveScriptFields()
 
         if (sfType == ScriptFieldType::None) continue;
 
-        ScriptField sf;
-        sf.type = sfType;
-        GetCurrentFieldValue(field, sf);
+        auto it = std::find_if(scriptFields.begin(), scriptFields.end(),
+            [&name](const auto& pair) { return pair.first == name; });
 
-        scriptFields.emplace_back(name, sf);
+        if (it != scriptFields.end())
+        {
+            GetCurrentFieldValue(field, it->second);
+        }
+        else
+        {
+            ScriptField sf;
+            sf.type = sfType;
+            GetCurrentFieldValue(field, sf);
+
+            sf.default_value = sf.value;
+            sf.first_time = false;
+
+            scriptFields.emplace_back(name, sf);
+        }
     }
 }
 
@@ -349,6 +362,14 @@ void Script::GetCurrentFieldValue(MonoClassField* field, ScriptField& sf) {
         break;
     }
     default: break;
+    }
+}
+
+void Script::SetValueDefault(std::string variable)
+{
+    for (auto& [name, field] : scriptFields)
+    {
+        if (name == variable) field.value = field.default_value;
     }
 }
 
