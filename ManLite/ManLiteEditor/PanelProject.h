@@ -27,6 +27,8 @@ public:
 
     const FileData* current_directory = nullptr;
     std::vector<std::string> current_path;
+    const FileData* selected_item;
+    std::string hovered_file_path = "";
 
 private:
 

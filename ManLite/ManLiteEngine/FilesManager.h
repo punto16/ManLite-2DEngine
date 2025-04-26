@@ -46,6 +46,13 @@ public:
 	//reload filedata
 	void ProcessFromRoot();
 
+	//upload filedata
+	bool MoveFile_(const std::string& sourcePath, const std::string& destFolderPath);
+	bool DuplicateFile(const std::string& path);
+	bool DeleteFile_(const std::string& path);
+	void OpenFile(const std::string& path);
+	bool CreateFolder(const std::string& path);
+
 	//file watcher
 	void StartWatching();
 	void StopWatching();

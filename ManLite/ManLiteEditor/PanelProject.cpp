@@ -52,7 +52,7 @@ bool PanelProject::Update()
 
 	if (ImGui::Begin(name.c_str(), &enabled))
     {
-        ImGui::BeginChild("LeftPanel", ImVec2(250, 0), true);
+        ImGui::BeginChild("LeftPanel", ImVec2(250, 0), ImGuiChildFlags_ResizeX | ImGuiChildFlags_Borders);
         FileData& root = FilesManager::GetInstance().GetFileData();
         RenderFileTree(root);
         ImGui::EndChild();
@@ -154,7 +154,9 @@ void PanelProject::RenderContentGrid()
     const float icon_size = 64.0f;
     const float padding = 8.0f;
 
-    ImGui::BeginChild("ContentArea");
+    float available_height = ImGui::GetContentRegionAvail().y - 32;
+
+    ImGui::BeginChild("ContentArea", ImVec2(0, available_height), true);
 
     float panel_width = ImGui::GetContentRegionAvail().x;
     int columns = static_cast<int>(panel_width / (icon_size + padding));
@@ -189,13 +191,73 @@ void PanelProject::RenderContentGrid()
                 ImVec2(1, 0)
             );
 
+            if (ImGui::BeginPopupContextItem()) {
+                selected_item = &item;
+
+                if (ImGui::MenuItem("Open")) {
+                    if (selected_item->type == FOLDER) UpdateCurrentDirectory(selected_item);
+                    else FilesManager::GetInstance().OpenFile(selected_item->absolute_path);
+                }
+                if (ImGui::MenuItem("Duplicate")) {
+                    FilesManager::GetInstance().DuplicateFile(selected_item->absolute_path);
+                    ImGui::EndPopup();
+                    ImGui::PopID();
+                    ImGui::EndChild();
+                    return;
+                }
+                if (ImGui::MenuItem("Delete")) {
+                    FilesManager::GetInstance().DeleteFile_(selected_item->absolute_path);
+                    ImGui::EndPopup();
+                    ImGui::PopID();
+                    ImGui::EndChild();
+                    return;
+                }
+
+                ImGui::EndPopup();
+            }
+
+            if (ImGui::IsItemHovered())
+            {
+                hovered_file_path = item.absolute_path;
+            }
+            else if (ImGui::IsWindowHovered()  && !ImGui::IsAnyItemHovered())
+            {
+                hovered_file_path = "";
+            }
+
+            if (ImGui::IsWindowHovered() && ImGui::IsMouseClicked(1) && !ImGui::IsAnyItemHovered())
+            {
+                ImGui::OpenPopup("ContextMenuEmpty");
+            }
+
+            if (ImGui::BeginPopup("ContextMenuEmpty")) {
+                static char new_folder_name[128] = "";
+                if (ImGui::InputText("##NewFolder", new_folder_name, IM_ARRAYSIZE(new_folder_name), ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_CharsNoBlank) ||
+                    ImGui::Button("Create Folder")) {
+                    std::string new_path = current_directory->absolute_path + "\\" + new_folder_name;
+                    if (FilesManager::GetInstance().CreateFolder(new_path)) {
+                        memset(new_folder_name, 0, sizeof(new_folder_name));
+                        FilesManager::GetInstance().ProcessFromRoot();
+                        UpdateCurrentDirectory(current_directory);
+                        ImGui::CloseCurrentPopup();
+                        ImGui::EndPopup();
+                        ImGui::PopID();
+                        ImGui::Columns(1);
+                        ImGui::EndChild();
+                        return;
+                    }
+                    ImGui::CloseCurrentPopup();
+                }
+                ImGui::EndPopup();
+            }
+
             if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0)) {
                 if (item.type == FOLDER) {
                     UpdateCurrentDirectory(&item);
                 }
                 else
                 {
-
+                    FilesManager::GetInstance().OpenFile(item.absolute_path);
                 }
             }
 
@@ -210,6 +272,10 @@ void PanelProject::RenderContentGrid()
 
     ImGui::Columns(1);
     ImGui::EndChild();
+
+    ImGui::Dummy({ 0, -100 });
+    ImGui::Separator();
+    ImGui::TextDisabled("%s", hovered_file_path.c_str());
 }
 
 void PanelProject::UpdateCurrentDirectory(const FileData* new_dir)
@@ -217,10 +283,7 @@ void PanelProject::UpdateCurrentDirectory(const FileData* new_dir)
     if (new_dir) {
         current_path.clear();
 
-        // Usar la ruta relativa desde Assets
         std::string path = new_dir->relative_path;
-
-        // Dividir usando '/' como separador
         size_t start = 0;
         size_t end = path.find('/');
 
@@ -234,10 +297,9 @@ void PanelProject::UpdateCurrentDirectory(const FileData* new_dir)
         current_directory = new_dir;
     }
     else {
-        // Navegar desde la raíz usando el path relativo
         const FileData* current = &FilesManager::GetInstance().GetFileData();
         for (const auto& path_segment : current_path) {
-            if (path_segment == "Assets") continue; // Saltar el root
+            if (path_segment == "Assets") continue;
 
             bool found = false;
             for (const auto& child : current->children) {

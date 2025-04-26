@@ -5,6 +5,16 @@
 #include "ScriptingEM.h"
 
 #include <algorithm> 
+
+#include <regex>
+#include <cstdlib>
+
+#ifdef _WIN32
+#include <windows.h>
+#elif defined(__APPLE__)
+#include <CoreFoundation/CoreFoundation.h>
+#endif
+
 #include "chrono"
 
 namespace fs = std::filesystem;
@@ -41,6 +51,178 @@ void FilesManager::ProcessFromRoot()
     assets_folder.absolute_path = fs::absolute("Assets").string();
 
     ProcessDirectory(assets_folder.relative_path, assets_folder);
+}
+
+bool FilesManager::MoveFile_(const std::string& sourcePath, const std::string& destFolderPath)
+{
+    std::error_code ec;
+    fs::path absSource = fs::absolute(sourcePath, ec);
+    if (ec || !fs::exists(absSource)) return false;
+
+    fs::path absDestFolder = fs::absolute(destFolderPath, ec);
+    if (ec || !fs::is_directory(absDestFolder)) return false;
+
+    fs::path newPath = absDestFolder / absSource.filename();
+
+    if (fs::exists(newPath)) return false;
+
+    bool success = false;
+    try {
+        fs::rename(absSource, newPath);
+        success = true;
+    }
+    catch (...) {
+        try {
+            if (fs::is_directory(absSource)) {
+                fs::copy(absSource, newPath, fs::copy_options::recursive | fs::copy_options::overwrite_existing);
+            }
+            else {
+                fs::copy_file(absSource, newPath, fs::copy_options::overwrite_existing);
+            }
+            fs::remove_all(absSource);
+            success = true;
+        }
+        catch (...) {
+            success = false;
+        }
+    }
+
+    if (success) {
+        StopWatching();
+        ProcessFromRoot();
+        StartWatching();
+        return true;
+    }
+    return false;
+}
+
+bool FilesManager::DuplicateFile(const std::string& originalPath)
+{
+    std::error_code ec;
+    fs::path source = fs::absolute(originalPath, ec);
+
+    // Verificar si el archivo/carpeta original existe
+    if (ec || !fs::exists(source)) return false;
+
+    // Obtener directorio padre y nombre del original
+    fs::path parentDir = source.parent_path();
+    std::string filename = source.filename().string();
+    std::string extension = source.extension().string();
+    std::string stem = source.stem().string();
+
+    // Generar nuevo nombre único
+    int copyNumber = 1;
+    std::string newName;
+    fs::path newPath;
+
+    // Expresión regular para detectar copias existentes
+    std::regex copyRegex(R"((.*)\s\(Copy(?:\s(\d+))?\)$)");
+
+    do {
+        std::smatch match;
+        if (std::regex_match(stem, match, copyRegex)) {
+            // Si ya es una copia, incrementar el número
+            std::string baseName = match[1].str();
+            if (match[2].matched) {
+                copyNumber = std::stoi(match[2].str()) + 1;
+            }
+            else {
+                copyNumber = 2;
+            }
+            newName = baseName + " (Copy " + std::to_string(copyNumber) + ")" + extension;
+        }
+        else {
+            // Primera copia
+            newName = stem + " (Copy)" + extension;
+        }
+
+        newPath = parentDir / newName;
+        copyNumber++;
+
+    } while (fs::exists(newPath));
+
+    try {
+        if (fs::is_directory(source)) {
+            // Copiar directorio recursivamente
+            fs::copy(source, newPath, fs::copy_options::recursive | fs::copy_options::overwrite_existing);
+        }
+        else {
+            // Copiar archivo
+            fs::copy_file(source, newPath);
+        }
+
+        // Actualizar estructura
+        StopWatching();
+        ProcessFromRoot();
+        StartWatching();
+
+        return true;
+    }
+    catch (...) {
+        return false;
+    }
+}
+
+bool FilesManager::DeleteFile_(const std::string& path)
+{
+    std::error_code ec;
+    fs::path absPath = fs::absolute(path, ec);
+    if (ec || !fs::exists(absPath)) return false;
+
+    try {
+        fs::remove_all(absPath);
+        StopWatching();
+        ProcessFromRoot();
+        StartWatching();
+        return true;
+    }
+    catch (...) {
+        return false;
+    }
+}
+
+void FilesManager::OpenFile(const std::string& path)
+{
+#ifdef _WIN32
+    // Conversión a UTF-16 para Windows
+    int wideLen = MultiByteToWideChar(CP_UTF8, 0, path.c_str(), -1, nullptr, 0);
+    wchar_t* widePath = new wchar_t[wideLen];
+    MultiByteToWideChar(CP_UTF8, 0, path.c_str(), -1, widePath, wideLen);
+    ShellExecuteW(nullptr, L"open", widePath, nullptr, nullptr, SW_SHOWNORMAL);
+    delete[] widePath;
+#elif defined(__APPLE__)
+    CFStringRef pathStr = CFStringCreateWithCString(
+        kCFAllocatorDefault,
+        path.c_str(),
+        kCFStringEncodingUTF8
+    );
+    CFURLRef url = CFURLCreateWithFileSystemPath(
+        kCFAllocatorDefault,
+        pathStr,
+        kCFURLPOSIXPathStyle,
+        false
+    );
+    LSOpenCFURLRef(url, nullptr);
+    CFRelease(url);
+    CFRelease(pathStr);
+#else
+    std::string command = "xdg-open \"" + path + "\"";
+    system(command.c_str());
+#endif
+}
+
+bool FilesManager::CreateFolder(const std::string& path)
+{
+    std::error_code ec;
+    bool created = fs::create_directory(path, ec);
+    if (created && !ec)
+    {
+        StopWatching();
+        ProcessFromRoot();
+        StartWatching();
+        return true;
+    }
+    return false;
 }
 
 void FilesManager::StartWatching()
