@@ -52,6 +52,11 @@ bool PanelProject::Update()
 
 	if (ImGui::Begin(name.c_str(), &enabled))
     {
+        if (FilesManager::GetInstance().DidFilesUpdateThisFrame())
+        {
+            const FileData* new_fd = FilesManager::GetInstance().GetFileDataByPath(current_path_string);
+            UpdateCurrentDirectory(new_fd);
+        }
         ImGui::BeginChild("LeftPanel", ImVec2(250, 0), ImGuiChildFlags_ResizeX | ImGuiChildFlags_Borders);
         FileData& root = FilesManager::GetInstance().GetFileData();
         RenderFileTree(root);
@@ -132,8 +137,10 @@ void PanelProject::RenderBreadcrumbs()
     std::string full_path;
     for (size_t i = 0; i < current_path.size(); ++i) {
         if (i > 0) ImGui::SameLine();
+        full_path += current_path[i] + "\\";
 
         ImGui::Text(current_path[i].c_str());
+        DropZone(full_path);
         if (ImGui::IsItemHovered()) ImGui::SetMouseCursor(7);
         if (ImGui::IsItemHovered() && ImGui::IsItemClicked()) {
             current_path.resize(i + 1);
@@ -191,12 +198,28 @@ void PanelProject::RenderContentGrid()
                 ImVec2(1, 0)
             );
 
+            if (DragAndDropFile(&item))
+            {
+                ImGui::PopID();
+                ImGui::EndChild();
+                return;
+            }
+
             if (ImGui::BeginPopupContextItem()) {
                 selected_item = &item;
 
                 if (ImGui::MenuItem("Open")) {
                     if (selected_item->type == FOLDER) UpdateCurrentDirectory(selected_item);
                     else FilesManager::GetInstance().OpenFile(selected_item->absolute_path);
+                }
+                if (ImGui::MenuItem("Rename")) {
+                    is_renaming = true;
+                    item_to_rename = selected_item;
+
+                    std::filesystem::path fullPath(selected_item->name);
+                    std::string name_without_ext = fullPath.stem().string();
+                    strncpy(rename_buffer, name_without_ext.c_str(), sizeof(rename_buffer));
+                    rename_buffer[sizeof(rename_buffer) - 1] = '\0';
                 }
                 if (ImGui::MenuItem("Duplicate")) {
                     FilesManager::GetInstance().DuplicateFile(selected_item->absolute_path);
@@ -216,6 +239,55 @@ void PanelProject::RenderContentGrid()
                 ImGui::EndPopup();
             }
 
+            //renaming
+            if (is_renaming && item_to_rename == &item) {
+                ImGui::OpenPopup("Rename Item");
+                is_renaming = false;
+            }
+
+            if (ImGui::BeginPopupModal("Rename Item", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
+                ImGui::Text("New name:");
+                std::string extension = std::filesystem::path(item_to_rename->name).extension().string();
+                std::string rename_label = extension + "##rename";
+                bool confirm = ImGui::InputText(rename_label.c_str(), rename_buffer, IM_ARRAYSIZE(rename_buffer),
+                    ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_AutoSelectAll);
+
+                if (ImGui::Button("Confirm") || confirm) {
+                    if (strlen(rename_buffer) > 0)
+                    {
+                        std::string new_name = rename_buffer;
+
+                        if (item_to_rename->type != FOLDER && !new_name.ends_with(extension)) {
+                            new_name += extension;
+                        }
+
+                        FilesManager::GetInstance().RenameFile(item_to_rename->absolute_path, new_name);
+
+                        FilesManager::GetInstance().ProcessFromRoot();
+                        UpdateCurrentDirectory(current_directory);
+
+                        memset(rename_buffer, 0, sizeof(rename_buffer));
+                        item_to_rename = nullptr;
+                        ImGui::CloseCurrentPopup();
+                        ImGui::EndPopup();
+                        ImGui::PopID();
+                        ImGui::EndChild();
+                        return;
+                    }
+                }
+
+                ImGui::SameLine();
+                if (ImGui::Button("Cancel")) {
+                    UpdateCurrentDirectory(current_directory);
+                    memset(rename_buffer, 0, sizeof(rename_buffer));
+                    item_to_rename = nullptr;
+                    ImGui::CloseCurrentPopup();
+                }
+
+                ImGui::EndPopup();
+            }
+
+
             if (ImGui::IsItemHovered())
             {
                 hovered_file_path = item.absolute_path;
@@ -225,31 +297,6 @@ void PanelProject::RenderContentGrid()
                 hovered_file_path = "";
             }
 
-            if (ImGui::IsWindowHovered() && ImGui::IsMouseClicked(1) && !ImGui::IsAnyItemHovered())
-            {
-                ImGui::OpenPopup("ContextMenuEmpty");
-            }
-
-            if (ImGui::BeginPopup("ContextMenuEmpty")) {
-                static char new_folder_name[128] = "";
-                if (ImGui::InputText("##NewFolder", new_folder_name, IM_ARRAYSIZE(new_folder_name), ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_CharsNoBlank) ||
-                    ImGui::Button("Create Folder")) {
-                    std::string new_path = current_directory->absolute_path + "\\" + new_folder_name;
-                    if (FilesManager::GetInstance().CreateFolder(new_path)) {
-                        memset(new_folder_name, 0, sizeof(new_folder_name));
-                        FilesManager::GetInstance().ProcessFromRoot();
-                        UpdateCurrentDirectory(current_directory);
-                        ImGui::CloseCurrentPopup();
-                        ImGui::EndPopup();
-                        ImGui::PopID();
-                        ImGui::Columns(1);
-                        ImGui::EndChild();
-                        return;
-                    }
-                    ImGui::CloseCurrentPopup();
-                }
-                ImGui::EndPopup();
-            }
 
             if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0)) {
                 if (item.type == FOLDER) {
@@ -267,6 +314,31 @@ void PanelProject::RenderContentGrid()
 
             ImGui::PopID();
             ImGui::NextColumn();
+        }
+
+        if (ImGui::IsWindowHovered() && ImGui::IsMouseClicked(1) && !ImGui::IsAnyItemHovered())
+        {
+            ImGui::OpenPopup("ContextMenuEmpty");
+        }
+
+        if (ImGui::BeginPopup("ContextMenuEmpty")) {
+            static char new_folder_name[128] = "";
+            if (ImGui::InputText("##NewFolder", new_folder_name, IM_ARRAYSIZE(new_folder_name), ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_AutoSelectAll) ||
+                ImGui::Button("Create Folder")) {
+                std::string new_path = current_directory->absolute_path + "\\" + new_folder_name;
+                if (FilesManager::GetInstance().CreateFolder(new_path)) {
+                    memset(new_folder_name, 0, sizeof(new_folder_name));
+                    FilesManager::GetInstance().ProcessFromRoot();
+                    UpdateCurrentDirectory(current_directory);
+                    ImGui::CloseCurrentPopup();
+                    ImGui::EndPopup();
+                    ImGui::Columns(1);
+                    ImGui::EndChild();
+                    return;
+                }
+                ImGui::CloseCurrentPopup();
+            }
+            ImGui::EndPopup();
         }
     }
 
@@ -295,6 +367,7 @@ void PanelProject::UpdateCurrentDirectory(const FileData* new_dir)
         current_path.push_back(path.substr(start));
 
         current_directory = new_dir;
+        current_path_string = current_directory->relative_path;
     }
     else {
         const FileData* current = &FilesManager::GetInstance().GetFileData();
@@ -312,5 +385,139 @@ void PanelProject::UpdateCurrentDirectory(const FileData* new_dir)
             if (!found) break;
         }
         current_directory = current;
+        current_path_string = current_directory->relative_path;
+    }
+}
+
+bool PanelProject::DragAndDropFile(const FileData* file_data)
+{
+    if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
+    {
+        std::string path = file_data->relative_path;
+        std::string extension = std::filesystem::path(file_data->name).extension().string();
+        std::string payload_type = "RESOURCE_FILE_" + FilesManager::GetInstance().GetFileTypeByExtension(extension);
+
+        ImGui::SetDragDropPayload(
+            payload_type.c_str(),
+            path.c_str(),
+            (path.length() + 1) * sizeof(char)
+        );
+
+        ImGui::Text("Moving \"%s\" file", file_data->name.c_str());
+        ImGui::EndDragDropSource();
+    }
+    if (file_data->type == FileType::FOLDER)
+    {
+        return DropZone(file_data->relative_path);
+    }
+    return false;
+}
+
+bool PanelProject::DropZone(const std::string& target_path)
+{
+    if (ImGui::BeginDragDropTarget())
+    {
+        const ImGuiPayload* payload = nullptr;
+
+        payload = ImGui::AcceptDragDropPayload("RESOURCE_FILE_FOLDER");
+        if (payload)
+        {
+            const char* payload_path = static_cast<const char*>(payload->Data);
+            std::string dragged_path(payload_path);
+
+            FilesManager::GetInstance().MoveFile_(dragged_path, target_path);
+            return true;
+        }
+        payload = ImGui::AcceptDragDropPayload("RESOURCE_FILE_IMAGE");
+        if (payload)
+        {
+            const char* payload_path = static_cast<const char*>(payload->Data);
+            std::string dragged_path(payload_path);
+
+            FilesManager::GetInstance().MoveFile_(dragged_path, target_path);
+            return true;
+        }
+        payload = ImGui::AcceptDragDropPayload("RESOURCE_FILE_ANIMATION");
+        if (payload)
+        {
+            const char* payload_path = static_cast<const char*>(payload->Data);
+            std::string dragged_path(payload_path);
+
+            FilesManager::GetInstance().MoveFile_(dragged_path, target_path);
+            return true;
+        }
+        payload = ImGui::AcceptDragDropPayload("RESOURCE_FILE_AUDIO");
+        if (payload)
+        {
+            const char* payload_path = static_cast<const char*>(payload->Data);
+            std::string dragged_path(payload_path);
+
+            FilesManager::GetInstance().MoveFile_(dragged_path, target_path);
+            return true;
+        }
+        payload = ImGui::AcceptDragDropPayload("RESOURCE_FILE_FONT");
+        if (payload)
+        {
+            const char* payload_path = static_cast<const char*>(payload->Data);
+            std::string dragged_path(payload_path);
+
+            FilesManager::GetInstance().MoveFile_(dragged_path, target_path);
+            return true;
+        }
+        payload = ImGui::AcceptDragDropPayload("RESOURCE_FILE_PARTICLES");
+        if (payload)
+        {
+            const char* payload_path = static_cast<const char*>(payload->Data);
+            std::string dragged_path(payload_path);
+
+            FilesManager::GetInstance().MoveFile_(dragged_path, target_path);
+            return true;
+        }
+        payload = ImGui::AcceptDragDropPayload("RESOURCE_FILE_SCENE");
+        if (payload)
+        {
+            const char* payload_path = static_cast<const char*>(payload->Data);
+            std::string dragged_path(payload_path);
+
+            FilesManager::GetInstance().MoveFile_(dragged_path, target_path);
+            return true;
+        }
+        payload = ImGui::AcceptDragDropPayload("RESOURCE_FILE_SCRIPT");
+        if (payload)
+        {
+            const char* payload_path = static_cast<const char*>(payload->Data);
+            std::string dragged_path(payload_path);
+
+            FilesManager::GetInstance().MoveFile_(dragged_path, target_path);
+            return true;
+        }
+        payload = ImGui::AcceptDragDropPayload("RESOURCE_FILE_TILED");
+        if (payload)
+        {
+            const char* payload_path = static_cast<const char*>(payload->Data);
+            std::string dragged_path(payload_path);
+
+            FilesManager::GetInstance().MoveFile_(dragged_path, target_path);
+            return true;
+        }
+        payload = ImGui::AcceptDragDropPayload("RESOURCE_FILE_PREFAB");
+        if (payload)
+        {
+            const char* payload_path = static_cast<const char*>(payload->Data);
+            std::string dragged_path(payload_path);
+
+            FilesManager::GetInstance().MoveFile_(dragged_path, target_path);
+            return true;
+        }
+        payload = ImGui::AcceptDragDropPayload("RESOURCE_FILE_");//other
+        if (payload)
+        {
+            const char* payload_path = static_cast<const char*>(payload->Data);
+            std::string dragged_path(payload_path);
+
+            FilesManager::GetInstance().MoveFile_(dragged_path, target_path);
+            return true;
+        }
+        ImGui::EndDragDropTarget();
     }
 }

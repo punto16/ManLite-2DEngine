@@ -29,6 +29,7 @@ FilesManager& FilesManager::GetInstance()
 bool FilesManager::Update(float dt)
 {
     bool ret = true;
+    update_happened_this_frame = false;
     if (watching)
     {
         watch_timer += dt;
@@ -71,26 +72,30 @@ bool FilesManager::MoveFile_(const std::string& sourcePath, const std::string& d
         fs::rename(absSource, newPath);
         success = true;
     }
-    catch (...) {
-        try {
-            if (fs::is_directory(absSource)) {
+    catch (...)
+    {
+        try
+        {
+            if (fs::is_directory(absSource))
+            {
                 fs::copy(absSource, newPath, fs::copy_options::recursive | fs::copy_options::overwrite_existing);
             }
-            else {
+            else
+            {
                 fs::copy_file(absSource, newPath, fs::copy_options::overwrite_existing);
             }
             fs::remove_all(absSource);
             success = true;
         }
-        catch (...) {
+        catch (...)
+        {
             success = false;
         }
     }
 
-    if (success) {
-        StopWatching();
-        ProcessFromRoot();
-        StartWatching();
+    if (success)
+    {
+        CallUpdateFiles();
         return true;
     }
     return false;
@@ -101,27 +106,24 @@ bool FilesManager::DuplicateFile(const std::string& originalPath)
     std::error_code ec;
     fs::path source = fs::absolute(originalPath, ec);
 
-    // Verificar si el archivo/carpeta original existe
     if (ec || !fs::exists(source)) return false;
 
-    // Obtener directorio padre y nombre del original
     fs::path parentDir = source.parent_path();
-    std::string filename = source.filename().string();
     std::string extension = source.extension().string();
-    std::string stem = source.stem().string();
+    std::string originalStem = source.stem().string();
 
-    // Generar nuevo nombre único
     int copyNumber = 1;
-    std::string newName;
+    std::string newStem;
     fs::path newPath;
 
-    // Expresión regular para detectar copias existentes
-    std::regex copyRegex(R"((.*)\s\(Copy(?:\s(\d+))?\)$)");
+    std::regex copyRegex(R"((.*)\s\(Copy(?: (\d+))?\)$)");
 
     do {
         std::smatch match;
-        if (std::regex_match(stem, match, copyRegex)) {
-            // Si ya es una copia, incrementar el número
+        std::string currentStem = (newStem.empty()) ? originalStem : newStem;
+
+        if (std::regex_match(currentStem, match, copyRegex))
+        {
             std::string baseName = match[1].str();
             if (match[2].matched) {
                 copyNumber = std::stoi(match[2].str()) + 1;
@@ -129,36 +131,35 @@ bool FilesManager::DuplicateFile(const std::string& originalPath)
             else {
                 copyNumber = 2;
             }
-            newName = baseName + " (Copy " + std::to_string(copyNumber) + ")" + extension;
+            newStem = baseName + " (Copy " + std::to_string(copyNumber) + ")";
         }
         else {
-            // Primera copia
-            newName = stem + " (Copy)" + extension;
+            newStem = currentStem + " (Copy)";
         }
 
-        newPath = parentDir / newName;
-        copyNumber++;
+        newPath = parentDir / (newStem + extension);
 
     } while (fs::exists(newPath));
 
-    try {
-        if (fs::is_directory(source)) {
-            // Copiar directorio recursivamente
+    try
+    {
+        if (fs::is_directory(source))
+        {
             fs::copy(source, newPath, fs::copy_options::recursive | fs::copy_options::overwrite_existing);
         }
-        else {
-            // Copiar archivo
+        else
+        {
             fs::copy_file(source, newPath);
         }
 
-        // Actualizar estructura
         StopWatching();
         ProcessFromRoot();
         StartWatching();
 
         return true;
     }
-    catch (...) {
+    catch (...)
+    {
         return false;
     }
 }
@@ -169,14 +170,14 @@ bool FilesManager::DeleteFile_(const std::string& path)
     fs::path absPath = fs::absolute(path, ec);
     if (ec || !fs::exists(absPath)) return false;
 
-    try {
+    try
+    {
         fs::remove_all(absPath);
-        StopWatching();
-        ProcessFromRoot();
-        StartWatching();
+        CallUpdateFiles();
         return true;
     }
-    catch (...) {
+    catch (...)
+    {
         return false;
     }
 }
@@ -217,12 +218,46 @@ bool FilesManager::CreateFolder(const std::string& path)
     bool created = fs::create_directory(path, ec);
     if (created && !ec)
     {
-        StopWatching();
-        ProcessFromRoot();
-        StartWatching();
+        CallUpdateFiles();
         return true;
     }
     return false;
+}
+
+bool FilesManager::RenameFile(const std::string& old_path, const std::string& new_name)
+{
+    std::error_code ec;
+    fs::path oldFsPath = fs::absolute(old_path, ec);
+
+    if (ec || !fs::exists(oldFsPath)) return false;
+    if (new_name.empty() || new_name.find_first_of("\\/:*?\"<>|") != std::string::npos) return false;
+
+    fs::path parentDir = oldFsPath.parent_path();
+    fs::path newFsPath = parentDir / new_name;
+
+    if (fs::exists(newFsPath))
+    {  
+        LOG(LogType::LOG_WARNING, "File \"%s\" already exists!\n", newFsPath.c_str());
+        return false;
+    }
+
+    try
+    {
+        fs::rename(oldFsPath, newFsPath);
+
+        CallUpdateFiles();
+
+        return true;
+    }
+    catch (const std::exception& e)
+    {
+        return false;
+    }
+}
+
+void FilesManager::CallUpdateFiles()
+{
+    watch_timer = watch_frequency;
 }
 
 void FilesManager::StartWatching()
@@ -237,11 +272,52 @@ void FilesManager::StopWatching()
     watch_timer = 0.0f;
 }
 
+FileData* FilesManager::GetFileDataByPath(std::string path)
+{
+    std::replace(path.begin(), path.end(), '\\', '/');
+
+    std::vector<std::string> path_parts;
+    std::stringstream ss(path);
+    std::string part;
+
+    while (std::getline(ss, part, '/')) {
+        if (!part.empty()) {
+            path_parts.push_back(part);
+        }
+    }
+
+    FileData* current = &assets_folder;
+
+    if (!path_parts.empty() && path_parts[0] != "Assets") {
+        return &assets_folder;
+    }
+
+    for (size_t i = 0; i < path_parts.size(); ++i) {
+        bool found = false;
+
+        if (i == 0 && path_parts[i] == "Assets") continue;
+
+        for (auto& child : current->children) {
+            if (child.name == path_parts[i]) {
+                current = &child;
+                found = true;
+                break;
+            }
+        }
+
+        if (!found) return &assets_folder;
+    }
+
+    return current;
+}
+
 void FilesManager::CheckForRemovals(const std::unordered_map<std::string, fs::file_time_type>& current_files) {
     std::vector<std::string> to_remove;
 
-    for (const auto& [old_path, _] : file_timestamps) {
-        if (!current_files.count(old_path)) {
+    for (const auto& [old_path, _] : file_timestamps)
+    {
+        if (!current_files.count(old_path))
+        {
             changed_files.push_back("[DELETED]" + old_path);
             to_remove.push_back(old_path);
         }
@@ -265,30 +341,28 @@ void FilesManager::WatchFiles()
     std::unordered_map<std::string, fs::file_time_type> current_files;
     std::vector<std::string> new_changes;
 
-    // Escaneo recursivo incluyendo carpetas
-    for (auto& entry : fs::recursive_directory_iterator("Assets")) {
-        try {
+    for (auto& entry : fs::recursive_directory_iterator("Assets"))
+    {
+        try
+        {
             const auto path_str = entry.path().string();
 
-            // Registrar carpetas y archivos
             current_files[path_str] = entry.last_write_time();
 
-            if (!file_timestamps.count(path_str)) {
-                // Nuevo elemento detectado
+            if (!file_timestamps.count(path_str))
+            {
                 new_changes.push_back(path_str);
             }
-            else if (file_timestamps[path_str] != entry.last_write_time()) {
-                // Elemento modificado
+            else if (file_timestamps[path_str] != entry.last_write_time())
+            {
                 new_changes.push_back(path_str);
             }
         }
         catch (...) {}
     }
 
-    // Detectar elementos eliminados
     CheckForRemovals(current_files);
 
-    // Actualizar timestamps
     file_timestamps = std::move(current_files);
     changed_files.insert(changed_files.end(), new_changes.begin(), new_changes.end());
 
@@ -339,10 +413,48 @@ void FilesManager::ProcessChanges()
     }
 
     changed_files.clear();
+    update_happened_this_frame = true;
+}
+
+std::string FilesManager::GetFileTypeByExtension(std::string ext)
+{
+    switch (DetermineFileType(ext))
+    {
+    case UNKNOWN:               return "";
+        break;
+    case FOLDER:                return "FOLDER";
+        break;
+    case IMAGE:                 return "IMAGE";
+        break;
+    case ANIMATION:             return "ANIMATION";
+        break;
+    case AUDIO:                 return "AUDIO";
+        break;
+    case FONT:                  return "FONT";
+        break;
+    case PARTICLES:             return "PARTICLES";
+        break;
+    case SCENE:                 return "SCENE";
+        break;
+    case SCRIPT:                return "SCRIPT";
+        break;
+    case TILED:                 return "TILED";
+        break;
+    case PREFAB:                return "PREFAB";
+        break;
+    case COUNT_FILE_TYPE:       return "";
+        break;
+    default:                    return "";
+        break;
+    }
+    return "";
 }
 
 void FilesManager::ProcessDirectory(const std::filesystem::path& path, FileData& parent)
 {
+    std::vector<FileData> folders;
+    std::vector<FileData> files;
+
     for (const auto& entry : fs::directory_iterator(path))
     {
         FileData child;
@@ -354,15 +466,23 @@ void FilesManager::ProcessDirectory(const std::filesystem::path& path, FileData&
         {
             child.type = FOLDER;
             ProcessDirectory(child.relative_path, child);
+            folders.push_back(child);
         }
         else
         {
             std::string extension = entry.path().extension().string();
             child.type = DetermineFileType(extension);
+            files.push_back(child);
         }
-
-        parent.children.push_back(child);
     }
+
+    for (const auto& item : folders)
+        parent.children.push_back(item);
+    folders.clear();
+
+    for (const auto& item : files)
+        parent.children.push_back(item);
+    files.clear();
 }
 
 FileType FilesManager::DetermineFileType(const std::string& extension)
@@ -370,6 +490,7 @@ FileType FilesManager::DetermineFileType(const std::string& extension)
     std::string ext = extension;
     std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
 
+    if (ext == "") return FOLDER;
     if (ext == ".png" || ext == ".jpg" || ext == ".jpeg" || ext == ".bmp" || ext == ".gif") return IMAGE;
     if (ext == ".wav" || ext == ".mp3" || ext == ".ogg") return AUDIO;
     if (ext == ".ttf" || ext == ".otf") return FONT;

@@ -25,10 +25,16 @@ public:
     void RenderContentGrid();
     void UpdateCurrentDirectory(const FileData* new_dir);
 
+    //returns true if it completed a drop file
+    bool DragAndDropFile(const FileData* file_data);
+    //returns true if it completed a drop file
+    bool DropZone(const std::string& target_path);
+
     const FileData* current_directory = nullptr;
     std::vector<std::string> current_path;
     const FileData* selected_item;
     std::string hovered_file_path = "";
+    std::string current_path_string = "";
 
 private:
 
@@ -44,6 +50,9 @@ private:
     uint tiled_icon = 0;
     uint prefab_icon = 0;
 
+    bool is_renaming = false;
+    char rename_buffer[256] = { 0 };
+    const FileData* item_to_rename = nullptr;
 };
 
 #endif // !__PANEL_PROJECT_H__

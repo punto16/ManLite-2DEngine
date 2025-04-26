@@ -28,7 +28,7 @@ public:
 private:
 
 	void CollectAllGameObjects(GameObject& parent, std::vector<std::shared_ptr<GameObject>>& list);
-
+	
 	char searchTextBuffer[256] = "";
 };
 

@@ -52,14 +52,20 @@ public:
 	bool DeleteFile_(const std::string& path);
 	void OpenFile(const std::string& path);
 	bool CreateFolder(const std::string& path);
+	bool RenameFile(const std::string & old_path, const std::string& new_name);
+
+	void CallUpdateFiles();
 
 	//file watcher
 	void StartWatching();
 	void StopWatching();
 
 	FileData& GetFileData() { return assets_folder; }
-
+	FileData* GetFileDataByPath(std::string path);
+	bool DidFilesUpdateThisFrame() { return update_happened_this_frame; }
 	void ProcessChanges();
+
+	std::string GetFileTypeByExtension(std::string ext);
 
 private:
 	FilesManager() = default;
@@ -78,6 +84,8 @@ private:
 	float watch_timer = 0.0f;
 	//in seconds
 	float watch_frequency = 1.5;
+
+	bool update_happened_this_frame = false;
 
 	FileData assets_folder;
 	std::vector<std::string> changed_files;
