@@ -56,6 +56,8 @@ bool PanelProject::Update()
         {
             const FileData* new_fd = FilesManager::GetInstance().GetFileDataByPath(current_path_string);
             UpdateCurrentDirectory(new_fd);
+            if (!item_to_rename_path_string.empty())
+                item_to_rename = FilesManager::GetInstance().GetFileDataByPath(item_to_rename_path_string);
         }
         ImGui::BeginChild("LeftPanel", ImVec2(250, 0), ImGuiChildFlags_ResizeX | ImGuiChildFlags_Borders);
         FileData& root = FilesManager::GetInstance().GetFileData();
@@ -215,6 +217,7 @@ void PanelProject::RenderContentGrid()
                 if (ImGui::MenuItem("Rename")) {
                     is_renaming = true;
                     item_to_rename = selected_item;
+                    item_to_rename_path_string = item_to_rename->relative_path;
 
                     std::filesystem::path fullPath(selected_item->name);
                     std::string name_without_ext = fullPath.stem().string();
@@ -268,6 +271,7 @@ void PanelProject::RenderContentGrid()
 
                         memset(rename_buffer, 0, sizeof(rename_buffer));
                         item_to_rename = nullptr;
+                        item_to_rename_path_string = "";
                         ImGui::CloseCurrentPopup();
                         ImGui::EndPopup();
                         ImGui::PopID();
@@ -281,6 +285,7 @@ void PanelProject::RenderContentGrid()
                     UpdateCurrentDirectory(current_directory);
                     memset(rename_buffer, 0, sizeof(rename_buffer));
                     item_to_rename = nullptr;
+                    item_to_rename_path_string = "";
                     ImGui::CloseCurrentPopup();
                 }
 

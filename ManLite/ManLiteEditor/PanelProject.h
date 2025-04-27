@@ -53,6 +53,7 @@ private:
     bool is_renaming = false;
     char rename_buffer[256] = { 0 };
     const FileData* item_to_rename = nullptr;
+    std::string item_to_rename_path_string = "";
 };
 
 #endif // !__PANEL_PROJECT_H__

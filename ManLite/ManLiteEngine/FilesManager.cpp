@@ -116,7 +116,7 @@ bool FilesManager::DuplicateFile(const std::string& originalPath)
     std::string newStem;
     fs::path newPath;
 
-    std::regex copyRegex(R"((.*)\s\(Copy(?: (\d+))?\)$)");
+    std::regex copyRegex(R"((.*) - Copy(?: \((\d+)\))?$)");
 
     do {
         std::smatch match;
@@ -131,10 +131,10 @@ bool FilesManager::DuplicateFile(const std::string& originalPath)
             else {
                 copyNumber = 2;
             }
-            newStem = baseName + " (Copy " + std::to_string(copyNumber) + ")";
+            newStem = baseName + " - Copy (" + std::to_string(copyNumber) + ")";
         }
         else {
-            newStem = currentStem + " (Copy)";
+            newStem = currentStem + " - Copy";
         }
 
         newPath = parentDir / (newStem + extension);
@@ -185,7 +185,6 @@ bool FilesManager::DeleteFile_(const std::string& path)
 void FilesManager::OpenFile(const std::string& path)
 {
 #ifdef _WIN32
-    // Conversión a UTF-16 para Windows
     int wideLen = MultiByteToWideChar(CP_UTF8, 0, path.c_str(), -1, nullptr, 0);
     wchar_t* widePath = new wchar_t[wideLen];
     MultiByteToWideChar(CP_UTF8, 0, path.c_str(), -1, widePath, wideLen);
