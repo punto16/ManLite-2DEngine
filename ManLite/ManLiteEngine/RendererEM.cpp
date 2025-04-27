@@ -64,12 +64,15 @@ bool RendererEM::Start()
 	glGenFramebuffers(1, &fbo);
 	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 
-	glGenTextures(1, &renderTexture);
-	glBindTexture(GL_TEXTURE_2D, renderTexture);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, fbSize.x, fbSize.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, renderTexture, 0);
+	if (engine->GetEditorOrBuild())
+	{
+		glGenTextures(1, &renderTexture);
+		glBindTexture(GL_TEXTURE_2D, renderTexture);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, fbSize.x, fbSize.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, renderTexture, 0);
+	}
 
 	glGenRenderbuffers(1, &rbo);
 	glBindRenderbuffer(GL_RENDERBUFFER, rbo);
@@ -169,9 +172,17 @@ bool RendererEM::PreUpdate()
 {
 	bool ret = true;
 
-	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-	glViewport(0, 0, fbSize.x, fbSize.y);
-
+	if (engine->GetEditorOrBuild())
+	{
+		glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+		glViewport(0, 0, fbSize.x, fbSize.y);
+	}
+	else
+	{
+		unsigned int w, h;
+		engine->window_em->GetWindowSize(w, h);
+		glViewport(0, 0, w, h);
+	}
 	glClearColor(0.4f, 0.4f, 0.4f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -197,10 +208,17 @@ bool RendererEM::PostUpdate()
 {
 	bool ret = true;
 
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	int w, h;
-	SDL_GetWindowSize(engine->window_em->GetSDLWindow(), &w, &h);
-	glViewport(0, 0, w, h);
+	if (engine->GetEditorOrBuild())
+	{
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		int w, h;
+		SDL_GetWindowSize(engine->window_em->GetSDLWindow(), &w, &h);
+		glViewport(0, 0, w, h);
+	}
+	else
+	{
+		SDL_GL_SwapWindow(engine->window_em->GetSDLWindow());
+	}
 
 	return ret;
 }
@@ -218,7 +236,8 @@ bool RendererEM::CleanUp()
 	glDeleteBuffers(1, &quadEBO);
 
 	glDeleteFramebuffers(1, &fbo);
-	glDeleteTextures(1, &renderTexture);
+	if (engine->GetEditorOrBuild())
+		glDeleteTextures(1, &renderTexture);
 	glDeleteRenderbuffers(1, &rbo);
 
 	glDeleteProgram(shaderProgram);

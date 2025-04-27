@@ -62,8 +62,8 @@ void EngineCore::AddEngineModule(EngineModule* engine_module, bool activate)
 
 void EngineCore::Awake()
 {
-	FilesManager::GetInstance().ProcessFromRoot();
-	FilesManager::GetInstance().StartWatching();
+	if (editor_or_build) FilesManager::GetInstance().ProcessFromRoot();
+	if (editor_or_build) FilesManager::GetInstance().StartWatching();
 
 	for (auto& item : engine_modules)
 	{
@@ -87,7 +87,7 @@ bool EngineCore::PreUpdate()
 	bool ret = true;
 
 	ResourceManager::GetInstance().ProcessTextures();
-	FilesManager::GetInstance().Update(dt);
+	if (editor_or_build) FilesManager::GetInstance().Update(dt);
 
 	for (auto& item : engine_modules)
 	{
@@ -133,7 +133,7 @@ bool EngineCore::PostUpdate()
 void EngineCore::CleanUp()
 {
 	RELEASE(game_timer);
-	FilesManager::GetInstance().StopWatching();
+	if (editor_or_build) FilesManager::GetInstance().StopWatching();
 
 	for (auto item = engine_modules.rbegin(); item != engine_modules.rend(); ++item)
 	{

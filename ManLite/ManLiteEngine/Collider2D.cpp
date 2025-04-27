@@ -110,6 +110,7 @@ bool Collider2D::Update(float dt)
 
 void Collider2D::Draw()
 {
+    if (!engine->GetEditorOrBuild()) return;
     if (!m_body) RecreateBody();
 
     Transform* t = container_go.lock()->GetComponent<Transform>();

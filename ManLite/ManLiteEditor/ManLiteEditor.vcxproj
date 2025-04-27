@@ -192,6 +192,9 @@ popd
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ManLiteBuilder\ManLiteBuilder.vcxproj">
+      <Project>{3606d492-39f7-4303-9693-14129b959019}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\ManLiteEngine\ManLiteEngine.vcxproj">
       <Project>{56225d11-006d-47ca-9bd8-873dfbeefeb6}</Project>
     </ProjectReference>

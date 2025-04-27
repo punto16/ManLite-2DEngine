@@ -15,6 +15,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ManLiteEngine", "ManLiteEng
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ManLiteScripting", "ManLiteScripting\ManLiteScripting.csproj", "{D65DBEC1-6387-4CF3-B658-5A1CA073DF36}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ManLiteBuilder", "ManLiteBuilder\ManLiteBuilder.vcxproj", "{3606D492-39F7-4303-9693-14129B959019}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -61,6 +63,18 @@ Global
 		{D65DBEC1-6387-4CF3-B658-5A1CA073DF36}.Release|x64.Build.0 = Release|Any CPU
 		{D65DBEC1-6387-4CF3-B658-5A1CA073DF36}.Release|x86.ActiveCfg = Release|Any CPU
 		{D65DBEC1-6387-4CF3-B658-5A1CA073DF36}.Release|x86.Build.0 = Release|Any CPU
+		{3606D492-39F7-4303-9693-14129B959019}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{3606D492-39F7-4303-9693-14129B959019}.Debug|Any CPU.Build.0 = Debug|x64
+		{3606D492-39F7-4303-9693-14129B959019}.Debug|x64.ActiveCfg = Debug|x64
+		{3606D492-39F7-4303-9693-14129B959019}.Debug|x64.Build.0 = Debug|x64
+		{3606D492-39F7-4303-9693-14129B959019}.Debug|x86.ActiveCfg = Debug|Win32
+		{3606D492-39F7-4303-9693-14129B959019}.Debug|x86.Build.0 = Debug|Win32
+		{3606D492-39F7-4303-9693-14129B959019}.Release|Any CPU.ActiveCfg = Release|x64
+		{3606D492-39F7-4303-9693-14129B959019}.Release|Any CPU.Build.0 = Release|x64
+		{3606D492-39F7-4303-9693-14129B959019}.Release|x64.ActiveCfg = Release|x64
+		{3606D492-39F7-4303-9693-14129B959019}.Release|x64.Build.0 = Release|x64
+		{3606D492-39F7-4303-9693-14129B959019}.Release|x86.ActiveCfg = Release|Win32
+		{3606D492-39F7-4303-9693-14129B959019}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
