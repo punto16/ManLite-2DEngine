@@ -5,6 +5,9 @@
 #include "../ManLiteEngine/Defs.h"
 #include "../ManLiteEngine/WindowEM.h"
 
+#include "nlohmann/json.hpp"
+#include "fstream"
+
 EngineCore* engine = NULL;
 
 App::App(int argc, char* args[]) : argc(argc), args(args)
@@ -42,14 +45,13 @@ bool App::Start()
 
 	engine->Start();
 
-	//read here from file whats the first scene and games name
-
+	LoadInit();
 	engine->window_em->SetTitle(game_name);
 
 	engine->scene_manager_em->LoadSceneFromJson(first_scene);
 	if (engine->scene_manager_em->CurrentSceneAvailable())
 	{
-		engine->scene_manager_em->StartSession();
+		engine->SetEngineState(EngineState::PLAY);
 	}
 
 	return true;
@@ -154,6 +156,41 @@ const char* App::GetArgv(int index) const
 		return args[index];
 	else
 		return NULL;
+}
+
+void App::LoadInit()
+{
+	const std::string configPath = "ManLite.init";
+	std::ifstream configFile(configPath);
+
+	if (configFile.is_open()) {
+		try {
+			nlohmann::json config;
+			configFile >> config;
+
+			if (config.contains("app_name"))
+			{
+				game_name = config["app_name"].get<std::string>();
+			}
+
+			if (config.contains("scenes") &&
+				config["scenes"].contains("main"))
+			{
+				first_scene = config["scenes"]["main"].get<std::string>();
+			}
+
+			configFile.close();
+			LOG(LogType::LOG_OK, "Build config loaded successfully!");
+		}
+		catch (const std::exception& e)
+		{
+			LOG(LogType::LOG_ERROR, "Error loading build config: %s", e.what());
+		}
+	}
+	else
+	{
+		LOG(LogType::LOG_WARNING, "No build config found, using defaults");
+	}
 }
 
 int App::GetFrameRate() const

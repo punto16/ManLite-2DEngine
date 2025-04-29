@@ -389,6 +389,8 @@ void Script::FinishLoad()
     }
 
     ApplyFieldValues();
+
+    if (enabled) Init();
 }
 
 void Script::ReloadScript()

@@ -3,6 +3,7 @@
 #include "MonoRegisterer.h"
 #include "GameObject.h"
 #include "Script.h"
+#include "EngineCore.h"
 
 #include "Log.h"
 
@@ -67,8 +68,16 @@ bool ScriptingEM::Start()
     }
     mono_data.coreAssemblyImage = mono_assembly_get_image(mono_data.coreAssembly);
 
+    if (engine->GetEditorOrBuild())
+    {
+        script_ready = CompileUserScripts();
+    }
+    else
+    {
+        script_ready = true;
+    }
 
-    if (script_ready = CompileUserScripts())
+    if (script_ready)
     {
         mono_data.userAssembly = mono_domain_assembly_open(mono_data.monoDomain, GetUserAssemblyPath().c_str());
         if (!mono_data.userAssembly)
@@ -335,7 +344,14 @@ void ScriptingEM::RecompileScripts()
     }
     mono_data.coreAssemblyImage = mono_assembly_get_image(mono_data.coreAssembly);
 
-    script_ready = CompileUserScripts();
+    if (engine->GetEditorOrBuild())
+    {
+        script_ready = CompileUserScripts();
+    }
+    else
+    {
+        script_ready = true;
+    }
 
     mono_data.userAssembly = mono_domain_assembly_open(mono_data.monoDomain, GetUserAssemblyPath().c_str());
     if (!mono_data.userAssembly) {

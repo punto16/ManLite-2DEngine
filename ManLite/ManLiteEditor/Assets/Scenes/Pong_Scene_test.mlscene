@@ -1,9 +1,51 @@
 {
+  "CurrentCamID": 155150651,
   "game_objects": [
     {
       "Components": [
         {
           "AspectRatio": 1.0,
+          "ComponentID": 2705755023,
+          "ComponentName": "Transform",
+          "ComponentType": 0,
+          "ContainerGOID": 155150651,
+          "Enabled": true,
+          "LockAspect": true,
+          "Position": [
+            0.0,
+            0.0
+          ],
+          "Rotation": 0.0,
+          "Scale": [
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "CameraZoom": 38.0,
+          "ComponentID": 2807089145,
+          "ComponentName": "Camera",
+          "ComponentType": 1,
+          "ContainerGOID": 155150651,
+          "Enabled": true,
+          "ViewportSize": [
+            1700,
+            900
+          ]
+        }
+      ],
+      "Enabled": true,
+      "ID": 155150651,
+      "Name": "Camera",
+      "ParentID": 3070202266,
+      "ParentLayerID": 0,
+      "Tag": "Default",
+      "Visible": true
+    },
+    {
+      "Components": [
+        {
+          "AspectRatio": 0.3333333432674408,
           "ComponentID": 448656229,
           "ComponentName": "Transform",
           "ComponentType": 0,
@@ -17,7 +59,7 @@
           "Rotation": 0.0,
           "Scale": [
             1.0,
-            1.0
+            3.0
           ]
         },
         {
@@ -44,6 +86,35 @@
           "ShapeType": "RECTANGLE",
           "UseGravity": false,
           "Width": 1.0
+        },
+        {
+          "ComponentID": 450314352,
+          "ComponentName": "Sprite2D",
+          "ComponentType": 2,
+          "ContainerGOID": 4094621133,
+          "Enabled": true,
+          "Offset": [
+            0.0,
+            0.0
+          ],
+          "PixelArtRender": false,
+          "TexturePath": "Assets\\Textures\\image.png",
+          "TextureSection": [
+            122,
+            47,
+            104,
+            103
+          ],
+          "TextureSize": [
+            640,
+            480
+          ],
+          "TextureUVs": [
+            0.19062499701976776,
+            0.6875,
+            0.3531250059604645,
+            0.9020833373069763
+          ]
         }
       ],
       "Enabled": true,
@@ -57,7 +128,7 @@
     {
       "Components": [
         {
-          "AspectRatio": 1.0,
+          "AspectRatio": 0.3333333432674408,
           "ComponentID": 511497007,
           "ComponentName": "Transform",
           "ComponentType": 0,
@@ -71,7 +142,7 @@
           "Rotation": 0.0,
           "Scale": [
             1.0,
-            1.0
+            3.0
           ]
         },
         {
@@ -98,6 +169,35 @@
           "ShapeType": "RECTANGLE",
           "UseGravity": false,
           "Width": 1.0
+        },
+        {
+          "ComponentID": 1111929332,
+          "ComponentName": "Sprite2D",
+          "ComponentType": 2,
+          "ContainerGOID": 1460323834,
+          "Enabled": true,
+          "Offset": [
+            0.0,
+            0.0
+          ],
+          "PixelArtRender": false,
+          "TexturePath": "Assets\\Textures\\image.png",
+          "TextureSection": [
+            396,
+            51,
+            98,
+            98
+          ],
+          "TextureSize": [
+            640,
+            480
+          ],
+          "TextureUVs": [
+            0.6187499761581421,
+            0.6895833611488342,
+            0.7718750238418579,
+            0.893750011920929
+          ]
         }
       ],
       "Enabled": true,
@@ -152,6 +252,35 @@
           "ShapeType": "CIRCLE",
           "UseGravity": false,
           "Width": 1.0
+        },
+        {
+          "ComponentID": 34170344,
+          "ComponentName": "Sprite2D",
+          "ComponentType": 2,
+          "ContainerGOID": 1273013404,
+          "Enabled": true,
+          "Offset": [
+            0.0,
+            0.0
+          ],
+          "PixelArtRender": false,
+          "TexturePath": "Assets\\Textures\\image2.png",
+          "TextureSection": [
+            529,
+            365,
+            566,
+            589
+          ],
+          "TextureSize": [
+            1200,
+            1200
+          ],
+          "TextureUVs": [
+            0.44083333015441895,
+            0.20499999821186066,
+            0.9125000238418579,
+            0.6958333253860474
+          ]
         }
       ],
       "Enabled": true,
@@ -188,7 +317,7 @@
         {
           "Components": [
             {
-              "AspectRatio": 1.0,
+              "AspectRatio": 30.0,
               "ComponentID": 1866283306,
               "ComponentName": "Transform",
               "ComponentType": 0,
@@ -201,7 +330,7 @@
               ],
               "Rotation": 0.0,
               "Scale": [
-                1.0,
+                30.0,
                 1.0
               ]
             },
@@ -229,6 +358,35 @@
               "ShapeType": "RECTANGLE",
               "UseGravity": false,
               "Width": 30.0
+            },
+            {
+              "ComponentID": 3170911259,
+              "ComponentName": "Sprite2D",
+              "ComponentType": 2,
+              "ContainerGOID": 3855638551,
+              "Enabled": true,
+              "Offset": [
+                0.0,
+                0.0
+              ],
+              "PixelArtRender": false,
+              "TexturePath": "Assets\\Textures\\image.png",
+              "TextureSection": [
+                225,
+                145,
+                181,
+                183
+              ],
+              "TextureSize": [
+                640,
+                480
+              ],
+              "TextureUVs": [
+                0.3515625,
+                0.3166666626930237,
+                0.6343749761581421,
+                0.6979166865348816
+              ]
             }
           ],
           "Enabled": true,
@@ -242,7 +400,7 @@
         {
           "Components": [
             {
-              "AspectRatio": 1.0,
+              "AspectRatio": 30.0,
               "ComponentID": 1615543476,
               "ComponentName": "Transform",
               "ComponentType": 0,
@@ -255,7 +413,7 @@
               ],
               "Rotation": 0.0,
               "Scale": [
-                1.0,
+                30.0,
                 1.0
               ]
             },
@@ -283,6 +441,35 @@
               "ShapeType": "RECTANGLE",
               "UseGravity": false,
               "Width": 30.0
+            },
+            {
+              "ComponentID": 3227546068,
+              "ComponentName": "Sprite2D",
+              "ComponentType": 2,
+              "ContainerGOID": 430060878,
+              "Enabled": true,
+              "Offset": [
+                0.0,
+                0.0
+              ],
+              "PixelArtRender": false,
+              "TexturePath": "Assets\\Textures\\image.png",
+              "TextureSection": [
+                245,
+                145,
+                181,
+                183
+              ],
+              "TextureSize": [
+                640,
+                480
+              ],
+              "TextureUVs": [
+                0.3828125,
+                0.3166666626930237,
+                0.6656249761581421,
+                0.6979166865348816
+              ]
             }
           ],
           "Enabled": true,
@@ -296,7 +483,7 @@
         {
           "Components": [
             {
-              "AspectRatio": 1.0,
+              "AspectRatio": 0.05263157933950424,
               "ComponentID": 2014502980,
               "ComponentName": "Transform",
               "ComponentType": 0,
@@ -310,7 +497,7 @@
               "Rotation": 0.0,
               "Scale": [
                 1.0,
-                1.0
+                19.0
               ]
             },
             {
@@ -337,6 +524,35 @@
               "ShapeType": "RECTANGLE",
               "UseGravity": false,
               "Width": 1.0
+            },
+            {
+              "ComponentID": 3150909646,
+              "ComponentName": "Sprite2D",
+              "ComponentType": 2,
+              "ContainerGOID": 1680177011,
+              "Enabled": true,
+              "Offset": [
+                0.0,
+                0.0
+              ],
+              "PixelArtRender": false,
+              "TexturePath": "Assets\\Textures\\image.png",
+              "TextureSection": [
+                225,
+                145,
+                181,
+                183
+              ],
+              "TextureSize": [
+                640,
+                480
+              ],
+              "TextureUVs": [
+                0.3515625,
+                0.3166666626930237,
+                0.6343749761581421,
+                0.6979166865348816
+              ]
             }
           ],
           "Enabled": true,
@@ -350,7 +566,7 @@
         {
           "Components": [
             {
-              "AspectRatio": 1.0,
+              "AspectRatio": 0.05263157933950424,
               "ComponentID": 3775189389,
               "ComponentName": "Transform",
               "ComponentType": 0,
@@ -364,7 +580,7 @@
               "Rotation": 0.0,
               "Scale": [
                 1.0,
-                1.0
+                19.0
               ]
             },
             {
@@ -391,6 +607,35 @@
               "ShapeType": "RECTANGLE",
               "UseGravity": false,
               "Width": 1.0
+            },
+            {
+              "ComponentID": 3249883142,
+              "ComponentName": "Sprite2D",
+              "ComponentType": 2,
+              "ContainerGOID": 1878005950,
+              "Enabled": true,
+              "Offset": [
+                0.0,
+                0.0
+              ],
+              "PixelArtRender": false,
+              "TexturePath": "Assets\\Textures\\image.png",
+              "TextureSection": [
+                225,
+                145,
+                181,
+                183
+              ],
+              "TextureSize": [
+                640,
+                480
+              ],
+              "TextureUVs": [
+                0.3515625,
+                0.3166666626930237,
+                0.6343749761581421,
+                0.6979166865348816
+              ]
             }
           ],
           "Enabled": true,
@@ -487,9 +732,10 @@
         3855638551,
         430060878,
         1680177011,
-        1878005950
+        1878005950,
+        155150651
       ],
-      "children_count": 9,
+      "children_count": 10,
       "layer_id": 0,
       "layer_name": "DefaultLayer_0",
       "visible": true

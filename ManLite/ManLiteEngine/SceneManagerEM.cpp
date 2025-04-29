@@ -208,6 +208,12 @@ void SceneManagerEM::LoadSceneFromJson(const std::string& file_name)
 	if (sceneJSON.contains("CurrentCamID")) current_scene->SetCurrentCameraGO(current_scene->FindGameObjectByID(sceneJSON["CurrentCamID"]));
 
 	LOG(LogType::LOG_OK, "Succesfully Loaded Scene %s", file_name.c_str());
+
+	if (engine->GetEngineState() == EngineState::PLAY)
+	{
+		StopSession();
+		StartSession();
+	}
 }
 
 void SceneManagerEM::LoadSceneToScene(const std::string& file_name, Scene& scene)

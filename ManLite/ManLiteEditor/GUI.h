@@ -101,7 +101,7 @@ private:
 	std::vector<std::string> scenes;
 	std::unordered_map<std::string, bool> sceneInclusionMap;
 	std::vector<std::string> includedScenesNames;
-	int selectedMainSceneIndex = 0;
+	std::string selectedMainScene = "";
 	bool fullscreen = false;
 	bool vsync = false;
 };

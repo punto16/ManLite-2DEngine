@@ -54,6 +54,10 @@ public class TestScript_1 : MonoBehaviour
             force2.Y = -players_speed;
         }
 
+        if (InternalCalls.GetKeyboardKeyRepeat((int)KeyboardKey.SDL_SCANCODE_P))
+        {
+            InternalCalls.LoadScene("Assets/Scenes/Pong_Scene_test.mlscene");
+        }
 
         if (!AllowUpdate)
         {

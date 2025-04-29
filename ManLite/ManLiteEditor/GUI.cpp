@@ -47,6 +47,8 @@
 #include <imgui_impl_sdl2.h>
 #include <imgui_impl_opengl3.h>
 #include "filesystem"
+#include "nlohmann/json.hpp"
+#include "fstream"
 
 Gui::Gui(App* parent) : Module(parent),
 hierarchy_panel(nullptr),
@@ -791,63 +793,93 @@ void Gui::BuildPanel()
 			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(8, 12));
 			ImGui::PushStyleColor(ImGuiCol_Header, ImGui::GetStyle().Colors[ImGuiCol_FrameBg]);
 
+			ImGui::Columns(2);
+			if (ImGui::ImageButton("build_icon",
+				icon_texture,
+				ImVec2(64, 64),
+				ImVec2(0, 1),
+				ImVec2(1, 0)
+				))
 			{
-				ImGui::Columns(2);
-				if (ImGui::ImageButton("build_icon", icon_texture, ImVec2(64, 64)))
+				std::string filePath = std::filesystem::relative(
+					FileDialog::OpenFile("Open Sprite file (*.png)\0*.png\0", "Assets\\Textures")
+				).string();
+
+				if (!filePath.empty() && filePath.ends_with(".png"))
 				{
-					std::string filePath = std::filesystem::relative(
-						FileDialog::OpenFile("Open Sprite file (*.png)\0*.png\0", "Assets\\Textures")
-					).string();
-
-					if (!filePath.empty() && filePath.ends_with(".png"))
-					{
-						int w = 0, h = 0;
-						if (icon_texture != 0 || !icon_path.empty()) ResourceManager::GetInstance().ReleaseTexture(icon_path);
-						icon_path = filePath;
-						icon_texture = ResourceManager::GetInstance().LoadTexture(filePath, w, h);
-					}
+					int w = 0, h = 0;
+					if (icon_texture != 0 || !icon_path.empty())
+						ResourceManager::GetInstance().ReleaseTexture(icon_path);
+					icon_path = filePath;
+					icon_texture = ResourceManager::GetInstance().LoadTexture(filePath, w, h);
 				}
-				ImGui::NextColumn();
-				ImGui::InputText("App Name", app_name, IM_ARRAYSIZE(app_name));
-				ImGui::Columns(1);
 			}
+			ImGui::NextColumn();
+			ImGui::InputText("App Name", app_name, IM_ARRAYSIZE(app_name));
+			ImGui::Columns(1);
 
+			ImGui::Spacing();
 			ImGui::Separator();
 
+			if (!includedScenesNames.empty())
 			{
-				if (!includedScenesNames.empty())
-				{
-					std::vector<const char*> items;
-					for (const auto& name : includedScenesNames) {
-						items.push_back(name.c_str());
+				std::vector<const char*> items;
+				int currentItem = -1;
+
+				for (size_t i = 0; i < includedScenesNames.size(); ++i) {
+					items.push_back(includedScenesNames[i].c_str());
+					if (includedScenesNames[i] == selectedMainScene) {
+						currentItem = static_cast<int>(i);
 					}
-					ImGui::Combo("Main Scene", &selectedMainSceneIndex, items.data(), items.size());
 				}
-				else
-				{
-					ImGui::TextColored(ImVec4(1, 0, 0, 1), "No scenes included in build!");
+
+				if (currentItem == -1 && !includedScenesNames.empty()) {
+					currentItem = 0;
+					selectedMainScene = includedScenesNames[0];
+				}
+
+				if (ImGui::Combo("Main Scene", &currentItem, items.data(), items.size())) {
+					selectedMainScene = includedScenesNames[currentItem];
 				}
 			}
-
-			if (ImGui::CollapsingHeader("Scene Selection", ImGuiTreeNodeFlags_DefaultOpen))
+			else
 			{
+				ImGui::TextColored(ImVec4(1, 0, 0, 1), "No scenes included in build!");
+			}
+
+			{
+				ImGui::Text("Included Scenes:");
+
+				const float child_height = ImGui::GetTextLineHeightWithSpacing() * 8;
+				ImGui::BeginChild("##SceneChild", ImVec2(-1, child_height), true,
+					ImGuiWindowFlags_HorizontalScrollbar);
+
+
 				for (const auto& scene : scenes)
 				{
 					bool& included = sceneInclusionMap[scene];
 					if (ImGui::Checkbox(scene.c_str(), &included))
 					{
-						if (included)
-						{
+						if (included) {
 							includedScenesNames.push_back(scene);
 						}
-						else
-						{
-							includedScenesNames.erase(std::find(includedScenesNames.begin(), includedScenesNames.end(), scene));
+						else {
+							auto it = std::find(includedScenesNames.begin(),
+								includedScenesNames.end(),
+								scene);
+							if (it != includedScenesNames.end())
+								includedScenesNames.erase(it);
+							if (scene == selectedMainScene) {
+								selectedMainScene = "";
+							}
 						}
 					}
 				}
+
+				ImGui::EndChild();
 			}
 
+			ImGui::Spacing();
 			ImGui::Separator();
 
 			{
@@ -868,7 +900,7 @@ void Gui::BuildPanel()
 				memset(app_name, 0, sizeof(app_name));
 				sceneInclusionMap.clear();
 				includedScenesNames.clear();
-				selectedMainSceneIndex = 0;
+				selectedMainScene = "";
 				fullscreen = false;
 				vsync = false;
 			}
@@ -876,17 +908,161 @@ void Gui::BuildPanel()
 			ImGui::BeginDisabled(sceneInclusionMap.empty());
 			if (ImGui::Button("Build", ImVec2(120, 0)))
 			{
-				//write all data to "Config\\Build_Resources\\ManLite.init"
-				//and prepare and move all necessary files to "Build" folder
+				nlohmann::json build_config;
 
-				if (icon_texture == 0 || !icon_path.empty()) ResourceManager::GetInstance().ReleaseTexture(icon_path);
+				build_config["app_name"] = app_name;
+				build_config["icon_path"] = icon_path;
+				int i = 0;
+				for (auto& scene : includedScenesNames)
+				{
+					build_config["scenes"]["included"][i] = "Assets" + scene;
+					i++;
+				}
+				build_config["scenes"]["main"] = "Assets" + selectedMainScene;
+
+				build_config["window"]["fullscreen"] = fullscreen;
+				build_config["window"]["vsync"] = vsync;
+
+				try
+				{
+					std::filesystem::create_directories("Config/Build_Resources");
+
+					std::ofstream output("Config/Build_Resources/ManLite.init");
+					output << build_config.dump(4);
+					output.close();
+
+					LOG(LogType::LOG_OK, "Build configuration saved successfully!");
+				}
+				catch (const std::exception& e)
+				{
+					LOG(LogType::LOG_ERROR, "Error saving build config: %s", e.what());
+				}
+
+
+				std::string buildFolder = "Build";
+#pragma region BUILD_EXE_MODE
+
+				if (std::filesystem::exists(buildFolder))
+				{
+					std::filesystem::remove_all(buildFolder);
+					LOG(LogType::LOG_INFO, "Deleted existing Build folder");
+				}
+
+				try
+				{
+					std::filesystem::create_directories(buildFolder);
+
+					std::string sourceExe = "Config/Build_Resources/ManLiteBuilder.exe";
+					std::string destExe = buildFolder + "/" + std::string(app_name) + ".exe";
+
+					if (std::filesystem::exists(sourceExe))
+					{
+						std::filesystem::copy(sourceExe, destExe,
+							std::filesystem::copy_options::overwrite_existing);
+					}
+
+					if (!icon_path.empty())
+					{
+						std::string cmd = "ResourceHacker.exe -open \"" + destExe +
+							"\" -save \"" + destExe +
+							"\" -action addoverwrite -res \"" +
+							icon_path + "\" -mask ICONGROUP,1,";
+						system(cmd.c_str());
+					}
+
+					std::filesystem::copy("Config/Build_Resources/ManLite.init",
+						buildFolder + "/ManLite.init",
+						std::filesystem::copy_options::overwrite_existing);
+
+					auto copyAssets = [](const std::filesystem::path& src, const std::filesystem::path& dst)
+						{
+							for (const auto& entry : std::filesystem::recursive_directory_iterator(src))
+							{
+								const auto& path = entry.path();
+								auto relativePath = std::filesystem::relative(path, src);
+								std::string ext = path.extension().string();
+
+								if (ext == ".mlscene" || ext == ".cs") continue;
+
+								if (entry.is_directory())
+								{
+									std::filesystem::create_directories(dst / relativePath);
+								}
+								else
+								{
+									std::filesystem::copy(path, dst / relativePath,
+										std::filesystem::copy_options::overwrite_existing);
+								}
+							}
+						};
+					copyAssets("Assets", buildFolder + "/Assets");
+
+					for (const auto& sceneName : includedScenesNames)
+					{
+						try
+						{
+							std::filesystem::path destPath("Build/Assets" + sceneName);
+							std::filesystem::path sourcePath("Assets" + sceneName);
+
+							std::filesystem::copy(sourcePath, destPath,
+								std::filesystem::copy_options::overwrite_existing);
+
+							LOG(LogType::LOG_INFO, "Scene copied: %s", sceneName.c_str());
+						}
+						catch (const std::exception& e)
+						{
+							LOG(LogType::LOG_ERROR, "Failed to copy scene %s: %s", sceneName.c_str(), e.what());
+						}
+					}
+
+					std::string exePath = []()
+						{
+#ifdef _WIN32
+						char path[MAX_PATH];
+						GetModuleFileNameA(NULL, path, MAX_PATH);
+						return std::filesystem::path(path).parent_path().string();
+#else
+						return std::filesystem::current_path().string();
+#endif
+						}();
+
+					for (const auto& entry : std::filesystem::directory_iterator(exePath))
+					{
+						if (entry.path().extension() == ".dll")
+						{
+							std::filesystem::copy(entry.path(),
+								buildFolder + "/" + entry.path().filename().string(),
+								std::filesystem::copy_options::overwrite_existing);
+						}
+					}
+
+					if (std::filesystem::exists(exePath + "/mono"))
+					{
+						std::filesystem::copy(exePath + "/mono",
+							buildFolder + "/mono",
+							std::filesystem::copy_options::recursive |
+							std::filesystem::copy_options::overwrite_existing);
+					}
+
+					LOG(LogType::LOG_OK, "Build completed successfully!");
+				}
+				catch (const std::exception& e)
+				{
+					LOG(LogType::LOG_ERROR, "Build failed: %s", e.what());
+				}
+
+#pragma endregion BUILD_EXE_MODE
+
+				if (icon_texture != 0 || !icon_path.empty())
+					ResourceManager::GetInstance().ReleaseTexture(icon_path);
+
 				icon_path = "";
 				showBuildPanel = false;
 				icon_texture = 0;
 				memset(app_name, 0, sizeof(app_name));
 				sceneInclusionMap.clear();
 				includedScenesNames.clear();
-				selectedMainSceneIndex = 0;
+				selectedMainScene = "";
 				fullscreen = false;
 				vsync = false;
 			}

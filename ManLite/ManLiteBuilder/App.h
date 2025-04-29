@@ -21,6 +21,7 @@ public:
 	int GetArgc() const;
 	const char* GetArgv(int index) const;
 
+	void LoadInit();
 
 	int GetFrameRate() const;
 	void SetFrameRate(int frameRate);
