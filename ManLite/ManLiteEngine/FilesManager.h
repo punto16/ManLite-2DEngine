@@ -67,8 +67,12 @@ public:
 
 	std::string GetFileTypeByExtension(std::string ext);
 
+	std::vector<std::string> GetAllScenePaths() const;
+
 private:
 	FilesManager() = default;
+
+	void CollectScenes(const FileData& node, std::vector<std::string>& scenes) const;
 
 	void CheckForRemovals(const std::unordered_map<std::string, std::filesystem::file_time_type>& current_files);
 	void UpdateStructure();

@@ -8,6 +8,8 @@
 #include "Module.h"
 #include "string"
 #include <list>
+#include "vector"
+#include "unordered_map"
 
 class Panel;
 class PanelHierarchy;
@@ -56,6 +58,8 @@ public:
 	void WindowMenu();
 	void HelpMenu();
 
+	void BuildPanel();
+
 	//shortcut handler
 	void HandleShortcut();
 
@@ -88,6 +92,18 @@ public:
 
 private:
 	std::list<Panel*> panels;
+
+	//build settings
+	bool showBuildPanel = false;
+	unsigned int icon_texture = 0;
+	std::string icon_path = "";
+	char app_name[128] = "";
+	std::vector<std::string> scenes;
+	std::unordered_map<std::string, bool> sceneInclusionMap;
+	std::vector<std::string> includedScenesNames;
+	int selectedMainSceneIndex = 0;
+	bool fullscreen = false;
+	bool vsync = false;
 };
 
 #endif // !__GUI_H__

@@ -310,6 +310,22 @@ FileData* FilesManager::GetFileDataByPath(std::string path)
     return current;
 }
 
+void FilesManager::CollectScenes(const FileData& node, std::vector<std::string>& scenes) const
+{
+    for (const auto& child : node.children) {
+        if (child.type == FileType::SCENE)
+{
+            std::string path = child.relative_path;
+            if (path.find("Assets/") == 0) path = path.substr(6);
+            scenes.push_back(path);
+        }
+        else if (child.type == FileType::FOLDER)
+        {
+            CollectScenes(child, scenes);
+        }
+    }
+}
+
 void FilesManager::CheckForRemovals(const std::unordered_map<std::string, fs::file_time_type>& current_files) {
     std::vector<std::string> to_remove;
 
@@ -448,6 +464,14 @@ std::string FilesManager::GetFileTypeByExtension(std::string ext)
     }
     return "";
 }
+
+std::vector<std::string> FilesManager::GetAllScenePaths() const
+{
+    std::vector<std::string> scenes;
+    CollectScenes(assets_folder, scenes);
+    return scenes;
+}
+
 
 void FilesManager::ProcessDirectory(const std::filesystem::path& path, FileData& parent)
 {

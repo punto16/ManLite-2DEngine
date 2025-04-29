@@ -31,6 +31,7 @@
 #include "Animator.h"
 #include "ParticleSystem.h"
 #include "TileMap.h"
+#include "FilesManager.h"
 
 #if defined(_WIN32)
 #   define WIN32_LEAN_AND_MEAN
@@ -251,6 +252,7 @@ bool Gui::Update(double dt)
 	HandleShortcut();
 
 	MainMenuBar();
+	BuildPanel();
 
 	//test window
 	ImGui::ShowDemoWindow();
@@ -477,16 +479,17 @@ void Gui::MainMenuBar()
 		Timer::SecondsToFormat(engine->GetGameTime(), h, m, s, ms);
 		ImGui::Text("Game Duration: %02d:%02d:%02d:%03d", h, m, s, ms);
 
-		ImGui::Dummy(ImVec2(40.0f, 0.0f));
-		if (engine->GetEngineState() == EngineState::STOP && ImGui::Button("Reload Scripts"))
-		{
-			engine->scripting_em->RecompileScripts();
-		}
-		ImGui::Dummy(ImVec2(40.0f, 0.0f));
-		if (engine->GetEngineState() == EngineState::STOP && ImGui::Button("Reload Resources"))
-		{
-			ResourceManager::GetInstance().ReloadAll();
-		}
+		//test buttons
+		//ImGui::Dummy(ImVec2(40.0f, 0.0f));
+		//if (engine->GetEngineState() == EngineState::STOP && ImGui::Button("Reload Scripts"))
+		//{
+		//	engine->scripting_em->RecompileScripts();
+		//}
+		//ImGui::Dummy(ImVec2(40.0f, 0.0f));
+		//if (engine->GetEngineState() == EngineState::STOP && ImGui::Button("Reload Resources"))
+		//{
+		//	ResourceManager::GetInstance().ReloadAll();
+		//}
 		//
 		ImGui::EndMainMenuBar();
 	}
@@ -562,9 +565,14 @@ void Gui::FileMenu()
 
 	ImGui::Separator();
 
-	if (ImGui::MenuItem("Build", 0, false, false))
+	if (ImGui::MenuItem("Build"))
 	{
-
+		showBuildPanel = true;
+		scenes = FilesManager::GetInstance().GetAllScenePaths();
+		int w = 0, h = 0;
+		if (icon_texture != 0 || !icon_path.empty()) ResourceManager::GetInstance().ReleaseTexture(icon_path);
+		icon_path = "Config\\Icons\\build_icon.png";
+		icon_texture = ResourceManager::GetInstance().LoadTexture(icon_path, w, h);
 	}
 
 	ImGui::Separator();
@@ -768,6 +776,127 @@ void Gui::HelpMenu()
 	ImGui::Separator();
 
 	ImGui::TextLinkOpenURL("Documentation", "https://github.com/punto16/ManLite-2DEngine");
+}
+
+void Gui::BuildPanel()
+{
+	if (showBuildPanel)
+	{
+		ImGui::OpenPopup("Build Settings");
+		ImGui::SetNextWindowSize(ImVec2(600, 500), ImGuiCond_FirstUseEver);
+		if (ImGui::BeginPopupModal("Build Settings", &showBuildPanel,
+			ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoCollapse))
+		{
+			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(8, 4));
+			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(8, 12));
+			ImGui::PushStyleColor(ImGuiCol_Header, ImGui::GetStyle().Colors[ImGuiCol_FrameBg]);
+
+			{
+				ImGui::Columns(2);
+				if (ImGui::ImageButton("build_icon", icon_texture, ImVec2(64, 64)))
+				{
+					std::string filePath = std::filesystem::relative(
+						FileDialog::OpenFile("Open Sprite file (*.png)\0*.png\0", "Assets\\Textures")
+					).string();
+
+					if (!filePath.empty() && filePath.ends_with(".png"))
+					{
+						int w = 0, h = 0;
+						if (icon_texture != 0 || !icon_path.empty()) ResourceManager::GetInstance().ReleaseTexture(icon_path);
+						icon_path = filePath;
+						icon_texture = ResourceManager::GetInstance().LoadTexture(filePath, w, h);
+					}
+				}
+				ImGui::NextColumn();
+				ImGui::InputText("App Name", app_name, IM_ARRAYSIZE(app_name));
+				ImGui::Columns(1);
+			}
+
+			ImGui::Separator();
+
+			{
+				if (!includedScenesNames.empty())
+				{
+					std::vector<const char*> items;
+					for (const auto& name : includedScenesNames) {
+						items.push_back(name.c_str());
+					}
+					ImGui::Combo("Main Scene", &selectedMainSceneIndex, items.data(), items.size());
+				}
+				else
+				{
+					ImGui::TextColored(ImVec4(1, 0, 0, 1), "No scenes included in build!");
+				}
+			}
+
+			if (ImGui::CollapsingHeader("Scene Selection", ImGuiTreeNodeFlags_DefaultOpen))
+			{
+				for (const auto& scene : scenes)
+				{
+					bool& included = sceneInclusionMap[scene];
+					if (ImGui::Checkbox(scene.c_str(), &included))
+					{
+						if (included)
+						{
+							includedScenesNames.push_back(scene);
+						}
+						else
+						{
+							includedScenesNames.erase(std::find(includedScenesNames.begin(), includedScenesNames.end(), scene));
+						}
+					}
+				}
+			}
+
+			ImGui::Separator();
+
+			{
+				ImGui::Text("Window Settings");
+				ImGui::Checkbox("Fullscreen", &fullscreen);
+				ImGui::SameLine();
+				ImGui::Checkbox("VSync", &vsync);
+			}
+
+			ImGui::Separator();
+			ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 260);
+			if (ImGui::Button("Cancel", ImVec2(120, 0)))
+			{
+				if (icon_texture != 0 || !icon_path.empty()) ResourceManager::GetInstance().ReleaseTexture(icon_path);
+				icon_path = "";
+				showBuildPanel = false;
+				icon_texture = 0;
+				memset(app_name, 0, sizeof(app_name));
+				sceneInclusionMap.clear();
+				includedScenesNames.clear();
+				selectedMainSceneIndex = 0;
+				fullscreen = false;
+				vsync = false;
+			}
+			ImGui::SameLine();
+			ImGui::BeginDisabled(sceneInclusionMap.empty());
+			if (ImGui::Button("Build", ImVec2(120, 0)))
+			{
+				//write all data to "Config\\Build_Resources\\ManLite.init"
+				//and prepare and move all necessary files to "Build" folder
+
+				if (icon_texture == 0 || !icon_path.empty()) ResourceManager::GetInstance().ReleaseTexture(icon_path);
+				icon_path = "";
+				showBuildPanel = false;
+				icon_texture = 0;
+				memset(app_name, 0, sizeof(app_name));
+				sceneInclusionMap.clear();
+				includedScenesNames.clear();
+				selectedMainSceneIndex = 0;
+				fullscreen = false;
+				vsync = false;
+			}
+			ImGui::EndDisabled();
+
+			ImGui::PopStyleColor();
+			ImGui::PopStyleVar(2);
+			ImGui::EndPopup();
+		}
+	}
 }
 
 void Gui::HandleShortcut()
