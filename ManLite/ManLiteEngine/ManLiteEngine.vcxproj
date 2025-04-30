@@ -126,11 +126,16 @@
       <Command>pushd "$(SolutionDir).."
 call vcpkg\bootstrap-vcpkg.bat
 vcpkg\vcpkg.exe install glm glew freetype stb nlohmann-json sdl2 sdl2-image sdl2-mixer box2d --recurse --overlay-triplets="custom-triplets"
-copy "vcpkg\installed\x64-windows\debug\bin\*.*" "$(OutDir)"
+copy "vcpkg\installed\x64-windows\debug\bin\*.dll" "$(OutDir)"
 copy "mono\bin\*.dll" "$(OutDir)"
+xcopy "mono" "$(OutDir)mono" /E /I /Y
 popd
 </Command>
     </PreBuildEvent>
+    <PostBuildEvent>
+      <Command>
+      </Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -160,11 +165,16 @@ popd
       <Command>pushd "$(SolutionDir).."
 call vcpkg\bootstrap-vcpkg.bat
 vcpkg\vcpkg.exe install glm glew freetype stb nlohmann-json sdl2 sdl2-image sdl2-mixer box2d --recurse --overlay-triplets="custom-triplets"
-copy "vcpkg\installed\x64-windows\bin\*.*" "$(OutDir)"
+copy "vcpkg\installed\x64-windows\bin\*.dll" "$(OutDir)"
 copy "mono\bin\*.dll" "$(OutDir)"
+xcopy "mono" "$(OutDir)mono" /E /I /Y
 popd
 </Command>
     </PreBuildEvent>
+    <PostBuildEvent>
+      <Command>
+      </Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Animator.cpp" />

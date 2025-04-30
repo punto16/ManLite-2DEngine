@@ -33,6 +33,14 @@ bool WindowEM::Awake()
 		SDL_WINDOW_ALLOW_HIGHDPI
 		);
 
+	if (fs)
+	{
+		if (SDL_SetWindowFullscreen(window, fs ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0) != 0)
+		{
+			return false;
+		}
+	}
+
 	window = SDL_CreateWindow(
 		"ManLite 2D Engine",
 		SDL_WINDOWPOS_CENTERED,
@@ -99,4 +107,14 @@ void WindowEM::SetVsync(bool vsync)
 {
 	this->vsync = vsync;
 	SDL_GL_SetSwapInterval(this->vsync ? 1 : 0);
+}
+
+void WindowEM::SetFullScreen(bool fs)
+{
+	if (SDL_SetWindowFullscreen(window, fs ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0) != 0)
+	{
+		return;
+	}
+
+	this->fs = fs;
 }

@@ -25,6 +25,8 @@ public:
 	SDL_GLContext GetGLContext() const { return this->gl_context; }
 	bool GetVsync() { return vsync; }
 	void SetVsync(bool vsync);
+	bool GetFullScreen() { return fs; }
+	void SetFullScreen(bool fs);
 
 private:
 	SDL_Window* window;
@@ -34,6 +36,7 @@ private:
 	unsigned int width, height;
 
 	bool vsync = false;
+	bool fs = false;
 };
 
 #endif // !__WINDOW_EM_H__

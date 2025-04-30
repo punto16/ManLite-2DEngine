@@ -70,6 +70,12 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\Build</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\Build</OutDir>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -118,10 +124,26 @@
       <Command>pushd "$(SolutionDir).."
 call vcpkg\bootstrap-vcpkg.bat
 vcpkg\vcpkg.exe install sdl2 --recurse --overlay-triplets="custom-triplets"
-copy "vcpkg\installed\x64-windows\debug\bin\*.*" "$(OutDir)"
-popd
-</Command>
+
+if not exist "$(OutDir)" mkdir "$(OutDir)"
+copy "vcpkg\installed\x64-windows\debug\bin\*.dll" "$(OutDir)"
+copy "$(SolutionDir)$(Platform)\$(Configuration)\*.dll" "$(OutDir)" 2&gt;nul
+xcopy "$(SolutionDir)$(Platform)\$(Configuration)\Assets" "$(OutDir)\Assets" /E /I /Y
+xcopy "$(SolutionDir)$(Platform)\$(Configuration)\mono" "$(OutDir)\mono" /E /I /Y
+copy "$(SolutionDir)$(Platform)\$(Configuration)\Config\Build_Resources\ManLite.init" "$(OutDir)" 2&gt;nul
+
+rmdir /S /Q "ManLite\ManLiteBuilder\Assets" 2&gt;nul
+rmdir /S /Q "ManLite\ManLiteBuilder\Config" 2&gt;nul
+xcopy "ManLite\ManLiteEditor\Assets" "ManLite\ManLiteBuilder\Assets" /E /I /Y
+xcopy "ManLite\ManLiteEditor\Config" "ManLite\ManLiteBuilder\Config" /E /I /Y
+popd</Command>
     </PreBuildEvent>
+    <PostBuildEvent>
+      <Command>del /Q /F "ManLite\ManLiteEditor\Config\Build_Resources\ManLiteBuilder.exe" 2&gt;nul
+xcopy "$(OutDir)ManLiteBuilder.exe" "ManLite\ManLiteEditor\Config\Build_Resources\" /E /I /Y
+xcopy "$(OutDir)ManLiteBuilder.exe" "$(SolutionDir)$(Platform)\$(Configuration)\Config\Build_Resources\" /E /I /Y
+xcopy "$(OutDir)ManLite.init" "$(SolutionDir)ManLiteBuilder\" /E /I /Y</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -147,9 +169,31 @@ popd
       <Command>pushd "$(SolutionDir).."
 call vcpkg\bootstrap-vcpkg.bat
 vcpkg\vcpkg.exe install sdl2 --recurse --overlay-triplets="custom-triplets"
-copy "vcpkg\installed\x64-windows\bin\*.*" "$(OutDir)"
-popd</Command>
+
+if not exist "$(OutDir)" mkdir "$(OutDir)"
+copy "vcpkg\installed\x64-windows\bin\*.dll" "$(OutDir)"
+copy "$(SolutionDir)$(Platform)\$(Configuration)\*.dll" "$(OutDir)" 2&gt;nul
+xcopy "$(SolutionDir)$(Platform)\$(Configuration)\Assets" "$(OutDir)\Assets" /E /I /Y
+xcopy "$(SolutionDir)$(Platform)\$(Configuration)\mono" "$(OutDir)\mono" /E /I /Y
+copy "$(SolutionDir)$(Platform)\$(Configuration)\Config\Build_Resources\ManLite.init" "$(OutDir)" 2&gt;nul
+
+rmdir /S /Q "ManLite\ManLiteBuilder\Assets" 2&gt;nul
+rmdir /S /Q "ManLite\ManLiteBuilder\Config" 2&gt;nul
+xcopy "ManLite\ManLiteEditor\Assets" "ManLite\ManLiteBuilder\Assets" /E /I /Y
+xcopy "ManLite\ManLiteEditor\Config" "ManLite\ManLiteBuilder\Config" /E /I /Y
+popd
+</Command>
     </PreBuildEvent>
+    <PostBuildEvent>
+      <Command>del /Q /F "ManLite\ManLiteEditor\Config\Build_Resources\ManLiteBuilder.exe" 2&gt;nul
+xcopy "$(OutDir)ManLiteBuilder.exe" "ManLite\ManLiteEditor\Config\Build_Resources\" /E /I /Y
+xcopy "$(OutDir)ManLiteBuilder.exe" "$(SolutionDir)$(Platform)\$(Configuration)\Config\Build_Resources\" /E /I /Y
+xcopy "$(OutDir)ManLite.init" "$(SolutionDir)ManLiteBuilder\" /E /I /Y
+
+del /Q /F "$(OutDir)*.pdb" 2&gt;nul
+del /Q /F "$(OutDir)*.lib" 2&gt;nul
+del /Q /F "$(OutDir)*.idb" 2&gt;nul</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ProjectReference Include="..\ManLiteEngine\ManLiteEngine.vcxproj">

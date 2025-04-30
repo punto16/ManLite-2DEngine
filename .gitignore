@@ -31,6 +31,14 @@
 *.out
 *.app
 
+# Builder
+ManLite/ManLiteBuilder/Assets/**
+ManLite/ManLiteBuilder/Config/**
+ManLite/ManLiteBuilder/ManLite/**
+ManLite/ManLiteBuilder/mono/**
+ManLite/ManLiteBuilder/ManLite.init
+ManLite/ManLiteEditor/Build/**
+
 # Exceptions
 !mono/
 !mono/**/*

@@ -1,4 +1,0 @@
-whats the first scene?
-whats the game name?
-whats the window main options? (fullscreen, allow resize, vsync, etc)
-whats the game icon?

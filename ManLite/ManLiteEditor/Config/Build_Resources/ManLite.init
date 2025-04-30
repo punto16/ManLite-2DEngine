@@ -1,11 +1,11 @@
 {
-    "app_name": "Pong",
-    "icon_path": "Assets\\Textures\\image2.png",
+    "app_name": "__Pong",
+    "icon_path": "Config\\Icons\\build_icon.png",
     "scenes": {
         "included": [
-            "/Scenes/Pong_Scene_test.mlscene"
+            "Assets/Scenes/Pong_Scene_test.mlscene"
         ],
-        "main": "/Scenes/Pong_Scene_test.mlscene"
+        "main": "Assets/Scenes/Pong_Scene_test.mlscene"
     },
     "window": {
         "fullscreen": false,

@@ -179,6 +179,12 @@ void App::LoadInit()
 				first_scene = config["scenes"]["main"].get<std::string>();
 			}
 
+			if (config.contains("window"))
+			{
+				engine->window_em->SetVsync(config["window"]["vsync"]);
+				engine->window_em->SetFullScreen(config["window"]["fullscreen"]);
+			}
+
 			configFile.close();
 			LOG(LogType::LOG_OK, "Build config loaded successfully!");
 		}

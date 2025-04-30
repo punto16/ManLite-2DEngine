@@ -31,6 +31,7 @@ Camera::~Camera()
 
 void Camera::Draw()
 {
+    if (!engine->GetEditorOrBuild()) return;
     if (auto transform = container_go.lock()->GetComponent<Transform>())
     {
         vec2f o_scale = transform->GetWorldScale();

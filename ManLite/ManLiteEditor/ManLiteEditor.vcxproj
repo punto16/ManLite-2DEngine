@@ -121,10 +121,19 @@
       <Command>pushd "$(SolutionDir).."
 call vcpkg\bootstrap-vcpkg.bat
 vcpkg\vcpkg.exe install sdl2 imgui[sdl2-binding,opengl3-binding,docking-experimental] imguizmo --recurse --overlay-triplets="custom-triplets"
-copy "vcpkg\installed\x64-windows\debug\bin\*.*" "$(OutDir)"
+copy "vcpkg\installed\x64-windows\debug\bin\*.dll" "$(OutDir)"
+rmdir /S /Q "$(OutDir)Assets" 2&gt;nul
+rmdir /S /Q "$(OutDir)Config" 2&gt;nul
+xcopy "ManLite\ManLiteEditor\Assets" "$(OutDir)Assets" /E /I /Y
+xcopy "ManLite\ManLiteEditor\Config" "$(OutDir)Config" /E /I /Y
+copy "ManLite\ManLiteEditor\imgui.ini" "$(OutDir)"
 popd
 </Command>
     </PreBuildEvent>
+    <PostBuildEvent>
+      <Command>copy "$(OutDir)Build\ManLiteBuilder.exe" "$(OutDir)Config\Build_Resources" 2&gt;nul
+rmdir /S /Q "$(OutDir)Build" 2&gt;nul</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -150,10 +159,23 @@ popd
       <Command>pushd "$(SolutionDir).."
 call vcpkg\bootstrap-vcpkg.bat
 vcpkg\vcpkg.exe install sdl2 imgui[sdl2-binding,opengl3-binding,docking-experimental] imguizmo --recurse --overlay-triplets="custom-triplets"
-copy "vcpkg\installed\x64-windows\bin\*.*" "$(OutDir)"
+copy "vcpkg\installed\x64-windows\bin\*.dll" "$(OutDir)"
+rmdir /S /Q "$(OutDir)Assets" 2&gt;nul
+rmdir /S /Q "$(OutDir)Config" 2&gt;nul
+xcopy "ManLite\ManLiteEditor\Assets" "$(OutDir)Assets" /E /I /Y
+xcopy "ManLite\ManLiteEditor\Config" "$(OutDir)Config" /E /I /Y
+copy "ManLite\ManLiteEditor\imgui.ini" "$(OutDir)"
 popd
 </Command>
     </PreBuildEvent>
+    <PostBuildEvent>
+      <Command>copy "$(OutDir)Build\ManLiteBuilder.exe" "$(OutDir)Config\Build_Resources" 2&gt;nul
+rmdir /S /Q "$(OutDir)Build" 2&gt;nul
+
+del /Q /F "$(OutDir)*.pdb" 2&gt;nul
+del /Q /F "$(OutDir)*.lib" 2&gt;nul
+del /Q /F "$(OutDir)*.idb" 2&gt;nul</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="App.cpp" />
@@ -192,6 +214,9 @@ popd
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ManLiteBuilder\ManLiteBuilder.vcxproj">
+      <Project>{3606d492-39f7-4303-9693-14129b959019}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\ManLiteEngine\ManLiteEngine.vcxproj">
       <Project>{56225d11-006d-47ca-9bd8-873dfbeefeb6}</Project>
     </ProjectReference>
