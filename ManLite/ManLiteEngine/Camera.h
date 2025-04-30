@@ -24,6 +24,7 @@ public:
     void GetViewportSize(int &width, int &height);
     void SetZoom(float zoom);
     float GetZoom() const { return zoom; }
+    void Resize(unsigned int width, unsigned int height);
 
     glm::mat4 GetViewMatrix() const;
     glm::mat4 GetProjectionMatrix() const;

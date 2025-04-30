@@ -132,6 +132,7 @@ popd
     </PreBuildEvent>
     <PostBuildEvent>
       <Command>copy "$(OutDir)Build\ManLiteBuilder.exe" "$(OutDir)Config\Build_Resources" 2&gt;nul
+copy "$(OutDir)Build\ManLiteBuilder.exe" "$(SolutionDir)ManLiteEditor\Config\Build_Resources" 2&gt;nul
 rmdir /S /Q "$(OutDir)Build" 2&gt;nul</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -170,6 +171,7 @@ popd
     </PreBuildEvent>
     <PostBuildEvent>
       <Command>copy "$(OutDir)Build\ManLiteBuilder.exe" "$(OutDir)Config\Build_Resources" 2&gt;nul
+copy "$(OutDir)Build\ManLiteBuilder.exe" "$(SolutionDir)ManLiteEditor\Config\Build_Resources" 2&gt;nul
 rmdir /S /Q "$(OutDir)Build" 2&gt;nul
 
 del /Q /F "$(OutDir)*.pdb" 2&gt;nul

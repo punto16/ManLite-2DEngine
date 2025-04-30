@@ -181,6 +181,10 @@ bool RendererEM::PreUpdate()
 	{
 		unsigned int w, h;
 		engine->window_em->GetWindowSize(w, h);
+		if (w != fbSize.x || h != fbSize.y)
+		{
+			ResizeFBO(w, h);
+		}
 		glViewport(0, 0, w, h);
 	}
 	glClearColor(0.4f, 0.4f, 0.4f, 1.0f);

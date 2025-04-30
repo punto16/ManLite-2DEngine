@@ -31,7 +31,7 @@ Camera::~Camera()
 
 void Camera::Draw()
 {
-    if (!engine->GetEditorOrBuild()) return;
+    //if (!engine->GetEditorOrBuild()) return;
     if (auto transform = container_go.lock()->GetComponent<Transform>())
     {
         vec2f o_scale = transform->GetWorldScale();
@@ -105,6 +105,13 @@ void Camera::GetViewportSize(int& width, int& height)
 void Camera::SetZoom(float new_zoom)
 {
     zoom = glm::clamp(new_zoom, 1.0f, 1000.0f);
+    UpdateMatrices();
+}
+
+void Camera::Resize(unsigned int width, unsigned int height)
+{
+    this->viewport_width = width;
+    this->viewport_height = height;
     UpdateMatrices();
 }
 

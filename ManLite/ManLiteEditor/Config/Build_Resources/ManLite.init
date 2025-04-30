@@ -1,6 +1,6 @@
 {
-    "app_name": "__Pong",
-    "icon_path": "Config\\Icons\\build_icon.png",
+    "app_name": "_asas",
+    "icon_path": "Assets\\Textures\\image2.png",
     "scenes": {
         "included": [
             "Assets/Scenes/Pong_Scene_test.mlscene"

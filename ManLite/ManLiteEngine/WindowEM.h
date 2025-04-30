@@ -33,8 +33,6 @@ private:
 
 	SDL_GLContext gl_context;
 
-	unsigned int width, height;
-
 	bool vsync = false;
 	bool fs = false;
 };

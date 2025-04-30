@@ -5,7 +5,7 @@
 
 #include <SDL2/SDL_image.h>
 
-WindowEM::WindowEM(EngineCore* parent) : EngineModule(parent), width(DEFAULT_CAM_WIDTH), height(DEFAULT_CAM_HEIGHT)
+WindowEM::WindowEM(EngineCore* parent) : EngineModule(parent)
 {
 
 }
@@ -29,9 +29,13 @@ bool WindowEM::Awake()
 
 	SDL_WindowFlags windowFlags = (SDL_WindowFlags)(
 		SDL_WINDOW_OPENGL |
-		SDL_WINDOW_RESIZABLE |
 		SDL_WINDOW_ALLOW_HIGHDPI
 		);
+
+	if (engine->GetEditorOrBuild())
+	{
+		windowFlags = (SDL_WindowFlags)(windowFlags | SDL_WINDOW_RESIZABLE);
+	}
 
 	if (fs)
 	{
@@ -45,8 +49,8 @@ bool WindowEM::Awake()
 		"ManLite 2D Engine",
 		SDL_WINDOWPOS_CENTERED,
 		SDL_WINDOWPOS_CENTERED,
-		width,
-		height,
+		DEFAULT_CAM_WIDTH,
+		DEFAULT_CAM_HEIGHT,
 		windowFlags
 	);
 
@@ -99,8 +103,10 @@ void WindowEM::SetIcon(std::string path)
 
 void WindowEM::GetWindowSize(unsigned int& w, unsigned int& h) const
 {
-	w = this->width;
-	h = this->height;
+	int w_ = 0, h_ = 0;
+	SDL_GetWindowSize(window, &w_, &h_);
+	w = (unsigned int)w_;
+	h = (unsigned int)h_;
 }
 
 void WindowEM::SetVsync(bool vsync)
