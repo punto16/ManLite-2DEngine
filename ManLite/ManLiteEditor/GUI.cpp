@@ -273,6 +273,7 @@ bool Gui::Update(double dt)
 		engine->scene_manager_em->GetCurrentScene() = *save_scene_panel->new_scene;
 		LOG(LogType::LOG_INFO, "Scene <%s> created", save_scene_panel->new_scene->GetSceneName().c_str());
 		save_scene_panel->set_scene = false;
+		ResourceManager::GetInstance().ReleaseTexture("Config\\placeholder.png");
 	}
 
 	return ret;

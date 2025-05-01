@@ -122,8 +122,10 @@ void SceneManagerEM::SaveScene(std::string directory, std::string scene_name)
 	std::ofstream(file_name) << sceneJSON.dump(2);
 }
 
-void SceneManagerEM::LoadSceneFromJson(const std::string& file_name)
+void SceneManagerEM::LoadSceneFromJson(const std::string& file_name_const)
 {
+	std::string file_name = file_name_const;
+	std::replace(file_name.begin(), file_name.end(), '/', '\\');
 	if (!fs::exists(file_name))
 	{
 		LOG(LogType::LOG_ERROR, "Scene file does not exist: %s", file_name.c_str());
@@ -216,8 +218,11 @@ void SceneManagerEM::LoadSceneFromJson(const std::string& file_name)
 	}
 }
 
-void SceneManagerEM::LoadSceneToScene(const std::string& file_name, Scene& scene)
+void SceneManagerEM::LoadSceneToScene(const std::string& file_name_const, Scene& scene)
 {
+	std::string file_name = file_name_const;
+	std::replace(file_name.begin(), file_name.end(), '/', '\\');
+
 	if (!fs::exists(file_name))
 	{
 		LOG(LogType::LOG_ERROR, "Scene file does not exist: %s", file_name.c_str());
@@ -242,6 +247,9 @@ void SceneManagerEM::LoadSceneToScene(const std::string& file_name, Scene& scene
 		return;
 	}
 	file.close();
+
+	bool old_log_state = engine->AreLogsStopped();
+	engine->StopLogs(true);
 
 	scene.SetScenePath(file_name);
 	if (sceneJSON.contains("scene_name"))
@@ -300,11 +308,14 @@ void SceneManagerEM::LoadSceneToScene(const std::string& file_name, Scene& scene
 	}
 	if (sceneJSON.contains("CurrentCamID")) scene.SetCurrentCameraGO(scene.FindGameObjectByID(sceneJSON["CurrentCamID"]));
 
+	engine->StopLogs(old_log_state);
 	LOG(LogType::LOG_OK, "Succesfully Loaded Scene %s", file_name.c_str());
 }
 
-void SceneManagerEM::ImportTiledFile(const std::string& file_name)
+void SceneManagerEM::ImportTiledFile(const std::string& file_name_const)
 {
+	std::string file_name = file_name_const;
+	std::replace(file_name.begin(), file_name.end(), '/', '\\');
 	std::string tiledName = std::filesystem::path(file_name).stem().string();
 	std::string directory_path;
 	size_t last_slash_pos = file_name.find_last_of("\\");

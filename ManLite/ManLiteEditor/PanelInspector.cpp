@@ -370,6 +370,20 @@ void PanelInspector::SpriteOptions(GameObject& go)
 				ImVec4(0.9f, 0.9f, 0.9f, 0.5f)
 			);
 
+			if (ImGui::BeginDragDropTarget())
+			{
+				const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("RESOURCE_FILE_IMAGE");
+				if (payload)
+				{
+					const char* payload_path = static_cast<const char*>(payload->Data);
+					std::string dragged_path(payload_path);
+					std::replace(dragged_path.begin(), dragged_path.end(), '/', '\\');
+					if (dragged_path.ends_with(".png")) sprite->SwapTexture(dragged_path);
+					else LOG(LogType::LOG_WARNING, "Wrong Sprite Format. Correct format to import Sprite file is .png");
+				}
+				ImGui::EndDragDropTarget();
+			}
+
 			ImGui::SameLine();
 			if (ImGui::Button(("Change##" + headerLabel).c_str(), ImVec2(60, 24)))
 			{
@@ -462,6 +476,7 @@ void PanelInspector::AnimatorOptions(GameObject& go)
 
 	std::string animatorLabel = std::string("Animator##" + std::to_string(go.GetID()));
 
+	ImGui::BeginGroup();
 	bool header_open = ImGui::CollapsingHeader(animatorLabel.c_str(), treeFlags);
 
 	if (ImGui::BeginPopupContextItem())
@@ -654,6 +669,25 @@ void PanelInspector::AnimatorOptions(GameObject& go)
 		ImGui::Dummy(ImVec2(0, 4));
 		ImGui::Separator();
 	}
+	ImGui::EndGroup();
+
+	if (ImGui::BeginDragDropTarget())
+	{
+		const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("RESOURCE_FILE_ANIMATION");
+		if (payload)
+		{
+			const char* payload_path = static_cast<const char*>(payload->Data);
+			std::string dragged_path(payload_path);
+			std::string dragged_name = fs::path(dragged_path).stem().string();
+			std::replace(dragged_path.begin(), dragged_path.end(), '/', '\\');
+
+			if (dragged_path.ends_with(".animation"))
+				animator->AddAnimation(dragged_name, dragged_path);
+			else
+				LOG(LogType::LOG_WARNING, "Wrong Animation Format. Correct format to import Animation file is .animation");
+		}
+		ImGui::EndDragDropTarget();
+	}
 }
 
 void PanelInspector::AudioSourceOptions(GameObject& go)
@@ -663,7 +697,7 @@ void PanelInspector::AudioSourceOptions(GameObject& go)
 	if (audio == nullptr) return;
 
 	const std::string headerLabel = "Audio Source##" + std::to_string(go.GetID());
-
+	ImGui::BeginGroup();
 	bool header_open = ImGui::CollapsingHeader(headerLabel.c_str(), treeFlags);
 
 	if (ImGui::BeginPopupContextItem())
@@ -842,6 +876,27 @@ void PanelInspector::AudioSourceOptions(GameObject& go)
 
 		ImGui::Dummy(ImVec2(0, 4));
 		ImGui::Separator();
+	}
+	ImGui::EndGroup();
+
+	if (ImGui::BeginDragDropTarget())
+	{
+		const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("RESOURCE_FILE_AUDIO");
+		if (payload)
+		{
+			const char* payload_path = static_cast<const char*>(payload->Data);
+			std::string dragged_path(payload_path);
+			std::string dragged_name = fs::path(dragged_path).stem().string();
+			std::replace(dragged_path.begin(), dragged_path.end(), '/', '\\');
+
+			if (dragged_path.ends_with(".ogg"))
+				audio->AddMusic(dragged_name, dragged_path);
+			else if (dragged_path.ends_with(".wav"))
+				audio->AddSound(dragged_name, dragged_path);
+			else
+				LOG(LogType::LOG_WARNING, "Wrong Audio Format. Correct format to import Audio file is .wav and .ogg");
+		}
+		ImGui::EndDragDropTarget();
 	}
 }
 
@@ -1180,6 +1235,19 @@ void PanelInspector::CanvasOptions(GameObject& go)
 								imageUI->SwapTexture(filePath);
 							}
 						}
+						if (ImGui::BeginDragDropTarget())
+						{
+							const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("RESOURCE_FILE_IMAGE");
+							if (payload)
+							{
+								const char* payload_path = static_cast<const char*>(payload->Data);
+								std::string dragged_path(payload_path);
+								std::replace(dragged_path.begin(), dragged_path.end(), '/', '\\');
+								if (dragged_path.ends_with(".png")) imageUI->SwapTexture(dragged_path);
+								else LOG(LogType::LOG_WARNING, "Wrong Sprite Format. Correct format to import Sprite file is .png");
+							}
+							ImGui::EndDragDropTarget();
+						}
 
 						std::string sizeLabel = "Texture Size";
 						ImGui::Text("%s: %d x %d", sizeLabel.c_str(), (int)imageUI->GetTextureSize().x, (int)imageUI->GetTextureSize().y);
@@ -1216,6 +1284,19 @@ void PanelInspector::CanvasOptions(GameObject& go)
 							{
 								buttonImage->SwapTexture(filePath);
 							}
+						}
+						if (ImGui::BeginDragDropTarget())
+						{
+							const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("RESOURCE_FILE_IMAGE");
+							if (payload)
+							{
+								const char* payload_path = static_cast<const char*>(payload->Data);
+								std::string dragged_path(payload_path);
+								std::replace(dragged_path.begin(), dragged_path.end(), '/', '\\');
+								if (dragged_path.ends_with(".png")) buttonImage->SwapTexture(dragged_path);
+								else LOG(LogType::LOG_WARNING, "Wrong Sprite Format. Correct format to import Sprite file is .png");
+							}
+							ImGui::EndDragDropTarget();
 						}
 
 						std::string sizeLabel = "Texture Size";
@@ -1270,6 +1351,19 @@ void PanelInspector::CanvasOptions(GameObject& go)
 							{
 								checkboxUI->SwapTexture(filePath);
 							}
+						}
+						if (ImGui::BeginDragDropTarget())
+						{
+							const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("RESOURCE_FILE_IMAGE");
+							if (payload)
+							{
+								const char* payload_path = static_cast<const char*>(payload->Data);
+								std::string dragged_path(payload_path);
+								std::replace(dragged_path.begin(), dragged_path.end(), '/', '\\');
+								if (dragged_path.ends_with(".png")) checkboxUI->SwapTexture(dragged_path);
+								else LOG(LogType::LOG_WARNING, "Wrong Sprite Format. Correct format to import Sprite file is .png");
+							}
+							ImGui::EndDragDropTarget();
 						}
 
 						std::string sizeLabel = "Texture Size";
@@ -1358,6 +1452,20 @@ void PanelInspector::CanvasOptions(GameObject& go)
 								sliderUI->SwapTexture(filePath);
 							}
 						}
+						if (ImGui::BeginDragDropTarget())
+						{
+							const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("RESOURCE_FILE_IMAGE");
+							if (payload)
+							{
+								const char* payload_path = static_cast<const char*>(payload->Data);
+								std::string dragged_path(payload_path);
+								std::replace(dragged_path.begin(), dragged_path.end(), '/', '\\');
+								if (dragged_path.ends_with(".png")) sliderUI->SwapTexture(dragged_path);
+								else LOG(LogType::LOG_WARNING, "Wrong Sprite Format. Correct format to import Sprite file is .png");
+							}
+							ImGui::EndDragDropTarget();
+						}
+
 						std::string sizeLabel = "Texture Size";
 						ImGui::Text("%s: %d x %d", sizeLabel.c_str(), (int)sliderUI->GetTextureSize().x, (int)sliderUI->GetTextureSize().y);
 
@@ -1477,6 +1585,24 @@ void PanelInspector::CanvasOptions(GameObject& go)
 							}
 						}
 
+						if (ImGui::BeginDragDropTarget())
+						{
+							const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("RESOURCE_FILE_FONT");
+							if (payload)
+							{
+								const char* payload_path = static_cast<const char*>(payload->Data);
+								std::string dragged_path(payload_path);
+								std::string dragged_name = fs::path(dragged_path).stem().string();
+								std::replace(dragged_path.begin(), dragged_path.end(), '/', '\\');
+
+								if (dragged_path.ends_with(".ttf"))
+									textUI->SwapFont(dragged_path);
+								else
+									LOG(LogType::LOG_WARNING, "Wrong Font Format. Correct format to import Font file is .ttf");
+							}
+							ImGui::EndDragDropTarget();
+						}
+
 						static const char* alignmentItems[] = { "Left", "Centered", "Right" };
 						int currentAlignment = static_cast<int>(textUI->GetTextAlignment());
 						std::string alignmentLabel = "Alignment##" + std::to_string(ui_element->GetID());
@@ -1579,6 +1705,8 @@ void PanelInspector::ParticleSystemOptions(GameObject& go)
 	if (psystem == nullptr) return;
 
 	std::string psystemLabel = std::string("Particle System##" + std::to_string(go.GetID()));
+
+	ImGui::BeginGroup();
 	bool header_open = ImGui::CollapsingHeader(psystemLabel.c_str(), treeFlags);
 
 	if (ImGui::BeginPopupContextItem()) {
@@ -1974,6 +2102,20 @@ void PanelInspector::ParticleSystemOptions(GameObject& go)
 									emitter->SwapTexture(filePath);
 								}
 							}
+							if (ImGui::BeginDragDropTarget())
+							{
+								const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("RESOURCE_FILE_IMAGE");
+								if (payload)
+								{
+									const char* payload_path = static_cast<const char*>(payload->Data);
+									std::string dragged_path(payload_path);
+									std::replace(dragged_path.begin(), dragged_path.end(), '/', '\\');
+									if (dragged_path.ends_with(".png")) emitter->SwapTexture(dragged_path);
+									else LOG(LogType::LOG_WARNING, "Wrong Sprite Format. Correct format to import Sprite file is .png");
+								}
+								ImGui::EndDragDropTarget();
+							}
+
 							ImGui::TableNextRow();
 							ImGui::TableSetColumnIndex(0);
 							ImGui::Text("Pixel Art");
@@ -2035,6 +2177,25 @@ void PanelInspector::ParticleSystemOptions(GameObject& go)
 		ImGui::Dummy(ImVec2(0, 4));
 		ImGui::Separator();
 	}
+	ImGui::EndGroup();
+
+	if (ImGui::BeginDragDropTarget())
+	{
+		const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("RESOURCE_FILE_PARTICLES");
+		if (payload)
+		{
+			const char* payload_path = static_cast<const char*>(payload->Data);
+			std::string dragged_path(payload_path);
+			std::string dragged_name = fs::path(dragged_path).stem().string();
+			std::replace(dragged_path.begin(), dragged_path.end(), '/', '\\');
+
+			if (dragged_path.ends_with(".mlparticle"))
+				psystem->LoadParticleSystemToFile(dragged_path);
+			else
+				LOG(LogType::LOG_WARNING, "Wrong Particle Format. Correct format to import Particle file is .mlparticle");
+		}
+		ImGui::EndDragDropTarget();
+	}
 }
 
 void PanelInspector::TileMapOptions(GameObject& go)
@@ -2084,6 +2245,20 @@ void PanelInspector::TileMapOptions(GameObject& go)
 				ImVec4(1, 1, 1, 1),
 				ImVec4(0.9f, 0.9f, 0.9f, 0.5f)
 			);
+
+			if (ImGui::BeginDragDropTarget())
+			{
+				const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("RESOURCE_FILE_IMAGE");
+				if (payload)
+				{
+					const char* payload_path = static_cast<const char*>(payload->Data);
+					std::string dragged_path(payload_path);
+					std::replace(dragged_path.begin(), dragged_path.end(), '/', '\\');
+					if (dragged_path.ends_with(".png")) tilemap->SwapTexture(dragged_path);
+					else LOG(LogType::LOG_WARNING, "Wrong Sprite Format. Correct format to import Sprite file is .png");
+				}
+				ImGui::EndDragDropTarget();
+			}
 		
 			ImGui::SameLine();
 			if (ImGui::Button(("Change##" + tilemapLabel).c_str(), ImVec2(60, 24)))

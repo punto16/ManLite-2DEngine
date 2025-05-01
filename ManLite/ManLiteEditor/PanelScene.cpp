@@ -1,6 +1,8 @@
 ﻿#include "PanelScene.h"
 
+#include "App.h"
 #include "GUI.h"
+#include "PanelSaveScene.h"
 #include "EngineCore.h"
 #include "RendererEM.h"
 #include "InputEM.h"
@@ -76,6 +78,36 @@ bool PanelScene::Update()
 		image_pos.x += (window_size.x - scaled_size.x) * 0.5f;
 		image_pos.y += (window_size.y - scaled_size.y) * 0.5f;
 
+		ImGui::SetCursorScreenPos(image_pos);
+		ImGui::InvisibleButton("##SceneImageDragTarget", scaled_size);
+
+		if (ImGui::BeginDragDropTarget())
+		{
+			const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("RESOURCE_FILE_TILED");
+			if (payload)
+			{
+				const char* payload_path = static_cast<const char*>(payload->Data);
+				std::string dragged_path(payload_path);
+				if (dragged_path.ends_with(".json")) engine->scene_manager_em->ImportTiledFile(dragged_path);
+				else LOG(LogType::LOG_WARNING, "Wrong Tiled Format. Correct format to import Tiled file is .json");
+			}
+			payload = ImGui::AcceptDragDropPayload("RESOURCE_FILE_SCENE");
+			if (payload)
+			{
+				const char* payload_path = static_cast<const char*>(payload->Data);
+				std::string dragged_path(payload_path);
+				if (dragged_path.ends_with(".mlscene"))
+				{
+					app->gui->save_scene_panel->RequestFocus();
+					app->gui->save_scene_panel->dragged_origin = true;
+					app->gui->save_scene_panel->dragged_path = dragged_path;
+					app->gui->save_scene_panel->save_panel_action = SavePanelAction::OPEN_SCENE;
+				}
+				else LOG(LogType::LOG_WARNING, "Wrong Scene Format. Correct format to import Scene file is .mlscene");
+			}
+			ImGui::EndDragDropTarget();
+		}
+
 		//rendering in imgui panel
 		ImGui::GetWindowDrawList()->AddImage(
 			(ImTextureID)(uintptr_t)engine->renderer_em->renderTexture,
@@ -87,8 +119,8 @@ bool PanelScene::Update()
 
 		if (engine->GetEngineState() != EngineState::PLAY)
 			ImGuizmoFunctionality(image_pos, scaled_size);
-
 	}
+
 	ImGui::End();
 
 	return ret;

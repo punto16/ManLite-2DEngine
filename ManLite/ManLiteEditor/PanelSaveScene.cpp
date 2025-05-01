@@ -89,7 +89,10 @@ bool PanelSaveScene::Update()
 						return false;
 					else
 					{
-						std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Open ManLite Scene file (*.mlscene)\0*.mlscene\0", "Assets\\Scenes")).string();
+						std::string filePath = dragged_path;
+						if (!dragged_origin) filePath = std::filesystem::relative(FileDialog::OpenFile("Open ManLite Scene file (*.mlscene)\0*.mlscene\0", "Assets\\Scenes")).string();
+						dragged_origin = false;
+						dragged_path = "";
 						if (!filePath.empty() && filePath.ends_with(".mlscene"))
 						{
 							std::string sceneName = std::filesystem::path(filePath).stem().string();
@@ -101,6 +104,8 @@ bool PanelSaveScene::Update()
 							app->gui->loading_panel->SetDescription(description);
 							new_scene = std::make_shared<Scene>();
 							auto scene_copy = new_scene;
+							int w = 0, h = 0;
+							ResourceManager::GetInstance().LoadTexture("Config\\placeholder.png", w, h);//load placeholder
 							loading_task = std::async(std::launch::async, [this, filePath, scene_copy]() {
 								engine->scene_manager_em->LoadSceneToScene(filePath, *scene_copy);
 								is_loading = false;
@@ -141,7 +146,10 @@ bool PanelSaveScene::Update()
 							return false;
 						else
 						{
-							std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Open ManLite Scene file (*.mlscene)\0*.mlscene\0", "Assets\\Scenes")).string();
+							std::string filePath = dragged_path;
+							if (!dragged_origin) filePath = std::filesystem::relative(FileDialog::OpenFile("Open ManLite Scene file (*.mlscene)\0*.mlscene\0", "Assets\\Scenes")).string();
+							dragged_origin = false;
+							dragged_path = "";
 							if (!filePath.empty() && filePath.ends_with(".mlscene"))
 							{
 								std::string sceneName = std::filesystem::path(filePath).stem().string();
@@ -153,6 +161,8 @@ bool PanelSaveScene::Update()
 								app->gui->loading_panel->SetDescription(description);
 								new_scene = std::make_shared<Scene>();
 								auto scene_copy = new_scene;
+								int w = 0, h = 0;
+								ResourceManager::GetInstance().LoadTexture("Config\\placeholder.png", w, h);//load placeholder
 								loading_task = std::async(std::launch::async, [this, filePath, scene_copy]() {
 									engine->scene_manager_em->LoadSceneToScene(filePath, *scene_copy);
 									is_loading = false;
@@ -173,7 +183,10 @@ bool PanelSaveScene::Update()
 						return false;
 					else
 					{
-						std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Open ManLite Scene file (*.mlscene)\0*.mlscene\0", "Assets\\Scenes")).string();
+						std::string filePath = dragged_path;
+						if (!dragged_origin) filePath = std::filesystem::relative(FileDialog::OpenFile("Open ManLite Scene file (*.mlscene)\0*.mlscene\0", "Assets\\Scenes")).string();
+						dragged_origin = false;
+						dragged_path = "";
 						if (!filePath.empty() && filePath.ends_with(".mlscene"))
 						{
 							std::string sceneName = std::filesystem::path(filePath).stem().string();
@@ -185,6 +198,8 @@ bool PanelSaveScene::Update()
 							app->gui->loading_panel->SetDescription(description);
 							new_scene = std::make_shared<Scene>();
 							auto scene_copy = new_scene;
+							int w = 0, h = 0;
+							ResourceManager::GetInstance().LoadTexture("Config\\placeholder.png", w, h);//load placeholder
 							loading_task = std::async(std::launch::async, [this, filePath, scene_copy]() {
 								engine->scene_manager_em->LoadSceneToScene(filePath, *scene_copy);
 								is_loading = false;

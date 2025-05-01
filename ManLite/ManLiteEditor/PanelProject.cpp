@@ -4,6 +4,9 @@
 #include "Log.h"
 #include "ResourceManager.h"
 #include "FilesManager.h"
+#include "App.h"
+#include "PanelSaveScene.h"
+#include "PanelAnimation.h"
 
 #include <imgui.h>
 
@@ -306,6 +309,18 @@ void PanelProject::RenderContentGrid()
             if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0)) {
                 if (item.type == FOLDER) {
                     UpdateCurrentDirectory(&item);
+                }
+                else if (item.type == SCENE)
+                {
+                    app->gui->save_scene_panel->RequestFocus();
+                    app->gui->save_scene_panel->dragged_origin = true;
+                    app->gui->save_scene_panel->dragged_path = item.relative_path;
+                    app->gui->save_scene_panel->save_panel_action = SavePanelAction::OPEN_SCENE;
+                }
+                else if (item.type == ANIMATION)
+                {
+                    app->gui->animation_panel->RequestFocus();
+                    app->gui->animation_panel->SetAnimation(item.relative_path);
                 }
                 else
                 {

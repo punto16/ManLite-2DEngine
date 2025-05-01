@@ -24,6 +24,7 @@ Sprite2D::Sprite2D(const Sprite2D& component_to_copy, std::shared_ptr<GameObject
     pixel_art(component_to_copy.pixel_art),
     offset(component_to_copy.offset)
 {
+    ResourceManager::GetInstance().LoadTexture("Config\\placeholder.png", tex_width, tex_height);//load placeholder
     textureID = ResourceManager::GetInstance().LoadTexture(texturePath, tex_width, tex_height);
     this->tex_width = component_to_copy.tex_width;
     this->tex_height = component_to_copy.tex_height;

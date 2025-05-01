@@ -30,9 +30,13 @@ public:
 	std::atomic<bool> set_scene{ false };
 	std::shared_ptr<Scene> new_scene;
 
+	bool dragged_origin = false;
+	std::string dragged_path = "";
+
 private:
 	int icon_image_id = -1;
 	int w, h;
+
 };
 
 #endif // !__PANEL_SAVE_SCENE_H__

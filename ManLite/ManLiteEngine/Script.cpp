@@ -390,7 +390,7 @@ void Script::FinishLoad()
 
     ApplyFieldValues();
 
-    if (enabled) Init();
+    if (enabled && engine->GetEngineState() == EngineState::PLAY) Init();
 }
 
 void Script::ReloadScript()
