@@ -22,6 +22,7 @@
 #include "AudioSource.h"
 #include "ParticleSystem.h"
 #include "TileMap.h"
+#include "Prefab.h"
 
 #include "Defs.h"
 #include "SDL2/SDL.h"
@@ -205,6 +206,11 @@ static void SetCurrentCameraGO(GameObject* go)
 {
 	if (!go) return;
 	engine->scene_manager_em->GetCurrentScene().SetCurrentCameraGO(go->GetSharedPtr());
+}
+static void InstantiatePrefab(MonoString* path)
+{
+	std::string path_string = MonoRegisterer::ToCppString(path);
+	engine->scene_manager_em->GetCurrentScene().SafeAddGO(Prefab::Instantiate(path_string, nullptr));
 }
 
 
@@ -1285,6 +1291,7 @@ void MonoRegisterer::RegisterFunctions()
 	mono_add_internal_call("ManLiteScripting.InternalCalls::GetSceneRoot", (void*)GetSceneRoot);
 	mono_add_internal_call("ManLiteScripting.InternalCalls::GetCurrentCameraGO", (void*)GetCurrentCameraGO);
 	mono_add_internal_call("ManLiteScripting.InternalCalls::SetCurrentCameraGO", (void*)SetCurrentCameraGO);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::InstantiatePrefab", (void*)InstantiatePrefab);
 
 	//utils
 	mono_add_internal_call("ManLiteScripting.InternalCalls::GetDT", (void*)GetDT);

@@ -1,0 +1,24 @@
+{
+  "game_objects": [
+    {
+      "ID": 1198274132,
+      "ParentID": 2451377295,
+      "ParentLayerID": 0,
+      "PrefabPath": "Assets\\Prefabs\\Samurai_Prefab_Test.prefab"
+    }
+  ],
+  "layers": [
+    {
+      "Layer_children_go_id": [
+        1198274132
+      ],
+      "children_count": 1,
+      "layer_id": 0,
+      "layer_name": "DefaultLayer_0",
+      "visible": true
+    }
+  ],
+  "scene_id": 2451377295,
+  "scene_name": "Prefab_Scene_Test",
+  "scene_path": "Assets\\Scenes\\Prefab_Scene_Test.mlscene"
+}

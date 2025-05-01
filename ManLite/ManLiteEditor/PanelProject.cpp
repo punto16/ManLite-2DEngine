@@ -27,6 +27,7 @@ PanelProject::PanelProject(PanelType type, std::string name, bool enabled) : Pan
     scene_icon          = ResourceManager::GetInstance().LoadTexture("Config\\Icons\\icon.png"              , w, h);
     script_icon         = ResourceManager::GetInstance().LoadTexture("Config\\Icons\\script_icon.png"       , w, h);
     tiled_icon          = ResourceManager::GetInstance().LoadTexture("Config\\Icons\\tiled_icon.png"        , w, h);
+    prefab_icon         = ResourceManager::GetInstance().LoadTexture("Config\\Icons\\prefab_icon.png"       , w, h);
 }
 
 PanelProject::~PanelProject()
@@ -41,6 +42,7 @@ PanelProject::~PanelProject()
     if (scene_icon      != 0) ResourceManager::GetInstance().ReleaseTexture("Config\\Icons\\icon.png"           );
     if (script_icon     != 0) ResourceManager::GetInstance().ReleaseTexture("Config\\Icons\\script_icon.png"    );
     if (tiled_icon      != 0) ResourceManager::GetInstance().ReleaseTexture("Config\\Icons\\tiled_icon.png"     );
+    if (prefab_icon     != 0) ResourceManager::GetInstance().ReleaseTexture("Config\\Icons\\prefab_icon.png"    );
 }
 
 bool PanelProject::Update()

@@ -571,6 +571,16 @@ bool Scene::Update(double dt)
 	AddPengindGOs();
 	AddPengindLayers();
 	//
+	if (engine->GetEngineState() == EngineState::STOP)
+	{
+		prefab_check_timer += (float)dt;
+		if (prefab_check_timer >= prefab_check_frequency)
+		{
+			for (const auto& item : scene_root.get()->GetChildren())
+				item->PrefabChecker();
+			prefab_check_timer = 0.0f;
+		}
+	}
 
 	for (const auto& item : scene_root.get()->GetChildren())
 		if (item->IsEnabled() && engine->GetEngineState() == EngineState::PLAY)

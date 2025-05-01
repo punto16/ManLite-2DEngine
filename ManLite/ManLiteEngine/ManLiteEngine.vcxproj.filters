@@ -172,6 +172,9 @@
     <ClCompile Include="FilesManager.cpp">
       <Filter>Utils\FilesManager</Filter>
     </ClCompile>
+    <ClCompile Include="Prefab.cpp">
+      <Filter>GameObject</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="EngineCore.h">
@@ -296,6 +299,9 @@
     </ClInclude>
     <ClInclude Include="FilesManager.h">
       <Filter>Utils\FilesManager</Filter>
+    </ClInclude>
+    <ClInclude Include="Prefab.h">
+      <Filter>GameObject</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -6,6 +6,7 @@
 #include "EngineCore.h"
 #include "RendererEM.h"
 #include "InputEM.h"
+#include "Prefab.h"
 #include "Defs.h"
 #include "WindowEM.h"
 #include "SceneManagerEM.h"
@@ -104,6 +105,14 @@ bool PanelScene::Update()
 					app->gui->save_scene_panel->save_panel_action = SavePanelAction::OPEN_SCENE;
 				}
 				else LOG(LogType::LOG_WARNING, "Wrong Scene Format. Correct format to import Scene file is .mlscene");
+			}
+			payload = ImGui::AcceptDragDropPayload("RESOURCE_FILE_PREFAB");
+			if (payload)
+			{
+				const char* payload_path = static_cast<const char*>(payload->Data);
+				std::string dragged_path(payload_path);
+				if (dragged_path.ends_with(".prefab")) Prefab::Instantiate(dragged_path, engine->scene_manager_em->GetCurrentScene().GetSceneRoot().GetSharedPtr());
+				else LOG(LogType::LOG_WARNING, "Wrong Prefab Format. Correct format to import Prefab file is .prefab");
 			}
 			ImGui::EndDragDropTarget();
 		}

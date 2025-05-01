@@ -27,6 +27,7 @@ public:
 	bool Unpause();
 
 	void Draw();
+	void PrefabChecker();
 
 	//DO NOT call this function to delete a game object
 	//instead, call current_scene->SafeDeleteGO(this);
@@ -180,6 +181,13 @@ public:
 	}
 	void SwitchEnabled() { SetEnabled(!this->enabled); }
 
+	void SetPrefabPath(std::string& path) { std::replace(path.begin(), path.end(), '/', '\\'); prefab_path = path; }
+	const std::string& GetPrefabPath() const { return prefab_path; }
+	bool IsPrefabInstance() const { return !prefab_path.empty(); }
+	bool IsPrefabModified() const { return prefab_modified; }
+	void SetPrefabModified(bool modified) { prefab_modified = modified; }
+	nlohmann::json& GetPrefabOriginalData() { return prefab_original_data; }
+	
 private:
 	std::string gameobject_name;
 	std::string gameobject_tag;
@@ -192,6 +200,10 @@ private:
 
 	bool enabled;
 	bool visible;
+
+	std::string prefab_path = "";
+	bool prefab_modified = false;
+	nlohmann::json prefab_original_data;
 };
 
 #endif // !__GAMEOBJECT_H__

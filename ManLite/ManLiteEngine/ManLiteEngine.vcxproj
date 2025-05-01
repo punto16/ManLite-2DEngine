@@ -203,6 +203,7 @@ popd
     <ClCompile Include="Particle.cpp" />
     <ClCompile Include="ParticleSystem.cpp" />
     <ClCompile Include="PhysicsEM.cpp" />
+    <ClCompile Include="Prefab.cpp" />
     <ClCompile Include="RendererEM.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="SceneManagerEM.cpp" />
@@ -245,6 +246,7 @@ popd
     <ClInclude Include="Particle.h" />
     <ClInclude Include="ParticleSystem.h" />
     <ClInclude Include="PhysicsEM.h" />
+    <ClInclude Include="Prefab.h" />
     <ClInclude Include="RendererEM.h" />
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="SceneManagerEM.h" />

@@ -1,0 +1,86 @@
+{
+    "Components": [
+        {
+            "AspectRatio": 1.0,
+            "ComponentName": "Transform",
+            "ComponentType": 0,
+            "Enabled": true,
+            "LockAspect": true,
+            "Position": [
+                0.0,
+                0.0
+            ],
+            "Rotation": 0.0,
+            "Scale": [
+                3.25,
+                3.25
+            ]
+        },
+        {
+            "ComponentName": "Sprite2D",
+            "ComponentType": 2,
+            "Enabled": true,
+            "Offset": [
+                0.0,
+                0.07400000095367432
+            ],
+            "PixelArtRender": true,
+            "TexturePath": "Assets\\Textures\\IDLE.png",
+            "TextureSection": [
+                35,
+                43,
+                26,
+                39
+            ],
+            "TextureSize": [
+                960,
+                96
+            ],
+            "TextureUVs": [
+                0.0364583320915699,
+                0.1458333283662796,
+                0.06354166567325592,
+                0.5520833134651184
+            ]
+        },
+        {
+            "Animations": [
+                {
+                    "name": "samurai_idle_animation_test1",
+                    "path": "Assets\\Animations\\samurai_idle_animation_test1.animation"
+                }
+            ],
+            "ComponentName": "Animator",
+            "ComponentType": 3,
+            "CurrentAnimation": "samurai_idle_animation_test1",
+            "Enabled": true
+        },
+        {
+            "Color": {
+                "A": 255,
+                "B": 0,
+                "G": 255,
+                "R": 0
+            },
+            "ComponentName": "Collider2D",
+            "ComponentType": 5,
+            "Enabled": true,
+            "Friction": 0.30000001192092896,
+            "Height": 2.5999999046325684,
+            "IsDynamic": true,
+            "IsSensor": false,
+            "LinearDamping": 0.0,
+            "LockRotation": false,
+            "Mass": 70.0,
+            "Radius": 0.5,
+            "Restitution": 0.0,
+            "ShapeType": "RECTANGLE",
+            "UseGravity": true,
+            "Width": 1.0
+        }
+    ],
+    "Enabled": true,
+    "Name": "Samurai_Prefab_Test",
+    "Tag": "Player",
+    "Visible": true
+}

@@ -58,10 +58,13 @@ void Animator::RemoveAnimation(const std::string& name)
 
 void Animator::RemoveAllAnimations()
 {
-    for (auto& pair : animations)
+    auto animationsCopy = animations;
+
+    for (auto& pair : animationsCopy)
     {
         RemoveAnimation(pair.first);
     }
+    animationsCopy.clear();
 }
 
 bool Animator::HasAnimation(const std::string& name)

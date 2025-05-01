@@ -115,6 +115,9 @@ private:
 	std::vector<std::shared_ptr<Layer>> layers_to_delete;
 
 	std::shared_ptr<GameObject> current_camera_go = nullptr;
+
+	float prefab_check_timer = 0.0f;
+	float prefab_check_frequency = 1.5;
 };
 
 class SceneManagerEM : public EngineModule

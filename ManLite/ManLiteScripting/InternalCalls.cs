@@ -72,6 +72,7 @@ namespace ManLiteScripting
         [MethodImpl(MethodImplOptions.InternalCall)] public extern static IntPtr GetSceneRoot();
         [MethodImpl(MethodImplOptions.InternalCall)] public extern static IntPtr GetCurrentCameraGO();
         [MethodImpl(MethodImplOptions.InternalCall)] public extern static void SetCurrentCameraGO(IntPtr cameraGO);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void InstantiatePrefab(string prefab_path);
         #endregion
 
 

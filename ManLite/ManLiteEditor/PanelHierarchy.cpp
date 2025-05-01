@@ -7,10 +7,12 @@
 #include "ManLiteEngine/SceneManagerEM.h"
 #include "ManLiteEngine/GameObject.h"
 #include "ManLiteEngine/TileMap.h"
-
+#include "ManLiteEngine/Prefab.h"
+#include "ManLiteEngine/FileDialog.h"
 
 #include "Defs.h"
 #include "algorithm"
+#include "filesystem"
 
 #include <imgui.h>
 
@@ -72,8 +74,6 @@ bool PanelHierarchy::Update()
 		else
 		{
 			BlankContext(engine->scene_manager_em->GetCurrentScene().GetSceneRoot());
-			if (ImGui::IsWindowHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Left) && !ImGui::IsAnyItemHovered())
-				engine->scene_manager_em->GetCurrentScene().SelectGameObject(nullptr, false, true);
 
 			if (ImGui::CollapsingHeader(std::string(engine->scene_manager_em->GetCurrentScene().GetSceneName() +
 				"##" +
@@ -99,6 +99,14 @@ bool PanelHierarchy::Update()
 			ImGui::SetCursorPos({5,5});
 			ImGui::InvisibleButton("##HierarchyDropTarget", window_size);
 
+			if (ImGui::IsItemHovered() &&
+				ImGui::IsMouseClicked(ImGuiMouseButton_Left) &&
+				!ImGui::GetIO().KeyCtrl &&
+				!ImGui::GetIO().KeyShift)
+			{
+				engine->scene_manager_em->GetCurrentScene().SelectGameObject(nullptr, false, true);
+			}
+
 			if (ImGui::BeginDragDropTarget())
 			{
 				const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("RESOURCE_FILE_TILED");
@@ -108,6 +116,14 @@ bool PanelHierarchy::Update()
 					std::string dragged_path(payload_path);
 					if (dragged_path.ends_with(".json")) engine->scene_manager_em->ImportTiledFile(dragged_path);
 					else LOG(LogType::LOG_WARNING, "Wrong Tiled Format. Correct format to import Tiled file is .json");
+				}
+				payload = ImGui::AcceptDragDropPayload("RESOURCE_FILE_PREFAB");
+				if (payload)
+				{
+					const char* payload_path = static_cast<const char*>(payload->Data);
+					std::string dragged_path(payload_path);
+					if (dragged_path.ends_with(".prefab")) Prefab::Instantiate(dragged_path ,engine->scene_manager_em->GetCurrentScene().GetSceneRoot().GetSharedPtr());
+					else LOG(LogType::LOG_WARNING, "Wrong Prefab Format. Correct format to import Prefab file is .prefab");
 				}
 				ImGui::EndDragDropTarget();
 			}
@@ -126,6 +142,14 @@ void PanelHierarchy::IterateTree(GameObject& parent, bool enabled)
     for (size_t i = 0; i < children.size(); ++i) {
         auto& item = children[i];
 
+		if (item->IsPrefabInstance())
+		{
+			if (item->IsPrefabModified())
+				ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 0, 0, 255)); // red
+			else
+				ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(0, 191, 255, 255)); // blue
+		}
+
 		const bool is_disabled = !item->IsEnabled();
 		if (!enabled || is_disabled) ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyle().Colors[ImGuiCol_TextDisabled]);
 		uint treeFlags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_DefaultOpen;
@@ -137,6 +161,7 @@ void PanelHierarchy::IterateTree(GameObject& parent, bool enabled)
 		std::string nodeLabel = std::string(item->GetName() + "##" + std::to_string(item->GetID()));
 		bool nodeOpen = ImGui::TreeNodeEx(nodeLabel.c_str(), treeFlags);
 		if (!enabled || is_disabled) ImGui::PopStyleColor();
+		if (item->IsPrefabInstance()) ImGui::PopStyleColor();
 
 		GameObjectSelection(*item);
 		DragAndDrop(*item);
@@ -240,6 +265,50 @@ void PanelHierarchy::Context(GameObject& parent)
 				parent.Reparent(new_parent, true);
 				new_parent->SetName(GameObject::GenerateUniqueName(new_parent->GetName(), new_parent.get()));
 				scene.SelectGameObject(new_parent);
+			}
+			ImGui::Separator();
+
+			if (parent.IsPrefabInstance())
+			{
+				if (ImGui::MenuItem("Revert to Prefab"))
+				{
+					parent.LoadGameObject(parent.GetPrefabOriginalData());
+					parent.SetPrefabModified(false);
+				}
+
+				if (ImGui::MenuItem("Overwrite Prefab"))
+				{
+					Prefab::SaveAsPrefab(parent.GetSharedPtr(), parent.GetPrefabPath());
+					nlohmann::json newOriginalData = parent.SaveGameObject();
+					Prefab::RemoveIDs(newOriginalData);
+					parent.GetPrefabOriginalData() = newOriginalData;
+					parent.SetPrefabModified(false);
+				}
+
+				if (ImGui::MenuItem("Unlink Prefab"))
+				{
+					std::string t = "";
+					parent.SetPrefabPath(t);
+					parent.SetPrefabModified(false);
+				}
+			}
+			else
+			{
+				if (ImGui::MenuItem("Convert to Prefab"))
+				{
+					std::string filePath = std::filesystem::relative(FileDialog::SaveFile("Save Prefab file (*.prefab)\0*.prefab\0", "Assets\\Prefabs")).string();
+					if (!filePath.empty())
+					{
+						std::string stem_name = std::filesystem::path(filePath).stem().string();
+
+						if (!filePath.ends_with(".prefab")) filePath += ".prefab";
+						if (Prefab::SaveAsPrefab(parent.GetSharedPtr(), filePath))
+						{
+							parent.SetPrefabPath(filePath);
+							LOG(LogType::LOG_OK, "Prefab file saved to: %s", filePath.c_str());
+						}
+					}
+				}
 			}
 		}
 		ImGui::EndPopup();

@@ -387,9 +387,7 @@ void PanelInspector::SpriteOptions(GameObject& go)
 			ImGui::SameLine();
 			if (ImGui::Button(("Change##" + headerLabel).c_str(), ImVec2(60, 24)))
 			{
-				std::string filePath = std::filesystem::relative(
-					FileDialog::OpenFile("Open Sprite file (*.png)\0*.png\0", "Assets\\Textures")
-				).string();
+				std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Open Sprite file (*.png)\0*.png\0", "Assets\\Textures")).string();
 
 				if (!filePath.empty() && filePath.ends_with(".png"))
 				{

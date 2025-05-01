@@ -522,6 +522,7 @@ FileType FilesManager::DetermineFileType(const std::string& extension)
     if (ext == ".animation") return ANIMATION;
     if (ext == ".mlscene") return SCENE;
     if (ext == ".tmx" || ext == ".json") return TILED;
+    if (ext == ".prefab") return PREFAB;
 
     return UNKNOWN;
 }

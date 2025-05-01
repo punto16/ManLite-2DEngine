@@ -1,6 +1,7 @@
 #include "GameObject.h"
 
 #include "Layer.h"
+#include "Prefab.h"
 
 #include "Component.h"
 #include "Transform.h"
@@ -42,7 +43,10 @@ GameObject::GameObject(std::weak_ptr<GameObject> go_to_copy) :
     gameobject_name(""),
     gameobject_tag(go_to_copy.lock()->GetTag()),
     enabled(go_to_copy.lock()->IsEnabled()),
-    visible(go_to_copy.lock()->IsVisible())
+    visible(go_to_copy.lock()->IsVisible()),
+    prefab_path(go_to_copy.lock()->prefab_path),
+    prefab_modified(go_to_copy.lock()->prefab_modified),
+    prefab_original_data(go_to_copy.lock()->prefab_original_data)
 {
     this->gameobject_name = GenerateUniqueName(go_to_copy.lock()->GetName(), this);
 
@@ -79,7 +83,7 @@ bool GameObject::Init()
 bool GameObject::Update(double dt)
 {
     bool ret = true;
-    
+
     //update components
     for (const auto& item : components_gameobject) if (item->IsEnabled()) item->Update(dt);
 
@@ -121,6 +125,30 @@ void GameObject::Draw()
     for (const auto& item : components_gameobject) if (item->IsEnabled()) item->Draw();
 
     //layer system!! do not iterate children.draw()
+}
+
+void GameObject::PrefabChecker()
+{
+    if (IsPrefabInstance() && !prefab_modified)
+    {
+        std::string t_prefab_path = prefab_path;
+        prefab_path = "";
+        nlohmann::json currentState = SaveGameObject();
+        prefab_path = t_prefab_path;
+        nlohmann::json cleanCurrent = currentState;
+        Prefab::RemoveIDs(cleanCurrent);
+
+        nlohmann::json cleanOriginal = prefab_original_data;
+        Prefab::RemoveIDs(cleanOriginal);
+
+        if (cleanCurrent.dump() != cleanOriginal.dump())
+        {
+            //LOG(LogType::LOG_INFO, "Current: %s\n\n\nOriginal: %s", cleanCurrent.dump().c_str(), cleanOriginal.dump().c_str());
+            prefab_modified = true;
+        }
+    }
+
+    for (const auto& item : children_gameobject) if (item->IsEnabled()) item->PrefabChecker();
 }
 
 void GameObject::Delete()
@@ -396,6 +424,17 @@ nlohmann::json GameObject::SaveGameObject()
     }
 
     goJSON["ID"] = this->gameobject_id;
+
+    if (IsPrefabInstance() && !prefab_modified)
+    {
+        goJSON["PrefabPath"] = prefab_path;
+        return goJSON;
+    }
+    else if (IsPrefabInstance() && prefab_modified)
+    {
+        goJSON["OriginalPrefabPath"] = prefab_path;
+    }
+
     goJSON["Name"] = this->gameobject_name;
     goJSON["Tag"] = this->gameobject_tag;
     goJSON["Enabled"] = this->enabled;
@@ -431,6 +470,28 @@ void GameObject::LoadGameObject(const nlohmann::json& goJSON)
     if (goJSON.contains("Tag")) this->gameobject_tag = goJSON["Tag"];
     if (goJSON.contains("Enabled")) this->enabled = goJSON["Enabled"];
     if (goJSON.contains("Visible")) this->visible = goJSON["Visible"];
+
+    if (goJSON.contains("PrefabPath") && !IsPrefabInstance())
+    {
+        std::string path = goJSON["PrefabPath"];
+
+        auto tempPrefab = Prefab::Instantiate(path, nullptr);
+
+        if (tempPrefab)
+        {
+            this->gameobject_name = tempPrefab->gameobject_name;
+            this->gameobject_tag = tempPrefab->gameobject_tag;
+            this->enabled = tempPrefab->enabled;
+            this->visible = tempPrefab->visible;
+
+            RemoveComponent(ComponentType::Transform);
+            CloneComponents(tempPrefab);
+            CloneChildrenHierarchy(tempPrefab);
+
+            prefab_original_data = tempPrefab->prefab_original_data;
+            prefab_path = path;
+        }
+    }
 
     //components
     if (goJSON.contains("Components"))
@@ -499,9 +560,22 @@ void GameObject::LoadGameObject(const nlohmann::json& goJSON)
         const nlohmann::json& childrenJSON = goJSON["GameObjects"];
         for (const auto& childJSON : childrenJSON)
         {
-            std::shared_ptr<GameObject> child_go = std::make_shared<GameObject>(shared_from_this(), "EmptyGameObject", true);
-            AddChild(child_go);
-            child_go->LoadGameObject(childJSON);
+            if (childJSON.contains("PrefabPath"))
+            {
+                std::string path = childJSON["PrefabPath"];
+                auto childPrefab = Prefab::Instantiate(path, shared_from_this());
+                if (childPrefab)
+                {
+                    childPrefab->SetID(childJSON["ID"]);
+                    AddChild(childPrefab);
+                }
+            }
+            else
+            {
+                std::shared_ptr<GameObject> child_go = std::make_shared<GameObject>(shared_from_this(), "EmptyGameObject", true);
+                AddChild(child_go);
+                child_go->LoadGameObject(childJSON);
+            }
         }
     }
 }
