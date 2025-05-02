@@ -95,9 +95,12 @@ bool PanelHierarchy::Update()
 				}
 				IterateTree(engine->scene_manager_em->GetCurrentScene().GetSceneRoot(), true);
 			}
-			ImVec2 window_size = { (float)(ImGui::GetContentRegionMax().x - 2.5), (float)(ImGui::GetContentRegionMax().y - 5) };
-			ImGui::SetCursorPos({5,5});
-			ImGui::InvisibleButton("##HierarchyDropTarget", window_size);
+			if (engine->GetEngineState() != PLAY)
+			{
+				ImVec2 window_size = { (float)(ImGui::GetContentRegionMax().x - 2.5), (float)(ImGui::GetContentRegionMax().y - 5) };
+				ImGui::SetCursorPos({5,5});
+				ImGui::InvisibleButton("##HierarchyDropTarget", window_size);
+			}
 
 			if (ImGui::IsItemHovered() &&
 				ImGui::IsMouseClicked(ImGuiMouseButton_Left) &&
@@ -107,25 +110,28 @@ bool PanelHierarchy::Update()
 				engine->scene_manager_em->GetCurrentScene().SelectGameObject(nullptr, false, true);
 			}
 
-			if (ImGui::BeginDragDropTarget())
+			if (engine->GetEngineState() != PLAY)
 			{
-				const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("RESOURCE_FILE_TILED");
-				if (payload)
+				if (ImGui::BeginDragDropTarget())
 				{
-					const char* payload_path = static_cast<const char*>(payload->Data);
-					std::string dragged_path(payload_path);
-					if (dragged_path.ends_with(".json")) engine->scene_manager_em->ImportTiledFile(dragged_path);
-					else LOG(LogType::LOG_WARNING, "Wrong Tiled Format. Correct format to import Tiled file is .json");
+					const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("RESOURCE_FILE_TILED");
+					if (payload)
+					{
+						const char* payload_path = static_cast<const char*>(payload->Data);
+						std::string dragged_path(payload_path);
+						if (dragged_path.ends_with(".json")) engine->scene_manager_em->ImportTiledFile(dragged_path);
+						else LOG(LogType::LOG_WARNING, "Wrong Tiled Format. Correct format to import Tiled file is .json");
+					}
+					payload = ImGui::AcceptDragDropPayload("RESOURCE_FILE_PREFAB");
+					if (payload)
+					{
+						const char* payload_path = static_cast<const char*>(payload->Data);
+						std::string dragged_path(payload_path);
+						if (dragged_path.ends_with(".prefab")) Prefab::Instantiate(dragged_path, engine->scene_manager_em->GetCurrentScene().GetSceneRoot().GetSharedPtr());
+						else LOG(LogType::LOG_WARNING, "Wrong Prefab Format. Correct format to import Prefab file is .prefab");
+					}
+					ImGui::EndDragDropTarget();
 				}
-				payload = ImGui::AcceptDragDropPayload("RESOURCE_FILE_PREFAB");
-				if (payload)
-				{
-					const char* payload_path = static_cast<const char*>(payload->Data);
-					std::string dragged_path(payload_path);
-					if (dragged_path.ends_with(".prefab")) Prefab::Instantiate(dragged_path ,engine->scene_manager_em->GetCurrentScene().GetSceneRoot().GetSharedPtr());
-					else LOG(LogType::LOG_WARNING, "Wrong Prefab Format. Correct format to import Prefab file is .prefab");
-				}
-				ImGui::EndDragDropTarget();
 			}
 		}
 	}

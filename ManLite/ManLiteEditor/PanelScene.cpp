@@ -79,6 +79,20 @@ bool PanelScene::Update()
 		image_pos.x += (window_size.x - scaled_size.x) * 0.5f;
 		image_pos.y += (window_size.y - scaled_size.y) * 0.5f;
 
+		//rendering in imgui panel
+		ImGui::GetWindowDrawList()->AddImage(
+			(ImTextureID)(uintptr_t)engine->renderer_em->renderTexture,
+			image_pos,
+			ImVec2(image_pos.x + scaled_size.x, image_pos.y + scaled_size.y),
+			ImVec2(0, 1),
+			ImVec2(1, 0)
+		);
+
+		if (engine->GetEngineState() != EngineState::PLAY)
+			ImGuizmoFunctionality(image_pos, scaled_size);
+
+
+		//drag and drop
 		ImGui::SetCursorScreenPos(image_pos);
 		ImGui::InvisibleButton("##SceneImageDragTarget", scaled_size);
 
@@ -116,18 +130,6 @@ bool PanelScene::Update()
 			}
 			ImGui::EndDragDropTarget();
 		}
-
-		//rendering in imgui panel
-		ImGui::GetWindowDrawList()->AddImage(
-			(ImTextureID)(uintptr_t)engine->renderer_em->renderTexture,
-			image_pos,
-			ImVec2(image_pos.x + scaled_size.x, image_pos.y + scaled_size.y),
-			ImVec2(0, 1),
-			ImVec2(1, 0)
-		);
-
-		if (engine->GetEngineState() != EngineState::PLAY)
-			ImGuizmoFunctionality(image_pos, scaled_size);
 	}
 
 	ImGui::End();

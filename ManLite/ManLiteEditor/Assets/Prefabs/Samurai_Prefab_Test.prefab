@@ -70,13 +70,24 @@
             "IsDynamic": true,
             "IsSensor": false,
             "LinearDamping": 0.0,
-            "LockRotation": false,
+            "LockRotation": true,
             "Mass": 70.0,
             "Radius": 0.5,
             "Restitution": 0.0,
             "ShapeType": "RECTANGLE",
             "UseGravity": true,
             "Width": 1.0
+        },
+        {
+            "ComponentName": "TestScript_2",
+            "ComponentType": 4,
+            "Enabled": true,
+            "ScriptFields": {
+                "prefab_path": {
+                    "type": 4,
+                    "value": "Assets/Prefabs/Samurai_Prefab_Test.prefab"
+                }
+            }
         }
     ],
     "Enabled": true,

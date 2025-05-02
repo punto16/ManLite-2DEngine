@@ -716,7 +716,12 @@ void Scene::SafeDeleteLayer(std::shared_ptr<Layer> layer_to_delete)
 
 void Scene::AddPengindGOs()
 {
-	for (const auto& item : objects_to_add) scene_root.get()->GetChildren().push_back(item);
+	for (const auto& item : objects_to_add)
+	{
+		scene_root.get()->GetChildren().push_back(item);
+		if (engine->GetEngineState() == EngineState::PLAY)
+			item->Init();
+	}
 	objects_to_add.clear();
 }
 

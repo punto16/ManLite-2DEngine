@@ -18,13 +18,21 @@ Script::Script(const Script& component_to_copy, std::shared_ptr<GameObject> cont
 {
     mono_object = engine->scripting_em->InstantiateClass(name, this);
     enabled = component_to_copy.enabled;
+
+    std::unordered_map<std::string, ScriptField> savedFields;
+    for (auto& [name, field] : component_to_copy.scriptFields) {
+        savedFields[name] = field;
+    }
+
     RetrieveScriptFields();
-    for (const auto& [fieldName, field] : component_to_copy.scriptFields) {
-        scriptFields.emplace_back(fieldName, field);
+
+    for (auto& [currentName, currentField] : scriptFields) {
+        if (savedFields.count(currentName) && savedFields[currentName].type == currentField.type) {
+            currentField.value = savedFields[currentName].value;
+        }
     }
 
     ApplyFieldValues();
-    RetrieveScriptFields();
 }
 
 Script::~Script()
@@ -390,7 +398,7 @@ void Script::FinishLoad()
 
     ApplyFieldValues();
 
-    if (enabled && engine->GetEngineState() == EngineState::PLAY) Init();
+    //if (enabled && engine->GetEngineState() == EngineState::PLAY) Init();
 }
 
 void Script::ReloadScript()

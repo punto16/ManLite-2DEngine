@@ -207,10 +207,12 @@ static void SetCurrentCameraGO(GameObject* go)
 	if (!go) return;
 	engine->scene_manager_em->GetCurrentScene().SetCurrentCameraGO(go->GetSharedPtr());
 }
-static void InstantiatePrefab(MonoString* path)
+static GameObject* InstantiatePrefab(MonoString* path)
 {
 	std::string path_string = MonoRegisterer::ToCppString(path);
-	engine->scene_manager_em->GetCurrentScene().SafeAddGO(Prefab::Instantiate(path_string, nullptr));
+	auto prefab = Prefab::Instantiate(path_string, nullptr);
+	engine->scene_manager_em->GetCurrentScene().SafeAddGO(prefab);
+	return prefab.get();
 }
 
 
