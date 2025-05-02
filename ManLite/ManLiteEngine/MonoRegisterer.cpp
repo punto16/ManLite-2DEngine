@@ -23,6 +23,7 @@
 #include "ParticleSystem.h"
 #include "TileMap.h"
 #include "Prefab.h"
+#include "Layer.h"
 
 #include "Defs.h"
 #include "SDL2/SDL.h"
@@ -207,12 +208,18 @@ static void SetCurrentCameraGO(GameObject* go)
 	if (!go) return;
 	engine->scene_manager_em->GetCurrentScene().SetCurrentCameraGO(go->GetSharedPtr());
 }
-static GameObject* InstantiatePrefab(MonoString* path)
+std::unordered_map<std::string, std::shared_ptr<GameObject>> MonoRegisterer::prefab_templates;
+GameObject* MonoRegisterer::InstantiatePrefab(MonoString* path)
 {
-	std::string path_string = MonoRegisterer::ToCppString(path);
-	auto prefab = Prefab::Instantiate(path_string, nullptr);
-	engine->scene_manager_em->GetCurrentScene().SafeAddGO(prefab);
-	return prefab.get();
+	std::string path_string = ToCppString(path);
+	auto& template_ptr = prefab_templates[path_string];
+	if (!template_ptr) template_ptr = Prefab::Instantiate(path_string, nullptr, true);
+
+	auto instantiated_prefab = engine->scene_manager_em->GetCurrentScene().DuplicateGO(*template_ptr.get());
+	engine->scene_manager_em->GetCurrentScene().SafeAddGO(instantiated_prefab);
+	engine->scene_manager_em->GetCurrentScene().GetSceneLayers()[0]->AddChild(instantiated_prefab);
+	instantiated_prefab->SetParentLayer(engine->scene_manager_em->GetCurrentScene().GetSceneLayers()[0]);
+	return instantiated_prefab.get();
 }
 
 

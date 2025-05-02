@@ -9,7 +9,7 @@ class Prefab
 {
 public:
     static bool SaveAsPrefab(std::shared_ptr<GameObject> gameObject, const std::string& filePath);
-    static std::shared_ptr<GameObject> Instantiate(const std::string& filePath, std::shared_ptr<GameObject> parent);
+    static std::shared_ptr<GameObject> Instantiate(const std::string& filePath, std::shared_ptr<GameObject> parent, bool runtime = false);
     static void RemoveIDs(nlohmann::json& json);
 
 private:

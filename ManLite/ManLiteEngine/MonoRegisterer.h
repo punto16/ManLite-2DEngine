@@ -8,6 +8,8 @@
 
 #include "string"
 #include "vector"
+#include "unordered_map"
+#include <memory>
 
 class MonoRegisterer
 {
@@ -16,6 +18,11 @@ public:
 
     static MonoString* ToMonoString(const std::string& str);
     static std::string ToCppString(MonoString* monoStr);
+
+    static GameObject* InstantiatePrefab(MonoString* path);
+
+    //use this only in runtime, after runtime clear it
+    static std::unordered_map<std::string, std::shared_ptr<GameObject>> prefab_templates;
 
     template<typename T>
     static MonoArray* VectorToMonoArray(const std::vector<T>& vec, MonoClass* elementClass)

@@ -27,7 +27,7 @@ bool Prefab::SaveAsPrefab(std::shared_ptr<GameObject> gameObject, const std::str
     return true;
 }
 
-std::shared_ptr<GameObject> Prefab::Instantiate(const std::string& filePath_const, std::shared_ptr<GameObject> parent)
+std::shared_ptr<GameObject> Prefab::Instantiate(const std::string& filePath_const, std::shared_ptr<GameObject> parent, bool runtime)
 {
     std::string filePath = filePath_const;
     std::replace(filePath.begin(), filePath.end(), '/', '\\');
@@ -62,8 +62,11 @@ std::shared_ptr<GameObject> Prefab::Instantiate(const std::string& filePath_cons
         if (parent.get() != nullptr) parent->AddChild(instance);
 
         //layers handle
-        engine->scene_manager_em->GetCurrentScene().GetSceneLayers()[0]->AddChild(instance);
-        instance->SetParentLayer(engine->scene_manager_em->GetCurrentScene().GetSceneLayers()[0]);
+        if (!runtime)
+        {
+            engine->scene_manager_em->GetCurrentScene().GetSceneLayers()[0]->AddChild(instance);
+            instance->SetParentLayer(engine->scene_manager_em->GetCurrentScene().GetSceneLayers()[0]);
+        }
     }
 
     return instance;

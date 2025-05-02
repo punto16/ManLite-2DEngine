@@ -9,6 +9,7 @@
 #include "TileMap.h"
 #include "Collider2D.h"
 #include "Script.h"
+#include "MonoRegisterer.h"
 
 #include "Defs.h"
 #include "Log.h"
@@ -511,6 +512,7 @@ void SceneManagerEM::StopSession()
 {
 	if (pre_play_scene)
 	{
+		MonoRegisterer::prefab_templates.clear();
 		engine->StopLogs(true);
 		current_scene->CleanUp();
 		if (engine->GetEditorOrBuild()) current_scene = std::move(pre_play_scene);
@@ -656,7 +658,10 @@ std::shared_ptr<GameObject> Scene::DuplicateGO(GameObject& go_to_copy, bool scen
 		copy->SetID(go_to_copy.GetID());
 	}
 	copy->CloneComponents(go_to_copy.GetSharedPtr(), scene_duplication);
-	go_to_copy.GetParentGO().lock()->AddChild(copy);
+	if (go_to_copy.GetParentGO().lock().get())
+	{
+		go_to_copy.GetParentGO().lock()->AddChild(copy);
+	}
 	if (go_to_copy.GetParentLayer().lock() != nullptr)
 	{
 		ReparentToLayer(copy, go_to_copy.GetParentLayer().lock());
