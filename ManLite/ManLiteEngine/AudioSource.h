@@ -9,9 +9,13 @@
 struct SoundRef {
     Mix_Chunk* chunk;
     std::string filePath;
+    int channel = -1;
     int volume = 100;
     bool loop = false;
     bool play_on_awake = false;
+    //spatial
+    bool spatial = false;
+    int spatial_distance = 10;
 };
 
 struct MusicRef {
@@ -35,7 +39,7 @@ public:
     bool Unpause() override;
 
     // sound
-    void AddSound(const std::string& name, const std::string& filePath, int volume = 100, bool loop = false, bool play_on_awake = false);
+    void AddSound(const std::string& name, const std::string& filePath, int volume = 100, bool loop = false, bool play_on_awake = false, bool spatial = false, int spatial_distance = 1000);
     void RemoveSound(const std::string& name);
     void RemoveAllSounds();
     bool HasSound(const std::string& name);
@@ -76,6 +80,8 @@ public:
     std::unordered_map<std::string, MusicRef>& GetMusics() { return musics; }
 
 private:
+    void UpdateSoundPosition(SoundRef& sound);
+
     std::unordered_map<std::string, SoundRef> sounds;
     std::unordered_map<std::string, MusicRef> musics;
 

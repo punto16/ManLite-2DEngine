@@ -798,6 +798,34 @@ void PanelInspector::AudioSourceOptions(GameObject& go)
 										audio->SetSoundVolume(name, vol);
 								}
 
+								if constexpr (std::is_same_v<decltype(audioRef), SoundRef>)
+								{
+									ImGui::TableNextRow();
+									ImGui::TableSetColumnIndex(0);
+									ImGui::Text("Spatial Sound");
+									ImGui::TableSetColumnIndex(1);
+									bool spatial = audioRef.spatial;
+									if (ImGui::Checkbox("##Spatial", &spatial))
+									{
+										audioRef.spatial = spatial;
+									}
+									ImGui::SameLine();
+									Gui::HelpMarker("Enable 3D positional audio effect");
+
+									if (audioRef.spatial)
+									{
+										ImGui::TableNextRow();
+										ImGui::TableSetColumnIndex(0);
+										ImGui::Text("Max Distance");
+										ImGui::TableSetColumnIndex(1);
+										int distance = audioRef.spatial_distance;
+										if (ImGui::DragInt("##Distance", &distance, 1, 0, 5000))
+										{
+											audioRef.spatial_distance = std::clamp(distance, 0, 5000);
+										}
+									}
+								}
+
 								ImGui::EndTable();
 							}
 

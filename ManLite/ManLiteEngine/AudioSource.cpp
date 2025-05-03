@@ -2,6 +2,10 @@
 #include "GameObject.h"
 #include "Log.h"
 
+#include "Transform.h"
+#include "EngineCore.h"
+#include "SceneManagerEM.h"
+
 #include "SDL2/SDL_mixer.h"
 
 AudioSource::AudioSource(std::weak_ptr<GameObject> container_go, std::string name, bool enable)
@@ -13,7 +17,7 @@ AudioSource::AudioSource(const AudioSource& component_to_copy, std::shared_ptr<G
     : Component(component_to_copy, container_go)
 {
     for (auto& pair : component_to_copy.sounds)
-        AddSound(pair.first, pair.second.filePath, pair.second.volume, pair.second.loop, pair.second.play_on_awake);
+        AddSound(pair.first, pair.second.filePath, pair.second.volume, pair.second.loop, pair.second.play_on_awake, pair.second.spatial, pair.second.spatial_distance);
 
     for (auto& pair : component_to_copy.musics)
         AddMusic(pair.first, pair.second.filePath, pair.second.volume, pair.second.loop, pair.second.play_on_awake);
@@ -41,6 +45,21 @@ bool AudioSource::Init()
 
 bool AudioSource::Update(float dt)
 {
+    for (auto& pair : sounds)
+    {
+        SoundRef& sound = pair.second;
+        if (sound.spatial && sound.channel != -1)
+        {
+            if (Mix_Playing(sound.channel))
+            {
+                UpdateSoundPosition(sound);
+            }
+            else
+            {
+                sound.channel = -1;
+            }
+        }
+    }
     return true;
 }
 
@@ -62,11 +81,11 @@ bool AudioSource::Unpause()
     return ret;
 }
 
-void AudioSource::AddSound(const std::string& name, const std::string& filePath, int volume, bool loop, bool play_on_awake)
+void AudioSource::AddSound(const std::string& name, const std::string& filePath, int volume, bool loop, bool play_on_awake, bool spatial, int spatial_distance)
 {
     if (HasSound(name)) return;
     if (Mix_Chunk* chunk = ResourceManager::GetInstance().LoadSound(filePath)) {
-        sounds[name] = { chunk, filePath, volume, loop, play_on_awake };
+        sounds[name] = { chunk, filePath, -1, volume, loop, play_on_awake, spatial, spatial_distance };
     }
 }
 
@@ -125,9 +144,15 @@ bool AudioSource::HasMusic(const std::string& name)
 void AudioSource::PlaySound(const std::string& name)
 {
     auto it = sounds.find(name);
-    if (it != sounds.end()) {
+    if (it != sounds.end())
+    {
         Mix_VolumeChunk(it->second.chunk, it->second.volume * 1.28);
-        Mix_PlayChannel(-1, it->second.chunk, it->second.loop ? -1 : 0);
+        it->second.channel = Mix_PlayChannel(-1, it->second.chunk, it->second.loop ? -1 : 0);
+
+        if (it->second.channel != -1 && it->second.spatial)
+        {
+            UpdateSoundPosition(it->second);
+        }
     }
 }
 
@@ -153,11 +178,11 @@ void AudioSource::StopSound(const std::string& name)
     if (it != sounds.end()) {
         Mix_Chunk* targetChunk = it->second.chunk;
         int numChannels = Mix_AllocateChannels(-1);
-        for (int i = 0; i < numChannels; ++i) {
-            if (Mix_GetChunk(i) == targetChunk && Mix_Playing(i)) {
-                Mix_HaltChannel(i);
-            }
+        if (Mix_Playing(it->second.channel))
+        {
+            Mix_HaltChannel(it->second.channel);
         }
+        it->second.channel = -1;
     }
 }
 
@@ -183,10 +208,9 @@ void AudioSource::PauseSound(const std::string& name)
     if (it != sounds.end()) {
         Mix_Chunk* targetChunk = it->second.chunk;
         int numChannels = Mix_AllocateChannels(-1);
-        for (int i = 0; i < numChannels; ++i) {
-            if (Mix_GetChunk(i) == targetChunk && Mix_Playing(i)) {
-                Mix_Pause(i);
-            }
+        if (Mix_Playing(it->second.channel))
+        {
+            Mix_Pause(it->second.channel);
         }
     }
 }
@@ -211,10 +235,9 @@ void AudioSource::UnpauseSound(const std::string& name)
     if (it != sounds.end()) {
         Mix_Chunk* targetChunk = it->second.chunk;
         int numChannels = Mix_AllocateChannels(-1);
-        for (int i = 0; i < numChannels; ++i) {
-            if (Mix_GetChunk(i) == targetChunk && Mix_Paused(i)) {
-                Mix_Resume(i);
-            }
+        if (Mix_Playing(it->second.channel))
+        {
+            Mix_Resume(it->second.channel);
         }
     }
 }
@@ -253,11 +276,9 @@ void AudioSource::SetSoundVolume(const std::string& name, int volume)
 
         Mix_VolumeChunk(targetChunk, targetVolume);
 
-        int numChannels = Mix_AllocateChannels(-1);
-        for (int i = 0; i < numChannels; ++i) {
-            if (Mix_GetChunk(i) == targetChunk && Mix_Playing(i)) {
-                Mix_Volume(i, targetVolume);
-            }
+        if (Mix_Playing(it->second.channel))
+        {
+            Mix_Volume(it->second.channel, targetVolume);
         }
     }
 }
@@ -288,6 +309,8 @@ nlohmann::json AudioSource::SaveComponent()
         soundJSON["volume"] = pair.second.volume;
         soundJSON["loop"] = pair.second.loop;
         soundJSON["play_on_awake"] = pair.second.play_on_awake;
+        soundJSON["spatial"] = pair.second.spatial;
+        soundJSON["spatial_distance"] = pair.second.spatial_distance;
         soundsJSON.push_back(soundJSON);
     }
     componentJSON["Sounds"] = soundsJSON;
@@ -323,7 +346,10 @@ void AudioSource::LoadComponent(const nlohmann::json& componentJSON)
                 soundJSON["path"],
                 soundJSON["volume"],
                 soundJSON["loop"],
-                soundJSON["play_on_awake"]);
+                soundJSON["play_on_awake"],
+                soundJSON["spatial"],
+                soundJSON["spatial_distance"]
+                );
         }
     }
 
@@ -336,4 +362,44 @@ void AudioSource::LoadComponent(const nlohmann::json& componentJSON)
                 musicJSON["play_on_awake"]);
         }
     }
+}
+
+void AudioSource::UpdateSoundPosition(SoundRef& sound)
+{
+    if (sound.channel == -1) return;
+
+    auto go = container_go.lock();
+    if (!go) return;
+    if (!engine->scene_manager_em->CurrentSceneAvailable()) return;
+    if (!engine->scene_manager_em->GetCurrentScene().HasCameraSet())
+    {
+        Mix_SetPosition(sound.channel, 0, 0);
+        return;
+    }
+
+    auto t = container_go.lock()->GetComponent<Transform>();
+    if (!t) return;
+    float obj_x = t->GetPosition().x;
+    float obj_y = t->GetPosition().y;
+
+    auto cam_t = engine->scene_manager_em->GetCurrentScene().GetCurrentCameraGO().GetComponent<Transform>();
+    if (!cam_t) return;
+    float cam_x = cam_t->GetPosition().x;
+    float cam_y = cam_t->GetPosition().y;
+
+    float dx = obj_x - cam_x;
+    float dy = obj_y - cam_y;
+    float distance = std::sqrt(dx * dx + dy * dy);
+
+    if (distance > sound.spatial_distance)
+    {
+        Mix_SetPosition(sound.channel, 0, 255);
+        return;
+    }
+
+    float angle_degrees = (dx / sound.spatial_distance) * 90.0f;
+    if (angle_degrees < 0) angle_degrees += 360.0f;
+
+    Uint8 sdl_distance = static_cast<Uint8>((distance / sound.spatial_distance) * 255);
+    Mix_SetPosition(sound.channel, static_cast<Sint16>(angle_degrees), sdl_distance);
 }
