@@ -170,7 +170,7 @@ static void CloseApp()
 static void LoadScene(MonoString* path)
 {
 	//for the moment, NON async
-	engine->scene_manager_em->LoadSceneFromJson(MonoRegisterer::ToCppString(path));
+	engine->scene_manager_em->RuntimeLoadScene(MonoRegisterer::ToCppString(path));
 }
 static void CreateEmptyGO(GameObject* go)
 {

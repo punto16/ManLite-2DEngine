@@ -17,6 +17,7 @@ public:
     ~Collider2D();
 
     bool Init() override;
+    bool CleanUp() override;
     bool Update(float dt) override;
     void Draw() override;
 

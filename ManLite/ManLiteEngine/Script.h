@@ -65,6 +65,9 @@ private:
 
     //variables
     std::vector<std::pair<std::string, ScriptField>> scriptFields;
+
+    //
+    bool did_init = false;
 };
 
 #endif // !__SCRIPT_H__

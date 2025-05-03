@@ -2608,8 +2608,8 @@ void PanelInspector::AddComponent(GameObject& go)
 			{
 				std::string script_name = std::filesystem::path(filePath).stem().string();
 				go.AddComponent<Script>(script_name);
-				if (!go.GetComponents<Script>()[go.GetComponents<Script>().size() - 1]->GetMonoObject())
-					go.RemoveComponent(go.GetComponents<Script>()[go.GetComponents<Script>().size() - 1]);
+				//if (!go.GetComponents<Script>()[go.GetComponents<Script>().size() - 1]->GetMonoObject())
+				//	go.RemoveComponent(go.GetComponents<Script>()[go.GetComponents<Script>().size() - 1]);
 			}
 			show_component_window = false;
 		}

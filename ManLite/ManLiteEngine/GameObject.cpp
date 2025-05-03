@@ -93,6 +93,19 @@ bool GameObject::Update(double dt)
     return ret;
 }
 
+bool GameObject::CleanUp()
+{
+    bool ret = true;
+
+    //cleanup components
+    for (const auto& item : components_gameobject) if (item->IsEnabled()) item->CleanUp();
+
+    //then, cleanup children game objects
+    for (const auto& item : children_gameobject) if (item->IsEnabled()) item->CleanUp();
+
+    return ret;
+}
+
 bool GameObject::Pause()
 {
     bool ret = true;

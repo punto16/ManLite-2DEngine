@@ -57,6 +57,14 @@ bool SceneManagerEM::Update(double dt)
 
 	if (!current_scene.get()->Update(dt)) return false;
 
+	if (!scene_to_load.empty())
+	{
+		bool engine_mode = engine->GetEditorOrBuild();
+		engine->SetEditorOrBuild(false);
+		LoadSceneFromJson(scene_to_load);
+		engine->SetEditorOrBuild(engine_mode);
+		scene_to_load = "";
+	}
 	return ret;
 }
 
@@ -152,6 +160,8 @@ void SceneManagerEM::LoadSceneFromJson(const std::string& file_name_const)
 	}
 	file.close();
 
+	if (engine->GetEngineState() == EngineState::PLAY) StopSession();
+
 	current_scene->SetScenePath(file_name);
 	if (sceneJSON.contains("scene_name"))
 	{
@@ -212,11 +222,7 @@ void SceneManagerEM::LoadSceneFromJson(const std::string& file_name_const)
 
 	LOG(LogType::LOG_OK, "Succesfully Loaded Scene %s", file_name.c_str());
 
-	if (engine->GetEngineState() == EngineState::PLAY)
-	{
-		StopSession();
-		StartSession();
-	}
+	if (engine->GetEngineState() == EngineState::PLAY) StartSession();
 }
 
 void SceneManagerEM::LoadSceneToScene(const std::string& file_name_const, Scene& scene)
@@ -311,6 +317,11 @@ void SceneManagerEM::LoadSceneToScene(const std::string& file_name_const, Scene&
 
 	engine->StopLogs(old_log_state);
 	LOG(LogType::LOG_OK, "Succesfully Loaded Scene %s", file_name.c_str());
+}
+
+void SceneManagerEM::RuntimeLoadScene(const std::string& file_name)
+{
+	if (scene_to_load.empty()) scene_to_load = file_name;
 }
 
 void SceneManagerEM::ImportTiledFile(const std::string& file_name_const)
@@ -510,13 +521,17 @@ void SceneManagerEM::StartSession()
 
 void SceneManagerEM::StopSession()
 {
-	if (pre_play_scene)
+	if (pre_play_scene && engine->GetEditorOrBuild())
 	{
 		MonoRegisterer::prefab_templates.clear();
 		engine->StopLogs(true);
 		current_scene->CleanUp();
 		if (engine->GetEditorOrBuild()) current_scene = std::move(pre_play_scene);
 		engine->StopLogs(false);
+	}
+	else if (!engine->GetEditorOrBuild())
+	{
+		current_scene->CleanUp();
 	}
 }
 
@@ -631,6 +646,10 @@ bool Scene::CleanUp()
 
 	objects_to_add.clear();
 	layers_to_add.clear();
+	for (const auto& item : scene_root.get()->GetChildren())
+		if (!item->CleanUp())
+			return false;
+
 	objects_to_delete.clear();
 	layers_to_delete.clear();
 	scene_layers.clear();

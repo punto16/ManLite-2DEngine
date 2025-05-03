@@ -140,8 +140,10 @@ void Transform::SetWorldAngle(float world_angle)
 {
     if (container_go.lock()->GetParentGO().lock().get())
     {
-        auto parent_transform = container_go.lock()->GetParentGO().lock()->GetComponent<Transform>();
-        SetAngle(world_angle - parent_transform->GetWorldAngle());
+        if (auto parent_transform = container_go.lock()->GetParentGO().lock()->GetComponent<Transform>())
+            SetAngle(world_angle - parent_transform->GetWorldAngle());
+        else
+            SetAngle(world_angle);
     }
     else
     {

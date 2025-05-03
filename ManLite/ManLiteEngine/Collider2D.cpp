@@ -61,6 +61,7 @@ Collider2D::~Collider2D()
     if (m_body)
     {
         PhysicsEM::GetWorld()->DestroyBody(m_body);
+        m_body = nullptr;
     }
 }
 
@@ -90,6 +91,16 @@ bool Collider2D::Init()
     m_body->SetEnabled(true);
 
     return ret;
+}
+
+bool Collider2D::CleanUp()
+{
+    if (m_body)
+    {
+        PhysicsEM::GetWorld()->DestroyBody(m_body);
+        m_body = nullptr;
+    }
+    return true;
 }
 
 bool Collider2D::Update(float dt)

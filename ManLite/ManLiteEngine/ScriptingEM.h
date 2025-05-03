@@ -34,7 +34,7 @@ public:
 	struct InstantiateQueueData
 	{
 		std::string class_name = "";
-		GameObject* container_go = nullptr;
+		unsigned int container_go_id = 0;
 		Script* script = nullptr;
 	};
 

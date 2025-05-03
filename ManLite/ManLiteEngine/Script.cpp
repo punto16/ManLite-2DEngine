@@ -9,14 +9,14 @@
 Script::Script(std::weak_ptr<GameObject> container_go, std::string name, bool enable)
     : Component(container_go, ComponentType::Script, name, true)
 {
-    mono_object = engine->scripting_em->InstantiateClass(name, this);
+    mono_object = engine->scripting_em->InstantiateClassAsync(name, this);
     RetrieveScriptFields();
 }
 
 Script::Script(const Script& component_to_copy, std::shared_ptr<GameObject> container_go)
     : Component(component_to_copy, container_go)
 {
-    mono_object = engine->scripting_em->InstantiateClass(name, this);
+    mono_object = engine->scripting_em->InstantiateClassAsync(name, this);
     enabled = component_to_copy.enabled;
 
     std::unordered_map<std::string, ScriptField> savedFields;
@@ -49,6 +49,7 @@ bool Script::Init()
 
     //call script start here
     engine->scripting_em->CallScriptFunction(this, mono_object, "Start");
+    if (mono_object) did_init = true;
     return ret;
 }
 
@@ -398,7 +399,7 @@ void Script::FinishLoad()
 
     ApplyFieldValues();
 
-    //if (enabled && engine->GetEngineState() == EngineState::PLAY) Init();
+    if (!did_init && enabled && engine->GetEngineState() == EngineState::PLAY) Init();
 }
 
 void Script::ReloadScript()

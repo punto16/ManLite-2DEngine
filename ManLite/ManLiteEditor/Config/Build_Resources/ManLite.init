@@ -1,14 +1,15 @@
 {
-    "app_name": "_asas",
-    "icon_path": "Assets\\Textures\\image2.png",
+    "app_name": "_Samurai_Pong2",
+    "icon_path": "Config\\Icons\\build_icon.png",
     "scenes": {
         "included": [
+            "Assets/Scenes/Prefab_Scene_Test.mlscene",
             "Assets/Scenes/Pong_Scene_test.mlscene"
         ],
-        "main": "Assets/Scenes/Pong_Scene_test.mlscene"
+        "main": "Assets/Scenes/Prefab_Scene_Test.mlscene"
     },
     "window": {
-        "fullscreen": false,
+        "fullscreen": true,
         "vsync": false
     }
 }

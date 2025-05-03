@@ -22,6 +22,7 @@ public:
 	bool Awake();
 	bool Init();
 	bool Update(double dt);
+	bool CleanUp();
 
 	bool Pause();
 	bool Unpause();
@@ -71,7 +72,9 @@ public:
 		std::vector<TComponent*> matchingComponents;
 		for (const auto& component : components_gameobject)
 		{
-			if (TComponent* castedComponent = dynamic_cast<TComponent*>(component.get())) {
+			if (!component.get()) continue;
+			if (TComponent* castedComponent = dynamic_cast<TComponent*>(component.get()))
+			{
 				matchingComponents.push_back(castedComponent);
 			}
 		}

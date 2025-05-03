@@ -10,6 +10,7 @@ public class TestScript_2 : MonoBehaviour
     private IGameObject game_object;
 	
     public string prefab_path = "Assets/Prefabs/Samurai_Prefab_Test.prefab";
+    public string scene_path = "Assets/Scenes/Pong_Scene_test.mlscene";
 
     public override void Start()
     {
@@ -22,6 +23,10 @@ public class TestScript_2 : MonoBehaviour
         if (InternalCalls.GetKeyboardKeyDown((int)KeyboardKey.SDL_SCANCODE_Q))
         {
             InternalCalls.InstantiatePrefab(prefab_path);
+        }
+        if (InternalCalls.GetKeyboardKeyDown((int)KeyboardKey.SDL_SCANCODE_E))
+        {
+            InternalCalls.LoadScene(scene_path);
         }
     }
 
