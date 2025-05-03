@@ -92,44 +92,47 @@ bool PanelScene::Update()
 			ImGuizmoFunctionality(image_pos, scaled_size);
 
 
-		////drag and drop
-		//ImGui::SetCursorScreenPos(image_pos);
-		//ImGui::InvisibleButton("##SceneImageDragTarget", scaled_size);
+		//drag and drop
+		if (engine->input_em->GetMouseButtonDown(SDL_BUTTON_LEFT) == KEY_REPEAT || engine->input_em->GetMouseButtonDown(SDL_BUTTON_LEFT) == KEY_UP)
+		{
+			ImGui::SetCursorScreenPos(image_pos);
+			ImGui::InvisibleButton("##SceneImageDragTarget", scaled_size);
 
-		//if (ImGui::BeginDragDropTarget())
-		//{
-		//	const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("RESOURCE_FILE_TILED");
-		//	if (payload)
-		//	{
-		//		const char* payload_path = static_cast<const char*>(payload->Data);
-		//		std::string dragged_path(payload_path);
-		//		if (dragged_path.ends_with(".json")) engine->scene_manager_em->ImportTiledFile(dragged_path);
-		//		else LOG(LogType::LOG_WARNING, "Wrong Tiled Format. Correct format to import Tiled file is .json");
-		//	}
-		//	payload = ImGui::AcceptDragDropPayload("RESOURCE_FILE_SCENE");
-		//	if (payload)
-		//	{
-		//		const char* payload_path = static_cast<const char*>(payload->Data);
-		//		std::string dragged_path(payload_path);
-		//		if (dragged_path.ends_with(".mlscene"))
-		//		{
-		//			app->gui->save_scene_panel->RequestFocus();
-		//			app->gui->save_scene_panel->dragged_origin = true;
-		//			app->gui->save_scene_panel->dragged_path = dragged_path;
-		//			app->gui->save_scene_panel->save_panel_action = SavePanelAction::OPEN_SCENE;
-		//		}
-		//		else LOG(LogType::LOG_WARNING, "Wrong Scene Format. Correct format to import Scene file is .mlscene");
-		//	}
-		//	payload = ImGui::AcceptDragDropPayload("RESOURCE_FILE_PREFAB");
-		//	if (payload)
-		//	{
-		//		const char* payload_path = static_cast<const char*>(payload->Data);
-		//		std::string dragged_path(payload_path);
-		//		if (dragged_path.ends_with(".prefab")) Prefab::Instantiate(dragged_path, engine->scene_manager_em->GetCurrentScene().GetSceneRoot().GetSharedPtr());
-		//		else LOG(LogType::LOG_WARNING, "Wrong Prefab Format. Correct format to import Prefab file is .prefab");
-		//	}
-		//	ImGui::EndDragDropTarget();
-		//}
+			if (ImGui::BeginDragDropTarget())
+			{
+				const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("RESOURCE_FILE_TILED");
+				if (payload)
+				{
+					const char* payload_path = static_cast<const char*>(payload->Data);
+					std::string dragged_path(payload_path);
+					if (dragged_path.ends_with(".json")) engine->scene_manager_em->ImportTiledFile(dragged_path);
+					else LOG(LogType::LOG_WARNING, "Wrong Tiled Format. Correct format to import Tiled file is .json");
+				}
+				payload = ImGui::AcceptDragDropPayload("RESOURCE_FILE_SCENE");
+				if (payload)
+				{
+					const char* payload_path = static_cast<const char*>(payload->Data);
+					std::string dragged_path(payload_path);
+					if (dragged_path.ends_with(".mlscene"))
+					{
+						app->gui->save_scene_panel->RequestFocus();
+						app->gui->save_scene_panel->dragged_origin = true;
+						app->gui->save_scene_panel->dragged_path = dragged_path;
+						app->gui->save_scene_panel->save_panel_action = SavePanelAction::OPEN_SCENE;
+					}
+					else LOG(LogType::LOG_WARNING, "Wrong Scene Format. Correct format to import Scene file is .mlscene");
+				}
+				payload = ImGui::AcceptDragDropPayload("RESOURCE_FILE_PREFAB");
+				if (payload)
+				{
+					const char* payload_path = static_cast<const char*>(payload->Data);
+					std::string dragged_path(payload_path);
+					if (dragged_path.ends_with(".prefab")) Prefab::Instantiate(dragged_path, engine->scene_manager_em->GetCurrentScene().GetSceneRoot().GetSharedPtr());
+					else LOG(LogType::LOG_WARNING, "Wrong Prefab Format. Correct format to import Prefab file is .prefab");
+				}
+				ImGui::EndDragDropTarget();
+			}
+		}
 	}
 
 	ImGui::End();
