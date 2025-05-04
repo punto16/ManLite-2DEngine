@@ -17,7 +17,10 @@ AudioSource::AudioSource(const AudioSource& component_to_copy, std::shared_ptr<G
     : Component(component_to_copy, container_go)
 {
     for (auto& pair : component_to_copy.sounds)
+    {
         AddSound(pair.first, pair.second.filePath, pair.second.volume, pair.second.loop, pair.second.play_on_awake, pair.second.spatial, pair.second.spatial_distance);
+        if (pair.second.listener.lock().get()) SetListener(pair.first, pair.second.listener.lock());
+    }
 
     for (auto& pair : component_to_copy.musics)
         AddMusic(pair.first, pair.second.filePath, pair.second.volume, pair.second.loop, pair.second.play_on_awake);
@@ -52,6 +55,10 @@ bool AudioSource::Update(float dt)
         {
             if (Mix_Playing(sound.channel))
             {
+                if (pair.second.listener_id != 0 && engine->scene_manager_em->CurrentSceneAvailable())
+                {
+                    pair.second.listener = engine->scene_manager_em->GetCurrentScene().FindGameObjectByID(pair.second.listener_id);
+                }
                 UpdateSoundPosition(sound);
             }
             else
@@ -151,6 +158,10 @@ void AudioSource::PlaySound(const std::string& name)
 
         if (it->second.channel != -1 && it->second.spatial)
         {
+            if (it->second.listener_id != 0 && engine->scene_manager_em->CurrentSceneAvailable())
+            {
+                it->second.listener = engine->scene_manager_em->GetCurrentScene().FindGameObjectByID(it->second.listener_id);
+            }
             UpdateSoundPosition(it->second);
         }
     }
@@ -292,6 +303,31 @@ void AudioSource::SetMusicVolume(const std::string& name, int volume)
     }
 }
 
+bool AudioSource::SetListener(const std::string& name, std::shared_ptr<GameObject> listener)
+{
+    if (!listener.get()) return false;
+    auto it = sounds.find(name);
+    if (it != sounds.end())
+    {
+        it->second.listener_id = listener->GetID();
+        it->second.listener = listener;
+        return true;
+    }
+    return false;
+}
+
+bool AudioSource::RemoveListener(const std::string& name)
+{
+    auto it = sounds.find(name);
+    if (it != sounds.end())
+    {
+        it->second.listener_id = 0;
+        it->second.listener.reset();
+        return true;
+    }
+    return false;
+}
+
 nlohmann::json AudioSource::SaveComponent()
 {
     nlohmann::json componentJSON;
@@ -311,6 +347,7 @@ nlohmann::json AudioSource::SaveComponent()
         soundJSON["play_on_awake"] = pair.second.play_on_awake;
         soundJSON["spatial"] = pair.second.spatial;
         soundJSON["spatial_distance"] = pair.second.spatial_distance;
+        if (pair.second.listener.lock().get()) soundJSON["listener_id"] = pair.second.listener.lock()->GetID();
         soundsJSON.push_back(soundJSON);
     }
     componentJSON["Sounds"] = soundsJSON;
@@ -349,7 +386,11 @@ void AudioSource::LoadComponent(const nlohmann::json& componentJSON)
                 soundJSON["play_on_awake"],
                 soundJSON["spatial"],
                 soundJSON["spatial_distance"]
-                );
+            );
+            if (soundJSON.contains("listener_id") && engine->scene_manager_em->CurrentSceneAvailable())
+            {
+                SetListener(soundJSON["name"], engine->scene_manager_em->GetCurrentScene().FindGameObjectByID(soundJSON["listener_id"]));
+            }
         }
     }
 
@@ -367,11 +408,18 @@ void AudioSource::LoadComponent(const nlohmann::json& componentJSON)
 void AudioSource::UpdateSoundPosition(SoundRef& sound)
 {
     if (sound.channel == -1) return;
-
+    bool cam_is_listener = !sound.listener.lock().get();
+    Transform* listener = nullptr;
+    if (!cam_is_listener) listener = sound.listener.lock()->GetComponent<Transform>();
+    if (!listener && !cam_is_listener)
+    {
+        sound.listener.reset();
+        cam_is_listener = true;
+    }
     auto go = container_go.lock();
     if (!go) return;
     if (!engine->scene_manager_em->CurrentSceneAvailable()) return;
-    if (!engine->scene_manager_em->GetCurrentScene().HasCameraSet())
+    if (!engine->scene_manager_em->GetCurrentScene().HasCameraSet() && cam_is_listener)
     {
         Mix_SetPosition(sound.channel, 0, 0);
         return;
@@ -382,10 +430,10 @@ void AudioSource::UpdateSoundPosition(SoundRef& sound)
     float obj_x = t->GetPosition().x;
     float obj_y = t->GetPosition().y;
 
-    auto cam_t = engine->scene_manager_em->GetCurrentScene().GetCurrentCameraGO().GetComponent<Transform>();
-    if (!cam_t) return;
-    float cam_x = cam_t->GetPosition().x;
-    float cam_y = cam_t->GetPosition().y;
+    if (cam_is_listener) listener = engine->scene_manager_em->GetCurrentScene().GetCurrentCameraGO().GetComponent<Transform>();
+    if (!listener) return;
+    float cam_x = listener->GetPosition().x;
+    float cam_y = listener->GetPosition().y;
 
     float dx = obj_x - cam_x;
     float dy = obj_y - cam_y;

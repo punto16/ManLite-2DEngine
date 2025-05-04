@@ -16,6 +16,8 @@ struct SoundRef {
     //spatial
     bool spatial = false;
     int spatial_distance = 10;
+    unsigned int listener_id = 0;
+    std::weak_ptr<GameObject> listener;
 };
 
 struct MusicRef {
@@ -39,7 +41,7 @@ public:
     bool Unpause() override;
 
     // sound
-    void AddSound(const std::string& name, const std::string& filePath, int volume = 100, bool loop = false, bool play_on_awake = false, bool spatial = false, int spatial_distance = 1000);
+    void AddSound(const std::string& name, const std::string& filePath, int volume = 100, bool loop = false, bool play_on_awake = false, bool spatial = false, int spatial_distance = 10);
     void RemoveSound(const std::string& name);
     void RemoveAllSounds();
     bool HasSound(const std::string& name);
@@ -70,6 +72,9 @@ public:
     int GetMusicVolume(const std::string& name);
     void SetSoundVolume(const std::string& name, int volume);
     void SetMusicVolume(const std::string& name, int volume);
+
+    bool SetListener(const std::string& name, std::shared_ptr<GameObject> listener);
+    bool RemoveListener(const std::string& name);
 
     // serialization
     nlohmann::json SaveComponent() override;

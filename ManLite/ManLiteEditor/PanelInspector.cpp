@@ -823,6 +823,43 @@ void PanelInspector::AudioSourceOptions(GameObject& go)
 										{
 											audioRef.spatial_distance = std::clamp(distance, 0, 5000);
 										}
+
+										ImGui::TableNextRow();
+										ImGui::TableSetColumnIndex(0);
+										ImGui::Text("Listener");
+										ImGui::TableSetColumnIndex(1);
+										GameObject* listener_go = audioRef.listener.lock().get();
+										if (!listener_go && audioRef.listener_id != 0)
+										{
+											audio->SetListener(name, engine->scene_manager_em->GetCurrentScene().FindGameObjectByID(audioRef.listener_id));
+											listener_go = audioRef.listener.lock().get();
+										}
+										ImGui::Button(listener_go ? listener_go->GetName().c_str() : "Default");
+										if (ImGui::BeginDragDropTarget())
+										{
+											ImGui::PushStyleColor(ImGuiCol_DragDropTarget, IM_COL32(45, 85, 230, 255));
+											if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_MULTI_NODE"))
+											{
+												GameObject* droppedGo = *(GameObject**)payload->Data;
+												if (droppedGo)
+												{
+													audio->SetListener(name, droppedGo->GetSharedPtr());
+												}
+											}
+											ImGui::PopStyleColor();
+											ImGui::EndDragDropTarget();
+										}
+										if (listener_go && ImGui::BeginPopupContextItem())
+										{
+											std::string context_label = "Remove Listener##" + std::to_string(listener_go->GetID());
+											if (ImGui::MenuItem(context_label.c_str()))
+											{
+												audio->RemoveListener(name);
+											}
+											ImGui::EndPopup();
+										}
+										ImGui::SameLine();
+										Gui::HelpMarker("Default listener is the current scene camera\nYou can drag and drop a game object to set it as the listener");
 									}
 								}
 
