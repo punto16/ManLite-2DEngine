@@ -93,13 +93,23 @@ void Prefab::RemoveIDs(nlohmann::json& json)
 
     if (json.contains("Components"))
     {
-        for (auto& component : json["Components"]) {
-            if (component.contains("ComponentID")) {
+        for (auto& component : json["Components"])
+        {
+            if (component.contains("ComponentID"))
                 component.erase("ComponentID");
-            }
-            if (component.contains("ContainerGOID")) {
+            if (component.contains("ContainerGOID"))
                 component.erase("ContainerGOID");
-            }
+
+            if (component.contains("ComponentType"))
+                if (component["ComponentType"] == (int)ComponentType::Canvas)
+                    if (component.contains("UIElements"))
+                        for (auto& ui_element : component["UIElements"])
+                        {
+                            if (ui_element.contains("CointainerCanvasID"))
+                                ui_element.erase("CointainerCanvasID");
+                            if (ui_element.contains("UIElementID"))
+                                ui_element.erase("UIElementID");
+                        }
         }
     }
 

@@ -56,6 +56,7 @@ Canvas::Canvas(const Canvas& component_to_copy, std::shared_ptr<GameObject> cont
 
 Canvas::~Canvas()
 {
+	ui_elements.clear();
 }
 
 bool Canvas::Init()

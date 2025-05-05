@@ -1,0 +1,513 @@
+{
+    "Components": [
+        {
+            "AspectRatio": 1.0,
+            "ComponentName": "Transform",
+            "ComponentType": 0,
+            "Enabled": true,
+            "LockAspect": true,
+            "Position": [
+                0.0,
+                0.0
+            ],
+            "Rotation": 0.0,
+            "Scale": [
+                4.199999809265137,
+                4.199999809265137
+            ]
+        },
+        {
+            "CameraZoom": 80.0,
+            "ComponentName": "Camera",
+            "ComponentType": 1,
+            "Enabled": true,
+            "ViewportSize": [
+                1700,
+                900
+            ]
+        },
+        {
+            "ComponentName": "Sprite2D",
+            "ComponentType": 2,
+            "Enabled": true,
+            "Offset": [
+                0.0,
+                0.07999999821186066
+            ],
+            "PixelArtRender": true,
+            "TexturePath": "Assets\\Textures\\IDLE.png",
+            "TextureSection": [
+                35,
+                43,
+                26,
+                39
+            ],
+            "TextureSize": [
+                960,
+                96
+            ],
+            "TextureUVs": [
+                0.0364583320915699,
+                0.1458333283662796,
+                0.06354166567325592,
+                0.5520833134651184
+            ]
+        },
+        {
+            "Animations": [
+                {
+                    "name": "samurai_idle_animation_test1",
+                    "path": "Assets\\Animations\\samurai_idle_animation_test1.animation"
+                }
+            ],
+            "ComponentName": "Animator",
+            "ComponentType": 3,
+            "CurrentAnimation": "samurai_idle_animation_test1",
+            "Enabled": true
+        },
+        {
+            "ComponentName": "AudioSource",
+            "ComponentType": 7,
+            "Enabled": true,
+            "Musics": [
+                {
+                    "loop": true,
+                    "name": "music",
+                    "path": "Assets\\Audio\\Music\\music.ogg",
+                    "play_on_awake": true,
+                    "volume": 6
+                }
+            ],
+            "Sounds": [
+                {
+                    "loop": true,
+                    "name": "fart",
+                    "path": "Assets\\Audio\\SoundEffects\\fart.wav",
+                    "play_on_awake": true,
+                    "spatial": true,
+                    "spatial_distance": 10,
+                    "volume": 100
+                }
+            ]
+        },
+        {
+            "Color": {
+                "A": 255,
+                "B": 0,
+                "G": 255,
+                "R": 0
+            },
+            "ComponentName": "Collider2D",
+            "ComponentType": 5,
+            "Enabled": true,
+            "Friction": 0.30000001192092896,
+            "Height": 3.299999952316284,
+            "IsDynamic": true,
+            "IsSensor": false,
+            "LinearDamping": 0.0,
+            "LockRotation": false,
+            "Mass": 0.0,
+            "Radius": 0.5,
+            "Restitution": 0.0,
+            "ShapeType": "RECTANGLE",
+            "UseGravity": true,
+            "Width": 1.0
+        },
+        {
+            "ComponentName": "Canvas",
+            "ComponentType": 6,
+            "Enabled": true,
+            "UIElements": [
+                {
+                    "PixelArtRender": false,
+                    "SectionIdle": [
+                        0.0,
+                        0.0,
+                        640.0,
+                        480.0
+                    ],
+                    "TexturePath": "Assets\\Textures\\image.png",
+                    "TextureSize": [
+                        640,
+                        480
+                    ],
+                    "UIElementAngle": 0.0,
+                    "UIElementAspectLocked": false,
+                    "UIElementAspectLockedRatio": 1.0,
+                    "UIElementEnabled": true,
+                    "UIElementName": "ImageUI",
+                    "UIElementPosition": [
+                        9.5,
+                        4.800000190734863
+                    ],
+                    "UIElementScale": [
+                        1.0,
+                        1.0
+                    ],
+                    "UIElementType": 0
+                },
+                {
+                    "CheckBoxState": 0,
+                    "PixelArtRender": false,
+                    "SectionDisabledFalse": [
+                        0.0,
+                        0.0,
+                        640.0,
+                        480.0
+                    ],
+                    "SectionDisabledTrue": [
+                        0.0,
+                        0.0,
+                        640.0,
+                        480.0
+                    ],
+                    "SectionHoveredFalse": [
+                        0.0,
+                        0.0,
+                        640.0,
+                        480.0
+                    ],
+                    "SectionHoveredSelectedFalse": [
+                        0.0,
+                        0.0,
+                        640.0,
+                        480.0
+                    ],
+                    "SectionHoveredSelectedTrue": [
+                        0.0,
+                        0.0,
+                        640.0,
+                        480.0
+                    ],
+                    "SectionHoveredTrue": [
+                        0.0,
+                        0.0,
+                        640.0,
+                        480.0
+                    ],
+                    "SectionIdleFalse": [
+                        0.0,
+                        0.0,
+                        640.0,
+                        480.0
+                    ],
+                    "SectionIdleTrue": [
+                        0.0,
+                        0.0,
+                        640.0,
+                        480.0
+                    ],
+                    "SectionSelectedFalse": [
+                        0.0,
+                        0.0,
+                        640.0,
+                        480.0
+                    ],
+                    "SectionSelectedTrue": [
+                        0.0,
+                        0.0,
+                        640.0,
+                        480.0
+                    ],
+                    "TexturePath": "Assets\\Textures\\image.png",
+                    "TextureSize": [
+                        640,
+                        480
+                    ],
+                    "UIElementAngle": 0.0,
+                    "UIElementAspectLocked": false,
+                    "UIElementAspectLockedRatio": 1.0,
+                    "UIElementEnabled": true,
+                    "UIElementName": "CheckBoxUI",
+                    "UIElementPosition": [
+                        9.550000190734863,
+                        2.4000000953674316
+                    ],
+                    "UIElementScale": [
+                        1.0,
+                        1.0
+                    ],
+                    "UIElementType": 3
+                },
+                {
+                    "Alignment": 0,
+                    "CurrentValue": 1,
+                    "FirstPartDisabledFalseSection": [
+                        0.0,
+                        0.0,
+                        640.0,
+                        480.0
+                    ],
+                    "FirstPartDisabledTrueSection": [
+                        0.0,
+                        0.0,
+                        640.0,
+                        480.0
+                    ],
+                    "FirstPartHoveredFalseSection": [
+                        0.0,
+                        0.0,
+                        640.0,
+                        480.0
+                    ],
+                    "FirstPartHoveredTrueSection": [
+                        0.0,
+                        0.0,
+                        640.0,
+                        480.0
+                    ],
+                    "FirstPartIdleFalseSection": [
+                        0.0,
+                        0.0,
+                        640.0,
+                        480.0
+                    ],
+                    "FirstPartIdleTrueSection": [
+                        0.0,
+                        0.0,
+                        640.0,
+                        480.0
+                    ],
+                    "LastPartDisabledFalseSection": [
+                        0.0,
+                        0.0,
+                        640.0,
+                        480.0
+                    ],
+                    "LastPartDisabledTrueSection": [
+                        0.0,
+                        0.0,
+                        640.0,
+                        480.0
+                    ],
+                    "LastPartHoveredFalseSection": [
+                        0.0,
+                        0.0,
+                        640.0,
+                        480.0
+                    ],
+                    "LastPartHoveredTrueSection": [
+                        0.0,
+                        0.0,
+                        640.0,
+                        480.0
+                    ],
+                    "LastPartIdleFalseSection": [
+                        0.0,
+                        0.0,
+                        640.0,
+                        480.0
+                    ],
+                    "LastPartIdleTrueSection": [
+                        0.0,
+                        0.0,
+                        640.0,
+                        480.0
+                    ],
+                    "MaxValue": 1,
+                    "MinValue": 0,
+                    "Offset": 0.0,
+                    "OffsetFirst": 0.0,
+                    "OffsetLast": 0.0,
+                    "PixelArt": false,
+                    "RegularPartDisabledFalseSection": [
+                        0.0,
+                        0.0,
+                        640.0,
+                        480.0
+                    ],
+                    "RegularPartDisabledTrueSection": [
+                        0.0,
+                        0.0,
+                        640.0,
+                        480.0
+                    ],
+                    "RegularPartHoveredFalseSection": [
+                        0.0,
+                        0.0,
+                        640.0,
+                        480.0
+                    ],
+                    "RegularPartHoveredTrueSection": [
+                        0.0,
+                        0.0,
+                        640.0,
+                        480.0
+                    ],
+                    "RegularPartIdleFalseSection": [
+                        0.0,
+                        0.0,
+                        640.0,
+                        480.0
+                    ],
+                    "RegularPartIdleTrueSection": [
+                        0.0,
+                        0.0,
+                        640.0,
+                        480.0
+                    ],
+                    "SliderState": 0,
+                    "SliderStyle": 0,
+                    "TexturePath": "Assets\\Textures\\image.png",
+                    "UIElementAngle": 0.0,
+                    "UIElementAspectLocked": false,
+                    "UIElementAspectLockedRatio": 1.0,
+                    "UIElementEnabled": true,
+                    "UIElementName": "SliderUI",
+                    "UIElementPosition": [
+                        9.5,
+                        1.149999976158142
+                    ],
+                    "UIElementScale": [
+                        1.0,
+                        1.0
+                    ],
+                    "UIElementType": 2
+                },
+                {
+                    "Color": [
+                        255,
+                        255,
+                        255,
+                        255
+                    ],
+                    "FontPath": "Assets\\Fonts\\Arial.ttf",
+                    "Text": "Lorem Ipsum",
+                    "TextAlignment": 1,
+                    "UIElementAngle": 0.0,
+                    "UIElementAspectLocked": true,
+                    "UIElementAspectLockedRatio": 1.0,
+                    "UIElementEnabled": true,
+                    "UIElementName": "TextUI",
+                    "UIElementPosition": [
+                        9.399999618530273,
+                        0.10000000149011612
+                    ],
+                    "UIElementScale": [
+                        0.3499999940395355,
+                        0.3499999940395355
+                    ],
+                    "UIElementType": 4
+                },
+                {
+                    "ButtonState": 0,
+                    "PixelArtRender": false,
+                    "SectionDisabled": [
+                        0.0,
+                        0.0,
+                        640.0,
+                        480.0
+                    ],
+                    "SectionHovered": [
+                        0.0,
+                        0.0,
+                        640.0,
+                        480.0
+                    ],
+                    "SectionHoveredSelected": [
+                        0.0,
+                        0.0,
+                        640.0,
+                        480.0
+                    ],
+                    "SectionIdle": [
+                        0.0,
+                        0.0,
+                        640.0,
+                        480.0
+                    ],
+                    "SectionSelected": [
+                        0.0,
+                        0.0,
+                        640.0,
+                        480.0
+                    ],
+                    "TexturePath": "Assets\\Textures\\image.png",
+                    "TextureSize": [
+                        640,
+                        480
+                    ],
+                    "UIElementAngle": 0.0,
+                    "UIElementAspectLocked": false,
+                    "UIElementAspectLockedRatio": 1.0,
+                    "UIElementEnabled": true,
+                    "UIElementName": "ButtonImageUI",
+                    "UIElementPosition": [
+                        9.649999618530273,
+                        3.5999999046325684
+                    ],
+                    "UIElementScale": [
+                        1.0,
+                        1.0
+                    ],
+                    "UIElementType": 1
+                }
+            ]
+        },
+        {
+            "ComponentName": "TileMap",
+            "ComponentType": 9,
+            "Enabled": true,
+            "GridData": [
+                79,
+                80,
+                81,
+                82,
+                83,
+                86,
+                87,
+                88,
+                89,
+                90,
+                83,
+                83,
+                83,
+                83,
+                83,
+                83,
+                83,
+                83,
+                83,
+                83,
+                83,
+                83,
+                83,
+                83,
+                83
+            ],
+            "GridSize": [
+                5.0,
+                5.0
+            ],
+            "ImageSectionSize": [
+                32.0,
+                32.0
+            ],
+            "PixelArt": true,
+            "TexturePath": "Assets\\TileMaps\\platformer_tileset.png",
+            "TileSize": [
+                1.0,
+                1.0
+            ]
+        },
+        {
+            "ComponentName": "TestScript_2",
+            "ComponentType": 4,
+            "Enabled": true,
+            "ScriptFields": {
+                "prefab_path": {
+                    "type": 4,
+                    "value": "Assets/Prefabs/Samurai_Prefab_Test.prefab"
+                },
+                "scene_path": {
+                    "type": 4,
+                    "value": "Assets/Scenes/Pong_Scene_test.mlscene"
+                }
+            }
+        }
+    ],
+    "Enabled": true,
+    "Name": "PrefabWithEverything",
+    "Tag": "sashakii",
+    "Visible": true
+}

@@ -159,7 +159,6 @@
     <ClCompile Include="PhysicsEM.cpp">
       <Filter>EngineModules\Physics</Filter>
     </ClCompile>
-    <ClCompile Include="TileMap.cpp" />
     <ClCompile Include="ScriptingEM.cpp">
       <Filter>EngineModules\Scripting</Filter>
     </ClCompile>
@@ -174,6 +173,9 @@
     </ClCompile>
     <ClCompile Include="Prefab.cpp">
       <Filter>GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="TileMap.cpp">
+      <Filter>GameObject\Components</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

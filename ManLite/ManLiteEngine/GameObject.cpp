@@ -156,7 +156,8 @@ void GameObject::PrefabChecker()
 
         if (cleanCurrent.dump() != cleanOriginal.dump())
         {
-            //LOG(LogType::LOG_INFO, "Current: %s\n\n\nOriginal: %s", cleanCurrent.dump().c_str(), cleanOriginal.dump().c_str());
+            //LOG(LogType::LOG_INFO, "Current: %s\n\n\n", cleanCurrent.dump().c_str());
+            //LOG(LogType::LOG_INFO, "Original: %s", cleanOriginal.dump().c_str());
             prefab_modified = true;
         }
     }
@@ -509,6 +510,9 @@ void GameObject::LoadGameObject(const nlohmann::json& goJSON)
     //components
     if (goJSON.contains("Components"))
     {
+        if (!components_gameobject.empty())
+            for (const auto& item : components_gameobject) if (item->IsEnabled()) item->CleanUp();
+        components_gameobject.clear();
         const nlohmann::json& componentsJSON = goJSON["Components"];
 
         for (const auto& componentJSON : componentsJSON)
@@ -570,6 +574,9 @@ void GameObject::LoadGameObject(const nlohmann::json& goJSON)
     //children
     if (goJSON.contains("GameObjects"))
     {
+        if (!children_gameobject.empty())
+            for (const auto& item : children_gameobject) if (item->IsEnabled()) item->CleanUp();
+        children_gameobject.clear();
         const nlohmann::json& childrenJSON = goJSON["GameObjects"];
         for (const auto& childJSON : childrenJSON)
         {

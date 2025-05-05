@@ -62,7 +62,6 @@ CheckBoxUI::CheckBoxUI(const CheckBoxUI& uielement_to_copy, std::shared_ptr<Game
 CheckBoxUI::~CheckBoxUI() {
     ResourceManager::GetInstance().ReleaseTexture("Config\\placeholder.png");
     if (!texture_path.empty()) ResourceManager::GetInstance().ReleaseTexture(texture_path);
-    if (section_manager.current_section != nullptr) RELEASE(section_manager.current_section);
 }
 
 void CheckBoxUI::Draw() {

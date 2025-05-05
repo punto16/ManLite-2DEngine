@@ -45,7 +45,6 @@ ButtonImageUI::~ButtonImageUI()
 {
     ResourceManager::GetInstance().ReleaseTexture("Config\\placeholder.png");
     if (!texture_path.empty()) ResourceManager::GetInstance().ReleaseTexture(texture_path);
-    if (button_section_manager.current_section != nullptr) RELEASE(button_section_manager.current_section)
 }
 
 void ButtonImageUI::Draw()
@@ -132,11 +131,6 @@ nlohmann::json ButtonImageUI::SaveUIElement()
     uielementJSON["PixelArtRender"] = pixel_art;
     uielementJSON["TextureSize"] = { tex_width, tex_height };
     uielementJSON["ButtonState"] = button_section_manager.button_state;
-    uielementJSON["CurrentSection"] = { 
-        button_section_manager.current_section->x, 
-        button_section_manager.current_section->y, 
-        button_section_manager.current_section->w, 
-        button_section_manager.current_section->h };
     uielementJSON["SectionIdle"] = { 
         button_section_manager.section_idle.x, 
         button_section_manager.section_idle.y, 
@@ -194,13 +188,7 @@ void ButtonImageUI::LoadUIElement(const nlohmann::json& uielementJSON)
         tex_height = uielementJSON["TextureSize"][1];
     }
     if (uielementJSON.contains("ButtonState")) button_section_manager.button_state = (ButtonState)uielementJSON["ButtonState"];
-    if (uielementJSON.contains("CurrentSection"))
-    {
-        button_section_manager.current_section->x = uielementJSON["CurrentSection"][0];
-        button_section_manager.current_section->y = uielementJSON["CurrentSection"][1];
-        button_section_manager.current_section->w = uielementJSON["CurrentSection"][2];
-        button_section_manager.current_section->h = uielementJSON["CurrentSection"][3];
-    }
+    
     if (uielementJSON.contains("SectionIdle"))
     {
         button_section_manager.section_idle.x = uielementJSON["SectionIdle"][0];
@@ -236,6 +224,7 @@ void ButtonImageUI::LoadUIElement(const nlohmann::json& uielementJSON)
         button_section_manager.section_disabled.w = uielementJSON["SectionDisabled"][2];
         button_section_manager.section_disabled.h = uielementJSON["SectionDisabled"][3];
     }
+    UpdateCurrentTexture();
 }
 
 void ButtonImageUI::SwapTexture(std::string new_path)
