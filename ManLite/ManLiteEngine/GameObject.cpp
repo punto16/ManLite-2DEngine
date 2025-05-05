@@ -585,6 +585,5 @@ void GameObject::LoadGameObject(const nlohmann::json& goJSON)
             AddChild(child_go);
             child_go->LoadGameObject(childJSON);
         }
-
     }
 }

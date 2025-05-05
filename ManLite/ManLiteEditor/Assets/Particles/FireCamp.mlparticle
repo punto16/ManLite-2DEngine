@@ -1,7 +1,6 @@
 [
     {
         "Characters": "",
-        "EmitterID": 1722217431,
         "EmitterName": "Smoke",
         "EmitterTypeManager": [
             0,
@@ -118,7 +117,6 @@
     },
     {
         "Characters": "a",
-        "EmitterID": 2879121503,
         "EmitterName": "Fire",
         "EmitterTypeManager": [
             0,

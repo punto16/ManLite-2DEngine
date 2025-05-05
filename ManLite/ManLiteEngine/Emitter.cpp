@@ -382,7 +382,6 @@ nlohmann::json Emitter::SaveComponent()
 	nlohmann::json emitterJSON;
 
 	emitterJSON["EmitterName"] = emitter_name;
-	emitterJSON["EmitterID"] = emitter_id;
 	emitterJSON["Enabled"] = enabled;
 
 	emitterJSON["MaxParticles"] = max_particles;
@@ -442,7 +441,6 @@ nlohmann::json Emitter::SaveComponent()
 void Emitter::LoadComponent(const nlohmann::json& emitterJSON)
 {
 	if (emitterJSON.contains("EmitterName")) emitter_name = emitterJSON["EmitterName"];
-	if (emitterJSON.contains("EmitterID")) emitter_id = emitterJSON["EmitterID"];
 	if (emitterJSON.contains("Enabled")) enabled = emitterJSON["Enabled"];
 
 	if (emitterJSON.contains("MaxParticles")) max_particles = emitterJSON["MaxParticles"];

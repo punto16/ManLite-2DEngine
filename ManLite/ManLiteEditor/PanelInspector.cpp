@@ -1169,11 +1169,24 @@ void PanelInspector::CanvasOptions(GameObject& go)
 		ImGui::Dummy(ImVec2(0, 4));
 		ImGui::TextColored(ImVec4(1, 1, 0, 1), "UI Elements:");
 
-		//auto ui_elements = std::move(canvas->GetUIElements());
-		for (auto& ui_element : canvas->GetUIElements())
+		auto& ui_elements = canvas->GetUIElements();
+
+		for (size_t i = 0; i < ui_elements.size(); ++i)
 		{
+			auto& ui_element = ui_elements[i];
 			std::string elementLabel = ui_element->GetName() +
 				"##" + std::to_string(ui_element->GetID());
+
+			if (ImGui::ArrowButton(("##up" + std::to_string(ui_element->GetID())).c_str(), ImGuiDir_Up)) {
+				if (i > 0) std::swap(ui_elements[i], ui_elements[i - 1]);
+				break;
+			}
+			ImGui::SameLine();
+			if (ImGui::ArrowButton(("##down" + std::to_string(ui_element->GetID())).c_str(), ImGuiDir_Down)) {
+				if (i < ui_elements.size() - 1) std::swap(ui_elements[i], ui_elements[i + 1]);
+				break;
+			}
+			ImGui::SameLine();
 
 			bool ui_element_header_open = ImGui::TreeNodeEx(elementLabel.c_str(), treeFlags);
 
@@ -1807,8 +1820,8 @@ void PanelInspector::ParticleSystemOptions(GameObject& go)
 		auto& emitters = psystem->GetEmitters();
 		auto emitters_c = std::vector<std::shared_ptr<Emitter>>(psystem->GetEmitters());
 
-
-		for (size_t i = 0; i < emitters_c.size(); ++i) {
+		for (size_t i = 0; i < emitters_c.size(); ++i)
+		{
 			std::shared_ptr<Emitter> emitter = emitters_c[i];
 			std::string emitterLabel = emitter->GetName() + "##" + std::to_string(emitter->GetID());
 
