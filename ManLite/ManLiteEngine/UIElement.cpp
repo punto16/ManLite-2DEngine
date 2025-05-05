@@ -16,6 +16,8 @@ UIElement::UIElement(const UIElement& uielement_to_copy, std::shared_ptr<GameObj
 	container_go(container_go),
 	type(uielement_to_copy.type),
 	name(uielement_to_copy.name),
+	aspectLocked(uielement_to_copy.aspectLocked),
+	lockedAspectRatio(uielement_to_copy.lockedAspectRatio),
 	enabled(uielement_to_copy.enabled),
 	uielement_id(GameObject::GenerateGameObjectID()),
 	position_x(uielement_to_copy.position_x),

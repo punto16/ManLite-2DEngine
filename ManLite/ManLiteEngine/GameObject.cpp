@@ -3,6 +3,7 @@
 #include "Layer.h"
 #include "Prefab.h"
 
+#include "EngineCore.h"
 #include "Component.h"
 #include "Transform.h"
 #include "Sprite2D.h"
@@ -489,7 +490,7 @@ void GameObject::LoadGameObject(const nlohmann::json& goJSON)
     {
         std::string path = goJSON["PrefabPath"];
 
-        auto tempPrefab = Prefab::Instantiate(path, nullptr);
+        auto tempPrefab = Prefab::Instantiate(path, nullptr, !engine->GetEditorOrBuild());
 
         if (tempPrefab)
         {
@@ -580,22 +581,10 @@ void GameObject::LoadGameObject(const nlohmann::json& goJSON)
         const nlohmann::json& childrenJSON = goJSON["GameObjects"];
         for (const auto& childJSON : childrenJSON)
         {
-            if (childJSON.contains("PrefabPath"))
-            {
-                std::string path = childJSON["PrefabPath"];
-                auto childPrefab = Prefab::Instantiate(path, shared_from_this());
-                if (childPrefab)
-                {
-                    childPrefab->SetID(childJSON["ID"]);
-                    AddChild(childPrefab);
-                }
-            }
-            else
-            {
-                std::shared_ptr<GameObject> child_go = std::make_shared<GameObject>(shared_from_this(), "EmptyGameObject", true);
-                AddChild(child_go);
-                child_go->LoadGameObject(childJSON);
-            }
+            std::shared_ptr<GameObject> child_go = std::make_shared<GameObject>(shared_from_this(), "EmptyGameObject", true);
+            AddChild(child_go);
+            child_go->LoadGameObject(childJSON);
         }
+
     }
 }

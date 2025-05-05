@@ -10,7 +10,6 @@ Script::Script(std::weak_ptr<GameObject> container_go, std::string name, bool en
     : Component(container_go, ComponentType::Script, name, true)
 {
     mono_object = engine->scripting_em->InstantiateClassAsync(name, this);
-    RetrieveScriptFields();
 }
 
 Script::Script(const Script& component_to_copy, std::shared_ptr<GameObject> container_go)
@@ -19,20 +18,10 @@ Script::Script(const Script& component_to_copy, std::shared_ptr<GameObject> cont
     mono_object = engine->scripting_em->InstantiateClassAsync(name, this);
     enabled = component_to_copy.enabled;
 
-    std::unordered_map<std::string, ScriptField> savedFields;
-    for (auto& [name, field] : component_to_copy.scriptFields) {
-        savedFields[name] = field;
+    for (auto& item : component_to_copy.scriptFields)
+    {
+        scriptFields.push_back(item);
     }
-
-    RetrieveScriptFields();
-
-    for (auto& [currentName, currentField] : scriptFields) {
-        if (savedFields.count(currentName) && savedFields[currentName].type == currentField.type) {
-            currentField.value = savedFields[currentName].value;
-        }
-    }
-
-    ApplyFieldValues();
 }
 
 Script::~Script()

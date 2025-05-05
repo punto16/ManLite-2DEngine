@@ -35,7 +35,6 @@ public:
 	{
 		std::string class_name = "";
 		unsigned int container_go_id = 0;
-		Script* script = nullptr;
 	};
 
 

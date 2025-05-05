@@ -56,7 +56,7 @@ public class TestScript_1 : MonoBehaviour
 
         if (InternalCalls.GetKeyboardKeyRepeat((int)KeyboardKey.SDL_SCANCODE_P))
         {
-            InternalCalls.LoadScene("Assets/Scenes/Pong_Scene_test.mlscene");
+            InternalCalls.LoadScene("Assets/Scenes/Prefab_Scene_Test.mlscene");
         }
 
         if (!AllowUpdate)

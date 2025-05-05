@@ -52,7 +52,7 @@ bool ScriptingEM::PreUpdate()
     bool ret = true;
 
     ProcessInstantiateQueue();
-
+    
     return ret;
 }
 
@@ -152,7 +152,7 @@ MonoObject* ScriptingEM::InstantiateClass(const std::string& class_name, Script*
 MonoObject* ScriptingEM::InstantiateClassAsync(const std::string& class_name, Script* container_script)
 {
     if (class_name.empty() || class_name == "Null Script") return nullptr;
-    instantiate_queue.emplace_back(InstantiateQueueData{ class_name, container_script->GetContainerGO()->GetID(), container_script});
+    instantiate_queue.emplace_back(InstantiateQueueData{ class_name, container_script->GetContainerGO()->GetID()});
     return nullptr;
 }
 
@@ -465,12 +465,20 @@ void ScriptingEM::ProcessInstantiateQueue()
 {
     for (auto& data : instantiate_queue)
     {
-        if (!engine->scene_manager_em->GetCurrentScene().FindGameObjectByID(data.container_go_id)) continue;
-        if (!data.script) continue;
-        MonoObject* mono_obj = InstantiateClass(data.class_name, data.script);
-        if (!mono_obj) continue;
-        data.script->SetMonoObject(mono_obj);
-        data.script->FinishLoad();
+        if (auto go = engine->scene_manager_em->GetCurrentScene().FindGameObjectByID(data.container_go_id))
+        {
+            auto scripts = go->GetComponents<Script>();
+            for (auto& script : scripts)
+            {
+                if (script->GetName() != data.class_name) continue;
+
+                MonoObject* mono_obj = InstantiateClass(data.class_name, script);
+                if (!mono_obj) continue;
+                script->SetMonoObject(mono_obj);
+                script->FinishLoad();
+                break;
+            }
+        }
     }
     instantiate_queue.clear();
 }
