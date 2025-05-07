@@ -95,7 +95,7 @@ nlohmann::json TextUI::SaveUIElement()
     //general uielement
     uielementJSON["UIElementID"] = uielement_id;
     uielementJSON["UIElementName"] = name;
-    uielementJSON["CointainerCanvasID"] = GetContainerGO()->GetComponent<Canvas>()->GetID();
+    uielementJSON["ContainerCanvasID"] = GetContainerGO()->GetComponent<Canvas>()->GetID();
     uielementJSON["UIElementType"] = type;
     uielementJSON["UIElementEnabled"] = enabled;
     uielementJSON["UIElementPosition"] = { position_x, position_y };

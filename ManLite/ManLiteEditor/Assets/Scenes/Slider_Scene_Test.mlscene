@@ -42,7 +42,7 @@
           "UIElements": [
             {
               "Alignment": 0,
-              "CointainerCanvasID": 1145340513,
+              "ContainerCanvasID": 1145340513,
               "CurrentValue": 4,
               "FirstPartDisabledFalseSection": [
                 408.0,
@@ -259,7 +259,7 @@
           "Enabled": true,
           "UIElements": [
             {
-              "CointainerCanvasID": 3496342455,
+              "ContainerCanvasID": 3496342455,
               "Color": [
                 255,
                 255,

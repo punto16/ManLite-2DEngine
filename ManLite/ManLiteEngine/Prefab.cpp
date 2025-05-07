@@ -105,8 +105,8 @@ void Prefab::RemoveIDs(nlohmann::json& json)
                     if (component.contains("UIElements"))
                         for (auto& ui_element : component["UIElements"])
                         {
-                            if (ui_element.contains("CointainerCanvasID"))
-                                ui_element.erase("CointainerCanvasID");
+                            if (ui_element.contains("ContainerCanvasID"))
+                                ui_element.erase("ContainerCanvasID");
                             if (ui_element.contains("UIElementID"))
                                 ui_element.erase("UIElementID");
                         }

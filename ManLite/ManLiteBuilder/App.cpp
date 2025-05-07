@@ -47,6 +47,7 @@ bool App::Start()
 
 	LoadInit();
 	engine->window_em->SetTitle(game_name);
+	engine->window_em->SetIcon(icon_path);
 
 	engine->scene_manager_em->LoadSceneFromJson(first_scene);
 	if (engine->scene_manager_em->CurrentSceneAvailable())
@@ -171,6 +172,10 @@ void App::LoadInit()
 			if (config.contains("app_name"))
 			{
 				game_name = config["app_name"].get<std::string>();
+			}
+			if (config.contains("icon_path"))
+			{
+				icon_path = config["icon_path"].get<std::string>();
 			}
 
 			if (config.contains("scenes") &&

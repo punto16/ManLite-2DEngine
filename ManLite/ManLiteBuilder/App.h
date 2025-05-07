@@ -48,6 +48,7 @@ private:
 
 	std::string first_scene = "";
 	std::string game_name = "My Test Game";
+	std::string icon_path = "";
 
 	//fps control
 	std::chrono::duration<double> targetFrameDuration;
