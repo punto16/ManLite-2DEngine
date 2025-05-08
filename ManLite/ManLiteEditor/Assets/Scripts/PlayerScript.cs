@@ -1,0 +1,71 @@
+﻿using ManLiteScripting;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+public class PlayerScript : MonoBehaviour
+{
+    private bool jump_available = false;
+
+    private Collider2D collider;
+
+    public override void Start()
+    {
+        collider = new Collider2D(attached_game_object);
+
+        ML_System.Log("Start PlayerScript");
+    }
+
+    public override void Update()
+    {
+        
+        Vec2f speed = collider.GetSpeed();
+
+        if (Input.GetKeyboardKey(KeyboardKey.SDL_SCANCODE_A) == KeyState.KEY_REPEAT)
+        {
+            ML_System.Log("PlayerScript Left");
+
+            speed.X = -10;
+        }
+        if (Input.GetKeyboardKey(KeyboardKey.SDL_SCANCODE_D) == KeyState.KEY_REPEAT)
+        {
+            ML_System.Log("PlayerScript Right");
+
+            speed.X = 10;
+        }
+
+        if (jump_available && Input.GetKeyboardKey(KeyboardKey.SDL_SCANCODE_SPACE) == KeyState.KEY_DOWN)
+        {
+            ML_System.Log("PlayerScript Jump");
+
+            speed.Y = 10;
+
+            jump_available = false;
+        }
+
+        collider.SetSpeed(speed);
+    }
+
+    public override void OnTriggerCollision(IGameObject other)
+    {
+        ML_System.Log("Collision IN");
+    }
+    public override void OnTriggerSensor(IGameObject other)
+    {
+        ML_System.Log("Sensor IN");
+
+        jump_available = true;
+    }
+    public override void OnExitCollision(IGameObject other)
+    {
+        ML_System.Log("Collision OUT");
+    }
+    public override void OnExitSensor(IGameObject other)
+    {
+        ML_System.Log("Sensor OUT");
+
+        jump_available = false;
+    }
+}

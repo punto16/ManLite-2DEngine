@@ -8,26 +8,26 @@ using System.Threading.Tasks;
 
 namespace ManLiteScripting
 {
+    #region Structs
+    [StructLayout(LayoutKind.Sequential)]
+    public struct Vec2f
+    {
+        public float X;
+        public float Y;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct Vec4f
+    {
+        public float X;
+        public float Y;
+        public float Z;
+        public float W;
+    }
+    #endregion
+
     public class InternalCalls
     {
-        #region Structs
-        [StructLayout(LayoutKind.Sequential)]
-        public struct Vec2f
-        {
-            public float X;
-            public float Y;
-        }
-
-        [StructLayout(LayoutKind.Sequential)]
-        public struct Vec4f
-        {
-            public float X;
-            public float Y;
-            public float Z;
-            public float W;
-        }
-        #endregion
-
 
         #region GameObject
         [MethodImpl(MethodImplOptions.InternalCall)] public extern static IntPtr GetGOPtr();
@@ -56,8 +56,8 @@ namespace ManLiteScripting
         [MethodImpl(MethodImplOptions.InternalCall)] public extern static bool GetMouseButtonRepeat(int id);
         [MethodImpl(MethodImplOptions.InternalCall)] public extern static bool GetMouseButtonUp(int id);
         [MethodImpl(MethodImplOptions.InternalCall)] public extern static bool GetMouseButtonIdle(int id);
-        [MethodImpl(MethodImplOptions.InternalCall)] public extern static Vec2f GetMousePosition();
-        [MethodImpl(MethodImplOptions.InternalCall)] public extern static Vec2f GetMouseMotion();
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void GetMousePosition(out Vec2f pos);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void GetMouseMotion(out Vec2f motion);
         [MethodImpl(MethodImplOptions.InternalCall)] public extern static int GetMouseWheelMotion();
         [MethodImpl(MethodImplOptions.InternalCall)] public extern static void CloseApp();
         #endregion
@@ -65,8 +65,9 @@ namespace ManLiteScripting
 
         #region Scene Management
         [MethodImpl(MethodImplOptions.InternalCall)] public extern static void LoadScene(string path);
-        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void CreateEmptyGO(IntPtr parent);
-        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void DeleteGO(IntPtr go);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static IntPtr CreateEmptyGO(IntPtr parent);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static IntPtr DuplicateGO(IntPtr go);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static IntPtr DeleteGO(IntPtr go);
         [MethodImpl(MethodImplOptions.InternalCall)] public extern static IntPtr FindGameObjectByID(uint id);
         [MethodImpl(MethodImplOptions.InternalCall)] public extern static IntPtr FindGameObjectByName(string name);
         [MethodImpl(MethodImplOptions.InternalCall)] public extern static IntPtr GetSceneRoot();
@@ -89,17 +90,17 @@ namespace ManLiteScripting
 
 
         #region Transform
-        [MethodImpl(MethodImplOptions.InternalCall)] public extern static Vec2f GetLocalPosition(IntPtr go);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void GetLocalPosition(IntPtr go, out Vec2f pos);
         [MethodImpl(MethodImplOptions.InternalCall)] public extern static void SetLocalPosition(IntPtr go, Vec2f pos);
         [MethodImpl(MethodImplOptions.InternalCall)] public extern static float GetLocalAngle(IntPtr go);
         [MethodImpl(MethodImplOptions.InternalCall)] public extern static void SetLocalAngle(IntPtr go, float angle);
-        [MethodImpl(MethodImplOptions.InternalCall)] public extern static Vec2f GetLocalScale(IntPtr go);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void GetLocalScale(IntPtr go, out Vec2f scale);
         [MethodImpl(MethodImplOptions.InternalCall)] public extern static void SetLocalScale(IntPtr go, Vec2f scale);
-        [MethodImpl(MethodImplOptions.InternalCall)] public extern static Vec2f GetWorldPosition(IntPtr go);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void GetWorldPosition(IntPtr go, out Vec2f pos);
         [MethodImpl(MethodImplOptions.InternalCall)] public extern static void SetWorldPosition(IntPtr go, Vec2f pos);
         [MethodImpl(MethodImplOptions.InternalCall)] public extern static float GetWorldAngle(IntPtr go);
         [MethodImpl(MethodImplOptions.InternalCall)] public extern static void SetWorldAngle(IntPtr go, float angle);
-        [MethodImpl(MethodImplOptions.InternalCall)] public extern static Vec2f GetWorldScale(IntPtr go);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void GetWorldScale(IntPtr go, out Vec2f scale);
         [MethodImpl(MethodImplOptions.InternalCall)] public extern static void SetWorldScale(IntPtr go, Vec2f scale);
         [MethodImpl(MethodImplOptions.InternalCall)] public extern static bool IsAspectRatioLocked(IntPtr go);
         [MethodImpl(MethodImplOptions.InternalCall)] public extern static void SetAspectRatioLock(IntPtr go, bool enable);
@@ -107,7 +108,7 @@ namespace ManLiteScripting
 
 
         #region Camera
-        [MethodImpl(MethodImplOptions.InternalCall)] public extern static Vec2f GetViewportSize(IntPtr cameraGO);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void GetViewportSize(IntPtr cameraGO, out Vec2f size);
         [MethodImpl(MethodImplOptions.InternalCall)] public extern static void SetViewportSize(IntPtr cameraGO, Vec2f size);
         [MethodImpl(MethodImplOptions.InternalCall)] public extern static float GetZoom(IntPtr cameraGO);
         [MethodImpl(MethodImplOptions.InternalCall)] public extern static void SetZoom(IntPtr cameraGO, float zoom);
@@ -115,10 +116,10 @@ namespace ManLiteScripting
 
 
         #region Sprite
-        [MethodImpl(MethodImplOptions.InternalCall)] public extern static Vec2f GetTextureSize(IntPtr go);
-        [MethodImpl(MethodImplOptions.InternalCall)] public extern static Vec4f GetTextureSection(IntPtr go);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void GetTextureSize(IntPtr go, out Vec2f size);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void GetTextureSection(IntPtr go, out Vec4f section);
         [MethodImpl(MethodImplOptions.InternalCall)] public extern static void SetTextureSection(IntPtr go, Vec4f section);
-        [MethodImpl(MethodImplOptions.InternalCall)] public extern static Vec2f GetOffset(IntPtr go);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void GetOffset(IntPtr go, out Vec2f offset);
         [MethodImpl(MethodImplOptions.InternalCall)] public extern static void SetOffset(IntPtr go, Vec2f offset);
         [MethodImpl(MethodImplOptions.InternalCall)] public extern static bool IsPixelArt(IntPtr go);
         [MethodImpl(MethodImplOptions.InternalCall)] public extern static void SetPixelArtRender(IntPtr go, bool enable);
@@ -129,7 +130,7 @@ namespace ManLiteScripting
         #region Animator
         [MethodImpl(MethodImplOptions.InternalCall)] public extern static void PlayAnimation(IntPtr go, string animation);
         [MethodImpl(MethodImplOptions.InternalCall)] public extern static void StopAnimation(IntPtr go);
-        [MethodImpl(MethodImplOptions.InternalCall)] public extern static bool IsAnimaitonPlaying(IntPtr go, string animation);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static bool IsAnimationPlaying(IntPtr go, string animation);
         #endregion
 
 
@@ -138,7 +139,7 @@ namespace ManLiteScripting
         [MethodImpl(MethodImplOptions.InternalCall)] public extern static void UnpauseCollider2D(IntPtr go);
         [MethodImpl(MethodImplOptions.InternalCall)] public extern static int GetShapeType(IntPtr go);
         [MethodImpl(MethodImplOptions.InternalCall)] public extern static void SetShapeType(IntPtr go, int shapeType);
-        [MethodImpl(MethodImplOptions.InternalCall)] public extern static Vec2f GetColliderSize(IntPtr go);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void GetColliderSize(IntPtr go, out Vec2f size);
         [MethodImpl(MethodImplOptions.InternalCall)] public extern static void SetColliderSize(IntPtr go, Vec2f size);
         [MethodImpl(MethodImplOptions.InternalCall)] public extern static float GetColliderRadius(IntPtr go);
         [MethodImpl(MethodImplOptions.InternalCall)] public extern static void SetColliderRadius(IntPtr go, float radius);
@@ -151,7 +152,7 @@ namespace ManLiteScripting
         [MethodImpl(MethodImplOptions.InternalCall)] public extern static bool IsCollierUsingGravity(IntPtr go);
         [MethodImpl(MethodImplOptions.InternalCall)] public extern static void SetCollierUsingGravity(IntPtr go, bool useGravity);
         [MethodImpl(MethodImplOptions.InternalCall)] public extern static void ApplyForceCollider(IntPtr go, Vec2f force);
-        [MethodImpl(MethodImplOptions.InternalCall)] public extern static Vec2f GetSpeedCollider(IntPtr go);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void GetSpeedCollider(IntPtr go, out Vec2f speed);
         [MethodImpl(MethodImplOptions.InternalCall)] public extern static void SetSpeedCollider(IntPtr go, Vec2f speed);
         [MethodImpl(MethodImplOptions.InternalCall)] public extern static float GetColliderFriction(IntPtr go);
         [MethodImpl(MethodImplOptions.InternalCall)] public extern static void SetColliderFriction(IntPtr go, float friction);
@@ -177,11 +178,11 @@ namespace ManLiteScripting
         [MethodImpl(MethodImplOptions.InternalCall)] public extern static void SetValueSliderUI(IntPtr go, string itemUI, int value);
         [MethodImpl(MethodImplOptions.InternalCall)] public extern static string GetTextTextUI(IntPtr go, string itemUI);
         [MethodImpl(MethodImplOptions.InternalCall)] public extern static void SetTextTextUI(IntPtr go, string itemUI, string text);
-        [MethodImpl(MethodImplOptions.InternalCall)] public extern static Vec2f GetItemUIPosition(IntPtr go, string itemUI);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void GetItemUIPosition(IntPtr go, string itemUI, out Vec2f pos);
         [MethodImpl(MethodImplOptions.InternalCall)] public extern static void SetItemUIPosition(IntPtr go, string itemUI, Vec2f position);
         [MethodImpl(MethodImplOptions.InternalCall)] public extern static float GetItemUIAngle(IntPtr go, string itemUI);
         [MethodImpl(MethodImplOptions.InternalCall)] public extern static void SetItemUIAngle(IntPtr go, string itemUI, float angle);
-        [MethodImpl(MethodImplOptions.InternalCall)] public extern static Vec2f GetItemUIScale(IntPtr go, string itemUI);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void GetItemUIScale(IntPtr go, string itemUI, out Vec2f scale);
         [MethodImpl(MethodImplOptions.InternalCall)] public extern static void SetItemUIScale(IntPtr go, string itemUI, Vec2f scale);
         [MethodImpl(MethodImplOptions.InternalCall)] public extern static bool GetItemUIAspectLock(IntPtr go, string itemUI);
         [MethodImpl(MethodImplOptions.InternalCall)] public extern static void SetItemUIAspectLock(IntPtr go, string itemUI, bool locked);
@@ -231,6 +232,54 @@ namespace ManLiteScripting
 
 
         Unkown
+    };
+
+    public enum ShapeType
+    {   
+        RECTANGLE = 0,
+        CIRCLE = 1
+    };
+
+    public enum ButtonState
+    {
+        IDLE = 0,
+        HOVERED = 1,
+        SELECTED = 2,
+        HOVEREDSELECTED = 3,
+        DISABLED = 4,
+
+        //
+        UNKNOWN
+    };
+
+    public enum CheckboxState
+    {
+        IDLE = 0,
+        HOVERED = 1,
+        SELECTED = 2,
+        HOVEREDSELECTED = 3,
+        DISABLED = 4,
+
+        //
+        UNKNOWN
+    };
+
+    public enum SliderState
+    {
+        IDLE = 0,
+        HOVERED = 1,
+        DISABLED = 4,
+
+        //
+        UNKNOWN
+    };
+
+    public enum KeyState
+    {
+        KEY_IDLE = 0,
+        KEY_DOWN = 1,
+        KEY_REPEAT = 2,
+        KEY_UP = 3,
     };
 
     public enum MouseButton

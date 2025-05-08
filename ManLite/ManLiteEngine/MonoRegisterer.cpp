@@ -145,19 +145,19 @@ static bool GetMouseButtonIdle(int id)
 {
 	return engine->input_em->GetMouseButtonDown(id) == KEY_IDLE;
 }
-static vec2f GetMousePosition(int id)
+static void GetMousePosition(vec2f* pos)
 {
 	int x, y;
 	engine->input_em->GetMousePosition(x, y);
-	return vec2f(x, y);
+	*pos = vec2f(x, y);
 }
-static vec2f GetMouseMotion(int id)
+static void GetMouseMotion(vec2f* motion)
 {
 	int x, y;
 	engine->input_em->GetMouseMotion(x, y);
-	return vec2f(x, y);
+	*motion = vec2f(x, y);
 }
-static int GetMouseWheelMotion(int id)
+static int GetMouseWheelMotion()
 {
 	return engine->input_em->GetMouseWheelMotion();
 }
@@ -172,14 +172,14 @@ static void LoadScene(MonoString* path)
 	//for the moment, NON async
 	engine->scene_manager_em->RuntimeLoadScene(MonoRegisterer::ToCppString(path));
 }
-static void CreateEmptyGO(GameObject* go)
+static GameObject* CreateEmptyGO(GameObject* go)
 {
-	engine->scene_manager_em->GetCurrentScene().CreateEmptyGO(go ? *go : engine->scene_manager_em->GetCurrentScene().GetSceneRoot());
+	return engine->scene_manager_em->GetCurrentScene().CreateEmptyGO(go ? *go : engine->scene_manager_em->GetCurrentScene().GetSceneRoot()).get();
 }
-static void DuplicateGO(GameObject* go)
+static GameObject* DuplicateGO(GameObject* go)
 {
-	if (!go) return;
-	engine->scene_manager_em->GetCurrentScene().DuplicateGO(*go);
+	if (!go) return nullptr;
+	return engine->scene_manager_em->GetCurrentScene().DuplicateGO(*go).get();
 }
 static void DeleteGO(GameObject* go)
 {
@@ -251,58 +251,68 @@ static bool IsComponentEnabled(GameObject* go, int component_type)
 	{
 		if (auto c = go->GetComponent<Transform>())
 			return c->IsEnabled();
+		else return false;
 		break;
 	}
 	case ComponentType::Camera:
 	{
 		if (auto c = go->GetComponent<Camera>())
 			return c->IsEnabled();
+		else return false;
 		break;
 	}
 	case ComponentType::Sprite:
 	{
 		if (auto c = go->GetComponent<Sprite2D>())
 			return c->IsEnabled();
+		else return false;
 		break;
 	}
 	case ComponentType::Animator:
 	{
 		if (auto c = go->GetComponent<Animator>())
 			return c->IsEnabled();
+		else return false;
 		break;
 	}
 	case ComponentType::Collider2D:
 	{
 		if (auto c = go->GetComponent<Collider2D>())
 			return c->IsEnabled();
+		else return false;
 		break;
 	}
 	case ComponentType::Canvas:
 	{
 		if (auto c = go->GetComponent<Canvas>())
 			return c->IsEnabled();
+		else return false;
 		break;
 	}
 	case ComponentType::AudioSource:
 	{
 		if (auto c = go->GetComponent<AudioSource>())
 			return c->IsEnabled();
+		else return false;
 		break;
 	}
 	case ComponentType::ParticleSystem:
 	{
 		if (auto c = go->GetComponent<ParticleSystem>())
 			return c->IsEnabled();
+		else return false;
 		break;
 	}
 	case ComponentType::TileMap:
 	{
 		if (auto c = go->GetComponent<TileMap>())
 			return c->IsEnabled();
+		else return false;
 		break;
 	}
 	case ComponentType::Unkown:
-		break;
+		return false;
+	break;
 	default:
 		break;
 	}
@@ -373,12 +383,12 @@ static void SetEnableComponent(GameObject* go, int component_type, bool enable)
 	}
 }
 
-static vec2f GetLocalPosition(GameObject* go)
+static void GetLocalPosition(GameObject* go, vec2f* pos)
 {
-	if (!go) return { 0.f, 0.0f };
+	if (!go) return;
 	if (auto t = go->GetComponent<Transform>())
-		return t->GetPosition();
-	return { 0.f, 0.0f };
+		*pos = t->GetPosition();
+	return;
 }
 static void SetLocalPosition(GameObject* go, vec2f pos)
 {
@@ -399,12 +409,12 @@ static void SetLocalAngle(GameObject* go, float angle)
 	if (auto t = go->GetComponent<Transform>())
 		t->SetAngle(angle);
 }
-static vec2f GetLocalScale(GameObject* go)
+static void GetLocalScale(GameObject* go, vec2f* scale)
 {
-	if (!go) return { 0.f, 0.0f };
+	if (!go) return;
 	if (auto t = go->GetComponent<Transform>())
-		return t->GetScale();
-	return { 0.f, 0.0f };
+		*scale = t->GetScale();
+	return;
 }
 static void SetLocalScale(GameObject* go, vec2f scale)
 {
@@ -412,12 +422,12 @@ static void SetLocalScale(GameObject* go, vec2f scale)
 	if (auto t = go->GetComponent<Transform>())
 		t->SetScale(scale);
 }
-static vec2f GetWorldPosition(GameObject* go)
+static void GetWorldPosition(GameObject* go, vec2f* pos)
 {
-	if (!go) return { 0.f, 0.0f };
+	if (!go) return;
 	if (auto t = go->GetComponent<Transform>())
-		return t->GetWorldPosition();
-	return { 0.f, 0.0f };
+		*pos = t->GetWorldPosition();
+	return;
 }
 static void SetWorldPosition(GameObject* go, vec2f pos)
 {
@@ -438,12 +448,12 @@ static void SetWorldAngle(GameObject* go, float angle)
 	if (auto t = go->GetComponent<Transform>())
 		t->SetWorldAngle(angle);
 }
-static vec2f GetWorldScale(GameObject* go)
+static void GetWorldScale(GameObject* go, vec2f* scale)
 {
-	if (!go) return { 0.f, 0.0f };
+	if (!go) return;
 	if (auto t = go->GetComponent<Transform>())
-		return t->GetWorldScale();
-	return { 0.f, 0.0f };
+		*scale = t->GetWorldScale();
+	return;
 }
 static void SetWorldScale(GameObject* go, vec2f scale)
 {
@@ -467,13 +477,13 @@ static void SetAspectRatioLock(GameObject* go, bool lock)
 
 
 
-static vec2f GetViewportSize(GameObject* go)
+static void GetViewportSize(GameObject* go, vec2f* size)
 {
 	int w = 0, h = 0;
-	if (!go) return { w, h };
+	if (!go) return;
 	if (auto c = go->GetComponent<Camera>())
 		c->GetViewportSize(w, h);
-	return { w, h };
+	*size = { w, h };
 }
 static void SetViewportSize(GameObject* go, vec2f size)
 {
@@ -497,21 +507,21 @@ static void SetZoom(GameObject* go, float zoom)
 
 
 
-static vec2f GetTextureSize(GameObject* go)
+static void GetTextureSize(GameObject* go, vec2f* size)
 {
 	int w = 0, h = 0;
-	if (!go) return { w, h };
+	if (!go) return;
 	if (auto c = go->GetComponent<Sprite2D>())
 		c->GetTextureSize(w, h);
-	return { w, h };
+	*size = { w, h };
 }
-static vec4f GetTextureSection(GameObject* go)
+static void GetTextureSection(GameObject* go, vec4f* section)
 {
 	ML_Rect r;
-	if (!go) return { r.x, r.y, r.w, r.h };
+	if (!go) return;
 	if (auto c = go->GetComponent<Sprite2D>())
 		ML_Rect r = c->GetTextureSection();
-	return { r.x, r.y, r.w, r.h };
+	*section = { r.x, r.y, r.w, r.h };
 }
 static void SetTextureSection(GameObject* go, vec4f section)
 {
@@ -519,13 +529,11 @@ static void SetTextureSection(GameObject* go, vec4f section)
 	if (auto c = go->GetComponent<Sprite2D>())
 		c->SetTextureSection(section.x, section.y, section.z, section.w);
 }
-static vec2f GetOffset(GameObject* go)
+static void GetOffset(GameObject* go, vec2f* offset)
 {
-	int w = 0, h = 0;
-	if (!go) return { w, h };
+	if (!go) return;
 	if (auto c = go->GetComponent<Sprite2D>())
-		return c->GetOffset();
-	return { w, h };
+		*offset = c->GetOffset();
 }
 static void SetOffset(GameObject* go, vec2f offset)
 {
@@ -566,7 +574,7 @@ static void StopAnimation(GameObject* go)
 	if (auto c = go->GetComponent<Animator>())
 		c->Stop();
 }
-static bool IsAnimaitonPlaying(GameObject* go, MonoString* animation)
+static bool IsAnimationPlaying(GameObject* go, MonoString* animation)
 {
 	if (!go) return false;
 	if (auto c = go->GetComponent<Animator>())
@@ -600,16 +608,16 @@ static void SetShapeType(GameObject* go, int shapeType)
 	if (auto c = go->GetComponent<Collider2D>())
 		c->SetShapeType((ShapeType)shapeType);
 }
-static vec2f GetColliderSize(GameObject* go)
+static void GetColliderSize(GameObject* go, vec2f* size)
 {
 	int w = 0, h = 0;
-	if (!go) return { w, h };
+	if (!go) return;
 	if (auto c = go->GetComponent<Collider2D>())
 	{
 		w = c->GetWidth();
 		h = c->GetHeight();
 	}
-	return { w, h };
+	*size = { w, h };
 }
 static void SetColliderSize(GameObject* go, vec2f size)
 {
@@ -688,12 +696,17 @@ static void ApplyForceCollider(GameObject* go, vec2f f)
 	if (auto c = go->GetComponent<Collider2D>())
 		c->ApplyForce(f.x, f.y);
 }
-static vec2f GetSpeedCollider(GameObject* go)
+static void GetSpeedCollider(GameObject* go, vec2f* outSpeed)
 {
-	if (!go) return { 0, 0 };
+	if (!go)
+	{
+		*outSpeed = { 0, 0 };
+		return;
+	}
 	if (auto c = go->GetComponent<Collider2D>())
-		return c->GetVelocity();
-	return { 0, 0 };
+		*outSpeed = c->GetVelocity();
+	else
+		*outSpeed = { 0, 0 };
 }
 static void SetSpeedCollider(GameObject* go, vec2f s)
 {
@@ -983,9 +996,9 @@ static void SetTextTextUI(GameObject* go, MonoString* item_ui, MonoString* text)
 		}
 	}
 }
-static vec2f GetItemUIPosition(GameObject* go, MonoString* item_ui)
+static void GetItemUIPosition(GameObject* go, MonoString* item_ui, vec2f* pos)
 {
-	if (!go) return { 0, 0};
+	if (!go) return;
 	std::string item_name = MonoRegisterer::ToCppString(item_ui);
 	if (auto c = go->GetComponent<Canvas>())
 	{
@@ -993,11 +1006,12 @@ static vec2f GetItemUIPosition(GameObject* go, MonoString* item_ui)
 		{
 			if (item->GetName() == item_name)
 			{
-				return item->GetPosition();
+				*pos = item->GetPosition();
+				return;
 			}
 		}
 	}
-	return { 0, 0 };
+	return;
 }
 static void SetItemUIPosition(GameObject* go, MonoString* item_ui, vec2f position)
 {
@@ -1047,9 +1061,9 @@ static void SetItemUIAngle(GameObject* go, MonoString* item_ui, float angle)
 		}
 	}
 }
-static vec2f GetItemUIScale(GameObject* go, MonoString* item_ui)
+static void GetItemUIScale(GameObject* go, MonoString* item_ui, vec2f* scale)
 {
-	if (!go) return { 0, 0 };
+	if (!go) return;
 	std::string item_name = MonoRegisterer::ToCppString(item_ui);
 	if (auto c = go->GetComponent<Canvas>())
 	{
@@ -1057,11 +1071,12 @@ static vec2f GetItemUIScale(GameObject* go, MonoString* item_ui)
 		{
 			if (item->GetName() == item_name)
 			{
-				return item->GetScale();
+				*scale = item->GetScale();
+				return;
 			}
 		}
 	}
-	return { 0, 0 };
+	return;
 }
 static void SetItemUIScale(GameObject* go, MonoString* item_ui, vec2f s)
 {
@@ -1294,6 +1309,7 @@ void MonoRegisterer::RegisterFunctions()
 	//scene manager and scene
 	mono_add_internal_call("ManLiteScripting.InternalCalls::LoadScene", (void*)LoadScene);
 	mono_add_internal_call("ManLiteScripting.InternalCalls::CreateEmptyGO", (void*)CreateEmptyGO);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::DuplicateGO", (void*)DuplicateGO);
 	mono_add_internal_call("ManLiteScripting.InternalCalls::DeleteGO", (void*)DeleteGO);
 	mono_add_internal_call("ManLiteScripting.InternalCalls::FindGameObjectByID", (void*)FindGameObjectByID);
 	mono_add_internal_call("ManLiteScripting.InternalCalls::FindGameObjectByName", (void*)FindGameObjectByName);
@@ -1343,8 +1359,8 @@ void MonoRegisterer::RegisterFunctions()
 
 	//animator
 	mono_add_internal_call("ManLiteScripting.InternalCalls::PlayAnimation", (void*)PlayAnimation);
-	mono_add_internal_call("ManLiteScripting.InternalCalls::PlayAnimation", (void*)StopAnimation);
-	mono_add_internal_call("ManLiteScripting.InternalCalls::PlayAnimation", (void*)IsAnimaitonPlaying);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::StopAnimation", (void*)StopAnimation);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::IsAnimationPlaying", (void*)IsAnimationPlaying);
 
 	//collider2d
 	mono_add_internal_call("ManLiteScripting.InternalCalls::PauseCollider2D", (void*)PauseCollider2D);

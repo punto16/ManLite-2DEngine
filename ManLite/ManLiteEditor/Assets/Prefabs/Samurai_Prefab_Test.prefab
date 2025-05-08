@@ -79,19 +79,10 @@
             "Width": 1.0
         },
         {
-            "ComponentName": "TestScript_2",
+            "ComponentName": "PlayerScript",
             "ComponentType": 4,
             "Enabled": true,
-            "ScriptFields": {
-                "prefab_path": {
-                    "type": 4,
-                    "value": "Assets/Prefabs/Samurai_Prefab_Test.prefab"
-                },
-                "scene_path": {
-                    "type": 4,
-                    "value": "Assets/Scenes/Pong_Scene_test.mlscene"
-                }
-            }
+            "ScriptFields": null
         }
     ],
     "Enabled": true,

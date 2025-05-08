@@ -22,7 +22,7 @@ public class TestScript_1 : MonoBehaviour
         game_object = attached_game_object;
         InternalCalls.ScriptingLog("Start TestScript_1", __arglist());
 
-        InternalCalls.Vec2f forceball;
+        Vec2f forceball;
         forceball.X = ball_speed;
         forceball.Y = ball_speed;
         InternalCalls.SetSpeedCollider(ball.game_object_ptr, forceball);
@@ -31,10 +31,10 @@ public class TestScript_1 : MonoBehaviour
     public override void Update()
     {
         float dt = InternalCalls.GetDT();
-        InternalCalls.Vec2f force;
+        Vec2f force;
         force.X = 0;
         force.Y = 0;
-        InternalCalls.Vec2f force2;
+        Vec2f force2;
         force2.X = 0;
         force2.Y = 0;
         if (InternalCalls.GetKeyboardKeyRepeat((int)KeyboardKey.SDL_SCANCODE_W))
@@ -61,7 +61,7 @@ public class TestScript_1 : MonoBehaviour
 
         if (!AllowUpdate)
         {
-            InternalCalls.Vec2f forceball;
+            Vec2f forceball;
             forceball.X = ball_speed;
             forceball.Y = ball_speed;
             InternalCalls.SetSpeedCollider(ball.game_object_ptr, forceball);
