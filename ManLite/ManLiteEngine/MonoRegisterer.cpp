@@ -169,8 +169,42 @@ static void CloseApp()
 
 static void LoadScene(MonoString* path)
 {
-	//for the moment, NON async
 	engine->scene_manager_em->RuntimeLoadScene(MonoRegisterer::ToCppString(path));
+}
+void MonoRegisterer::LoadSceneBackGround(MonoString* path, bool set_on_finish_loading)
+{
+	if (is_loading) return;
+	
+	std::string filePath = ToCppString(path);
+	
+	new_scene = std::make_shared<Scene>();
+	auto scene_copy = new_scene;
+
+	is_loading = true;
+	set_scene = false;
+
+	loading_task = std::async(std::launch::async,
+		[filePath, scene_copy, set_on_finish_loading]() {
+			engine->scene_manager_em->LoadSceneToScene(filePath, *scene_copy);
+			is_loading = false;
+			if (!set_scene) set_scene = set_on_finish_loading;
+		});
+}
+void MonoRegisterer::SetBackGroundLoadedSceneAsync()
+{
+	set_scene = true;
+
+	if (!is_loading && new_scene)
+	{
+		engine->scene_manager_em->CleanUp();
+		engine->scene_manager_em->GetCurrentScene() = *new_scene;
+		new_scene.reset();
+		set_scene = false;
+	}
+}
+void MonoRegisterer::SetBackGroundLoadedScene()
+{
+	set_scene = true;
 }
 static GameObject* CreateEmptyGO(GameObject* go)
 {
@@ -1308,6 +1342,8 @@ void MonoRegisterer::RegisterFunctions()
 
 	//scene manager and scene
 	mono_add_internal_call("ManLiteScripting.InternalCalls::LoadScene", (void*)LoadScene);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::LoadSceneBackGround", (void*)LoadSceneBackGround);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::SetBackGroundLoadedScene", (void*)SetBackGroundLoadedScene);
 	mono_add_internal_call("ManLiteScripting.InternalCalls::CreateEmptyGO", (void*)CreateEmptyGO);
 	mono_add_internal_call("ManLiteScripting.InternalCalls::DuplicateGO", (void*)DuplicateGO);
 	mono_add_internal_call("ManLiteScripting.InternalCalls::DeleteGO", (void*)DeleteGO);

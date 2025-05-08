@@ -51,6 +51,8 @@ bool ScriptingEM::PreUpdate()
 {
     bool ret = true;
 
+    if (MonoRegisterer::set_scene) MonoRegisterer::SetBackGroundLoadedSceneAsync();
+
     ProcessInstantiateQueue();
     
     return ret;

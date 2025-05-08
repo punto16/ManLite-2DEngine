@@ -173,6 +173,16 @@ namespace ManLiteScripting
             InternalCalls.LoadScene(path);
         }
 
+        public static void LoadSceneAsync(string path, bool set_scene_on_finish_load)
+        {
+            InternalCalls.LoadSceneBackGround(path, set_scene_on_finish_load);
+        }
+
+        public static void SetBackGroundLoadedScene()
+        {
+            InternalCalls.SetBackGroundLoadedScene();
+        }
+
         public static IGameObject CreateEmptyGO(IGameObject parent, bool root_is_parent = false)
         {
             if (root_is_parent) return new IGameObject(InternalCalls.CreateEmptyGO(InternalCalls.GetSceneRoot()));

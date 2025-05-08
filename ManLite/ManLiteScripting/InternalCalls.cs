@@ -65,6 +65,8 @@ namespace ManLiteScripting
 
         #region Scene Management
         [MethodImpl(MethodImplOptions.InternalCall)] public extern static void LoadScene(string path);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void LoadSceneBackGround(string path, bool set_on_finish_loading);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void SetBackGroundLoadedScene();
         [MethodImpl(MethodImplOptions.InternalCall)] public extern static IntPtr CreateEmptyGO(IntPtr parent);
         [MethodImpl(MethodImplOptions.InternalCall)] public extern static IntPtr DuplicateGO(IntPtr go);
         [MethodImpl(MethodImplOptions.InternalCall)] public extern static IntPtr DeleteGO(IntPtr go);

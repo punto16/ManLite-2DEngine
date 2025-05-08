@@ -9,7 +9,11 @@
 #include "string"
 #include "vector"
 #include "unordered_map"
+#include "atomic"
+#include "future"
 #include <memory>
+
+class Scene;
 
 class MonoRegisterer
 {
@@ -18,6 +22,16 @@ public:
 
     static MonoString* ToMonoString(const std::string& str);
     static std::string ToCppString(MonoString* monoStr);
+
+    // load scene async
+    static void LoadSceneBackGround(MonoString* path, bool set_on_finish_loading);
+    static void SetBackGroundLoadedSceneAsync();
+    static void SetBackGroundLoadedScene();
+    static std::future<void> loading_task;
+    static std::atomic<bool> is_loading;
+    static std::atomic<bool> set_scene;
+    static std::shared_ptr<Scene> new_scene;
+    //
 
     static GameObject* InstantiatePrefab(MonoString* path);
 
