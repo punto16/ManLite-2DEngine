@@ -34,7 +34,6 @@ Script::Script(const Script& component_to_copy, std::shared_ptr<GameObject> cont
         did_init = false;
     }
     enabled = component_to_copy.enabled;
-
 }
 
 Script::~Script()
@@ -390,6 +389,8 @@ void Script::FinishLoad()
     for (auto& [name, field] : scriptFields) {
         savedFields[name] = field;
     }
+
+    scriptFields.clear();
 
     RetrieveScriptFields();
 

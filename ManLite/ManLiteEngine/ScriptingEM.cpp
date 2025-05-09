@@ -53,7 +53,7 @@ bool ScriptingEM::PreUpdate()
 
     if (MonoRegisterer::set_scene) MonoRegisterer::SetBackGroundLoadedSceneAsync();
 
-    ProcessInstantiateQueue();
+    if (!stop_process_instantiate_queue) ProcessInstantiateQueue();
     
     return ret;
 }

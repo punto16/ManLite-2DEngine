@@ -274,6 +274,7 @@ bool Gui::Update(double dt)
 		LOG(LogType::LOG_INFO, "Scene <%s> created", save_scene_panel->new_scene->GetSceneName().c_str());
 		save_scene_panel->set_scene = false;
 		ResourceManager::GetInstance().ReleaseTexture("Config\\placeholder.png");
+		engine->scripting_em->stop_process_instantiate_queue = false;
 	}
 
 	return ret;

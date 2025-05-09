@@ -85,6 +85,8 @@ private:
 	void ProcessInstantiateQueue();
 
 public:
+	bool stop_process_instantiate_queue = false;
+
 	// Helpers para conversión de tipos
 	static void* ToMonoParam(const auto& value);
 	static void* ToMonoStringParam(const std::string& str);

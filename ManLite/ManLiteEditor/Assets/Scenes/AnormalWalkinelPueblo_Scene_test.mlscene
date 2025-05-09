@@ -66,7 +66,7 @@
           "Visible": true
         },
         {
-          "ID": 26716246,
+          "ID": 869044798,
           "ParentID": 3010753683,
           "ParentLayerID": 2,
           "PrefabPath": "Assets\\Prefabs\\Samurai_Prefab_Test.prefab"
@@ -6654,8 +6654,8 @@
     {
       "Layer_children_go_id": [
         2946671881,
-        3010753683,
-        26716246
+        869044798,
+        3010753683
       ],
       "children_count": 3,
       "layer_id": 2,

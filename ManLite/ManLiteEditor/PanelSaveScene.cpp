@@ -3,6 +3,7 @@
 #include "GUI.h"
 #include "App.h"
 #include "EngineCore.h"
+#include "ScriptingEM.h"
 #include "WindowEM.h"
 #include "ResourceManager.h"
 #include "SceneManagerEM.h"
@@ -106,6 +107,7 @@ bool PanelSaveScene::Update()
 							auto scene_copy = new_scene;
 							int w = 0, h = 0;
 							ResourceManager::GetInstance().LoadTexture("Config\\placeholder.png", w, h);//load placeholder
+							engine->scripting_em->stop_process_instantiate_queue = true;
 							loading_task = std::async(std::launch::async, [this, filePath, scene_copy]() {
 								engine->scene_manager_em->LoadSceneToScene(filePath, *scene_copy);
 								is_loading = false;
@@ -163,6 +165,7 @@ bool PanelSaveScene::Update()
 								auto scene_copy = new_scene;
 								int w = 0, h = 0;
 								ResourceManager::GetInstance().LoadTexture("Config\\placeholder.png", w, h);//load placeholder
+								engine->scripting_em->stop_process_instantiate_queue = true;
 								loading_task = std::async(std::launch::async, [this, filePath, scene_copy]() {
 									engine->scene_manager_em->LoadSceneToScene(filePath, *scene_copy);
 									is_loading = false;
@@ -200,6 +203,7 @@ bool PanelSaveScene::Update()
 							auto scene_copy = new_scene;
 							int w = 0, h = 0;
 							ResourceManager::GetInstance().LoadTexture("Config\\placeholder.png", w, h);//load placeholder
+							engine->scripting_em->stop_process_instantiate_queue = true;
 							loading_task = std::async(std::launch::async, [this, filePath, scene_copy]() {
 								engine->scene_manager_em->LoadSceneToScene(filePath, *scene_copy);
 								is_loading = false;
