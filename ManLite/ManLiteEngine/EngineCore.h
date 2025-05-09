@@ -6,6 +6,7 @@
 #include "Timer.h"
 #include <list>
 #include <vector>
+#include <thread>
 
 //EM means Engine Module
 class EngineModule;
@@ -83,6 +84,9 @@ public:
 	PhysicsEM* physics_em = nullptr;
 	FontEM* font_em = nullptr;
 	ScriptingEM* scripting_em = nullptr;
+
+	//
+	static std::thread::id main_thread_id;
 
 private:
 

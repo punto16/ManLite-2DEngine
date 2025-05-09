@@ -9,19 +9,32 @@
 Script::Script(std::weak_ptr<GameObject> container_go, std::string name, bool enable)
     : Component(container_go, ComponentType::Script, name, true)
 {
-    mono_object = engine->scripting_em->InstantiateClassAsync(name, this);
+    if (std::this_thread::get_id() != engine->main_thread_id)
+        mono_object = engine->scripting_em->InstantiateClassAsync(name, this);
+    else
+        mono_object = engine->scripting_em->InstantiateClass(name, this);
 }
 
 Script::Script(const Script& component_to_copy, std::shared_ptr<GameObject> container_go)
     : Component(component_to_copy, container_go)
 {
-    mono_object = engine->scripting_em->InstantiateClassAsync(name, this);
-    enabled = component_to_copy.enabled;
-
     for (auto& item : component_to_copy.scriptFields)
     {
         scriptFields.push_back(item);
     }
+    if (std::this_thread::get_id() != engine->main_thread_id)
+    {
+        mono_object = engine->scripting_em->InstantiateClassAsync(name, this);
+    }
+    else
+    {
+        mono_object = engine->scripting_em->InstantiateClass(name, this);
+        did_init = true;
+        FinishLoad();
+        did_init = false;
+    }
+    enabled = component_to_copy.enabled;
+
 }
 
 Script::~Script()

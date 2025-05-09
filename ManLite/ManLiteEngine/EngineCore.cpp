@@ -15,6 +15,8 @@
 #include "Defs.h"
 #include "Log.h"
 
+std::thread::id EngineCore::main_thread_id = std::this_thread::get_id();
+
 EngineCore::EngineCore()
 {
 	//create engine modules
