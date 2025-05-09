@@ -171,6 +171,10 @@ static void LoadScene(MonoString* path)
 {
 	engine->scene_manager_em->RuntimeLoadScene(MonoRegisterer::ToCppString(path));
 }
+std::future<void> MonoRegisterer::loading_task;
+std::atomic<bool> MonoRegisterer::is_loading(false);
+std::atomic<bool> MonoRegisterer::set_scene(false);
+std::shared_ptr<Scene> MonoRegisterer::new_scene = nullptr;
 void MonoRegisterer::LoadSceneBackGround(MonoString* path, bool set_on_finish_loading)
 {
 	if (is_loading) return;
