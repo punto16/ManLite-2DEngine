@@ -39,7 +39,7 @@ bool PanelAbout::Update()
 
 	ImVec2 center(ImGui::GetIO().DisplaySize.x * 0.5f, ImGui::GetIO().DisplaySize.y * 0.6f);
 	ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
-	ImGui::SetNextWindowSize(ImVec2(520, 765));
+	ImGui::SetNextWindowSize(ImVec2(520, 795));
 	if (ImGui::Begin("About", nullptr, window_flags)) {
 		{
 			// name engine + version
@@ -85,9 +85,13 @@ bool PanelAbout::Update()
 			}
 
 			{
+				ImGui::SeparatorText("Used Assets: ");
+				ImGui::Bullet(); ImGui::Text("Icons used from FreePik");
+			}
+
+			{
 				ImGui::SeparatorText("License");
 
-				// --TODO-- read directly the license document (?)
 				ImGui::Text("MIT License");
 				ImGui::Text("");
 				ImGui::Text("Copyright(c) 2025 Luis Gonzalez (punto16)");

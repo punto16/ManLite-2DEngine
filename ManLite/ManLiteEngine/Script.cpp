@@ -12,7 +12,16 @@ Script::Script(std::weak_ptr<GameObject> container_go, std::string name, bool en
     if (std::this_thread::get_id() != engine->main_thread_id)
         mono_object = engine->scripting_em->InstantiateClassAsync(name, this);
     else
+    {
         mono_object = engine->scripting_em->InstantiateClass(name, this);
+        if (mono_object)
+        {
+            mono_object = engine->scripting_em->InstantiateClass(name, this);
+            did_init = true;
+            FinishLoad();
+            did_init = false;
+        }
+    }
 }
 
 Script::Script(const Script& component_to_copy, std::shared_ptr<GameObject> container_go)
@@ -262,7 +271,7 @@ void Script::ApplyFieldValues()
 
             MonoClassField* ptrField = mono_class_get_field_from_name(
                 iGameObjectClass,
-                "game_object_ptr"
+                "_game_object_ptr"
             );
 
             void* goPtr = reinterpret_cast<void*>(go);
@@ -316,21 +325,21 @@ void Script::GetCurrentFieldValue(MonoClassField* field, ScriptField& sf) {
     {
     case ScriptFieldType::Float:
     {
-        float value;
+        float value = 0.0f;
         mono_field_get_value(mono_object, field, &value);
         sf.value = value;
         break;
     }
     case ScriptFieldType::Int:
     {
-        int value;
+        int value = 0;
         mono_field_get_value(mono_object, field, &value);
         sf.value = value;
         break;
     }
     case ScriptFieldType::Bool:
     {
-        bool value;
+        bool value = false;
         mono_field_get_value(mono_object, field, &value);
         sf.value = value;
         break;
@@ -340,6 +349,7 @@ void Script::GetCurrentFieldValue(MonoClassField* field, ScriptField& sf) {
         MonoString* monoStr;
         mono_field_get_value(mono_object, field, &monoStr);
         if (monoStr) sf.value = std::string(MonoRegisterer::ToCppString(monoStr));
+        else sf.value = "";
         break;
     }
     case ScriptFieldType::GameObjectPtr:
