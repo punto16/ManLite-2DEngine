@@ -16,6 +16,10 @@ public class PlayerScript : MonoBehaviour
         collider = new Collider2D(attached_game_object);
 
         ML_System.Log("Start PlayerScript");
+        ML_System.Log("Log Test | Int: {0}", 69);
+        ML_System.Log("Log Test | Float: {0}", 69.420f);
+        ML_System.Log("Log Test | String: {0}", "Kilo Niga");
+        ML_System.Log("Log Test | Bool: {0}", true);
     }
 
     public override void Update()
