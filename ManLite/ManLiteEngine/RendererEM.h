@@ -104,17 +104,13 @@ private:
     )glsl";
 };
 
-struct RenderCircleInfo
+struct RenderShapeInfo
 {
     mat3f mat;
     ML_Color color;
+    bool circle_or_rect;
     float radius;
-};
-
-struct RenderRectInfo
-{
-    mat3f mat;
-    ML_Color color;
+    bool filled_or_contorn;
 };
 
 struct Vertex
@@ -183,10 +179,7 @@ public:
     //collider stuff
     GLuint debugShaderProgram;
     GLuint lineVAO, lineVBO;
-    std::vector<RenderCircleInfo> debugCollidersCircleFilled;
-    std::vector<RenderCircleInfo> debugCollidersCircleContorn;
-    std::vector<RenderRectInfo> debugCollidersRectFilled;
-    std::vector<RenderRectInfo> debugCollidersRectContorn;
+    std::vector<RenderShapeInfo> debugColliders;
 
     //text
     GLuint textShaderProgram;
