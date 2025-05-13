@@ -515,14 +515,27 @@ void RendererEM::SubmitSprite(GLuint textureID, const mat3f& modelMatrix, float 
 
 void RendererEM::SubmitDebugCollider(const mat3f& modelMatrix, const ML_Color& color, bool isCircle, float radius, bool filled)
 {
-	RenderShapeInfo i;
-	i.circle_or_rect = isCircle;
-	i.mat = isCircle ? mat3f::CreateTransformMatrix(modelMatrix.GetTranslation(), modelMatrix.GetRotation(), { 1.0f, 1.0f }) : modelMatrix;
-	i.color = color;
-	i.radius = radius;
-	i.filled_or_contorn = filled;
-
-	debugColliders.emplace_back(i);
+	if (isCircle)
+	{
+		RenderCircleInfo i;
+		i.mat = modelMatrix;
+		i.color = color;
+		i.radius = radius;
+		if (filled)
+			debugCollidersCircleFilled.emplace_back(i);
+		else
+			debugCollidersCircleContorn.emplace_back(i);
+	}
+	else
+	{
+		RenderRectInfo i;
+		i.mat = modelMatrix;
+		i.color = color;
+		if (filled)
+			debugCollidersRectFilled.emplace_back(i);
+		else
+			debugCollidersRectContorn.emplace_back(i);
+	}
 }
 
 void RendererEM::RenderDebugColliders()
@@ -556,12 +569,11 @@ void RendererEM::RenderDebugColliders()
 
 	glUniformMatrix4fv(uViewProj, 1, GL_FALSE, glm::value_ptr(viewProj));
 
-	for (const auto& item : debugColliders) {
+	// circles filled
+	for (const auto& item : debugCollidersCircleFilled) {
 		const auto& modelMat = item.mat;
 		const auto& color = item.color;
 		const auto& radius = item.radius;
-		const auto& isCircle = item.circle_or_rect;
-		const auto& isFilled = item.filled_or_contorn;
 
 		glm::mat4 glmModel = ConvertMat3fToGlmMat4(modelMat);
 		glUniformMatrix4fv(uModel, 1, GL_FALSE, glm::value_ptr(glmModel));
@@ -571,79 +583,118 @@ void RendererEM::RenderDebugColliders()
 			color.b / 255.0f,
 			color.a / 255.0f);
 
-		if (isCircle)
-		{
-			const int segments = isFilled ? 32 : 64;
-			std::vector<float> circleVertices;
+		const int segments = 32;
+		std::vector<float> circleVertices;
 
-			if (isFilled) //circle filled
-			{
-				circleVertices.push_back(0.0f);
-				circleVertices.push_back(0.0f);
+		// Centro del círculo
+		circleVertices.push_back(0.0f);
+		circleVertices.push_back(0.0f);
 
-				for (int i = 0; i <= segments; ++i) {
-					float angle = 2.0f * PI * i / segments;
-					circleVertices.push_back(cos(angle) * radius);
-					circleVertices.push_back(sin(angle) * radius);
-				}
-
-				glBindBuffer(GL_ARRAY_BUFFER, lineVBO);
-				glBufferData(GL_ARRAY_BUFFER, circleVertices.size() * sizeof(float),
-					circleVertices.data(), GL_DYNAMIC_DRAW);
-
-				glDrawArrays(GL_TRIANGLE_FAN, 0, segments + 2);
-			}
-			else //circle contorn
-			{
-				for (int i = 0; i <= segments; ++i) {
-					float angle = 2.0f * PI * i / segments;
-					circleVertices.push_back(cos(angle) * radius);
-					circleVertices.push_back(sin(angle) * radius);
-				}
-
-				glBindBuffer(GL_ARRAY_BUFFER, lineVBO);
-				glBufferData(GL_ARRAY_BUFFER, circleVertices.size() * sizeof(float),
-					circleVertices.data(), GL_DYNAMIC_DRAW);
-
-				glDrawArrays(GL_LINE_LOOP, 0, segments + 1);
-			}
+		// Triángulo fan
+		for (int i = 0; i <= segments; ++i) {
+			float angle = 2.0f * PI * i / segments;
+			circleVertices.push_back(cos(angle) * radius);
+			circleVertices.push_back(sin(angle) * radius);
 		}
-		else
-		{
-			if (isFilled) //rect filled
-			{
-				float vertices[] = {
-					// Triangle 1
-					-0.5f,  0.5f,
-					 0.5f,  0.5f,
-					-0.5f, -0.5f,
-					// Triangle 2
-					 0.5f,  0.5f,
-					 0.5f, -0.5f,
-					-0.5f, -0.5f
-				};
 
-				glBindBuffer(GL_ARRAY_BUFFER, lineVBO);
-				glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-				glDrawArrays(GL_TRIANGLES, 0, 6);
-			}
-			else //rect contorn
-			{
-				float outlineVertices[] = {
-					-0.5f,  0.5f,
-					 0.5f,  0.5f,
-					 0.5f, -0.5f,
-					-0.5f, -0.5f,
-					-0.5f,  0.5f
-				};
+		glBindBuffer(GL_ARRAY_BUFFER, lineVBO);
+		glBufferData(GL_ARRAY_BUFFER, circleVertices.size() * sizeof(float),
+			circleVertices.data(), GL_DYNAMIC_DRAW);
 
-				glBindBuffer(GL_ARRAY_BUFFER, lineVBO);
-				glBufferData(GL_ARRAY_BUFFER, sizeof(outlineVertices), outlineVertices, GL_STATIC_DRAW);
-				glDrawArrays(GL_LINE_LOOP, 0, 5);
-			}
-		}
+		glDrawArrays(GL_TRIANGLE_FAN, 0, segments + 2);
 	}
-	debugColliders.clear();
+	debugCollidersCircleFilled.clear();
+
+	// circles contorn
+	for (const auto& item : debugCollidersCircleContorn) {
+		const auto& modelMat = item.mat;
+		const auto& color = item.color;
+		const auto& radius = item.radius;
+
+		glm::mat4 glmModel = ConvertMat3fToGlmMat4(modelMat);
+		glUniformMatrix4fv(uModel, 1, GL_FALSE, glm::value_ptr(glmModel));
+		glUniform4f(uColor,
+			color.r / 255.0f,
+			color.g / 255.0f,
+			color.b / 255.0f,
+			color.a / 255.0f);
+
+		const int segments = 64;
+		std::vector<float> circleVertices;
+
+		// Línea contorno
+		for (int i = 0; i <= segments; ++i) {
+			float angle = 2.0f * PI * i / segments;
+			circleVertices.push_back(cos(angle) * radius);
+			circleVertices.push_back(sin(angle) * radius);
+		}
+
+		glBindBuffer(GL_ARRAY_BUFFER, lineVBO);
+		glBufferData(GL_ARRAY_BUFFER, circleVertices.size() * sizeof(float),
+			circleVertices.data(), GL_DYNAMIC_DRAW);
+
+		glDrawArrays(GL_LINE_LOOP, 0, segments + 1);
+	}
+	debugCollidersCircleContorn.clear();
+
+
+	// rect filled
+	for (const auto& item : debugCollidersRectFilled) {
+		const auto& modelMat = item.mat;
+		const auto& color = item.color;
+
+		glm::mat4 glmModel = ConvertMat3fToGlmMat4(modelMat);
+		glUniformMatrix4fv(uModel, 1, GL_FALSE, glm::value_ptr(glmModel));
+		glUniform4f(uColor,
+			color.r / 255.0f,
+			color.g / 255.0f,
+			color.b / 255.0f,
+			color.a / 255.0f);
+
+		float vertices[] = {
+			// Triángulo 1
+			-0.5f,  0.5f,
+			 0.5f,  0.5f,
+			-0.5f, -0.5f,
+			// Triángulo 2
+			 0.5f,  0.5f,
+			 0.5f, -0.5f,
+			-0.5f, -0.5f
+		};
+
+		glBindBuffer(GL_ARRAY_BUFFER, lineVBO);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+		glDrawArrays(GL_TRIANGLES, 0, 6);
+
+	}
+	debugCollidersRectFilled.clear();
+
+	// rect contorn
+	for (const auto& item : debugCollidersRectContorn) {
+		const auto& modelMat = item.mat;
+		const auto& color = item.color;
+
+		glm::mat4 glmModel = ConvertMat3fToGlmMat4(modelMat);
+		glUniformMatrix4fv(uModel, 1, GL_FALSE, glm::value_ptr(glmModel));
+		glUniform4f(uColor,
+			color.r / 255.0f,
+			color.g / 255.0f,
+			color.b / 255.0f,
+			color.a / 255.0f);
+
+		float outlineVertices[] = {
+			-0.5f,  0.5f,
+			 0.5f,  0.5f,
+			 0.5f, -0.5f,
+			-0.5f, -0.5f,
+			-0.5f,  0.5f
+		};
+
+		glBindBuffer(GL_ARRAY_BUFFER, lineVBO);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(outlineVertices), outlineVertices, GL_STATIC_DRAW);
+		glDrawArrays(GL_LINE_LOOP, 0, 5);
+	}
+	debugCollidersRectContorn.clear();
 
 	glLineWidth(1.0f);
 
