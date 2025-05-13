@@ -148,9 +148,13 @@ public:
     void UseSceneViewCam();
     void UseGameViewCam();
 
+    void SetupDebugShapes();
+    void SetupInstancedAttributes(GLuint VAO);
     void SubmitSprite(GLuint textureID, const mat3f& modelMatrix, float u1, float v1, float u2, float v2, bool pixel_art);
     void SubmitDebugCollider(const mat3f& modelMatrix, const ML_Color& color, bool isCircle, float radius = 0.0f, bool filled = false);
     void RenderDebugColliders();
+    template<typename T>
+    void RenderBatchShapes(const std::vector<T>& instances, GLuint VAO, GLenum mode, int vertexCount);
     void SubmitText(std::string text, FontData* font, const mat3f& modelMatrix, const ML_Color& color, TextAlignment ta = TextAlignment::TEXT_ALIGN_LEFT);
 
     static glm::mat4 ConvertMat3fToGlmMat4(const mat3f& mat);
@@ -187,6 +191,16 @@ public:
     std::vector<RenderCircleInfo> debugCollidersCircleContorn;
     std::vector<RenderRectInfo> debugCollidersRectFilled;
     std::vector<RenderRectInfo> debugCollidersRectContorn;
+    int filledCircleVertexCount;
+    int outlineCircleVertexCount;
+    int filledQuadVertexCount;
+    int outlineQuadVertexCount;
+    GLuint modelMatricesBuffer;
+    GLuint colorsBuffer;
+    GLuint filledCircleVAO, filledCircleVBO;
+    GLuint outlineCircleVAO, outlineCircleVBO;
+    GLuint filledQuadVAO, filledQuadVBO;
+    GLuint outlineQuadVAO, outlineQuadVBO;
 
     //text
     GLuint textShaderProgram;
@@ -194,22 +208,27 @@ public:
     //shaders
     const char* debugVertexShader = R"glsl(
 #version 330 core
-layout (location = 0) in vec2 aPos;
+layout(location = 0) in vec2 aPos;
+layout(location = 1) in mat4 modelMatrix; // 4 atributos (location 1-4)
+layout(location = 5) in vec4 color;
+
 uniform mat4 uViewProj;
-uniform mat4 uModel;
+
+out vec4 vColor;
 
 void main() {
-    gl_Position = uViewProj * uModel * vec4(aPos, 0.0, 1.0);
+    gl_Position = uViewProj * modelMatrix * vec4(aPos, 0.0, 1.0);
+    vColor = color;
 }
 )glsl";
     
     const char* debugFragmentShader = R"glsl(
 #version 330 core
+in vec4 vColor;
 out vec4 FragColor;
-uniform vec4 uColor;
 
 void main() {
-    FragColor = uColor;
+    FragColor = vColor;
 }
 )glsl";
 
@@ -252,3 +271,31 @@ void main() {
 };
 
 #endif // !__RENDERER_EM_H__
+
+template<typename T>
+inline void RendererEM::RenderBatchShapes(const std::vector<T>& instances, GLuint VAO, GLenum mode, int vertexCount)
+{
+    // Convertir datos a formatos de GPU
+    std::vector<glm::mat4> modelMatrices;
+    std::vector<glm::vec4> colors;
+    for (const auto& inst : instances) {
+        modelMatrices.push_back(ConvertMat3fToGlmMat4(inst.mat));
+        colors.emplace_back(
+            inst.color.r / 255.0f,
+            inst.color.g / 255.0f,
+            inst.color.b / 255.0f,
+            inst.color.a / 255.0f
+        );
+    }
+
+    // Actualizar buffers de instancias
+    glBindBuffer(GL_ARRAY_BUFFER, modelMatricesBuffer);
+    glBufferData(GL_ARRAY_BUFFER, modelMatrices.size() * sizeof(glm::mat4), modelMatrices.data(), GL_DYNAMIC_DRAW);
+
+    glBindBuffer(GL_ARRAY_BUFFER, colorsBuffer);
+    glBufferData(GL_ARRAY_BUFFER, colors.size() * sizeof(glm::vec4), colors.data(), GL_DYNAMIC_DRAW);
+
+    // Dibujar
+    glBindVertexArray(VAO);
+    glDrawArraysInstanced(mode, 0, vertexCount, instances.size());
+}
