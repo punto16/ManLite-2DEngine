@@ -262,31 +262,41 @@ bool RendererEM::CompileShaders()
 			layout (location = 0) in vec2 aPos;
 			layout (location = 1) in vec2 aTexCoords;
 			
-			uniform mat4 uModel;
+			// Atributos instanciados (1 por instancia)
+			layout (location = 2) in mat4 aModel;      // Ocupa locations 2-5
+			layout (location = 6) in vec4 aUVRect;     // u1, v1, u2, v2
+			layout (location = 7) in vec4 aColor;      // Color de la instancia
+			
 			uniform mat4 uViewProj;
-			uniform vec4 uUVRect; // x = u1, y = v1, z = u2, w = v2
 			
 			out vec2 TexCoords;
+			out vec4 vColor;
 			
 			void main() {
-			    gl_Position = uViewProj * uModel * vec4(aPos, 0.0, 1.0);
+			    // Aplica transformaciones
+			    mat4 model = aModel;
+			    gl_Position = uViewProj * model * vec4(aPos, 0.0, 1.0);
 			    
-			    // Calcula las coordenadas UV aplicando el recorte
-			    vec2 uvOffset = vec2(uUVRect.x, uUVRect.y);
-			    vec2 uvScale = vec2(uUVRect.z - uUVRect.x, uUVRect.w - uUVRect.y);
+			    // Calcula UVs
+			    vec2 uvOffset = aUVRect.xy;
+			    vec2 uvScale = aUVRect.zw - aUVRect.xy;
 			    TexCoords = uvOffset + aTexCoords * uvScale;
+			    
+			    vColor = aColor;
 			}
         )glsl";
 
 	const char* fragmentShaderSource = R"glsl(
 			#version 330 core
 			in vec2 TexCoords;
+			in vec4 vColor;
 			out vec4 FragColor;
 			
 			uniform sampler2D uTexture;
 			
 			void main() {
-			    FragColor = texture(uTexture, TexCoords);
+			    vec4 texColor = texture(uTexture, TexCoords);
+			    FragColor = texColor * vColor;
 			    
 			    if (FragColor.a < 0.1)
 			        discard;
@@ -349,10 +359,6 @@ void RendererEM::RenderBatch()
 	glBindVertexArray(quadVAO);
 
 	glm::mat4 viewProj;
-	GLuint uViewProjLoc = glGetUniformLocation(shaderProgram, "uViewProj");
-	GLuint uModelLoc = glGetUniformLocation(shaderProgram, "uModel");
-	GLuint uTextureLoc = glGetUniformLocation(shaderProgram, "uTexture");
-	GLuint uUVRectLoc = glGetUniformLocation(shaderProgram, "uUVRect");
 
 	if (use_scene_cam && engine->GetEditorOrBuild()) {
 		viewProj = scene_camera.GetViewProjMatrix();
@@ -370,30 +376,58 @@ void RendererEM::RenderBatch()
 		}
 	}
 
+	glUseProgram(shaderProgram);
+	GLuint uViewProjLoc = glGetUniformLocation(shaderProgram, "uViewProj");
+	GLuint uModelLoc = glGetUniformLocation(shaderProgram, "uModel");
+	GLuint uTextureLoc = glGetUniformLocation(shaderProgram, "uTexture");
+	GLuint uUVRectLoc = glGetUniformLocation(shaderProgram, "uUVRect");
+
 	glUniformMatrix4fv(uViewProjLoc, 1, GL_FALSE, glm::value_ptr(viewProj));
 	glUniform1i(uTextureLoc, 0);
 
-	for (const auto& sprite : spritesToRender) {
-		if (sprite.text) continue;
+	for (const auto& entry : spritesToRender) {
+		const auto& key = entry.first;
+		GLuint textureID = key.first;
+		bool pixelArt = key.second;
+		const auto& sprites = entry.second;
+
+		// Filtrar sprites de texto
+		bool hasText = std::any_of(sprites.begin(), sprites.end(), [](const SpriteRenderData& s) { return s.text; });
+		if (hasText) continue; // Los procesaremos después
 
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, sprite.textureID);
-
-		// Configurar sampler
-		if (sprite.pixel_art) glBindSampler(0, samplerNearest);
+		glBindTexture(GL_TEXTURE_2D, textureID);
+		if (pixelArt) glBindSampler(0, samplerNearest);
 		else glBindSampler(0, samplerLinear);
 
-		glUniformMatrix4fv(uModelLoc, 1, GL_FALSE, glm::value_ptr(sprite.modelMatrix));
-		glUniform4f(uUVRectLoc, sprite.u1, sprite.v1, sprite.u2, sprite.v2);
+		// Recolectar datos de instancias
+		std::vector<glm::mat4> models;
+		std::vector<glm::vec4> uvRects;
+		std::vector<glm::vec4> colors;
+		for (const auto& sprite : sprites) {
+			models.push_back(sprite.modelMatrix);
+			uvRects.emplace_back(sprite.u1, sprite.v1, sprite.u2, sprite.v2);
+			colors.push_back(sprite.color);
+		}
 
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		// Actualizar buffers de instancias
+		glBindBuffer(GL_ARRAY_BUFFER, instanceModelVBO);
+		glBufferData(GL_ARRAY_BUFFER, models.size() * sizeof(glm::mat4), models.data(), GL_DYNAMIC_DRAW);
+
+		glBindBuffer(GL_ARRAY_BUFFER, instanceUVRectVBO);
+		glBufferData(GL_ARRAY_BUFFER, uvRects.size() * sizeof(glm::vec4), uvRects.data(), GL_DYNAMIC_DRAW);
+
+		glBindBuffer(GL_ARRAY_BUFFER, instanceColorVBO);
+		glBufferData(GL_ARRAY_BUFFER, colors.size() * sizeof(glm::vec4), colors.data(), GL_DYNAMIC_DRAW);
+
+		// Dibujar TODAS las instancias en 1 llamada
+		glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, sprites.size());
 	}
 
-	// Renderizar texto
+	// =============================================
+	// 2. Renderizar TEXTOS (shader de texto)
+	// =============================================
 	glUseProgram(textShaderProgram);
-	glBindVertexArray(quadVAO);
-
-	// Configurar uniforms para texto
 	GLuint text_uViewProj = glGetUniformLocation(textShaderProgram, "uViewProj");
 	GLuint text_uModel = glGetUniformLocation(textShaderProgram, "uModel");
 	GLuint text_uTexture = glGetUniformLocation(textShaderProgram, "uTexture");
@@ -403,25 +437,46 @@ void RendererEM::RenderBatch()
 	glUniformMatrix4fv(text_uViewProj, 1, GL_FALSE, glm::value_ptr(viewProj));
 	glUniform1i(text_uTexture, 0);
 
-	for (const auto& sprite : spritesToRender) {
-		if (!sprite.text) continue;
+	for (const auto& entry : spritesToRender) {
+		const auto& key = entry.first;
+		GLuint textureID = key.first;
+		bool pixelArt = key.second;
+		const auto& sprites = entry.second;
+
+		// Filtrar sprites NO textuales
+		bool allText = std::all_of(sprites.begin(), sprites.end(), [](const SpriteRenderData& s) { return s.text; });
+		if (!allText) continue;
 
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, sprite.textureID);
-		if (sprite.pixel_art) glBindSampler(0, samplerNearest);
+		glBindTexture(GL_TEXTURE_2D, textureID);
+		if (pixelArt) glBindSampler(0, samplerNearest);
 		else glBindSampler(0, samplerLinear);
 
-		glUniformMatrix4fv(text_uModel, 1, GL_FALSE, glm::value_ptr(sprite.modelMatrix));
-		glUniform4f(text_uUVRect, sprite.u1, sprite.v1, sprite.u2, sprite.v2);
-		glUniform4f(text_uColor,
-			sprite.color.r,
-			sprite.color.g,
-			sprite.color.b,
-			sprite.color.a);
+		// Recolectar datos de instancias
+		std::vector<glm::mat4> models;
+		std::vector<glm::vec4> uvRects;
+		std::vector<glm::vec4> colors;
+		for (const auto& sprite : sprites) {
+			models.push_back(sprite.modelMatrix);
+			uvRects.emplace_back(sprite.u1, sprite.v1, sprite.u2, sprite.v2);
+			colors.push_back(sprite.color);
+		}
 
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		// Actualizar buffers de instancias
+		glBindBuffer(GL_ARRAY_BUFFER, instanceModelVBO);
+		glBufferData(GL_ARRAY_BUFFER, models.size() * sizeof(glm::mat4), models.data(), GL_DYNAMIC_DRAW);
+
+		glBindBuffer(GL_ARRAY_BUFFER, instanceUVRectVBO);
+		glBufferData(GL_ARRAY_BUFFER, uvRects.size() * sizeof(glm::vec4), uvRects.data(), GL_DYNAMIC_DRAW);
+
+		glBindBuffer(GL_ARRAY_BUFFER, instanceColorVBO);
+		glBufferData(GL_ARRAY_BUFFER, colors.size() * sizeof(glm::vec4), colors.data(), GL_DYNAMIC_DRAW);
+
+		// Dibujar TODAS las instancias en 1 llamada
+		glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, sprites.size());
 	}
 
+	// Limpiar el mapa para el siguiente frame
 	spritesToRender.clear();
 	glBindVertexArray(0);
 }
@@ -485,6 +540,30 @@ void RendererEM::SetupQuad()
 	// UVs
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
 	glEnableVertexAttribArray(1);
+	glBindVertexArray(quadVAO);
+
+	// Buffer para matrices modelo (mat4)
+	glGenBuffers(1, &instanceModelVBO);
+	glBindBuffer(GL_ARRAY_BUFFER, instanceModelVBO);
+	for (int i = 0; i < 4; ++i) {
+		glEnableVertexAttribArray(2 + i);
+		glVertexAttribPointer(2 + i, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(i * sizeof(glm::vec4)));
+		glVertexAttribDivisor(2 + i, 1);
+	}
+
+	// Buffer para UV rects (vec4)
+	glGenBuffers(1, &instanceUVRectVBO);
+	glBindBuffer(GL_ARRAY_BUFFER, instanceUVRectVBO);
+	glEnableVertexAttribArray(6);
+	glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(glm::vec4), 0);
+	glVertexAttribDivisor(6, 1);
+
+	// Buffer para colores (vec4)
+	glGenBuffers(1, &instanceColorVBO);
+	glBindBuffer(GL_ARRAY_BUFFER, instanceColorVBO);
+	glEnableVertexAttribArray(7);
+	glVertexAttribPointer(7, 4, GL_FLOAT, GL_FALSE, sizeof(glm::vec4), 0);
+	glVertexAttribDivisor(7, 1);
 
 	glBindVertexArray(0);
 }
@@ -617,13 +696,15 @@ void RendererEM::SetupInstancedAttributes(GLuint VAO)
 
 void RendererEM::SubmitSprite(GLuint textureID, const mat3f& modelMatrix, float u1, float v1, float u2, float v2, bool pixel_art, int order_in_layer, int order_in_component)
 {
-	spritesToRender.push_back({
-	textureID,
-	ConvertMat3fToGlmMat4(modelMatrix, (float)(order_in_layer / 1000 + order_in_component / 1000)),
-	u1, v1, u2, v2,
-	pixel_art,
-	{ 1.0f, 1.0f, 1.0f, 1.0f },
-	false
+	auto key = std::make_pair(textureID, pixel_art);
+
+	spritesToRender[key].push_back({
+		textureID,
+		ConvertMat3fToGlmMat4(modelMatrix, (float)(order_in_layer / 1000 + order_in_component / 1000)),
+		u1, v1, u2, v2,
+		pixel_art,
+		{ 1.0f, 1.0f, 1.0f, 1.0f },
+		false
 		});
 }
 
@@ -769,7 +850,9 @@ void RendererEM::SubmitText(std::string text, FontData* font, const mat3f& model
 
 			mat3f charModel = modelMatrix * new_mat;
 
-			spritesToRender.push_back({
+			auto key = std::make_pair(ch->textureID, true);
+
+			spritesToRender[key].push_back({
 				ch->textureID,
 				ConvertMat3fToGlmMat4(charModel),
 				0.0f, 1.0f,

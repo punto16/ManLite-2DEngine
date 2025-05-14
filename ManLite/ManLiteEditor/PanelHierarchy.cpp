@@ -256,7 +256,7 @@ void PanelHierarchy::Context(GameObject& parent)
 			{
 				if (auto map = parent.GetComponent<TileMap>())
 				{
-					if (map->GetID() == app->gui->tile_map_panel->GetMap()->GetID())
+					if (app->gui->tile_map_panel->GetMap() && map->GetID() == app->gui->tile_map_panel->GetMap()->GetID())
 						app->gui->tile_map_panel->SetMap(nullptr);
 				}
 				parent.Delete();

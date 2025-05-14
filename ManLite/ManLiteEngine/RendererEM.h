@@ -13,6 +13,8 @@
 #include "Defs.h"
 #include "vector"
 #include "string"
+#include "utility"
+#include "unordered_map"
 
 #include "mat3f.h"
 
@@ -111,6 +113,13 @@ struct RenderShapeInfo
     float layer_order;
 };
 
+struct PairHash {
+    size_t operator()(const std::pair<GLuint, bool>& key) const {
+        return std::hash<GLuint>()(key.first) ^
+            (std::hash<bool>()(key.second) << 1);
+    }
+};
+
 struct Vertex
 {
 	vec3f position;
@@ -167,8 +176,8 @@ private:
 	Camera2D scene_camera;
 
     bool use_scene_cam = true;
-
-    std::vector<SpriteRenderData> spritesToRender;
+    std::unordered_map<std::pair<GLuint, bool>, std::vector<SpriteRenderData>, PairHash> spritesToRender;
+    GLuint instanceModelVBO, instanceUVRectVBO, instanceColorVBO;
     GLuint quadVAO, quadVBO, quadEBO;
 
     void SetupQuad();
