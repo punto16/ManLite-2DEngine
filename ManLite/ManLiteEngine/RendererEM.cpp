@@ -262,21 +262,20 @@ bool RendererEM::CompileShaders()
 			layout (location = 0) in vec2 aPos;
 			layout (location = 1) in vec2 aTexCoords;
 			
-			uniform mat4 uModel;
+			// Atributos instanciados
+			layout (location = 2) in mat4 instanceModel;
+			layout (location = 6) in vec4 instanceUVRect;
+			
 			uniform mat4 uViewProj;
-			uniform vec4 uUVRect; // x = u1, y = v1, z = u2, w = v2
 			
 			out vec2 TexCoords;
 			
 			void main() {
-			    gl_Position = uViewProj * uModel * vec4(aPos, 0.0, 1.0);
-			    
-			    // Calcula las coordenadas UV aplicando el recorte
-			    vec2 uvOffset = vec2(uUVRect.x, uUVRect.y);
-			    vec2 uvScale = vec2(uUVRect.z - uUVRect.x, uUVRect.w - uUVRect.y);
+			    gl_Position = uViewProj * instanceModel * vec4(aPos, 0.0, 1.0);
+			    vec2 uvOffset = instanceUVRect.xy;
+			    vec2 uvScale = instanceUVRect.zw - instanceUVRect.xy;
 			    TexCoords = uvOffset + aTexCoords * uvScale;
-			}
-        )glsl";
+			})glsl";
 
 	const char* fragmentShaderSource = R"glsl(
 			#version 330 core
@@ -336,6 +335,10 @@ bool RendererEM::CompileShaders()
 		return false;
 	}
 
+	glGenBuffers(1, &instanceModelVBO);
+	glGenBuffers(1, &instanceUVVBO);
+	glGenBuffers(1, &instanceColorVBO);
+
 	// Cleanup shaders
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
@@ -343,87 +346,98 @@ bool RendererEM::CompileShaders()
 	return ret;
 }
 
-void RendererEM::RenderBatch()
-{
-	glUseProgram(shaderProgram);
-	glBindVertexArray(quadVAO);
+void RendererEM::RenderBatch() {
+
 
 	glm::mat4 viewProj;
-	GLuint uViewProjLoc = glGetUniformLocation(shaderProgram, "uViewProj");
-	GLuint uModelLoc = glGetUniformLocation(shaderProgram, "uModel");
-	GLuint uTextureLoc = glGetUniformLocation(shaderProgram, "uTexture");
-	GLuint uUVRectLoc = glGetUniformLocation(shaderProgram, "uUVRect");
-
 	if (use_scene_cam && engine->GetEditorOrBuild()) {
 		viewProj = scene_camera.GetViewProjMatrix();
 	}
 	else {
 		GameObject* cam_go = &engine->scene_manager_em->GetCurrentScene().GetCurrentCameraGO();
-		if (cam_go && cam_go->GetComponent<Camera>())
-		{
+		if (cam_go && cam_go->GetComponent<Camera>()) {
 			auto camera = cam_go->GetComponent<Camera>();
 			viewProj = camera->GetProjectionMatrix() * camera->GetViewMatrix();
 		}
-		else
-		{
+		else {
 			viewProj = scene_camera.GetViewProjMatrix();
 		}
 	}
 
-	glUniformMatrix4fv(uViewProjLoc, 1, GL_FALSE, glm::value_ptr(viewProj));
-	glUniform1i(uTextureLoc, 0);
+
+	// Ordenar sprites por textura, sampler y tipo
+	std::sort(spritesToRender.begin(), spritesToRender.end(),
+		[](const SpriteRenderData& a, const SpriteRenderData& b) {
+			return std::tie(a.textureID, a.pixel_art, a.text, a.layerOrder) <
+				std::tie(b.textureID, b.pixel_art, b.text, b.layerOrder);
+		});
+
+	// Procesar batches
+	GLuint currentTexture = 0;
+	bool currentPixelArt = false;
+	bool currentIsText = false;
+	std::vector<glm::mat4> models;
+	std::vector<glm::vec4> uvRects;
+	std::vector<glm::vec4> colors;
+
+	auto flushBatch = [&]() {
+		if (models.empty()) return;
+
+		// Seleccionar shader
+		GLuint program = currentIsText ? textShaderProgram : shaderProgram;
+		glUseProgram(program);
+
+		GLuint uViewProjLoc = glGetUniformLocation(program, "uViewProj");
+		glUniformMatrix4fv(uViewProjLoc, 1, GL_FALSE, glm::value_ptr(viewProj));
+
+		// Configurar textura y sampler
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, currentTexture);
+		glBindSampler(0, currentPixelArt ? samplerNearest : samplerLinear);
+
+		// Actualizar buffers de instancias
+		glBindBuffer(GL_ARRAY_BUFFER, instanceModelVBO);
+		glBufferData(GL_ARRAY_BUFFER, models.size() * sizeof(glm::mat4), models.data(), GL_DYNAMIC_DRAW);
+
+		glBindBuffer(GL_ARRAY_BUFFER, instanceUVVBO);
+		glBufferData(GL_ARRAY_BUFFER, uvRects.size() * sizeof(glm::vec4), uvRects.data(), GL_DYNAMIC_DRAW);
+
+		if (currentIsText) {
+			glBindBuffer(GL_ARRAY_BUFFER, instanceColorVBO);
+			glBufferData(GL_ARRAY_BUFFER, colors.size() * sizeof(glm::vec4), colors.data(), GL_DYNAMIC_DRAW);
+		}
+
+		// Dibujar instancias
+		glBindVertexArray(quadVAO);
+		glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, models.size());
+
+		// Resetear buffers
+		models.clear();
+		uvRects.clear();
+		colors.clear();
+		};
 
 	for (const auto& sprite : spritesToRender) {
-		if (sprite.text) continue;
+		if (sprite.textureID != currentTexture ||
+			sprite.pixel_art != currentPixelArt ||
+			sprite.text != currentIsText)
+		{
+			flushBatch();
+			currentTexture = sprite.textureID;
+			currentPixelArt = sprite.pixel_art;
+			currentIsText = sprite.text;
+		}
 
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, sprite.textureID);
+		models.push_back(sprite.modelMatrix);
+		uvRects.emplace_back(sprite.u1, sprite.v1, sprite.u2, sprite.v2);
 
-		// Configurar sampler
-		if (sprite.pixel_art) glBindSampler(0, samplerNearest);
-		else glBindSampler(0, samplerLinear);
-
-		glUniformMatrix4fv(uModelLoc, 1, GL_FALSE, glm::value_ptr(sprite.modelMatrix));
-		glUniform4f(uUVRectLoc, sprite.u1, sprite.v1, sprite.u2, sprite.v2);
-
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		if (currentIsText) {
+			colors.push_back(sprite.color);
+		}
 	}
 
-	// Renderizar texto
-	glUseProgram(textShaderProgram);
-	glBindVertexArray(quadVAO);
-
-	// Configurar uniforms para texto
-	GLuint text_uViewProj = glGetUniformLocation(textShaderProgram, "uViewProj");
-	GLuint text_uModel = glGetUniformLocation(textShaderProgram, "uModel");
-	GLuint text_uTexture = glGetUniformLocation(textShaderProgram, "uTexture");
-	GLuint text_uUVRect = glGetUniformLocation(textShaderProgram, "uUVRect");
-	GLuint text_uColor = glGetUniformLocation(textShaderProgram, "uTextColor");
-
-	glUniformMatrix4fv(text_uViewProj, 1, GL_FALSE, glm::value_ptr(viewProj));
-	glUniform1i(text_uTexture, 0);
-
-	for (const auto& sprite : spritesToRender) {
-		if (!sprite.text) continue;
-
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, sprite.textureID);
-		if (sprite.pixel_art) glBindSampler(0, samplerNearest);
-		else glBindSampler(0, samplerLinear);
-
-		glUniformMatrix4fv(text_uModel, 1, GL_FALSE, glm::value_ptr(sprite.modelMatrix));
-		glUniform4f(text_uUVRect, sprite.u1, sprite.v1, sprite.u2, sprite.v2);
-		glUniform4f(text_uColor,
-			sprite.color.r,
-			sprite.color.g,
-			sprite.color.b,
-			sprite.color.a);
-
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-	}
-
+	flushBatch();
 	spritesToRender.clear();
-	glBindVertexArray(0);
 }
 
 void RendererEM::ResizeFBO(int width, int height)
@@ -454,17 +468,14 @@ void RendererEM::UseGameViewCam()
 void RendererEM::SetupQuad()
 {
 	float vertices[] = {
-		// Position	     // UVs
+		// Position      // UVs
 		-0.5f,  0.5f,     0.0f, 1.0f,
 		 0.5f,  0.5f,     1.0f, 1.0f,
 		 0.5f, -0.5f,     1.0f, 0.0f,
 		-0.5f, -0.5f,     0.0f, 0.0f
 	};
 
-	unsigned int indices[] = {
-		0, 1, 2,
-		2, 3, 0
-	};
+	unsigned int indices[] = { 0, 1, 2, 2, 3, 0 };
 
 	glGenVertexArrays(1, &quadVAO);
 	glGenBuffers(1, &quadVBO);
@@ -472,19 +483,51 @@ void RendererEM::SetupQuad()
 
 	glBindVertexArray(quadVAO);
 
+	// 1. Buffer de vértices base (posición y UVs)
 	glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, quadEBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-	// Posición
+	// Atributo 0: Posición
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 
-	// UVs
+	// Atributo 1: UVs
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
 	glEnableVertexAttribArray(1);
+
+	// 2. Buffer de elementos
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, quadEBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+	// 3. Buffer de instancias: Model Matrix (atributos 2-5)
+	glGenBuffers(1, &instanceModelVBO);
+	glBindBuffer(GL_ARRAY_BUFFER, instanceModelVBO);
+	for (int i = 0; i < 4; ++i) {
+		glEnableVertexAttribArray(2 + i);
+		glVertexAttribPointer(
+			2 + i,                      // Location 
+			4,                          // Componentes (vec4)
+			GL_FLOAT,
+			GL_FALSE,
+			sizeof(glm::mat4),          // Stride completo de la matriz
+			(void*)(i * sizeof(glm::vec4)) // Offset por columna
+		);
+		glVertexAttribDivisor(2 + i, 1); // Instanciado
+	}
+
+	// 4. Buffer de UV Rect (atributo 6)
+	glGenBuffers(1, &instanceUVVBO);
+	glBindBuffer(GL_ARRAY_BUFFER, instanceUVVBO);
+	glEnableVertexAttribArray(6);
+	glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(glm::vec4), 0);
+	glVertexAttribDivisor(6, 1);
+
+	// 5. Buffer de Color (atributo 7 - solo texto)
+	glGenBuffers(1, &instanceColorVBO);
+	glBindBuffer(GL_ARRAY_BUFFER, instanceColorVBO);
+	glEnableVertexAttribArray(7);
+	glVertexAttribPointer(7, 4, GL_FLOAT, GL_FALSE, sizeof(glm::vec4), 0);
+	glVertexAttribDivisor(7, 1);
 
 	glBindVertexArray(0);
 }
@@ -623,7 +666,8 @@ void RendererEM::SubmitSprite(GLuint textureID, const mat3f& modelMatrix, float 
 	u1, v1, u2, v2,
 	pixel_art,
 	{ 1.0f, 1.0f, 1.0f, 1.0f },
-	false
+	false,
+	(float)(order_in_layer / 1000 + order_in_component / 1000)
 		});
 }
 

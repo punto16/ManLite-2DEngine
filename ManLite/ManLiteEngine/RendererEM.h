@@ -25,6 +25,7 @@ struct SpriteRenderData {
     bool pixel_art;
     glm::vec4 color;
     bool text;
+    float layerOrder;
 };
 
 enum TextAlignment
@@ -169,6 +170,9 @@ private:
     bool use_scene_cam = true;
 
     std::vector<SpriteRenderData> spritesToRender;
+    GLuint instanceModelVBO;
+    GLuint instanceUVVBO;
+    GLuint instanceColorVBO;
     GLuint quadVAO, quadVBO, quadEBO;
 
     void SetupQuad();
@@ -228,40 +232,40 @@ void main() {
 
 
     const char* textVertexShader = R"glsl(
-    #version 330 core
-    layout (location = 0) in vec2 aPos;
-    layout (location = 1) in vec2 aTexCoords;
-    
-    uniform mat4 uModel;
-    uniform mat4 uViewProj;
-    uniform vec4 uUVRect;
-    
-    out vec2 TexCoords;
-    
-    void main() {
-        gl_Position = uViewProj * uModel * vec4(aPos, 0.0, 1.0);
-        vec2 uvOffset = vec2(uUVRect.x, uUVRect.y);
-        vec2 uvScale = vec2(uUVRect.z - uUVRect.x, uUVRect.w - uUVRect.y);
-        TexCoords = uvOffset + aTexCoords * uvScale;
-    }
-    )glsl";
+#version 330 core
+layout (location = 0) in vec2 aPos;
+layout (location = 1) in vec2 aTexCoords;
+layout (location = 2) in mat4 instanceModel;
+layout (location = 6) in vec4 instanceUVRect;
+layout (location = 7) in vec4 instanceColor;
 
+uniform mat4 uViewProj;
+
+out vec2 TexCoords;
+out vec4 TextColor;
+
+void main() {
+    gl_Position = uViewProj * instanceModel * vec4(aPos, 0.0, 1.0);
+    vec2 uvOffset = instanceUVRect.xy;
+    vec2 uvScale = instanceUVRect.zw - instanceUVRect.xy;
+    TexCoords = uvOffset + aTexCoords * uvScale;
+    TextColor = instanceColor;
+})glsl";
+
+    // Fragment shader de texto
     const char* textFragmentShader = R"glsl(
-    #version 330 core
-    in vec2 TexCoords;
-    out vec4 FragColor;
-    
-    uniform sampler2D uTexture;
-    uniform vec4 uTextColor;
-    
-    void main() {
-        vec4 texColor = texture(uTexture, TexCoords);
-        FragColor = vec4(uTextColor.rgb, uTextColor.a * texColor.a);
-        
-        if (FragColor.a < 0.1)
-            discard;
-    }
-    )glsl";
+#version 330 core
+in vec2 TexCoords;
+in vec4 TextColor;
+out vec4 FragColor;
+
+uniform sampler2D uTexture;
+
+void main() {
+    vec4 texColor = texture(uTexture, TexCoords);
+    FragColor = vec4(TextColor.rgb, TextColor.a * texColor.a);
+    if (FragColor.a < 0.1) discard;
+})glsl";
 };
 
 #endif // !__RENDERER_EM_H__
