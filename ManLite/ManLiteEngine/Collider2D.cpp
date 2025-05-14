@@ -7,6 +7,7 @@
 #include "RendererEM.h"
 #include "Script.h"
 #include "ScriptingEM.h"
+#include "SceneManagerEM.h"
 
 Collider2D::Collider2D(std::weak_ptr<GameObject> container_go,
     bool isDynamic,
@@ -150,7 +151,7 @@ void Collider2D::Draw()
 
         mat3f finalMat = modelMat * colliderMat;
 
-        engine->renderer_em->SubmitDebugCollider(finalMat, color, false);
+        engine->renderer_em->SubmitDebugCollider(finalMat, color, false, engine->scene_manager_em->GetCurrentScene().GetGOOrderInLayer(container_go.lock()));
     }
     else
     {
@@ -161,7 +162,7 @@ void Collider2D::Draw()
         );
 
         mat3f finalMat = modelMat * colliderMat;
-        engine->renderer_em->SubmitDebugCollider(finalMat, color, true, m_radius);
+        engine->renderer_em->SubmitDebugCollider(finalMat, color, true, engine->scene_manager_em->GetCurrentScene().GetGOOrderInLayer(container_go.lock()), 0.0f, m_radius);
     }
 }
 

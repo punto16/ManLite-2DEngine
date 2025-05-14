@@ -104,17 +104,11 @@ private:
     )glsl";
 };
 
-struct RenderCircleInfo
+struct RenderShapeInfo
 {
     mat3f mat;
     ML_Color color;
-    float radius;
-};
-
-struct RenderRectInfo
-{
-    mat3f mat;
-    ML_Color color;
+    float layer_order;
 };
 
 struct Vertex
@@ -150,14 +144,14 @@ public:
 
     void SetupDebugShapes();
     void SetupInstancedAttributes(GLuint VAO);
-    void SubmitSprite(GLuint textureID, const mat3f& modelMatrix, float u1, float v1, float u2, float v2, bool pixel_art);
-    void SubmitDebugCollider(const mat3f& modelMatrix, const ML_Color& color, bool isCircle, float radius = 0.0f, bool filled = false);
+    void SubmitSprite(GLuint textureID, const mat3f& modelMatrix, float u1, float v1, float u2, float v2, bool pixel_art, int order_in_layer, int order_in_component = 0);
+    void SubmitDebugCollider(const mat3f& modelMatrix, const ML_Color& color, bool isCircle, int order_in_layer, int order_in_component = 0, float radius = 0.0f, bool filled = false);
     void RenderDebugColliders();
     template<typename T>
     void RenderBatchShapes(const std::vector<T>& instances, GLuint VAO, GLenum mode, int vertexCount);
     void SubmitText(std::string text, FontData* font, const mat3f& modelMatrix, const ML_Color& color, TextAlignment ta = TextAlignment::TEXT_ALIGN_LEFT);
 
-    static glm::mat4 ConvertMat3fToGlmMat4(const mat3f& mat);
+    static glm::mat4 ConvertMat3fToGlmMat4(const mat3f& mat, float z = 0.0f);
 private:
 
 	bool vsync;
@@ -187,10 +181,10 @@ public:
     //collider stuff
     GLuint debugShaderProgram;
     GLuint lineVAO, lineVBO;
-    std::vector<RenderCircleInfo> debugCollidersCircleFilled;
-    std::vector<RenderCircleInfo> debugCollidersCircleContorn;
-    std::vector<RenderRectInfo> debugCollidersRectFilled;
-    std::vector<RenderRectInfo> debugCollidersRectContorn;
+    std::vector<RenderShapeInfo> debugCollidersCircleFilled;
+    std::vector<RenderShapeInfo> debugCollidersCircleContorn;
+    std::vector<RenderShapeInfo> debugCollidersRectFilled;
+    std::vector<RenderShapeInfo> debugCollidersRectContorn;
     int filledCircleVertexCount;
     int outlineCircleVertexCount;
     int filledQuadVertexCount;
@@ -278,8 +272,14 @@ inline void RendererEM::RenderBatchShapes(const std::vector<T>& instances, GLuin
     // Convertir datos a formatos de GPU
     std::vector<glm::mat4> modelMatrices;
     std::vector<glm::vec4> colors;
-    for (const auto& inst : instances) {
-        modelMatrices.push_back(ConvertMat3fToGlmMat4(inst.mat));
+
+    std::vector<T> sortedInstances = instances;
+    std::sort(sortedInstances.begin(), sortedInstances.end(), [](const T& a, const T& b) {
+        return a.layer_order < b.layer_order;
+        });
+
+    for (const auto& inst : sortedInstances) {
+        modelMatrices.push_back(ConvertMat3fToGlmMat4(inst.mat, inst.layer_order));
         colors.emplace_back(
             inst.color.r / 255.0f,
             inst.color.g / 255.0f,

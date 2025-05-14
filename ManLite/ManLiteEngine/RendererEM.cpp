@@ -167,6 +167,9 @@ bool RendererEM::Start()
 
 	SetupDebugShapes();
 
+	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LESS);
+
 	return ret;
 }
 
@@ -486,7 +489,7 @@ void RendererEM::SetupQuad()
 	glBindVertexArray(0);
 }
 
-glm::mat4 RendererEM::ConvertMat3fToGlmMat4(const mat3f& mat)
+glm::mat4 RendererEM::ConvertMat3fToGlmMat4(const mat3f& mat, float z)
 {
 	glm::mat4 result(1.0f);
 
@@ -499,6 +502,7 @@ glm::mat4 RendererEM::ConvertMat3fToGlmMat4(const mat3f& mat)
 	// Traslation (column 2 in mat3f)
 	result[3][0] = mat.m[6];
 	result[3][1] = mat.m[7];
+	result[3][2] = z;
 
 	return result;
 }
@@ -611,11 +615,11 @@ void RendererEM::SetupInstancedAttributes(GLuint VAO)
 	glVertexAttribDivisor(5, 1);
 }
 
-void RendererEM::SubmitSprite(GLuint textureID, const mat3f& modelMatrix, float u1, float v1, float u2, float v2, bool pixel_art)
+void RendererEM::SubmitSprite(GLuint textureID, const mat3f& modelMatrix, float u1, float v1, float u2, float v2, bool pixel_art, int order_in_layer, int order_in_component)
 {
 	spritesToRender.push_back({
 	textureID,
-	ConvertMat3fToGlmMat4(modelMatrix),
+	ConvertMat3fToGlmMat4(modelMatrix, (float)(order_in_layer / 1000 + order_in_component / 1000)),
 	u1, v1, u2, v2,
 	pixel_art,
 	{ 1.0f, 1.0f, 1.0f, 1.0f },
@@ -623,14 +627,14 @@ void RendererEM::SubmitSprite(GLuint textureID, const mat3f& modelMatrix, float 
 		});
 }
 
-void RendererEM::SubmitDebugCollider(const mat3f& modelMatrix, const ML_Color& color, bool isCircle, float radius, bool filled)
+void RendererEM::SubmitDebugCollider(const mat3f& modelMatrix, const ML_Color& color, bool isCircle, int order_in_layer, int order_in_component, float radius, bool filled)
 {
 	if (isCircle)
 	{
-		RenderCircleInfo i;
+		RenderShapeInfo i;
 		i.mat = mat3f::CreateTransformMatrix(modelMatrix.GetTranslation(), modelMatrix.GetRotation(), { radius, radius });
 		i.color = color;
-		i.radius = radius;
+		i.layer_order = (float)(order_in_layer / 1000 + order_in_component / 1000);
 		if (filled)
 			debugCollidersCircleFilled.emplace_back(i);
 		else
@@ -638,9 +642,10 @@ void RendererEM::SubmitDebugCollider(const mat3f& modelMatrix, const ML_Color& c
 	}
 	else
 	{
-		RenderRectInfo i;
+		RenderShapeInfo i;
 		i.mat = modelMatrix;
 		i.color = color;
+		i.layer_order = (float)(order_in_layer / 1000 + order_in_component / 1000);
 		if (filled)
 			debugCollidersRectFilled.emplace_back(i);
 		else
@@ -676,8 +681,10 @@ void RendererEM::RenderDebugColliders()
 
 	if (!debugCollidersCircleContorn.empty())
 	{
+		glLineWidth(2.0f);
 		RenderBatchShapes(debugCollidersCircleContorn, outlineCircleVAO, GL_LINE_LOOP, outlineCircleVertexCount);
 		debugCollidersCircleContorn.clear();
+		glLineWidth(1.0f);
 	}
 
 	if (!debugCollidersRectFilled.empty())
@@ -688,8 +695,10 @@ void RendererEM::RenderDebugColliders()
 
 	if (!debugCollidersRectContorn.empty())
 	{
+		glLineWidth(2.0f);
 		RenderBatchShapes(debugCollidersRectContorn, outlineQuadVAO, GL_LINE_LOOP, outlineQuadVertexCount);
 		debugCollidersRectContorn.clear();
+		glLineWidth(1.0f);
 	}
 }
 

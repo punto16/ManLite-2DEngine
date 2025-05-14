@@ -66,6 +66,7 @@ public:
 	void ReparentToLayer(std::shared_ptr<GameObject> game_object, std::shared_ptr<Layer> target_layer);
 	void ReparentToLayer(std::shared_ptr<GameObject> game_object, uint32_t target_layer_id, int position);
 	int GetLayerIndex(uint32_t layer_id);
+	int GetGOOrderInLayer(std::shared_ptr<GameObject> go);
 	std::shared_ptr<Layer> GetLayerByID(uint32_t layer_id);
 	void ReorderLayer(int old_index, uint32_t target_layer_id);
 	bool ContainsLayer(const std::shared_ptr<Layer>& layer) const;

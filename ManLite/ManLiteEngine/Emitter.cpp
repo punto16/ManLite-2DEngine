@@ -7,6 +7,7 @@
 #include "ResourceManager.h"
 #include "EngineCore.h"
 #include "RendererEM.h"
+#include "SceneManagerEM.h"
 
 Emitter::Emitter(std::weak_ptr<GameObject> container_go, std::string name, bool enable) :
 	container_go(container_go),
@@ -229,7 +230,15 @@ void Emitter::Draw()
 
 			particle_t = mat * particle_t;
 
-			engine->renderer_em->SubmitDebugCollider(particle_t, particle.color, false, 0.0f, true);
+			engine->renderer_em->SubmitDebugCollider(
+				particle_t,
+				particle.color,
+				false,
+				engine->scene_manager_em->GetCurrentScene().GetGOOrderInLayer(container_go.lock()),
+				0.0f,
+				0.0f,
+				true
+			);
 		}
 		break;
 	}
@@ -252,7 +261,14 @@ void Emitter::Draw()
 				{ 1, 1 });
 			particle_t = mat * particle_t;
 
-			engine->renderer_em->SubmitDebugCollider(particle_t, particle.color, true, particle.scale.x / 2, true);
+			engine->renderer_em->SubmitDebugCollider(
+				particle_t,
+				particle.color,
+				true,
+				engine->scene_manager_em->GetCurrentScene().GetGOOrderInLayer(container_go.lock()),
+				0.0f,
+				particle.scale.x / 2,
+				true);
 		}
 		break;
 	}
@@ -288,9 +304,9 @@ void Emitter::Draw()
 				texture_id != 0 ? texture_id : ResourceManager::GetInstance().GetTexture("Config\\placeholder.png"),
 				particle_t,
 				0, 1, 1, 0,
-				pixel_art
+				pixel_art,
+				engine->scene_manager_em->GetCurrentScene().GetGOOrderInLayer(container_go.lock())
 			);
-
 		}
 
 		break;

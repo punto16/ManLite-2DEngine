@@ -25,6 +25,7 @@ public:
     bool Pause() override;
     bool Unpause() override;
 
+    int GetUIElementOrderPosition(UIElement* ui_element);
 
     //ui elements 
     template <typename TUI>

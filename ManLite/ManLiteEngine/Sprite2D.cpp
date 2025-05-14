@@ -4,6 +4,7 @@
 #include "RendererEM.h"
 #include "EngineCore.h"
 #include "GameObject.h"
+#include "SceneManagerEM.h"
 
 #include "Transform.h"
 #include "mat3f.h"
@@ -56,7 +57,9 @@ void Sprite2D::Draw()
             placeholder,
             GetContainerGO()->GetComponent<Transform>()->GetWorldMatrix(),
             0, 1, 1, 0,
-            pixel_art
+            pixel_art,
+            engine->scene_manager_em->GetCurrentScene().GetGOOrderInLayer(container_go.lock()),
+            0.0f
         );
         return;
     }
@@ -85,7 +88,9 @@ void Sprite2D::Draw()
             textureID,
             model_mat,
             u1, v1, u2, v2,
-            pixel_art
+            pixel_art,
+            engine->scene_manager_em->GetCurrentScene().GetGOOrderInLayer(container_go.lock()),
+            0.0f
         );
     }
 }

@@ -823,6 +823,12 @@ int Scene::GetLayerIndex(uint32_t layer_id)
 	return -1;
 }
 
+int Scene::GetGOOrderInLayer(std::shared_ptr<GameObject> go)
+{
+	return GetLayerIndex(go->GetParentLayer().lock()->GetLayerID()) * 10000 + 
+		go->GetParentLayer().lock()->GetGameObjectIndex(go);
+}
+
 std::shared_ptr<Layer> Scene::GetLayerByID(uint32_t layer_id)
 {
 	auto& layers = GetSceneLayers();

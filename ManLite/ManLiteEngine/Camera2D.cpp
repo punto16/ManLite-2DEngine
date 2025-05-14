@@ -49,7 +49,7 @@ void Camera2D::UpdateMatrix() {
         width * 0.5f / zoom,
         -height * 0.5f / zoom,
         height * 0.5f / zoom,
-        -1.0f, 1.0f
+        -1000.0f, 1000.0f
     );
 
     view = glm::translate(glm::mat4(1.0f),

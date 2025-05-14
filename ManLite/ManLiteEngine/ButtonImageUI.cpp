@@ -6,6 +6,7 @@
 #include "GameObject.h"
 #include "Canvas.h"
 #include "Camera.h"
+#include "SceneManagerEM.h"
 
 ButtonImageUI::ButtonImageUI(std::weak_ptr<GameObject> container_go, std::string texturePath, std::string name, bool enable) :
 	UIElement(container_go, UIElementType::ButtonImage, name, enable),
@@ -100,7 +101,9 @@ void ButtonImageUI::Draw()
             textureID != 0 ? textureID : ResourceManager::GetInstance().GetTexture("Config\\placeholder.png"),
             finalMat,
             uvs.x, uvs.y, uvs.w, uvs.h,
-            pixel_art
+            pixel_art,
+            engine->scene_manager_em->GetCurrentScene().GetGOOrderInLayer(container_go.lock()),
+            container_go.lock()->GetComponent<Canvas>()->GetUIElementOrderPosition(this)
         );
     }
 }

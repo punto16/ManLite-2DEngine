@@ -6,6 +6,7 @@
 #include "EngineCore.h"
 #include "RendererEM.h"
 #include "Canvas.h"
+#include "SceneManagerEM.h"
 
 TileMap::TileMap(std::weak_ptr<GameObject> container_go, std::string name, bool enable) :
 	Component(container_go, ComponentType::TileMap, name, enable),
@@ -87,7 +88,9 @@ void TileMap::Draw()
 			textureID != 0 ? textureID : ResourceManager::GetInstance().GetTexture("Config\\placeholder.png"),
 			final_mat,
 			uvs.x, uvs.y, uvs.w, uvs.h,
-			pixel_art
+			pixel_art,
+			engine->scene_manager_em->GetCurrentScene().GetGOOrderInLayer(container_go.lock()),
+			0.0f
 		);
 	}
 }

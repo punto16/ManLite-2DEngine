@@ -109,6 +109,16 @@ bool Canvas::Unpause()
 	return ret;
 }
 
+int Canvas::GetUIElementOrderPosition(UIElement* ui_element)
+{
+	auto it = std::find_if(ui_elements.begin(), ui_elements.end(),
+		[ui_element](const std::unique_ptr<UIElement>& elem) {
+			return elem.get() == ui_element;
+		});
+
+	return (it != ui_elements.end()) ? std::distance(ui_elements.begin(), it) : -1;
+}
+
 bool Canvas::RemoveItemUI(unsigned int id)
 {
 	bool ret = true;

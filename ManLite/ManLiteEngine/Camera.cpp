@@ -56,7 +56,7 @@ void Camera::Draw()
         );
 
         mat3f finalMat = worldMat * colliderMat;
-        engine->renderer_em->SubmitDebugCollider(finalMat, color, false);
+        engine->renderer_em->SubmitDebugCollider(finalMat, color, false, engine->scene_manager_em->GetCurrentScene().GetGOOrderInLayer(container_go.lock()));
     }
 }
 
@@ -152,6 +152,6 @@ void Camera::UpdateMatrices()
     projection_matrix = glm::ortho(
         -half_width, half_width,
         -half_height, half_height,
-        -1.0f, 1.0f
+        -1000.0f, 1000.0f
     );
 }

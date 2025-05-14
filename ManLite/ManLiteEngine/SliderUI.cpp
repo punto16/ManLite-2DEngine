@@ -6,6 +6,7 @@
 #include "Canvas.h"
 #include "Camera.h"
 #include "ResourceManager.h"
+#include "SceneManagerEM.h"
 
 void SliderSectionPart::UpdateSections(SliderState state) {
     switch (state) {
@@ -227,7 +228,9 @@ void SliderUI::Draw() {
                 textureID != 0 ? textureID : ResourceManager::GetInstance().GetTexture("Config\\placeholder.png"),
                 modelMat * localMat,
                 uvs.x, uvs.y, uvs.w, uvs.h,
-                pixel_art
+                pixel_art,
+                engine->scene_manager_em->GetCurrentScene().GetGOOrderInLayer(container_go.lock()),
+                container_go.lock()->GetComponent<Canvas>()->GetUIElementOrderPosition(this)
             );
 
             currentX += element_width;
