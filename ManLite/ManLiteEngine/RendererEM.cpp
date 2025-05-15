@@ -698,9 +698,17 @@ void RendererEM::SubmitSprite(GLuint textureID, const mat3f& modelMatrix, float 
 {
 	auto key = std::make_pair(textureID, pixel_art);
 
+	int layer_index = order_in_layer / 10000;
+	int game_object_index = order_in_layer % 10000;
+
+	float pos_z = 10.0f +
+		(float)layer_index * 1.0f +
+		(float)game_object_index * 0.001f +
+		(float)(1000 - order_in_component) * 0.000001f;
+
 	spritesToRender[key].push_back({
 		textureID,
-		ConvertMat3fToGlmMat4(modelMatrix, (float)(order_in_layer / 1000 + order_in_component / 1000)),
+		ConvertMat3fToGlmMat4(modelMatrix, -pos_z),
 		u1, v1, u2, v2,
 		pixel_art,
 		{ 1.0f, 1.0f, 1.0f, 1.0f },
@@ -710,12 +718,20 @@ void RendererEM::SubmitSprite(GLuint textureID, const mat3f& modelMatrix, float 
 
 void RendererEM::SubmitDebugCollider(const mat3f& modelMatrix, const ML_Color& color, bool isCircle, int order_in_layer, int order_in_component, float radius, bool filled)
 {
+	int layer_index = order_in_layer / 10000;
+	int game_object_index = order_in_layer % 10000;
+
+	float pos_z = 10.0f +
+		(float)layer_index * 1.0f +
+		(float)game_object_index * 0.001f +
+		(float)(1000 - order_in_component) * 0.000001f;
+
 	if (isCircle)
 	{
 		RenderShapeInfo i;
 		i.mat = mat3f::CreateTransformMatrix(modelMatrix.GetTranslation(), modelMatrix.GetRotation(), { radius, radius });
 		i.color = color;
-		i.layer_order = (float)(order_in_layer / 1000 + order_in_component / 1000);
+		i.layer_order = -pos_z;
 		if (filled)
 			debugCollidersCircleFilled.emplace_back(i);
 		else
@@ -726,7 +742,7 @@ void RendererEM::SubmitDebugCollider(const mat3f& modelMatrix, const ML_Color& c
 		RenderShapeInfo i;
 		i.mat = modelMatrix;
 		i.color = color;
-		i.layer_order = (float)(order_in_layer / 1000 + order_in_component / 1000);
+		i.layer_order = -pos_z;
 		if (filled)
 			debugCollidersRectFilled.emplace_back(i);
 		else

@@ -20,7 +20,7 @@ public:
 	bool Update(double dt);
 
 	//utils
-	void AddChild(std::shared_ptr<GameObject> child);
+	void AddChild(std::shared_ptr<GameObject> child, bool add_to_front = false);
 	bool RemoveChild(const std::shared_ptr<GameObject>& child);
 	bool RemoveChild(uint32_t id);
 	bool HasChild(const std::shared_ptr<GameObject>& child) const;

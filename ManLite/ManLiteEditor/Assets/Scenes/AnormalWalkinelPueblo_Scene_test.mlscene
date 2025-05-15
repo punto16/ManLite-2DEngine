@@ -61,21 +61,21 @@
           "ID": 2946671881,
           "Name": "Cam",
           "ParentID": 3010753683,
-          "ParentLayerID": 2,
+          "ParentLayerID": 0,
           "Tag": "Default",
           "Visible": true
         },
         {
           "ID": 869044798,
           "ParentID": 3010753683,
-          "ParentLayerID": 2,
+          "ParentLayerID": 0,
           "PrefabPath": "Assets\\Prefabs\\Samurai_Prefab_Test.prefab"
         }
       ],
       "ID": 3010753683,
       "Name": "Player",
       "ParentID": 1185669598,
-      "ParentLayerID": 2,
+      "ParentLayerID": 0,
       "Tag": "Default",
       "Visible": true
     },
@@ -83,10 +83,10 @@
       "Components": [
         {
           "AspectRatio": 1.0,
-          "ComponentID": 643704203,
+          "ComponentID": 531881369,
           "ComponentName": "Transform",
           "ComponentType": 0,
-          "ContainerGOID": 515004012,
+          "ContainerGOID": 2867311918,
           "Enabled": true,
           "LockAspect": true,
           "Position": [
@@ -106,10 +106,10 @@
           "Components": [
             {
               "AspectRatio": 1.0,
-              "ComponentID": 1458807943,
+              "ComponentID": 3400419668,
               "ComponentName": "Transform",
               "ComponentType": 0,
-              "ContainerGOID": 4160729400,
+              "ContainerGOID": 2861591359,
               "Enabled": true,
               "LockAspect": true,
               "Position": [
@@ -123,10 +123,10 @@
               ]
             },
             {
-              "ComponentID": 2481068802,
+              "ComponentID": 3662341609,
               "ComponentName": "TileMap",
               "ComponentType": 9,
-              "ContainerGOID": 4160729400,
+              "ContainerGOID": 2861591359,
               "Enabled": true,
               "GridData": [
                 83,
@@ -1683,9 +1683,9 @@
             }
           ],
           "Enabled": true,
-          "ID": 4160729400,
+          "ID": 2861591359,
           "Name": "Background",
-          "ParentID": 515004012,
+          "ParentID": 2867311918,
           "ParentLayerID": 1,
           "Tag": "Default",
           "Visible": true
@@ -1694,10 +1694,10 @@
           "Components": [
             {
               "AspectRatio": 1.0,
-              "ComponentID": 3666442241,
+              "ComponentID": 3771606384,
               "ComponentName": "Transform",
               "ComponentType": 0,
-              "ContainerGOID": 314716509,
+              "ContainerGOID": 1038885658,
               "Enabled": true,
               "LockAspect": true,
               "Position": [
@@ -1711,10 +1711,10 @@
               ]
             },
             {
-              "ComponentID": 4255295541,
+              "ComponentID": 1718003899,
               "ComponentName": "TileMap",
               "ComponentType": 9,
-              "ContainerGOID": 314716509,
+              "ContainerGOID": 1038885658,
               "Enabled": true,
               "GridData": [
                 -1,
@@ -3271,9 +3271,9 @@
             }
           ],
           "Enabled": true,
-          "ID": 314716509,
+          "ID": 1038885658,
           "Name": "Map2",
-          "ParentID": 515004012,
+          "ParentID": 2867311918,
           "ParentLayerID": 1,
           "Tag": "Default",
           "Visible": true
@@ -3282,10 +3282,10 @@
           "Components": [
             {
               "AspectRatio": 1.0,
-              "ComponentID": 785433796,
+              "ComponentID": 2582635393,
               "ComponentName": "Transform",
               "ComponentType": 0,
-              "ContainerGOID": 350148925,
+              "ContainerGOID": 2170720871,
               "Enabled": true,
               "LockAspect": true,
               "Position": [
@@ -3299,10 +3299,10 @@
               ]
             },
             {
-              "ComponentID": 205426425,
+              "ComponentID": 3506803190,
               "ComponentName": "TileMap",
               "ComponentType": 9,
-              "ContainerGOID": 350148925,
+              "ContainerGOID": 2170720871,
               "Enabled": true,
               "GridData": [
                 -1,
@@ -4859,9 +4859,9 @@
             }
           ],
           "Enabled": true,
-          "ID": 350148925,
+          "ID": 2170720871,
           "Name": "Map",
-          "ParentID": 515004012,
+          "ParentID": 2867311918,
           "ParentLayerID": 1,
           "Tag": "Default",
           "Visible": true
@@ -4870,10 +4870,10 @@
           "Components": [
             {
               "AspectRatio": 1.0,
-              "ComponentID": 2014736792,
+              "ComponentID": 1009677962,
               "ComponentName": "Transform",
               "ComponentType": 0,
-              "ContainerGOID": 328513001,
+              "ContainerGOID": 2972291733,
               "Enabled": true,
               "LockAspect": true,
               "Position": [
@@ -4893,10 +4893,10 @@
               "Components": [
                 {
                   "AspectRatio": 1.0,
-                  "ComponentID": 3681691049,
+                  "ComponentID": 676559104,
                   "ComponentName": "Transform",
                   "ComponentType": 0,
-                  "ContainerGOID": 3188138879,
+                  "ContainerGOID": 2785842632,
                   "Enabled": true,
                   "LockAspect": true,
                   "Position": [
@@ -4916,10 +4916,10 @@
                     "G": 0,
                     "R": 255
                   },
-                  "ComponentID": 1017300689,
+                  "ComponentID": 3447136252,
                   "ComponentName": "Collider2D",
                   "ComponentType": 5,
-                  "ContainerGOID": 3188138879,
+                  "ContainerGOID": 2785842632,
                   "Enabled": true,
                   "Friction": 0.30000001192092896,
                   "Height": 0.009999999776482582,
@@ -4936,21 +4936,21 @@
                 }
               ],
               "Enabled": true,
-              "ID": 3188138879,
+              "ID": 2785842632,
               "Name": "Object",
-              "ParentID": 328513001,
+              "ParentID": 2972291733,
               "ParentLayerID": 1,
-              "Tag": "Floor",
+              "Tag": "Default",
               "Visible": false
             },
             {
               "Components": [
                 {
                   "AspectRatio": 1.0,
-                  "ComponentID": 375051100,
+                  "ComponentID": 3031694747,
                   "ComponentName": "Transform",
                   "ComponentType": 0,
-                  "ContainerGOID": 3652323824,
+                  "ContainerGOID": 34319879,
                   "Enabled": true,
                   "LockAspect": true,
                   "Position": [
@@ -4970,10 +4970,10 @@
                     "G": 0,
                     "R": 255
                   },
-                  "ComponentID": 2763680384,
+                  "ComponentID": 966639442,
                   "ComponentName": "Collider2D",
                   "ComponentType": 5,
-                  "ContainerGOID": 3652323824,
+                  "ContainerGOID": 34319879,
                   "Enabled": true,
                   "Friction": 0.30000001192092896,
                   "Height": 0.009999999776482582,
@@ -4990,9 +4990,9 @@
                 }
               ],
               "Enabled": true,
-              "ID": 3652323824,
+              "ID": 34319879,
               "Name": "Object_(1)",
-              "ParentID": 328513001,
+              "ParentID": 2972291733,
               "ParentLayerID": 1,
               "Tag": "Default",
               "Visible": false
@@ -5001,10 +5001,10 @@
               "Components": [
                 {
                   "AspectRatio": 1.0,
-                  "ComponentID": 1486179018,
+                  "ComponentID": 4183491527,
                   "ComponentName": "Transform",
                   "ComponentType": 0,
-                  "ContainerGOID": 4179934233,
+                  "ContainerGOID": 3178657617,
                   "Enabled": true,
                   "LockAspect": true,
                   "Position": [
@@ -5024,10 +5024,10 @@
                     "G": 0,
                     "R": 255
                   },
-                  "ComponentID": 1175560409,
+                  "ComponentID": 3785288486,
                   "ComponentName": "Collider2D",
                   "ComponentType": 5,
-                  "ContainerGOID": 4179934233,
+                  "ContainerGOID": 3178657617,
                   "Enabled": true,
                   "Friction": 0.30000001192092896,
                   "Height": 0.009999999776482582,
@@ -5044,9 +5044,9 @@
                 }
               ],
               "Enabled": true,
-              "ID": 4179934233,
+              "ID": 3178657617,
               "Name": "Object_(2)",
-              "ParentID": 328513001,
+              "ParentID": 2972291733,
               "ParentLayerID": 1,
               "Tag": "Default",
               "Visible": false
@@ -5055,10 +5055,10 @@
               "Components": [
                 {
                   "AspectRatio": 1.0,
-                  "ComponentID": 702335627,
+                  "ComponentID": 2109000726,
                   "ComponentName": "Transform",
                   "ComponentType": 0,
-                  "ContainerGOID": 4248798414,
+                  "ContainerGOID": 1018860532,
                   "Enabled": true,
                   "LockAspect": true,
                   "Position": [
@@ -5078,10 +5078,10 @@
                     "G": 0,
                     "R": 255
                   },
-                  "ComponentID": 2301092299,
+                  "ComponentID": 170809193,
                   "ComponentName": "Collider2D",
                   "ComponentType": 5,
-                  "ContainerGOID": 4248798414,
+                  "ContainerGOID": 1018860532,
                   "Enabled": true,
                   "Friction": 0.30000001192092896,
                   "Height": 0.009999999776482582,
@@ -5098,9 +5098,9 @@
                 }
               ],
               "Enabled": true,
-              "ID": 4248798414,
+              "ID": 1018860532,
               "Name": "Object_(3)",
-              "ParentID": 328513001,
+              "ParentID": 2972291733,
               "ParentLayerID": 1,
               "Tag": "Default",
               "Visible": false
@@ -5109,10 +5109,10 @@
               "Components": [
                 {
                   "AspectRatio": 1.0,
-                  "ComponentID": 4267345691,
+                  "ComponentID": 2918813608,
                   "ComponentName": "Transform",
                   "ComponentType": 0,
-                  "ContainerGOID": 3070927873,
+                  "ContainerGOID": 1820395792,
                   "Enabled": true,
                   "LockAspect": true,
                   "Position": [
@@ -5132,10 +5132,10 @@
                     "G": 0,
                     "R": 255
                   },
-                  "ComponentID": 3646803593,
+                  "ComponentID": 2292366683,
                   "ComponentName": "Collider2D",
                   "ComponentType": 5,
-                  "ContainerGOID": 3070927873,
+                  "ContainerGOID": 1820395792,
                   "Enabled": true,
                   "Friction": 0.30000001192092896,
                   "Height": 0.009999999776482582,
@@ -5152,9 +5152,9 @@
                 }
               ],
               "Enabled": true,
-              "ID": 3070927873,
+              "ID": 1820395792,
               "Name": "Object_(4)",
-              "ParentID": 328513001,
+              "ParentID": 2972291733,
               "ParentLayerID": 1,
               "Tag": "Default",
               "Visible": false
@@ -5163,10 +5163,10 @@
               "Components": [
                 {
                   "AspectRatio": 1.0,
-                  "ComponentID": 2809612851,
+                  "ComponentID": 3662221199,
                   "ComponentName": "Transform",
                   "ComponentType": 0,
-                  "ContainerGOID": 1251529123,
+                  "ContainerGOID": 2547743783,
                   "Enabled": true,
                   "LockAspect": true,
                   "Position": [
@@ -5186,10 +5186,10 @@
                     "G": 0,
                     "R": 255
                   },
-                  "ComponentID": 3868183453,
+                  "ComponentID": 1002370910,
                   "ComponentName": "Collider2D",
                   "ComponentType": 5,
-                  "ContainerGOID": 1251529123,
+                  "ContainerGOID": 2547743783,
                   "Enabled": true,
                   "Friction": 0.30000001192092896,
                   "Height": 0.009999999776482582,
@@ -5206,9 +5206,9 @@
                 }
               ],
               "Enabled": true,
-              "ID": 1251529123,
+              "ID": 2547743783,
               "Name": "Object_(5)",
-              "ParentID": 328513001,
+              "ParentID": 2972291733,
               "ParentLayerID": 1,
               "Tag": "Default",
               "Visible": false
@@ -5217,10 +5217,10 @@
               "Components": [
                 {
                   "AspectRatio": 1.0,
-                  "ComponentID": 488025510,
+                  "ComponentID": 3231646770,
                   "ComponentName": "Transform",
                   "ComponentType": 0,
-                  "ContainerGOID": 3269804704,
+                  "ContainerGOID": 3953097307,
                   "Enabled": true,
                   "LockAspect": true,
                   "Position": [
@@ -5240,10 +5240,10 @@
                     "G": 0,
                     "R": 255
                   },
-                  "ComponentID": 1343827968,
+                  "ComponentID": 41212601,
                   "ComponentName": "Collider2D",
                   "ComponentType": 5,
-                  "ContainerGOID": 3269804704,
+                  "ContainerGOID": 3953097307,
                   "Enabled": true,
                   "Friction": 0.30000001192092896,
                   "Height": 0.009999999776482582,
@@ -5260,9 +5260,9 @@
                 }
               ],
               "Enabled": true,
-              "ID": 3269804704,
+              "ID": 3953097307,
               "Name": "Object_(6)",
-              "ParentID": 328513001,
+              "ParentID": 2972291733,
               "ParentLayerID": 1,
               "Tag": "Default",
               "Visible": false
@@ -5271,10 +5271,10 @@
               "Components": [
                 {
                   "AspectRatio": 1.0,
-                  "ComponentID": 3036774068,
+                  "ComponentID": 3025880910,
                   "ComponentName": "Transform",
                   "ComponentType": 0,
-                  "ContainerGOID": 1269078544,
+                  "ContainerGOID": 3669747384,
                   "Enabled": true,
                   "LockAspect": true,
                   "Position": [
@@ -5294,10 +5294,10 @@
                     "G": 0,
                     "R": 255
                   },
-                  "ComponentID": 739907694,
+                  "ComponentID": 2391995283,
                   "ComponentName": "Collider2D",
                   "ComponentType": 5,
-                  "ContainerGOID": 1269078544,
+                  "ContainerGOID": 3669747384,
                   "Enabled": true,
                   "Friction": 0.30000001192092896,
                   "Height": 0.009999999776482582,
@@ -5314,9 +5314,9 @@
                 }
               ],
               "Enabled": true,
-              "ID": 1269078544,
+              "ID": 3669747384,
               "Name": "Object_(7)",
-              "ParentID": 328513001,
+              "ParentID": 2972291733,
               "ParentLayerID": 1,
               "Tag": "Default",
               "Visible": false
@@ -5325,10 +5325,10 @@
               "Components": [
                 {
                   "AspectRatio": 1.0,
-                  "ComponentID": 1914661467,
+                  "ComponentID": 87153281,
                   "ComponentName": "Transform",
                   "ComponentType": 0,
-                  "ContainerGOID": 2293134919,
+                  "ContainerGOID": 4041813884,
                   "Enabled": true,
                   "LockAspect": true,
                   "Position": [
@@ -5348,10 +5348,10 @@
                     "G": 0,
                     "R": 255
                   },
-                  "ComponentID": 986382211,
+                  "ComponentID": 1744470114,
                   "ComponentName": "Collider2D",
                   "ComponentType": 5,
-                  "ContainerGOID": 2293134919,
+                  "ContainerGOID": 4041813884,
                   "Enabled": true,
                   "Friction": 0.30000001192092896,
                   "Height": 0.009999999776482582,
@@ -5368,9 +5368,9 @@
                 }
               ],
               "Enabled": true,
-              "ID": 2293134919,
+              "ID": 4041813884,
               "Name": "Object_(8)",
-              "ParentID": 328513001,
+              "ParentID": 2972291733,
               "ParentLayerID": 1,
               "Tag": "Default",
               "Visible": false
@@ -5379,10 +5379,10 @@
               "Components": [
                 {
                   "AspectRatio": 1.0,
-                  "ComponentID": 2617384235,
+                  "ComponentID": 4275520571,
                   "ComponentName": "Transform",
                   "ComponentType": 0,
-                  "ContainerGOID": 2729409557,
+                  "ContainerGOID": 601829500,
                   "Enabled": true,
                   "LockAspect": true,
                   "Position": [
@@ -5402,10 +5402,10 @@
                     "G": 0,
                     "R": 255
                   },
-                  "ComponentID": 1694837819,
+                  "ComponentID": 3238907116,
                   "ComponentName": "Collider2D",
                   "ComponentType": 5,
-                  "ContainerGOID": 2729409557,
+                  "ContainerGOID": 601829500,
                   "Enabled": true,
                   "Friction": 0.30000001192092896,
                   "Height": 0.009999999776482582,
@@ -5422,9 +5422,9 @@
                 }
               ],
               "Enabled": true,
-              "ID": 2729409557,
+              "ID": 601829500,
               "Name": "Object_(9)",
-              "ParentID": 328513001,
+              "ParentID": 2972291733,
               "ParentLayerID": 1,
               "Tag": "Default",
               "Visible": false
@@ -5433,10 +5433,10 @@
               "Components": [
                 {
                   "AspectRatio": 1.0,
-                  "ComponentID": 2460544901,
+                  "ComponentID": 1151796287,
                   "ComponentName": "Transform",
                   "ComponentType": 0,
-                  "ContainerGOID": 1648972302,
+                  "ContainerGOID": 1503484482,
                   "Enabled": true,
                   "LockAspect": true,
                   "Position": [
@@ -5456,10 +5456,10 @@
                     "G": 0,
                     "R": 255
                   },
-                  "ComponentID": 3537119629,
+                  "ComponentID": 531918081,
                   "ComponentName": "Collider2D",
                   "ComponentType": 5,
-                  "ContainerGOID": 1648972302,
+                  "ContainerGOID": 1503484482,
                   "Enabled": true,
                   "Friction": 0.30000001192092896,
                   "Height": 0.009999999776482582,
@@ -5476,17 +5476,17 @@
                 }
               ],
               "Enabled": true,
-              "ID": 1648972302,
+              "ID": 1503484482,
               "Name": "Object_(10)",
-              "ParentID": 328513001,
+              "ParentID": 2972291733,
               "ParentLayerID": 1,
               "Tag": "Default",
               "Visible": false
             }
           ],
-          "ID": 328513001,
+          "ID": 2972291733,
           "Name": "FloorCollisions",
-          "ParentID": 515004012,
+          "ParentID": 2867311918,
           "ParentLayerID": 1,
           "Tag": "Default",
           "Visible": false
@@ -5495,10 +5495,10 @@
           "Components": [
             {
               "AspectRatio": 1.0,
-              "ComponentID": 769953540,
+              "ComponentID": 2623568536,
               "ComponentName": "Transform",
               "ComponentType": 0,
-              "ContainerGOID": 4223104354,
+              "ContainerGOID": 1760609765,
               "Enabled": true,
               "LockAspect": true,
               "Position": [
@@ -5518,10 +5518,10 @@
               "Components": [
                 {
                   "AspectRatio": 1.0,
-                  "ComponentID": 3994854447,
+                  "ComponentID": 665851909,
                   "ComponentName": "Transform",
                   "ComponentType": 0,
-                  "ContainerGOID": 20230353,
+                  "ContainerGOID": 207893860,
                   "Enabled": true,
                   "LockAspect": true,
                   "Position": [
@@ -5541,10 +5541,10 @@
                     "G": 130,
                     "R": 0
                   },
-                  "ComponentID": 3255290393,
+                  "ComponentID": 321084428,
                   "ComponentName": "Collider2D",
                   "ComponentType": 5,
-                  "ContainerGOID": 20230353,
+                  "ContainerGOID": 207893860,
                   "Enabled": true,
                   "Friction": 0.30000001192092896,
                   "Height": 22.0,
@@ -5561,9 +5561,9 @@
                 }
               ],
               "Enabled": true,
-              "ID": 20230353,
+              "ID": 207893860,
               "Name": "Object",
-              "ParentID": 4223104354,
+              "ParentID": 1760609765,
               "ParentLayerID": 1,
               "Tag": "Default",
               "Visible": false
@@ -5572,10 +5572,10 @@
               "Components": [
                 {
                   "AspectRatio": 1.0,
-                  "ComponentID": 1758573823,
+                  "ComponentID": 1534892948,
                   "ComponentName": "Transform",
                   "ComponentType": 0,
-                  "ContainerGOID": 2188861935,
+                  "ContainerGOID": 4151122286,
                   "Enabled": true,
                   "LockAspect": true,
                   "Position": [
@@ -5595,10 +5595,10 @@
                     "G": 130,
                     "R": 0
                   },
-                  "ComponentID": 4271735109,
+                  "ComponentID": 4291706581,
                   "ComponentName": "Collider2D",
                   "ComponentType": 5,
-                  "ContainerGOID": 2188861935,
+                  "ContainerGOID": 4151122286,
                   "Enabled": true,
                   "Friction": 0.30000001192092896,
                   "Height": 6.0,
@@ -5615,9 +5615,9 @@
                 }
               ],
               "Enabled": true,
-              "ID": 2188861935,
+              "ID": 4151122286,
               "Name": "Object_(1)",
-              "ParentID": 4223104354,
+              "ParentID": 1760609765,
               "ParentLayerID": 1,
               "Tag": "Default",
               "Visible": false
@@ -5626,10 +5626,10 @@
               "Components": [
                 {
                   "AspectRatio": 1.0,
-                  "ComponentID": 1719885932,
+                  "ComponentID": 3666121538,
                   "ComponentName": "Transform",
                   "ComponentType": 0,
-                  "ContainerGOID": 4109273789,
+                  "ContainerGOID": 355967030,
                   "Enabled": true,
                   "LockAspect": true,
                   "Position": [
@@ -5649,10 +5649,10 @@
                     "G": 130,
                     "R": 0
                   },
-                  "ComponentID": 1396013930,
+                  "ComponentID": 2803752370,
                   "ComponentName": "Collider2D",
                   "ComponentType": 5,
-                  "ContainerGOID": 4109273789,
+                  "ContainerGOID": 355967030,
                   "Enabled": true,
                   "Friction": 0.30000001192092896,
                   "Height": 3.0,
@@ -5669,9 +5669,9 @@
                 }
               ],
               "Enabled": true,
-              "ID": 4109273789,
+              "ID": 355967030,
               "Name": "Object_(2)",
-              "ParentID": 4223104354,
+              "ParentID": 1760609765,
               "ParentLayerID": 1,
               "Tag": "Default",
               "Visible": false
@@ -5680,10 +5680,10 @@
               "Components": [
                 {
                   "AspectRatio": 1.0,
-                  "ComponentID": 4062603442,
+                  "ComponentID": 1455072696,
                   "ComponentName": "Transform",
                   "ComponentType": 0,
-                  "ContainerGOID": 3151266722,
+                  "ContainerGOID": 1997061979,
                   "Enabled": true,
                   "LockAspect": true,
                   "Position": [
@@ -5703,10 +5703,10 @@
                     "G": 130,
                     "R": 0
                   },
-                  "ComponentID": 4266742603,
+                  "ComponentID": 1412554377,
                   "ComponentName": "Collider2D",
                   "ComponentType": 5,
-                  "ContainerGOID": 3151266722,
+                  "ContainerGOID": 1997061979,
                   "Enabled": true,
                   "Friction": 0.30000001192092896,
                   "Height": 6.0,
@@ -5723,9 +5723,9 @@
                 }
               ],
               "Enabled": true,
-              "ID": 3151266722,
+              "ID": 1997061979,
               "Name": "Object_(3)",
-              "ParentID": 4223104354,
+              "ParentID": 1760609765,
               "ParentLayerID": 1,
               "Tag": "Default",
               "Visible": false
@@ -5734,10 +5734,10 @@
               "Components": [
                 {
                   "AspectRatio": 1.0,
-                  "ComponentID": 4149490957,
+                  "ComponentID": 2946837582,
                   "ComponentName": "Transform",
                   "ComponentType": 0,
-                  "ContainerGOID": 1965509367,
+                  "ContainerGOID": 1611949492,
                   "Enabled": true,
                   "LockAspect": true,
                   "Position": [
@@ -5757,10 +5757,10 @@
                     "G": 130,
                     "R": 0
                   },
-                  "ComponentID": 4201720347,
+                  "ComponentID": 1936667011,
                   "ComponentName": "Collider2D",
                   "ComponentType": 5,
-                  "ContainerGOID": 1965509367,
+                  "ContainerGOID": 1611949492,
                   "Enabled": true,
                   "Friction": 0.30000001192092896,
                   "Height": 7.0,
@@ -5777,9 +5777,9 @@
                 }
               ],
               "Enabled": true,
-              "ID": 1965509367,
+              "ID": 1611949492,
               "Name": "Object_(4)",
-              "ParentID": 4223104354,
+              "ParentID": 1760609765,
               "ParentLayerID": 1,
               "Tag": "Default",
               "Visible": false
@@ -5788,10 +5788,10 @@
               "Components": [
                 {
                   "AspectRatio": 1.0,
-                  "ComponentID": 978373557,
+                  "ComponentID": 3428603749,
                   "ComponentName": "Transform",
                   "ComponentType": 0,
-                  "ContainerGOID": 1141195921,
+                  "ContainerGOID": 2933483910,
                   "Enabled": true,
                   "LockAspect": true,
                   "Position": [
@@ -5811,10 +5811,10 @@
                     "G": 130,
                     "R": 0
                   },
-                  "ComponentID": 1850795774,
+                  "ComponentID": 2920735483,
                   "ComponentName": "Collider2D",
                   "ComponentType": 5,
-                  "ContainerGOID": 1141195921,
+                  "ContainerGOID": 2933483910,
                   "Enabled": true,
                   "Friction": 0.30000001192092896,
                   "Height": 14.0,
@@ -5831,9 +5831,9 @@
                 }
               ],
               "Enabled": true,
-              "ID": 1141195921,
+              "ID": 2933483910,
               "Name": "Object_(5)",
-              "ParentID": 4223104354,
+              "ParentID": 1760609765,
               "ParentLayerID": 1,
               "Tag": "Default",
               "Visible": false
@@ -5842,10 +5842,10 @@
               "Components": [
                 {
                   "AspectRatio": 1.0,
-                  "ComponentID": 4097073870,
+                  "ComponentID": 3407793601,
                   "ComponentName": "Transform",
                   "ComponentType": 0,
-                  "ContainerGOID": 3443834013,
+                  "ContainerGOID": 2039880648,
                   "Enabled": true,
                   "LockAspect": true,
                   "Position": [
@@ -5865,10 +5865,10 @@
                     "G": 130,
                     "R": 0
                   },
-                  "ComponentID": 1868685097,
+                  "ComponentID": 468116464,
                   "ComponentName": "Collider2D",
                   "ComponentType": 5,
-                  "ContainerGOID": 3443834013,
+                  "ContainerGOID": 2039880648,
                   "Enabled": true,
                   "Friction": 0.30000001192092896,
                   "Height": 0.009999999776482582,
@@ -5885,9 +5885,9 @@
                 }
               ],
               "Enabled": true,
-              "ID": 3443834013,
+              "ID": 2039880648,
               "Name": "Object_(6)",
-              "ParentID": 4223104354,
+              "ParentID": 1760609765,
               "ParentLayerID": 1,
               "Tag": "Default",
               "Visible": false
@@ -5896,10 +5896,10 @@
               "Components": [
                 {
                   "AspectRatio": 1.0,
-                  "ComponentID": 557119021,
+                  "ComponentID": 3683814289,
                   "ComponentName": "Transform",
                   "ComponentType": 0,
-                  "ContainerGOID": 742242827,
+                  "ContainerGOID": 2081003815,
                   "Enabled": true,
                   "LockAspect": true,
                   "Position": [
@@ -5919,12 +5919,12 @@
                     "G": 130,
                     "R": 0
                   },
-                  "ComponentID": 1489507117,
+                  "ComponentID": 1188651174,
                   "ComponentName": "Collider2D",
                   "ComponentType": 5,
-                  "ContainerGOID": 742242827,
+                  "ContainerGOID": 2081003815,
                   "Enabled": true,
-                  "Friction": 1.0,
+                  "Friction": 0.30000001192092896,
                   "Height": 2.0,
                   "IsDynamic": false,
                   "IsSensor": false,
@@ -5939,17 +5939,17 @@
                 }
               ],
               "Enabled": true,
-              "ID": 742242827,
+              "ID": 2081003815,
               "Name": "Object_(7)",
-              "ParentID": 4223104354,
+              "ParentID": 1760609765,
               "ParentLayerID": 1,
               "Tag": "Default",
               "Visible": false
             }
           ],
-          "ID": 4223104354,
+          "ID": 1760609765,
           "Name": "WallCollisions",
-          "ParentID": 515004012,
+          "ParentID": 2867311918,
           "ParentLayerID": 1,
           "Tag": "Default",
           "Visible": false
@@ -5958,10 +5958,10 @@
           "Components": [
             {
               "AspectRatio": 1.0,
-              "ComponentID": 1975775734,
+              "ComponentID": 767315292,
               "ComponentName": "Transform",
               "ComponentType": 0,
-              "ContainerGOID": 3203966004,
+              "ContainerGOID": 1742078772,
               "Enabled": true,
               "LockAspect": true,
               "Position": [
@@ -5981,10 +5981,10 @@
               "Components": [
                 {
                   "AspectRatio": 1.0,
-                  "ComponentID": 1224227967,
+                  "ComponentID": 578596658,
                   "ComponentName": "Transform",
                   "ComponentType": 0,
-                  "ContainerGOID": 795328825,
+                  "ContainerGOID": 1095192977,
                   "Enabled": true,
                   "LockAspect": true,
                   "Position": [
@@ -6004,10 +6004,10 @@
                     "G": 255,
                     "R": 0
                   },
-                  "ComponentID": 3943181557,
+                  "ComponentID": 2888562137,
                   "ComponentName": "Collider2D",
                   "ComponentType": 5,
-                  "ContainerGOID": 795328825,
+                  "ContainerGOID": 1095192977,
                   "Enabled": true,
                   "Friction": 0.30000001192092896,
                   "Height": 1.0,
@@ -6024,9 +6024,9 @@
                 }
               ],
               "Enabled": true,
-              "ID": 795328825,
+              "ID": 1095192977,
               "Name": "Object",
-              "ParentID": 3203966004,
+              "ParentID": 1742078772,
               "ParentLayerID": 1,
               "Tag": "Default",
               "Visible": false
@@ -6035,10 +6035,10 @@
               "Components": [
                 {
                   "AspectRatio": 1.0,
-                  "ComponentID": 2370670713,
+                  "ComponentID": 3270830017,
                   "ComponentName": "Transform",
                   "ComponentType": 0,
-                  "ContainerGOID": 2241532179,
+                  "ContainerGOID": 3415110149,
                   "Enabled": true,
                   "LockAspect": true,
                   "Position": [
@@ -6058,10 +6058,10 @@
                     "G": 255,
                     "R": 0
                   },
-                  "ComponentID": 1724027893,
+                  "ComponentID": 1640311343,
                   "ComponentName": "Collider2D",
                   "ComponentType": 5,
-                  "ContainerGOID": 2241532179,
+                  "ContainerGOID": 3415110149,
                   "Enabled": true,
                   "Friction": 0.30000001192092896,
                   "Height": 1.0,
@@ -6078,9 +6078,9 @@
                 }
               ],
               "Enabled": true,
-              "ID": 2241532179,
+              "ID": 3415110149,
               "Name": "Object_(1)",
-              "ParentID": 3203966004,
+              "ParentID": 1742078772,
               "ParentLayerID": 1,
               "Tag": "Default",
               "Visible": false
@@ -6089,10 +6089,10 @@
               "Components": [
                 {
                   "AspectRatio": 1.0,
-                  "ComponentID": 4052837471,
+                  "ComponentID": 4228839253,
                   "ComponentName": "Transform",
                   "ComponentType": 0,
-                  "ContainerGOID": 1356596528,
+                  "ContainerGOID": 3748243012,
                   "Enabled": true,
                   "LockAspect": true,
                   "Position": [
@@ -6112,10 +6112,10 @@
                     "G": 255,
                     "R": 0
                   },
-                  "ComponentID": 402432363,
+                  "ComponentID": 824602048,
                   "ComponentName": "Collider2D",
                   "ComponentType": 5,
-                  "ContainerGOID": 1356596528,
+                  "ContainerGOID": 3748243012,
                   "Enabled": true,
                   "Friction": 0.30000001192092896,
                   "Height": 1.0,
@@ -6132,9 +6132,9 @@
                 }
               ],
               "Enabled": true,
-              "ID": 1356596528,
+              "ID": 3748243012,
               "Name": "Object_(2)",
-              "ParentID": 3203966004,
+              "ParentID": 1742078772,
               "ParentLayerID": 1,
               "Tag": "Default",
               "Visible": false
@@ -6143,10 +6143,10 @@
               "Components": [
                 {
                   "AspectRatio": 1.0,
-                  "ComponentID": 3530478529,
+                  "ComponentID": 683212060,
                   "ComponentName": "Transform",
                   "ComponentType": 0,
-                  "ContainerGOID": 2416947585,
+                  "ContainerGOID": 1989166517,
                   "Enabled": true,
                   "LockAspect": true,
                   "Position": [
@@ -6166,10 +6166,10 @@
                     "G": 255,
                     "R": 0
                   },
-                  "ComponentID": 3900216715,
+                  "ComponentID": 3870660730,
                   "ComponentName": "Collider2D",
                   "ComponentType": 5,
-                  "ContainerGOID": 2416947585,
+                  "ContainerGOID": 1989166517,
                   "Enabled": true,
                   "Friction": 0.30000001192092896,
                   "Height": 1.0,
@@ -6186,9 +6186,9 @@
                 }
               ],
               "Enabled": true,
-              "ID": 2416947585,
+              "ID": 1989166517,
               "Name": "Object_(3)",
-              "ParentID": 3203966004,
+              "ParentID": 1742078772,
               "ParentLayerID": 1,
               "Tag": "Default",
               "Visible": false
@@ -6197,10 +6197,10 @@
               "Components": [
                 {
                   "AspectRatio": 1.0,
-                  "ComponentID": 2884098782,
+                  "ComponentID": 1040800409,
                   "ComponentName": "Transform",
                   "ComponentType": 0,
-                  "ContainerGOID": 1995959892,
+                  "ContainerGOID": 59947759,
                   "Enabled": true,
                   "LockAspect": true,
                   "Position": [
@@ -6220,10 +6220,10 @@
                     "G": 255,
                     "R": 0
                   },
-                  "ComponentID": 2831391676,
+                  "ComponentID": 2767202937,
                   "ComponentName": "Collider2D",
                   "ComponentType": 5,
-                  "ContainerGOID": 1995959892,
+                  "ContainerGOID": 59947759,
                   "Enabled": true,
                   "Friction": 0.30000001192092896,
                   "Height": 1.0,
@@ -6240,9 +6240,9 @@
                 }
               ],
               "Enabled": true,
-              "ID": 1995959892,
+              "ID": 59947759,
               "Name": "Object_(4)",
-              "ParentID": 3203966004,
+              "ParentID": 1742078772,
               "ParentLayerID": 1,
               "Tag": "Default",
               "Visible": false
@@ -6251,10 +6251,10 @@
               "Components": [
                 {
                   "AspectRatio": 1.0,
-                  "ComponentID": 2642928305,
+                  "ComponentID": 3715982081,
                   "ComponentName": "Transform",
                   "ComponentType": 0,
-                  "ContainerGOID": 769629386,
+                  "ContainerGOID": 2183227348,
                   "Enabled": true,
                   "LockAspect": true,
                   "Position": [
@@ -6274,10 +6274,10 @@
                     "G": 255,
                     "R": 0
                   },
-                  "ComponentID": 891407558,
+                  "ComponentID": 427276522,
                   "ComponentName": "Collider2D",
                   "ComponentType": 5,
-                  "ContainerGOID": 769629386,
+                  "ContainerGOID": 2183227348,
                   "Enabled": true,
                   "Friction": 0.30000001192092896,
                   "Height": 1.0,
@@ -6294,17 +6294,17 @@
                 }
               ],
               "Enabled": true,
-              "ID": 769629386,
+              "ID": 2183227348,
               "Name": "Object_(5)",
-              "ParentID": 3203966004,
+              "ParentID": 1742078772,
               "ParentLayerID": 1,
               "Tag": "Default",
               "Visible": false
             }
           ],
-          "ID": 3203966004,
+          "ID": 1742078772,
           "Name": "FloatingTerrainCollisions",
-          "ParentID": 515004012,
+          "ParentID": 2867311918,
           "ParentLayerID": 1,
           "Tag": "Default",
           "Visible": false
@@ -6313,10 +6313,10 @@
           "Components": [
             {
               "AspectRatio": 1.0,
-              "ComponentID": 4176855710,
+              "ComponentID": 3576501372,
               "ComponentName": "Transform",
               "ComponentType": 0,
-              "ContainerGOID": 3612181358,
+              "ContainerGOID": 413941545,
               "Enabled": true,
               "LockAspect": true,
               "Position": [
@@ -6336,10 +6336,10 @@
               "Components": [
                 {
                   "AspectRatio": 1.0,
-                  "ComponentID": 1925790835,
+                  "ComponentID": 3622744486,
                   "ComponentName": "Transform",
                   "ComponentType": 0,
-                  "ContainerGOID": 2502236307,
+                  "ContainerGOID": 179480566,
                   "Enabled": true,
                   "LockAspect": true,
                   "Position": [
@@ -6359,10 +6359,10 @@
                     "G": 170,
                     "R": 0
                   },
-                  "ComponentID": 134429704,
+                  "ComponentID": 1718241202,
                   "ComponentName": "Collider2D",
                   "ComponentType": 5,
-                  "ContainerGOID": 2502236307,
+                  "ContainerGOID": 179480566,
                   "Enabled": true,
                   "Friction": 0.30000001192092896,
                   "Height": 0.009999999776482582,
@@ -6379,9 +6379,9 @@
                 }
               ],
               "Enabled": true,
-              "ID": 2502236307,
+              "ID": 179480566,
               "Name": "Object",
-              "ParentID": 3612181358,
+              "ParentID": 413941545,
               "ParentLayerID": 1,
               "Tag": "Default",
               "Visible": false
@@ -6390,10 +6390,10 @@
               "Components": [
                 {
                   "AspectRatio": 1.0,
-                  "ComponentID": 3331898365,
+                  "ComponentID": 2408625246,
                   "ComponentName": "Transform",
                   "ComponentType": 0,
-                  "ContainerGOID": 1272100788,
+                  "ContainerGOID": 2317648667,
                   "Enabled": true,
                   "LockAspect": true,
                   "Position": [
@@ -6413,10 +6413,10 @@
                     "G": 170,
                     "R": 0
                   },
-                  "ComponentID": 4092362151,
+                  "ComponentID": 3977192646,
                   "ComponentName": "Collider2D",
                   "ComponentType": 5,
-                  "ContainerGOID": 1272100788,
+                  "ContainerGOID": 2317648667,
                   "Enabled": true,
                   "Friction": 0.30000001192092896,
                   "Height": 0.009999999776482582,
@@ -6433,9 +6433,9 @@
                 }
               ],
               "Enabled": true,
-              "ID": 1272100788,
+              "ID": 2317648667,
               "Name": "Object_(1)",
-              "ParentID": 3612181358,
+              "ParentID": 413941545,
               "ParentLayerID": 1,
               "Tag": "Default",
               "Visible": false
@@ -6444,10 +6444,10 @@
               "Components": [
                 {
                   "AspectRatio": 1.0,
-                  "ComponentID": 1848496437,
+                  "ComponentID": 3374732466,
                   "ComponentName": "Transform",
                   "ComponentType": 0,
-                  "ContainerGOID": 418959796,
+                  "ContainerGOID": 4290734654,
                   "Enabled": true,
                   "LockAspect": true,
                   "Position": [
@@ -6467,10 +6467,10 @@
                     "G": 170,
                     "R": 0
                   },
-                  "ComponentID": 3951602769,
+                  "ComponentID": 2970571140,
                   "ComponentName": "Collider2D",
                   "ComponentType": 5,
-                  "ContainerGOID": 418959796,
+                  "ContainerGOID": 4290734654,
                   "Enabled": true,
                   "Friction": 0.30000001192092896,
                   "Height": 0.009999999776482582,
@@ -6487,17 +6487,17 @@
                 }
               ],
               "Enabled": true,
-              "ID": 418959796,
+              "ID": 4290734654,
               "Name": "Object_(2)",
-              "ParentID": 3612181358,
+              "ParentID": 413941545,
               "ParentLayerID": 1,
               "Tag": "Default",
               "Visible": false
             }
           ],
-          "ID": 3612181358,
+          "ID": 413941545,
           "Name": "WaterCollisions",
-          "ParentID": 515004012,
+          "ParentID": 2867311918,
           "ParentLayerID": 1,
           "Tag": "Default",
           "Visible": false
@@ -6506,10 +6506,10 @@
           "Components": [
             {
               "AspectRatio": 1.0,
-              "ComponentID": 863059623,
+              "ComponentID": 168512276,
               "ComponentName": "Transform",
               "ComponentType": 0,
-              "ContainerGOID": 1933453362,
+              "ContainerGOID": 3804016094,
               "Enabled": true,
               "LockAspect": true,
               "Position": [
@@ -6529,10 +6529,10 @@
               "Components": [
                 {
                   "AspectRatio": 1.0,
-                  "ComponentID": 2925823459,
+                  "ComponentID": 1048746287,
                   "ComponentName": "Transform",
                   "ComponentType": 0,
-                  "ContainerGOID": 2825526722,
+                  "ContainerGOID": 854488074,
                   "Enabled": true,
                   "LockAspect": true,
                   "Position": [
@@ -6552,10 +6552,10 @@
                     "G": 255,
                     "R": 255
                   },
-                  "ComponentID": 1473269041,
+                  "ComponentID": 3224909086,
                   "ComponentName": "Collider2D",
                   "ComponentType": 5,
-                  "ContainerGOID": 2825526722,
+                  "ContainerGOID": 854488074,
                   "Enabled": true,
                   "Friction": 0.30000001192092896,
                   "Height": 1.0,
@@ -6572,26 +6572,26 @@
                 }
               ],
               "Enabled": true,
-              "ID": 2825526722,
+              "ID": 854488074,
               "Name": "Object",
-              "ParentID": 1933453362,
+              "ParentID": 3804016094,
               "ParentLayerID": 1,
               "Tag": "Default",
               "Visible": false
             }
           ],
-          "ID": 1933453362,
+          "ID": 3804016094,
           "Name": "WinCollisions",
-          "ParentID": 515004012,
+          "ParentID": 2867311918,
           "ParentLayerID": 1,
           "Tag": "Default",
           "Visible": false
         }
       ],
-      "ID": 515004012,
+      "ID": 2867311918,
       "Name": "Level1",
       "ParentID": 1185669598,
-      "ParentLayerID": 0,
+      "ParentLayerID": 1,
       "Tag": "Default",
       "Visible": true
     }
@@ -6599,67 +6599,59 @@
   "layers": [
     {
       "Layer_children_go_id": [
-        515004012
+        2946671881,
+        869044798,
+        3010753683
       ],
-      "children_count": 1,
+      "children_count": 3,
       "layer_id": 0,
       "layer_name": "DefaultLayer_0",
       "visible": true
     },
     {
       "Layer_children_go_id": [
-        4160729400,
-        314716509,
-        350148925,
-        328513001,
-        3188138879,
-        3652323824,
-        4179934233,
-        4248798414,
-        3070927873,
-        1251529123,
-        3269804704,
-        1269078544,
-        2293134919,
-        2729409557,
-        1648972302,
-        4223104354,
-        20230353,
-        2188861935,
-        4109273789,
-        3151266722,
-        1965509367,
-        1141195921,
-        3443834013,
-        742242827,
-        3203966004,
-        795328825,
-        2241532179,
-        1356596528,
-        2416947585,
-        1995959892,
-        769629386,
-        3612181358,
-        2502236307,
-        1272100788,
-        418959796,
-        1933453362,
-        2825526722
+        854488074,
+        3804016094,
+        4290734654,
+        2317648667,
+        179480566,
+        413941545,
+        2183227348,
+        59947759,
+        1989166517,
+        3748243012,
+        3415110149,
+        1095192977,
+        1742078772,
+        2081003815,
+        2039880648,
+        2933483910,
+        1611949492,
+        1997061979,
+        355967030,
+        4151122286,
+        207893860,
+        1760609765,
+        1503484482,
+        601829500,
+        4041813884,
+        3669747384,
+        3953097307,
+        2547743783,
+        1820395792,
+        1018860532,
+        3178657617,
+        34319879,
+        2785842632,
+        2972291733,
+        2170720871,
+        1038885658,
+        2861591359,
+        2867311918
       ],
-      "children_count": 37,
+      "children_count": 38,
       "layer_id": 1,
       "layer_name": "Level1",
-      "visible": true
-    },
-    {
-      "Layer_children_go_id": [
-        2946671881,
-        869044798,
-        3010753683
-      ],
-      "children_count": 3,
-      "layer_id": 2,
-      "layer_name": "Layer_2",
       "visible": true
     }
   ],

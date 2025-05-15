@@ -34,9 +34,16 @@ bool Layer::Update(double dt)
 	return ret;
 }
 
-void Layer::AddChild(std::shared_ptr<GameObject> child)
+void Layer::AddChild(std::shared_ptr<GameObject> child, bool add_to_front)
 {
-	children_gameobject.push_back(child);
+	if (add_to_front)
+	{
+		children_gameobject.insert(children_gameobject.begin(), child);
+	}
+	else
+	{
+		children_gameobject.push_back(child);
+	}
 }
 
 bool Layer::RemoveChild(const std::shared_ptr<GameObject>& child)

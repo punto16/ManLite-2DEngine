@@ -374,6 +374,10 @@ void SceneManagerEM::ImportTiledFile(const std::string& file_name_const)
 	std::shared_ptr<Layer> container_layer = current_scene->CreateEmptyLayer();
 	container_layer->SetLayerName(tiledName);
 
+	container_layer->AddChild(parent);
+	parent->GetParentLayer().lock()->RemoveChild(parent);
+	parent->SetParentLayer(container_layer);
+
 	int tile_width, tile_height, grid_width, grid_height;
 	tile_width = tiledJSON["tilewidth"];
 	tile_height = tiledJSON["tileheight"];
@@ -398,7 +402,7 @@ void SceneManagerEM::ImportTiledFile(const std::string& file_name_const)
 				layer_go->SetName(layerJSON["name"]);
 				layer_go->SetVisible(layerJSON["visible"]);
 
-				container_layer->AddChild(layer_go);
+				container_layer->AddChild(layer_go, true);
 				layer_go->GetParentLayer().lock()->RemoveChild(layer_go);
 				layer_go->SetParentLayer(container_layer);
 
@@ -422,7 +426,7 @@ void SceneManagerEM::ImportTiledFile(const std::string& file_name_const)
 				bool parent_visible = layerJSON["visible"];
 				layer_go->SetVisible(parent_visible);
 
-				container_layer->AddChild(layer_go);
+				container_layer->AddChild(layer_go, true);
 				layer_go->GetParentLayer().lock()->RemoveChild(layer_go);
 				layer_go->SetParentLayer(container_layer);
 
@@ -464,7 +468,7 @@ void SceneManagerEM::ImportTiledFile(const std::string& file_name_const)
 
 					object_go->SetVisible(parent_visible);
 
-					container_layer->AddChild(object_go);
+					container_layer->AddChild(object_go, true);
 					object_go->GetParentLayer().lock()->RemoveChild(object_go);
 					object_go->SetParentLayer(container_layer);
 
@@ -825,8 +829,10 @@ int Scene::GetLayerIndex(uint32_t layer_id)
 
 int Scene::GetGOOrderInLayer(std::shared_ptr<GameObject> go)
 {
-	return GetLayerIndex(go->GetParentLayer().lock()->GetLayerID()) * 10000 + 
-		go->GetParentLayer().lock()->GetGameObjectIndex(go);
+	int layer_index = GetLayerIndex(go->GetParentLayer().lock()->GetLayerID());
+	int game_object_index = go->GetParentLayer().lock()->GetGameObjectIndex(go);
+
+	return layer_index * 10000 + game_object_index;
 }
 
 std::shared_ptr<Layer> Scene::GetLayerByID(uint32_t layer_id)
