@@ -1061,7 +1061,7 @@ void PanelInspector::Collider2DOptions(GameObject& go)
 			ImGui::TableSetColumnIndex(1);
 
 			float mass = collider2d->GetMass();
-			if (ImGui::DragFloat("##Mass", &mass, 0.1f, 0.0f, 1000.0f, "%.2f kg"))
+			if (ImGui::DragFloat("##Mass", &mass, 0.1f, 0.0f, 100000.0f, "%.2f kg"))
 			{
 				collider2d->SetMass(mass);
 			}
@@ -1072,7 +1072,7 @@ void PanelInspector::Collider2DOptions(GameObject& go)
 			ImGui::TableSetColumnIndex(1);
 
 			float damping = collider2d->GetLinearDamping();
-			if (ImGui::DragFloat("##Damping", &damping, 0.01f, 0.0f, 5.0f, "%.2f"))
+			if (ImGui::DragFloat("##Damping", &damping, 0.01f, -50.0f, 50.0f, "%.2f"))
 			{
 				collider2d->SetLinearDamping(damping);
 			}
@@ -1083,7 +1083,7 @@ void PanelInspector::Collider2DOptions(GameObject& go)
 			ImGui::TableSetColumnIndex(1);
 
 			float friction = collider2d->GetFriction();
-			if (ImGui::SliderFloat("##Friction", &friction, 0.0f, 1.0f, "%.2f"))
+			if (ImGui::DragFloat("##Friction", &friction, 0.01f, -50.0f, 50.0f, "%.2f"))
 			{
 				collider2d->SetFriction(friction);
 			}
@@ -1121,16 +1121,16 @@ void PanelInspector::Collider2DOptions(GameObject& go)
 				float width = collider2d->GetWidth();
 				float height = collider2d->GetHeight();
 
-				if (ImGui::DragFloat("Width##Collider", &width, 0.05f, 0.1f, 10000.0f)) {
+				if (ImGui::DragFloat("Width##Collider", &width, 0.05f, 0.01f, 10000.0f)) {
 					collider2d->SetSize(width, height);
 				}
-				if (ImGui::DragFloat("Height##Collider", &height, 0.05f, 0.1f, 10000.0f)) {
+				if (ImGui::DragFloat("Height##Collider", &height, 0.05f, 0.01f, 10000.0f)) {
 					collider2d->SetSize(width, height);
 				}
 			}
 			else {
 				float radius = collider2d->GetRadius();
-				if (ImGui::DragFloat("Radius##Collider", &radius, 0.05f, 0.1f, 10000.0f)) {
+				if (ImGui::DragFloat("Radius##Collider", &radius, 0.05f, 0.01f, 10000.0f)) {
 					collider2d->SetRadius(radius);
 				}
 			}
