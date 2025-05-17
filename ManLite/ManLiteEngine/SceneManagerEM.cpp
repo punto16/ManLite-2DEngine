@@ -703,7 +703,7 @@ std::shared_ptr<GameObject> Scene::DuplicateGO(GameObject& go_to_copy, bool scen
 std::shared_ptr<Layer> Scene::CreateEmptyLayer()
 {
 	std::shared_ptr<Layer> empty_layer = std::make_shared<Layer>(scene_layers.size(), std::string("Layer_" + std::to_string(scene_layers.size())));
-	scene_layers.push_back(empty_layer);
+	scene_layers.insert(scene_layers.begin(), empty_layer);
 	return empty_layer;
 }
 
@@ -761,10 +761,28 @@ void Scene::DeletePengindGOs()
 
 void Scene::AddPengindLayers()
 {
+	for (const auto& item : layers_to_add)
+	{
+		scene_layers.insert(scene_layers.begin(), item);
+	}
+	layers_to_add.clear();
 }
 
 void Scene::DeletePengindLayers()
 {
+	for (const auto& item : layers_to_delete)
+	{
+		const size_t initial_size = scene_layers.size();
+
+		scene_layers.erase(
+			std::remove_if(scene_layers.begin(), scene_layers.end(),
+				[&item](const std::shared_ptr<Layer>& c) {
+					return c.get() == item.get();
+				}),
+			scene_layers.end()
+		);
+	}
+	layers_to_delete.clear();
 }
 
 void Scene::ReparentToLayer(std::shared_ptr<GameObject> game_object, std::shared_ptr<Layer> target_layer)

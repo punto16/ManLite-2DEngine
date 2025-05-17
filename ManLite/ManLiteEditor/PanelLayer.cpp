@@ -32,6 +32,8 @@ bool PanelLayer::Update()
         uint treeFlags = ImGuiTreeNodeFlags_OpenOnArrow;
         IntroPart();
 
+        BlankContext();
+
         const bool had_global_request = request_collapse_all || request_uncollapse_all;
 
         if (had_global_request)
@@ -65,6 +67,25 @@ bool PanelLayer::Update()
             ImGui::PushID(layer_id);
             bool collapsing_header_layer = ImGui::CollapsingHeader(layer_header_label.c_str(), treeFlags);
             ImGui::PopID();
+
+            if (ImGui::BeginPopupContextItem())
+            {
+                if (layer->GetChildren().empty())
+                {
+                    if (ImGui::MenuItem("Delete Layer"))
+                    {
+                        engine->scene_manager_em->GetCurrentScene().SafeDeleteLayer(layer);
+                    }
+                }
+                else
+                {
+                    ImGui::MenuItem("Delete Layer", 0, false, false);
+                    ImGui::SameLine();
+                    Gui::HelpMarker("Can NOT delete a scene that is not empty");
+                }
+                ImGui::EndPopup();
+            }
+
             HandleLayerDragAndDrop(*layer);
 
             HandleLayerHeaderDrop(*layer);
@@ -78,7 +99,6 @@ bool PanelLayer::Update()
                 IterateChildren(*layer, layer_visible);
             }
         }
-        BlankContext();
     }
     ImGui::End();
 
