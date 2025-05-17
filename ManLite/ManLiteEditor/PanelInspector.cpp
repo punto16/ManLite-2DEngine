@@ -27,6 +27,7 @@
 #include "Emitter.h"
 #include "TileMap.h"
 #include "Script.h"
+#include "Prefab.h"
 
 #include "ResourceManager.h"
 
@@ -69,6 +70,8 @@ bool PanelInspector::Update()
 			if (engine->scene_manager_em->GetCurrentScene().GetSelectedGOs()[0].lock() != nullptr)
 			{
 				GeneralOptions(go);
+				PrefabOptions(go);
+				//
 				TransformOptions(go);
 				CameraOptions(go);
 				SpriteOptions(go);
@@ -168,6 +171,52 @@ void PanelInspector::GeneralOptions(GameObject& go)
 
 void PanelInspector::PrefabOptions(GameObject& go)
 {
+	if (!go.IsPrefabInstance()) return;
+
+	ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 203, 0, 255));
+	ImGui::TextWrapped("Prefab: %s", go.GetPrefabPath().c_str());
+	ImGui::PopStyleColor();
+
+	if (go.IsPrefabModified())
+	{
+		ImGui::TextColored(ImVec4(1, 0, 0, 1), "(Modified)");
+	}
+
+	ImGui::Dummy(ImVec2(0, 5));
+
+	const float buttonWidth = (ImGui::GetContentRegionAvail().x - ImGui::GetStyle().ItemSpacing.x) / 2.0f;
+
+	// Revertir
+	ImGui::PushStyleColor(ImGuiCol_Button, IM_COL32(255, 203, 0, 100));
+	if (ImGui::Button("Revert to Prefab", ImVec2(buttonWidth, 0)))
+	{
+		go.LoadGameObject(go.GetPrefabOriginalData());
+		go.SetPrefabModified(false);
+	}
+	ImGui::PopStyleColor();
+
+	ImGui::SameLine();
+
+	ImGui::PushStyleColor(ImGuiCol_Button, IM_COL32(0, 255, 0, 100));
+	if (ImGui::Button("Overwrite Prefab", ImVec2(buttonWidth, 0)))
+	{
+		Prefab::SaveAsPrefab(go.GetSharedPtr(), go.GetPrefabPath());
+		nlohmann::json newOriginal = go.SaveGameObject();
+		Prefab::RemoveIDs(newOriginal);
+		go.GetPrefabOriginalData() = newOriginal;
+		go.SetPrefabModified(false);
+	}
+	ImGui::PopStyleColor();
+
+	if (ImGui::Button("Unlink Prefab", ImVec2(-FLT_MIN, 0)))
+	{
+		std::string empty;
+		go.SetPrefabPath(empty);
+		go.SetPrefabModified(false);
+	}
+
+	ImGui::Separator();
+	ImGui::Dummy(ImVec2(0, 5));
 }
 
 void PanelInspector::TransformOptions(GameObject& go)
