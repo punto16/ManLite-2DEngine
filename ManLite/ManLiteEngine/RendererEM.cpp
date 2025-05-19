@@ -167,6 +167,114 @@ bool RendererEM::Start()
 
 	SetupDebugShapes();
 
+
+	const char* lightVS = R"glsl(
+#version 330 core
+layout (location = 0) in vec2 aPos; // Quad en coordenadas NDC (-1 a 1)
+
+void main() {
+    // Proyección ortográfica simple para cubrir toda la pantalla
+    gl_Position = vec4(aPos, 0.0, 1.0);
+}
+)glsl";
+	const char* lightFS = R"glsl(
+#version 330 core
+out vec4 FragColor;
+
+uniform vec2 uScreenSize;
+uniform vec3 uAmbientLight;
+uniform int uNumLights;
+uniform sampler2D uMainTexture;
+uniform mat4 uViewProj; // Asegurar que se pasa la matriz de la cámara
+uniform float uZoom;          // Zoom actual de la cámara
+uniform float uBaseCamWidth;
+
+struct Light {
+    vec2 position;    // En coordenadas del MUNDO
+    vec2 endPos;      // En coordenadas del MUNDO (para RayLight)
+    vec3 color;
+    float intensity;
+    float radius;     // En píxeles
+    float startRadius;
+    float endRadius;
+    int type;
+};
+
+uniform Light uLights[32];
+
+float smoothAttenuation(float dist, float radius) {
+    return 1.0 - smoothstep(radius * 0.7, radius, dist);
+}
+
+float distanceToSegment(vec2 p, vec2 a, vec2 b) {
+    vec2 ap = p - a;
+    vec2 ab = b - a;
+    float t = clamp(dot(ap, ab) / dot(ab, ab), 0.0, 1.0);
+    return length(ap - ab * t);
+}
+
+vec2 worldToScreen(vec2 worldPos) {
+    // Transformar a coordenadas de clip
+    vec4 clipPos = uViewProj * vec4(worldPos, 0.0, 1.0);
+    
+    // Convertir a coordenadas normalizadas [0, 1]
+    vec2 ndc = (clipPos.xy / clipPos.w) * 0.5 + 0.5;
+    
+    // Escalar al tamaño de pantalla real
+    return ndc * uScreenSize;
+}
+
+void main() {
+	float pixelScale = (uScreenSize.x / uBaseCamWidth) * uZoom;
+    vec2 uv = gl_FragCoord.xy / uScreenSize;
+    vec4 sceneColor = texture(uMainTexture, uv);
+    
+    vec3 finalColor = sceneColor.rgb * uAmbientLight;
+    
+        for (int i = 0; i < uNumLights; ++i) {
+        Light light = uLights[i];
+        vec2 fragPos = gl_FragCoord.xy;
+        
+        if (light.type == 0) { // Environmental Light (toda la pantalla)
+            // Aplicar color e intensidad directamente
+            finalColor += light.color * light.intensity;
+        }
+        else if (light.type == 1) { // PointLight
+            vec2 lightScreenPos = worldToScreen(light.position);
+            float dist = distance(fragPos, lightScreenPos);
+            float attenuation = smoothAttenuation(dist, light.radius * pixelScale); // Escalar radio
+            finalColor += light.color * light.intensity * attenuation;
+        }
+        else if (light.type == 2) { // RayLight
+            vec2 start = worldToScreen(light.position);
+            vec2 end = worldToScreen(light.endPos);
+            float dist = distanceToSegment(fragPos, start, end);
+            
+            float t = clamp(dot(fragPos - start, end - start) / dot(end - start, end - start), 0.0, 1.0);
+            float currentRadius = mix(light.startRadius, light.endRadius, t) * pixelScale; // Escalar radio
+            
+            float attenuation = smoothAttenuation(dist, currentRadius);
+            finalColor += light.color * light.intensity * attenuation;
+        }
+    }
+    
+    FragColor = vec4(finalColor, sceneColor.a);
+}
+)glsl";
+    lightShaderProgram = CreateShaderProgram(lightVS, lightFS);
+    
+    // Quad para el fullscreen (usado en el paso de luces)
+    float quad[] = { -1, -1, 1, -1, -1, 1, 1, 1 };
+    glGenVertexArrays(1, &lightVAO);
+    glGenBuffers(1, &lightVBO);
+    glBindVertexArray(lightVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, lightVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(quad), quad, GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
+    glEnableVertexAttribArray(0);
+
+
+
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
 
@@ -207,6 +315,7 @@ bool RendererEM::Update(double dt)
 
 	RenderBatch();
 	RenderDebugColliders();
+	RenderLights();
 
 	glDisable(GL_BLEND);
 
@@ -250,6 +359,7 @@ bool RendererEM::CleanUp()
 	glDeleteRenderbuffers(1, &rbo);
 
 	glDeleteProgram(shaderProgram);
+	glDeleteProgram(lightShaderProgram);
 
 	return ret;
 }
@@ -566,6 +676,181 @@ void RendererEM::SetupQuad()
 	glVertexAttribDivisor(7, 1);
 
 	glBindVertexArray(0);
+}
+
+GLuint RendererEM::CreateShaderProgram(const char* vertexShaderSource, const char* fragmentShaderSource)
+{
+	// Compilar vertex shader
+	GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
+	glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
+	glCompileShader(vertexShader);
+
+	// Verificar errores
+	GLint success;
+	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
+	if (!success) {
+		char infoLog[512];
+		glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
+		LOG(LogType::LOG_ERROR, "Vertex shader compilation failed: {}", infoLog);
+		return 0;
+	}
+
+	// Compilar fragment shader
+	GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+	glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
+	glCompileShader(fragmentShader);
+
+	// Verificar errores
+	glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
+	if (!success) {
+		char infoLog[512];
+		glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
+		LOG(LogType::LOG_ERROR, "Fragment shader compilation failed: {}", infoLog);
+		return 0;
+	}
+
+	// Crear programa
+	GLuint program = glCreateProgram();
+	glAttachShader(program, vertexShader);
+	glAttachShader(program, fragmentShader);
+	glLinkProgram(program);
+
+	// Verificar enlace
+	glGetProgramiv(program, GL_LINK_STATUS, &success);
+	if (!success) {
+		char infoLog[512];
+		glGetProgramInfoLog(program, 512, NULL, infoLog);
+		LOG(LogType::LOG_ERROR, "Shader program linking failed: {}", infoLog);
+		return 0;
+	}
+
+	// Limpiar
+	glDeleteShader(vertexShader);
+	glDeleteShader(fragmentShader);
+
+	return program;
+}
+
+void RendererEM::SetupLightRendering()
+{
+	// Quad Fullscreen (vertices)
+	float quadVertices[] = {
+		-1.0f, -1.0f, // Izq-abajo
+		 1.0f, -1.0f, // Der-abajo
+		-1.0f,  1.0f, // Izq-arriba
+		 1.0f,  1.0f  // Der-arriba
+	};
+
+	// VAO/VBO
+	glGenVertexArrays(1, &lightVAO);
+	glGenBuffers(1, &lightVBO);
+
+	glBindVertexArray(lightVAO);
+	glBindBuffer(GL_ARRAY_BUFFER, lightVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), quadVertices, GL_STATIC_DRAW);
+
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+
+	glBindVertexArray(0);
+}
+
+void RendererEM::RenderLights()
+{
+	if (lightsToRender.empty()) return;
+	//glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+	// 1. Obtener textura de la escena renderizada
+	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+
+
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_ONE, GL_ONE);
+
+	// 2. Usar shader de luces
+	glUseProgram(lightShaderProgram);
+
+	glm::mat4 viewProj;
+	float zoom = 0;
+	if (use_scene_cam && engine->GetEditorOrBuild()) {
+		viewProj = scene_camera.GetViewProjMatrix();
+		zoom = scene_camera.GetZoom();
+	}
+	else {
+		GameObject* cam_go = &engine->scene_manager_em->GetCurrentScene().GetCurrentCameraGO();
+		if (cam_go && cam_go->GetComponent<Camera>())
+		{
+			auto camera = cam_go->GetComponent<Camera>();
+			viewProj = camera->GetProjectionMatrix() * camera->GetViewMatrix();
+			zoom = camera->GetZoom();
+		}
+		else
+		{
+			viewProj = scene_camera.GetViewProjMatrix();
+			zoom = scene_camera.GetZoom();
+		}
+	}
+
+	float baseCamWidth = DEFAULT_CAM_WIDTH; // Usar el mismo que en la cámara
+
+	// Pasar uniforms al shader
+	GLuint uZoomLoc = glGetUniformLocation(lightShaderProgram, "uZoom");
+	GLuint uBaseCamWidthLoc = glGetUniformLocation(lightShaderProgram, "uBaseCamWidth");
+	glUniform1f(uZoomLoc, zoom);
+	glUniform1f(uBaseCamWidthLoc, baseCamWidth);
+
+	glUniformMatrix4fv(
+		glGetUniformLocation(lightShaderProgram, "uViewProj"),
+		1,
+		GL_FALSE,
+		glm::value_ptr(viewProj)
+	);
+
+	// 6. Pasar tamaño de pantalla
+
+	// 3. Pasar uniforms comunes
+	glm::vec2 screenSize(fbSize.x, fbSize.y);
+	glUniform2fv(glGetUniformLocation(lightShaderProgram, "uScreenSize"), 1, &screenSize[0]);
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, renderTexture);
+	glUniform1i(glGetUniformLocation(lightShaderProgram, "uMainTexture"), 0);
+
+	// 4. Luz ambiental (AreaLight)
+	glm::vec3 ambientColor(0.2f); // Ajusta según tu componente AreaLight
+	glUniform3fv(glGetUniformLocation(lightShaderProgram, "uAmbientLight"), 1, &ambientColor[0]);
+
+	// 5. Pasar datos de cada luz al shader
+	GLint maxLights;
+	glGetIntegerv(GL_MAX_FRAGMENT_UNIFORM_VECTORS, &maxLights);
+	int numLights = std::min((int)lightsToRender.size(), 32); // Máximo 32 luces (ajustable)
+
+	for (int i = 0; i < numLights; ++i) {
+		const LightRenderData& light = lightsToRender[i];
+		std::string lightUniform = "uLights[" + std::to_string(i) + "]";
+
+		glUniform2fv(glGetUniformLocation(lightShaderProgram, (lightUniform + ".position").c_str()), 1, &light.position[0]);
+		glUniform2fv(glGetUniformLocation(lightShaderProgram, (lightUniform + ".endPos").c_str()), 1, &light.endPosition[0]);
+		glUniform3fv(glGetUniformLocation(lightShaderProgram, (lightUniform + ".color").c_str()), 1, &light.color[0]);
+		glUniform1f(glGetUniformLocation(lightShaderProgram, (lightUniform + ".intensity").c_str()), light.intensity);
+		glUniform1f(glGetUniformLocation(lightShaderProgram, (lightUniform + ".radius").c_str()), light.radius);
+		glUniform1f(glGetUniformLocation(lightShaderProgram, (lightUniform + ".startRadius").c_str()), light.startRadius);
+		glUniform1f(glGetUniformLocation(lightShaderProgram, (lightUniform + ".endRadius").c_str()), light.endRadius);
+		glUniform1i(glGetUniformLocation(lightShaderProgram, (lightUniform + ".type").c_str()), light.type);
+	}
+	glUniform1i(glGetUniformLocation(lightShaderProgram, "uNumLights"), numLights);
+
+	// 6. Dibujar quad fullscreen (1 draw call)
+	glViewport(0, 0, fbSize.x, fbSize.y);
+
+	glBindVertexArray(lightVAO);
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+	glBindVertexArray(0);
+
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glDisable(GL_BLEND);
+
+	lightsToRender.clear(); // Limpiar para el próximo frame
 }
 
 glm::mat4 RendererEM::ConvertMat3fToGlmMat4(const mat3f& mat, float z)

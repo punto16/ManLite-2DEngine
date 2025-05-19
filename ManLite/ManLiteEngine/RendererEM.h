@@ -29,6 +29,17 @@ struct SpriteRenderData {
     bool text;
 };
 
+struct LightRenderData {
+    glm::vec2 position;     // Para PointLight y RayLight (start)
+    glm::vec2 endPosition;  // Solo para RayLight
+    glm::vec3 color;
+    float intensity;
+    float radius;           // Para PointLight
+    float startRadius;      // Para RayLight
+    float endRadius;        // Para RayLight
+    int type;               // 0: Area, 1: Point, 2: Ray
+};
+
 enum TextAlignment
 {
     TEXT_ALIGN_LEFT             = 0,
@@ -204,6 +215,23 @@ public:
     GLuint outlineCircleVAO, outlineCircleVBO;
     GLuint filledQuadVAO, filledQuadVBO;
     GLuint outlineQuadVAO, outlineQuadVBO;
+    GLuint CreateShaderProgram(const char* vertexShaderSource, const char* fragmentShaderSource);
+
+    GLuint lightVAO, lightVBO;
+    GLuint lightShaderProgram;
+    std::vector<LightRenderData> lightsToRender;
+
+    void SetupLightRendering();
+    void RenderLights();
+    void SubmitLight(const LightRenderData& light)
+    {
+        for (const auto& item : lightsToRender)
+        {
+            if (item.type == 0) return;
+        }
+
+        lightsToRender.push_back(light);
+    }
 
     //text
     GLuint textShaderProgram;

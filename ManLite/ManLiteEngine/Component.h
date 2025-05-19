@@ -20,6 +20,7 @@ enum class ComponentType
 	AudioSource				= 7,
 	ParticleSystem			= 8,
 	TileMap					= 9,
+	Light					= 10,
 
 
 	Unkown

@@ -28,6 +28,7 @@ public:
 	void ParticleSystemOptions(GameObject& go);
 	void TileMapOptions(GameObject& go);
 	void ScriptsOptions(GameObject& go);
+	void LightOptions(GameObject& go);
 
 	//add components last
 	void AddComponent(GameObject& go);

@@ -28,6 +28,7 @@
 #include "TileMap.h"
 #include "Script.h"
 #include "Prefab.h"
+#include "Light.h"
 
 #include "ResourceManager.h"
 
@@ -81,6 +82,7 @@ bool PanelInspector::Update()
 				CanvasOptions(go);
 				ParticleSystemOptions(go);
 				TileMapOptions(go);
+				LightOptions(go);
 				ScriptsOptions(go);
 
 				//last
@@ -2615,6 +2617,110 @@ void PanelInspector::ScriptsOptions(GameObject& go)
 	}
 }
 
+void PanelInspector::LightOptions(GameObject& go)
+{
+	uint treeFlags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_DefaultOpen;
+	Light* light = go.GetComponent<Light>();
+	if (light == nullptr) return;
+	std::string camLabel = std::string("Light##" + std::to_string(go.GetID()));
+
+	bool header_open = ImGui::CollapsingHeader(camLabel.c_str(), treeFlags);
+
+	if (ImGui::BeginPopupContextItem())
+	{
+		std::string context_label = "Remove Component##" + camLabel;
+		if (ImGui::MenuItem(context_label.c_str()))
+		{
+			go.RemoveComponent(ComponentType::Light);
+			ImGui::EndPopup();
+			return;
+		}
+		ImGui::EndPopup();
+	}
+
+	if (header_open)
+	{
+		int currentType = static_cast<int>(light->GetType());
+		const char* lightTypes[] = { "Area Light", "Point Light", "Ray Light" };
+
+		ImGui::Dummy(ImVec2(0, 4));
+		if (ImGui::Combo("Light Type", &currentType, lightTypes, IM_ARRAYSIZE(lightTypes))) {
+			light->SetType(static_cast<LightType>(currentType));
+		}
+
+		// Color (conversión de ML_Color a ImVec4)
+		ML_Color mlColor = light->GetColor();
+		ImVec4 color = ImVec4(
+			mlColor.r / 255.0f,
+			mlColor.g / 255.0f,
+			mlColor.b / 255.0f,
+			1.0f
+		);
+
+		ImGui::Dummy(ImVec2(0, 4));
+		if (ImGui::ColorEdit3("Color", (float*)&color)) {
+			light->SetColor({
+				static_cast<Uint8>(color.x * 255),
+				static_cast<Uint8>(color.y * 255),
+				static_cast<Uint8>(color.z * 255),
+				255
+				});
+		}
+
+		// Intensidad común a todos los tipos
+		ImGui::Dummy(ImVec2(0, 4));
+		float intensity = light->GetIntensity();
+		if (ImGui::DragFloat("Intensity", &intensity, 0.1f, 0.0f, 100.0f)) {
+			light->SetIntensity(intensity);
+		}
+
+		// Propiedades específicas por tipo
+		switch (light->GetType()) {
+		case LightType::POINT_LIGHT: {
+			// Radio para Point Light
+			float radius = light->GetRadius();
+			ImGui::Dummy(ImVec2(0, 4));
+			if (ImGui::DragFloat("Radius", &radius, 1.0f, 0.1f, 1000.0f)) {
+				light->SetRadius(radius);
+			}
+			break;
+		}
+
+		case LightType::RAY_LIGHT: {
+			// Propiedades del Ray Light
+			vec2f endPos = light->GetEndPosition();
+			float startRadius = light->GetRadius();
+			float endRadius = light->GetEndRadius();
+
+			ImGui::Dummy(ImVec2(0, 4));
+			if (ImGui::DragFloat2("End Position", &endPos.x, 1.0f)) {
+				light->SetEndPosition(endPos);
+			}
+
+			ImGui::Dummy(ImVec2(0, 4));
+			if (ImGui::DragFloat("Start Radius", &startRadius, 1.0f, 0.1f, 1000.0f)) {
+				light->SetRadius(startRadius);
+			}
+
+			ImGui::Dummy(ImVec2(0, 4));
+			if (ImGui::DragFloat("End Radius", &endRadius, 1.0f, 0.1f, 1000.0f)) {
+				light->SetEndRadius(endRadius);
+			}
+			break;
+		}
+
+								 // Area Light no necesita propiedades adicionales
+		case LightType::AREA_LIGHT:
+		default:
+			break;
+		}
+
+
+		ImGui::Dummy(ImVec2(0, 4));
+		ImGui::Separator();
+	}
+}
+
 void PanelInspector::AddComponent(GameObject& go)
 {
 	const ImVec2 button_size_default = ImVec2(150, 0);
@@ -2735,9 +2841,13 @@ void PanelInspector::AddComponent(GameObject& go)
 			{
 				std::string script_name = std::filesystem::path(filePath).stem().string();
 				go.AddComponent<Script>(script_name);
-				//if (!go.GetComponents<Script>()[go.GetComponents<Script>().size() - 1]->GetMonoObject())
-				//	go.RemoveComponent(go.GetComponents<Script>()[go.GetComponents<Script>().size() - 1]);
 			}
+			show_component_window = false;
+		}
+
+		if (ImGui::Selectable("Light"))
+		{
+			go.AddComponent<Light>();
 			show_component_window = false;
 		}
 

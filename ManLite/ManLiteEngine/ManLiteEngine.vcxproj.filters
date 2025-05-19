@@ -177,6 +177,9 @@
     <ClCompile Include="TileMap.cpp">
       <Filter>GameObject\Components</Filter>
     </ClCompile>
+    <ClCompile Include="Light.cpp">
+      <Filter>GameObject\Components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="EngineCore.h">
@@ -304,6 +307,9 @@
     </ClInclude>
     <ClInclude Include="Prefab.h">
       <Filter>GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="Light.h">
+      <Filter>GameObject\Components</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
