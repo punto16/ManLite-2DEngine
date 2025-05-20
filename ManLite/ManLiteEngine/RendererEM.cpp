@@ -816,7 +816,7 @@ void RendererEM::RenderLights()
 	glUniform1i(glGetUniformLocation(lightShaderProgram, "uMainTexture"), 0);
 
 	// 4. Luz ambiental (AreaLight)
-	glm::vec3 ambientColor(0.2f); // Ajusta según tu componente AreaLight
+	glm::vec3 ambientColor(0.0f); // Ajusta según tu componente AreaLight
 	glUniform3fv(glGetUniformLocation(lightShaderProgram, "uAmbientLight"), 1, &ambientColor[0]);
 
 	// 5. Pasar datos de cada luz al shader

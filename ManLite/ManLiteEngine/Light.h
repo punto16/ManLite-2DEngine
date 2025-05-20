@@ -52,8 +52,8 @@ public:
 
 private:
     LightType light_type = LightType::POINT_LIGHT;
-    float intensity = 1.0f;
-    float radius = 100.0f; // Para PointLight
+    float intensity = 0.6f;
+    float radius = 1.0f; // Para PointLight
     vec2f endPosition; // Solo para RayLight
     float endRadius = 0.0f; // Solo para RayLight
     ML_Color color = { 255, 255, 255, 255 }; // Blanco por defecto

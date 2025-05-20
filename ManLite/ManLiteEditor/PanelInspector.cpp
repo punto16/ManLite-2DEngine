@@ -2670,7 +2670,7 @@ void PanelInspector::LightOptions(GameObject& go)
 		// Intensidad común a todos los tipos
 		ImGui::Dummy(ImVec2(0, 4));
 		float intensity = light->GetIntensity();
-		if (ImGui::DragFloat("Intensity", &intensity, 0.1f, 0.0f, 100.0f)) {
+		if (ImGui::DragFloat("Intensity", &intensity, 0.005f, 0.0f, 100.0f)) {
 			light->SetIntensity(intensity);
 		}
 
@@ -2680,7 +2680,7 @@ void PanelInspector::LightOptions(GameObject& go)
 			// Radio para Point Light
 			float radius = light->GetRadius();
 			ImGui::Dummy(ImVec2(0, 4));
-			if (ImGui::DragFloat("Radius", &radius, 1.0f, 0.1f, 1000.0f)) {
+			if (ImGui::DragFloat("Radius", &radius, 0.005f, 0.001f, 1000.0f)) {
 				light->SetRadius(radius);
 			}
 			break;
