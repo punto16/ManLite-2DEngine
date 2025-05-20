@@ -761,7 +761,8 @@ void RendererEM::RenderLights()
 	//glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 	// 1. Obtener textura de la escena renderizada
 	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT);
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_ONE, GL_ONE);
