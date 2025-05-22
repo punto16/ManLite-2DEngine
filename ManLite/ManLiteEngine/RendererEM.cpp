@@ -61,6 +61,31 @@ bool RendererEM::Start()
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
 	glEnableVertexAttribArray(2);
 
+	glGenFramebuffers(1, &fbo_lights);
+	glBindFramebuffer(GL_FRAMEBUFFER, fbo_lights);
+
+	// Textura de color para luces
+	glGenTextures(1, &lightRenderTexture);
+	glBindTexture(GL_TEXTURE_2D, lightRenderTexture);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, fbSize.x, fbSize.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, lightRenderTexture, 0);
+
+	// Buffer de profundidad (opcional, si es necesario)
+	GLuint rboLightsDepth;
+	glGenRenderbuffers(1, &rboLightsDepth);
+	glBindRenderbuffer(GL_RENDERBUFFER, rboLightsDepth);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, fbSize.x, fbSize.y);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rboLightsDepth);
+
+	// Verificar integridad del FBO
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+		LOG(LogType::LOG_ERROR, "FBO de luces incompleto");
+	}
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
 	glGenFramebuffers(1, &fbo);
 	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 
@@ -99,7 +124,7 @@ bool RendererEM::Start()
 	glGenSamplers(1, &samplerNearest);
 
 	// sampler for NON pixel art
-	glSamplerParameteri(samplerLinear, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glSamplerParameteri(samplerLinear, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glSamplerParameteri(samplerLinear, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glSamplerParameteri(samplerLinear, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glSamplerParameteri(samplerLinear, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -225,25 +250,33 @@ vec2 worldToScreen(vec2 worldPos) {
 }
 
 void main() {
-	float pixelScale = (uScreenSize.x / uBaseCamWidth) * uZoom;
+    float pixelScale = (uScreenSize.x / uBaseCamWidth) * uZoom;
     vec2 uv = gl_FragCoord.xy / uScreenSize;
     vec4 sceneColor = texture(uMainTexture, uv);
     
-    vec3 finalColor = sceneColor.rgb * uAmbientLight;
+    // Start with complete darkness
+    vec3 finalColor = vec3(0.0);
+    float totalLightInfluence = 0.0;
     
-        for (int i = 0; i < uNumLights; ++i) {
+    for (int i = 0; i < uNumLights; ++i) {
         Light light = uLights[i];
         vec2 fragPos = gl_FragCoord.xy;
+        float attenuation = 0.0;
         
-        if (light.type == 0) { // Environmental Light (toda la pantalla)
-            // Aplicar color e intensidad directamente
-            finalColor += light.color * light.intensity;
+        if (light.type == 0) { // Environmental Light
+            attenuation = light.intensity;
+            totalLightInfluence = max(totalLightInfluence, attenuation);
+            finalColor += sceneColor.rgb * light.color * attenuation;
         }
         else if (light.type == 1) { // PointLight
             vec2 lightScreenPos = worldToScreen(light.position);
             float dist = distance(fragPos, lightScreenPos);
-            float attenuation = smoothAttenuation(dist, light.radius * pixelScale); // Escalar radio
-            finalColor += light.color * light.intensity * attenuation;
+            attenuation = smoothAttenuation(dist, light.radius * pixelScale);
+            
+            if (attenuation > 0.0) {
+                totalLightInfluence = max(totalLightInfluence, attenuation);
+                finalColor += sceneColor.rgb * light.color * light.intensity * attenuation;
+            }
         }
         else if (light.type == 2) { // RayLight
             vec2 start = worldToScreen(light.position);
@@ -251,14 +284,21 @@ void main() {
             float dist = distanceToSegment(fragPos, start, end);
             
             float t = clamp(dot(fragPos - start, end - start) / dot(end - start, end - start), 0.0, 1.0);
-            float currentRadius = mix(light.startRadius, light.endRadius, t) * pixelScale; // Escalar radio
+            float currentRadius = mix(light.startRadius, light.endRadius, t) * pixelScale;
             
-            float attenuation = smoothAttenuation(dist, currentRadius);
-            finalColor += light.color * light.intensity * attenuation;
+            attenuation = smoothAttenuation(dist, currentRadius);
+            
+            if (attenuation > 0.0) {
+                totalLightInfluence = max(totalLightInfluence, attenuation);
+                finalColor += sceneColor.rgb * light.color * light.intensity * attenuation;
+            }
         }
     }
-    
-    FragColor = vec4(finalColor, sceneColor.a);
+    if (totalLightInfluence > 0.0) {
+        FragColor = vec4(finalColor, sceneColor.a);
+    } else {
+        FragColor = vec4(0.0, 0.0, 0.0, sceneColor.a);
+	}
 }
 )glsl";
     lightShaderProgram = CreateShaderProgram(lightVS, lightFS);
@@ -604,6 +644,15 @@ void RendererEM::ResizeFBO(int width, int height)
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+
+	glBindTexture(GL_TEXTURE_2D, lightRenderTexture);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glBindRenderbuffer(GL_RENDERBUFFER, rboLightsDepth);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
+
+	glBindRenderbuffer(GL_RENDERBUFFER, rboLightsDepth);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
 }
 
 void RendererEM::UseSceneViewCam()
@@ -691,7 +740,7 @@ GLuint RendererEM::CreateShaderProgram(const char* vertexShaderSource, const cha
 	if (!success) {
 		char infoLog[512];
 		glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-		LOG(LogType::LOG_ERROR, "Vertex shader compilation failed: {}", infoLog);
+		LOG(LogType::LOG_ERROR, "Vertex shader compilation failed: %s", infoLog);
 		return 0;
 	}
 
@@ -705,7 +754,7 @@ GLuint RendererEM::CreateShaderProgram(const char* vertexShaderSource, const cha
 	if (!success) {
 		char infoLog[512];
 		glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
-		LOG(LogType::LOG_ERROR, "Fragment shader compilation failed: {}", infoLog);
+		LOG(LogType::LOG_ERROR, "Fragment shader compilation failed: %s", infoLog);
 		return 0;
 	}
 
@@ -760,9 +809,10 @@ void RendererEM::RenderLights()
 	if (lightsToRender.empty()) return;
 	//glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 	// 1. Obtener textura de la escena renderizada
-	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+	glBindFramebuffer(GL_FRAMEBUFFER, fbo_lights);
+	glViewport(0, 0, fbSize.x, fbSize.y);
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_ONE, GL_ONE);
@@ -852,6 +902,17 @@ void RendererEM::RenderLights()
 	glDisable(GL_BLEND);
 
 	lightsToRender.clear(); // Limpiar para el próximo frame
+
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo_lights);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fbo);
+	glBlitFramebuffer(
+		0, 0, fbSize.x, fbSize.y,
+		0, 0, fbSize.x, fbSize.y,
+		GL_COLOR_BUFFER_BIT, GL_NEAREST
+	);
+
+	// 3. Volver al FBO principal para renderizado posterior
+	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 }
 
 glm::mat4 RendererEM::ConvertMat3fToGlmMat4(const mat3f& mat, float z)

@@ -194,6 +194,12 @@ private:
     void SetupQuad();
 public:
 	GLuint fbo;
+	
+    GLuint fbo_lights;
+    GLuint lightRenderTexture;  // Textura donde se renderizan las luces
+    GLuint rboLightsDepth;
+
+
 	GLuint renderTexture;
 	GLuint rbo;
 	glm::ivec2 fbSize = { DEFAULT_CAM_WIDTH, DEFAULT_CAM_HEIGHT };
@@ -225,10 +231,9 @@ public:
     void RenderLights();
     void SubmitLight(const LightRenderData& light)
     {
-        for (const auto& item : lightsToRender)
-        {
-            if (item.type == 0) return;
-        }
+        if (light.type == 0)
+            for (const auto& item : lightsToRender)
+                if (item.type == 0) return;
 
         lightsToRender.push_back(light);
     }
