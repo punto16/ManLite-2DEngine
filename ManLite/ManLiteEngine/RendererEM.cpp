@@ -64,7 +64,6 @@ bool RendererEM::Start()
 	glGenFramebuffers(1, &fbo_lights);
 	glBindFramebuffer(GL_FRAMEBUFFER, fbo_lights);
 
-	// Textura de color para luces
 	glGenTextures(1, &lightRenderTexture);
 	glBindTexture(GL_TEXTURE_2D, lightRenderTexture);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, fbSize.x, fbSize.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
@@ -72,14 +71,12 @@ bool RendererEM::Start()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, lightRenderTexture, 0);
 
-	// Buffer de profundidad (opcional, si es necesario)
 	GLuint rboLightsDepth;
 	glGenRenderbuffers(1, &rboLightsDepth);
 	glBindRenderbuffer(GL_RENDERBUFFER, rboLightsDepth);
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, fbSize.x, fbSize.y);
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rboLightsDepth);
 
-	// Verificar integridad del FBO
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
 		LOG(LogType::LOG_ERROR, "FBO de luces incompleto");
 	}
@@ -123,13 +120,11 @@ bool RendererEM::Start()
 	glGenSamplers(1, &samplerLinear);
 	glGenSamplers(1, &samplerNearest);
 
-	// sampler for NON pixel art
 	glSamplerParameteri(samplerLinear, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glSamplerParameteri(samplerLinear, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glSamplerParameteri(samplerLinear, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glSamplerParameteri(samplerLinear, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-	// samper for pixel art
 	glSamplerParameteri(samplerNearest, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glSamplerParameteri(samplerNearest, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glSamplerParameteri(samplerNearest, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -303,7 +298,6 @@ void main() {
 )glsl";
     lightShaderProgram = CreateShaderProgram(lightVS, lightFS);
     
-    // Quad para el fullscreen (usado en el paso de luces)
     float quad[] = { -1, -1, 1, -1, -1, 1, 1, 1 };
     glGenVertexArrays(1, &lightVAO);
     glGenBuffers(1, &lightVBO);
@@ -457,7 +451,6 @@ bool RendererEM::CompileShaders()
 	glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
 	glCompileShader(vertexShader);
 
-	// Check vertex shader errors
 	GLint success;
 	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
 	if (!success) {
@@ -467,12 +460,10 @@ bool RendererEM::CompileShaders()
 		return false;
 	}
 
-	// Fragment Shader
 	GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
 	glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
 	glCompileShader(fragmentShader);
 
-	// Check fragment shader errors
 	glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
 	if (!success) {
 		char infoLog[512];
@@ -481,13 +472,11 @@ bool RendererEM::CompileShaders()
 		return false;
 	}
 
-	// Shader Program
 	shaderProgram = glCreateProgram();
 	glAttachShader(shaderProgram, vertexShader);
 	glAttachShader(shaderProgram, fragmentShader);
 	glLinkProgram(shaderProgram);
 
-	// Check linking errors
 	glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
 	if (!success) {
 		char infoLog[512];
@@ -496,7 +485,6 @@ bool RendererEM::CompileShaders()
 		return false;
 	}
 
-	// Cleanup shaders
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
 
@@ -546,7 +534,6 @@ void RendererEM::RenderBatch()
 		if (pixelArt) glBindSampler(0, samplerNearest);
 		else glBindSampler(0, samplerLinear);
 
-		// Recolectar datos de instancias
 		std::vector<glm::mat4> models;
 		std::vector<glm::vec4> uvRects;
 		std::vector<glm::vec4> colors;
@@ -556,7 +543,6 @@ void RendererEM::RenderBatch()
 			colors.push_back(sprite.color);
 		}
 
-		// Actualizar buffers de instancias
 		glBindBuffer(GL_ARRAY_BUFFER, instanceModelVBO);
 		glBufferData(GL_ARRAY_BUFFER, models.size() * sizeof(glm::mat4), models.data(), GL_DYNAMIC_DRAW);
 
@@ -566,11 +552,9 @@ void RendererEM::RenderBatch()
 		glBindBuffer(GL_ARRAY_BUFFER, instanceColorVBO);
 		glBufferData(GL_ARRAY_BUFFER, colors.size() * sizeof(glm::vec4), colors.data(), GL_DYNAMIC_DRAW);
 
-		// Dibujar TODAS las instancias en 1 llamada
 		glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, sprites.size());
 	}
 
-	// Limpiar el mapa para el siguiente frame
 	spritesToRender.clear();
 	glBindVertexArray(0);
 }
@@ -636,7 +620,6 @@ void RendererEM::SetupQuad()
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, quadEBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-	// Posición
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 
@@ -645,7 +628,6 @@ void RendererEM::SetupQuad()
 	glEnableVertexAttribArray(1);
 	glBindVertexArray(quadVAO);
 
-	// Buffer para matrices modelo (mat4)
 	glGenBuffers(1, &instanceModelVBO);
 	glBindBuffer(GL_ARRAY_BUFFER, instanceModelVBO);
 	for (int i = 0; i < 4; ++i) {
@@ -654,14 +636,12 @@ void RendererEM::SetupQuad()
 		glVertexAttribDivisor(2 + i, 1);
 	}
 
-	// Buffer para UV rects (vec4)
 	glGenBuffers(1, &instanceUVRectVBO);
 	glBindBuffer(GL_ARRAY_BUFFER, instanceUVRectVBO);
 	glEnableVertexAttribArray(6);
 	glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(glm::vec4), 0);
 	glVertexAttribDivisor(6, 1);
 
-	// Buffer para colores (vec4)
 	glGenBuffers(1, &instanceColorVBO);
 	glBindBuffer(GL_ARRAY_BUFFER, instanceColorVBO);
 	glEnableVertexAttribArray(7);
@@ -673,12 +653,10 @@ void RendererEM::SetupQuad()
 
 GLuint RendererEM::CreateShaderProgram(const char* vertexShaderSource, const char* fragmentShaderSource)
 {
-	// Compilar vertex shader
 	GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
 	glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
 	glCompileShader(vertexShader);
 
-	// Verificar errores
 	GLint success;
 	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
 	if (!success) {
@@ -688,12 +666,10 @@ GLuint RendererEM::CreateShaderProgram(const char* vertexShaderSource, const cha
 		return 0;
 	}
 
-	// Compilar fragment shader
 	GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
 	glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
 	glCompileShader(fragmentShader);
 
-	// Verificar errores
 	glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
 	if (!success) {
 		char infoLog[512];
@@ -702,13 +678,11 @@ GLuint RendererEM::CreateShaderProgram(const char* vertexShaderSource, const cha
 		return 0;
 	}
 
-	// Crear programa
 	GLuint program = glCreateProgram();
 	glAttachShader(program, vertexShader);
 	glAttachShader(program, fragmentShader);
 	glLinkProgram(program);
 
-	// Verificar enlace
 	glGetProgramiv(program, GL_LINK_STATUS, &success);
 	if (!success) {
 		char infoLog[512];
@@ -717,7 +691,6 @@ GLuint RendererEM::CreateShaderProgram(const char* vertexShaderSource, const cha
 		return 0;
 	}
 
-	// Limpiar
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
 
@@ -726,12 +699,11 @@ GLuint RendererEM::CreateShaderProgram(const char* vertexShaderSource, const cha
 
 void RendererEM::SetupLightRendering()
 {
-	// Quad Fullscreen (vertices)
 	float quadVertices[] = {
-		-1.0f, -1.0f, // Izq-abajo
-		 1.0f, -1.0f, // Der-abajo
-		-1.0f,  1.0f, // Izq-arriba
-		 1.0f,  1.0f  // Der-arriba
+		-1.0f, -1.0f,
+		 1.0f, -1.0f,
+		-1.0f,  1.0f,
+		 1.0f,  1.0f
 	};
 
 	// VAO/VBO
@@ -751,8 +723,7 @@ void RendererEM::SetupLightRendering()
 void RendererEM::RenderLights()
 {
 	if (lightsToRender.empty()) return;
-	//glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-	// 1. Obtener textura de la escena renderizada
+
 	glBindFramebuffer(GL_FRAMEBUFFER, fbo_lights);
 	glViewport(0, 0, fbSize.x, fbSize.y);
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -761,7 +732,6 @@ void RendererEM::RenderLights()
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_ONE, GL_ONE);
 
-	// 2. Usar shader de luces
 	glUseProgram(lightShaderProgram);
 
 	glm::mat4 viewProj;
@@ -785,9 +755,8 @@ void RendererEM::RenderLights()
 		}
 	}
 
-	float baseCamWidth = DEFAULT_CAM_WIDTH; // Usar el mismo que en la cámara
+	float baseCamWidth = DEFAULT_CAM_WIDTH;
 
-	// Pasar uniforms al shader
 	GLuint uZoomLoc = glGetUniformLocation(lightShaderProgram, "uZoom");
 	GLuint uBaseCamWidthLoc = glGetUniformLocation(lightShaderProgram, "uBaseCamWidth");
 	glUniform1f(uZoomLoc, zoom);
@@ -800,9 +769,6 @@ void RendererEM::RenderLights()
 		glm::value_ptr(viewProj)
 	);
 
-	// 6. Pasar tamaño de pantalla
-
-	// 3. Pasar uniforms comunes
 	glm::vec2 screenSize(fbSize.x, fbSize.y);
 	glUniform2fv(glGetUniformLocation(lightShaderProgram, "uScreenSize"), 1, &screenSize[0]);
 
@@ -810,14 +776,12 @@ void RendererEM::RenderLights()
 	glBindTexture(GL_TEXTURE_2D, renderTexture);
 	glUniform1i(glGetUniformLocation(lightShaderProgram, "uMainTexture"), 0);
 
-	// 4. Luz ambiental (AreaLight)
-	glm::vec3 ambientColor(0.0f); // Ajusta según tu componente AreaLight
+	glm::vec3 ambientColor(0.0f);
 	glUniform3fv(glGetUniformLocation(lightShaderProgram, "uAmbientLight"), 1, &ambientColor[0]);
 
-	// 5. Pasar datos de cada luz al shader
 	GLint maxLights;
 	glGetIntegerv(GL_MAX_FRAGMENT_UNIFORM_VECTORS, &maxLights);
-	int numLights = std::min((int)lightsToRender.size(), 32); // Máximo 32 luces (ajustable)
+	int numLights = std::min((int)lightsToRender.size(), 32);
 
 	for (int i = 0; i < numLights; ++i) {
 		const LightRenderData& light = lightsToRender[i];
@@ -834,7 +798,6 @@ void RendererEM::RenderLights()
 	}
 	glUniform1i(glGetUniformLocation(lightShaderProgram, "uNumLights"), numLights);
 
-	// 6. Dibujar quad fullscreen (1 draw call)
 	glViewport(0, 0, fbSize.x, fbSize.y);
 
 	glBindVertexArray(lightVAO);
@@ -845,7 +808,7 @@ void RendererEM::RenderLights()
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glDisable(GL_BLEND);
 
-	lightsToRender.clear(); // Limpiar para el próximo frame
+	lightsToRender.clear();
 
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo_lights);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fbo);
@@ -855,8 +818,20 @@ void RendererEM::RenderLights()
 		GL_COLOR_BUFFER_BIT, GL_NEAREST
 	);
 
-	// 3. Volver al FBO principal para renderizado posterior
 	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+}
+
+void RendererEM::SubmitLight(const LightRenderData& light)
+{
+	if (light.type == 0)
+		for (const auto& item : lightsToRender)
+			if (item.type == 0)
+				return;
+
+	if (lightsToRender.size() == 32)
+		return;
+
+	lightsToRender.push_back(light);
 }
 
 glm::mat4 RendererEM::ConvertMat3fToGlmMat4(const mat3f& mat, float z)
@@ -879,11 +854,10 @@ glm::mat4 RendererEM::ConvertMat3fToGlmMat4(const mat3f& mat, float z)
 
 void RendererEM::SetupDebugShapes()
 {
-	// 1. Círculo relleno (TRIANGLE_FAN)
 	const int FILLED_CIRCLE_SEGMENTS = 32;
 	std::vector<float> filledCircleVertices;
-	filledCircleVertices.push_back(0.0f); // Centro (x)
-	filledCircleVertices.push_back(0.0f); // Centro (y)
+	filledCircleVertices.push_back(0.0f);
+	filledCircleVertices.push_back(0.0f);
 	for (int i = 0; i <= FILLED_CIRCLE_SEGMENTS; ++i) {
 		float angle = 2.0f * PI * i / FILLED_CIRCLE_SEGMENTS;
 		filledCircleVertices.push_back(cos(angle)); // x
@@ -915,13 +889,11 @@ void RendererEM::SetupDebugShapes()
 	glEnableVertexAttribArray(0);
 	glBindVertexArray(0);
 
-	// 3. Cuadrado relleno (TRIANGLES)
 	float filledQuadVertices[] = {
-		// Triángulo 1
 		-0.5f,  0.5f, // V0
 		 0.5f,  0.5f, // V1
 		-0.5f, -0.5f, // V2
-		// Triángulo 2
+
 		 0.5f,  0.5f, // V1
 		 0.5f, -0.5f, // V3
 		-0.5f, -0.5f  // V2
@@ -935,13 +907,12 @@ void RendererEM::SetupDebugShapes()
 	glEnableVertexAttribArray(0);
 	glBindVertexArray(0);
 
-	// 4. Cuadrado contorno (LINE_LOOP)
 	float outlineQuadVertices[] = {
 		-0.5f,  0.5f, // V0
 		 0.5f,  0.5f, // V1
 		 0.5f, -0.5f, // V2
 		-0.5f, -0.5f, // V3
-		-0.5f,  0.5f  // V0 (cierra el loop)
+		-0.5f,  0.5f  // V0
 	};
 	glGenVertexArrays(1, &outlineQuadVAO);
 	glGenBuffers(1, &outlineQuadVBO);
@@ -960,25 +931,23 @@ void RendererEM::SetupDebugShapes()
 	SetupInstancedAttributes(filledQuadVAO);
 	SetupInstancedAttributes(outlineQuadVAO);
 
-	filledCircleVertexCount = filledCircleVertices.size() / 2;  // +2 por el centro y cierre
+	filledCircleVertexCount = filledCircleVertices.size() / 2;
 	outlineCircleVertexCount = outlineCircleVertices.size() / 2;
-	filledQuadVertexCount = 6;  // 2 triángulos = 6 vértices
-	outlineQuadVertexCount = 5; // 5 puntos en LINE_LOOP
+	filledQuadVertexCount = 6;
+	outlineQuadVertexCount = 5;
 }
 
 void RendererEM::SetupInstancedAttributes(GLuint VAO)
 {
 	glBindVertexArray(VAO);
 
-	// Model matrices (mat4 ocupa 4 locations)
 	glBindBuffer(GL_ARRAY_BUFFER, modelMatricesBuffer);
 	for (int i = 0; i < 4; ++i) {
 		glEnableVertexAttribArray(1 + i);
 		glVertexAttribPointer(1 + i, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(i * sizeof(glm::vec4)));
-		glVertexAttribDivisor(1 + i, 1); // 1 = instanciado
+		glVertexAttribDivisor(1 + i, 1);
 	}
 
-	// Colores
 	glBindBuffer(GL_ARRAY_BUFFER, colorsBuffer);
 	glEnableVertexAttribArray(5);
 	glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(glm::vec4), 0);

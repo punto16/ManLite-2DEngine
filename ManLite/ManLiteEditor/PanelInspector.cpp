@@ -2647,11 +2647,13 @@ void PanelInspector::LightOptions(GameObject& go)
 		const char* lightTypes[] = { "Area Light", "Point Light", "Ray Light" };
 
 		ImGui::Dummy(ImVec2(0, 4));
-		if (ImGui::Combo("Light Type", &currentType, lightTypes, IM_ARRAYSIZE(lightTypes))) {
+		std::string generic_unique_label = std::string("Light Type##" + std::to_string(go.GetID()));
+		if (ImGui::Combo(generic_unique_label.c_str(), &currentType, lightTypes, IM_ARRAYSIZE(lightTypes))) {
 			light->SetType(static_cast<LightType>(currentType));
 		}
+		ImGui::SameLine();
+		Gui::HelpMarker("Remember: There can only be 1 Area per scene since it affects all visible scene");
 
-		// Color (conversión de ML_Color a ImVec4)
 		ML_Color mlColor = light->GetColor();
 		ImVec4 color = ImVec4(
 			mlColor.r / 255.0f,
@@ -2661,7 +2663,8 @@ void PanelInspector::LightOptions(GameObject& go)
 		);
 
 		ImGui::Dummy(ImVec2(0, 4));
-		if (ImGui::ColorEdit3("Color", (float*)&color)) {
+		generic_unique_label = std::string("Color##" + std::to_string(go.GetID()));
+		if (ImGui::ColorEdit3(generic_unique_label.c_str(), (float*)&color)) {
 			light->SetColor({
 				static_cast<Uint8>(color.x * 255),
 				static_cast<Uint8>(color.y * 255),
@@ -2670,49 +2673,57 @@ void PanelInspector::LightOptions(GameObject& go)
 				});
 		}
 
-		// Intensidad común a todos los tipos
 		ImGui::Dummy(ImVec2(0, 4));
 		float intensity = light->GetIntensity();
-		if (ImGui::DragFloat("Intensity", &intensity, 0.005f, 0.0f, 100.0f)) {
+		generic_unique_label = std::string("Intensity##" + std::to_string(go.GetID()));
+		if (ImGui::DragFloat(generic_unique_label.c_str(), &intensity, 0.005f, 0.0f, 100.0f)) {
 			light->SetIntensity(intensity);
 		}
 
-		// Propiedades específicas por tipo
 		switch (light->GetType()) {
 		case LightType::POINT_LIGHT: {
-			// Radio para Point Light
 			float radius = light->GetRadius();
 			ImGui::Dummy(ImVec2(0, 4));
-			if (ImGui::DragFloat("Radius", &radius, 0.005f, 0.001f, 1000.0f)) {
+			generic_unique_label = std::string("Radius##" + std::to_string(go.GetID()));
+			if (ImGui::DragFloat(generic_unique_label.c_str(), &radius, 0.005f, 0.001f, 1000.0f)) {
 				light->SetRadius(radius);
 			}
 			break;
 		}
 
 		case LightType::RAY_LIGHT: {
-			// Propiedades del Ray Light
 			vec2f endPos = light->GetEndPosition();
 			float startRadius = light->GetRadius();
 			float endRadius = light->GetEndRadius();
+			bool static_final_pos = light->IsFinalPosStatic();
+			
+			ImGui::Dummy(ImVec2(0, 4));
+			generic_unique_label = std::string("End Position Static##" + std::to_string(go.GetID()));
+			if (ImGui::Checkbox(generic_unique_label.c_str(), &static_final_pos))
+			{
+				light->SetFinalPosStatic(static_final_pos);
+			}
 
 			ImGui::Dummy(ImVec2(0, 4));
-			if (ImGui::DragFloat2("End Position", &endPos.x, 0.05f)) {
+			generic_unique_label = std::string("End Position##" + std::to_string(go.GetID()));
+			if (ImGui::DragFloat2(generic_unique_label.c_str(), &endPos.x, 0.05f)) {
 				light->SetEndPosition(endPos);
 			}
 
 			ImGui::Dummy(ImVec2(0, 4));
-			if (ImGui::DragFloat("Start Radius", &startRadius, 0.05f, 0.001f, 1000.0f)) {
+			generic_unique_label = std::string("Start Radius##" + std::to_string(go.GetID()));
+			if (ImGui::DragFloat(generic_unique_label.c_str(), &startRadius, 0.05f, 0.001f, 1000.0f)) {
 				light->SetRadius(startRadius);
 			}
 
 			ImGui::Dummy(ImVec2(0, 4));
-			if (ImGui::DragFloat("End Radius", &endRadius, 0.005f, 0.001f, 1000.0f)) {
+			generic_unique_label = std::string("End Radius##" + std::to_string(go.GetID()));
+			if (ImGui::DragFloat(generic_unique_label.c_str(), &endRadius, 0.005f, 0.001f, 1000.0f)) {
 				light->SetEndRadius(endRadius);
 			}
 			break;
 		}
 
-								 // Area Light no necesita propiedades adicionales
 		case LightType::AREA_LIGHT:
 		default:
 			break;
@@ -2848,11 +2859,23 @@ void PanelInspector::AddComponent(GameObject& go)
 			show_component_window = false;
 		}
 
+		bool not_max_lights = !(engine->renderer_em->lightsToRender.size() >= 32);
+		if (!not_max_lights) ImGui::BeginDisabled();
 		if (ImGui::Selectable("Light"))
 		{
-			go.AddComponent<Light>();
+			if (not_max_lights)
+			{
+				go.AddComponent<Light>();
+			}
+			else
+			{
+				LOG(LogType::LOG_WARNING, "Can NOT add Light Component, there is already 32 lights in scene");
+			}
 			show_component_window = false;
 		}
+		if (!not_max_lights) ImGui::EndDisabled();
+		ImGui::SameLine();
+		Gui::HelpMarker("Max amount of lights in scene is 32");
 
 		if (!ImGui::IsWindowFocused())
 		{

@@ -15,6 +15,7 @@
 #include "ParticleSystem.h"
 #include "TileMap.h"
 #include "Script.h"
+#include "Light.h"
 
 #include "Log.h"
 #include "Defs.h"
@@ -316,6 +317,12 @@ void GameObject::CloneComponents(const std::shared_ptr<GameObject>& original, bo
             if (same_id) GetComponent<TileMap>()->SetID(item->GetID());
             break;
         }
+        case ComponentType::Light:
+        {
+            AddCopiedComponent<Light>(*dynamic_cast<const Light*>(item.get()));
+            if (same_id) GetComponent<Light>()->SetID(item->GetID());
+            break;
+        }
         case ComponentType::Unkown:
         {
             break;
@@ -568,6 +575,11 @@ void GameObject::LoadGameObject(const nlohmann::json& goJSON)
             {
                 this->AddComponent<TileMap>();
                 this->GetComponent<TileMap>()->LoadComponent(componentJSON);
+            }
+            else if (componentJSON["ComponentType"] == (int)ComponentType::Light)
+            {
+                this->AddComponent<Light>();
+                this->GetComponent<Light>()->LoadComponent(componentJSON);
             }
         }
     }

@@ -29,14 +29,14 @@ struct SpriteRenderData {
 };
 
 struct LightRenderData {
-    glm::vec2 position;     // Para PointLight y RayLight (start)
-    glm::vec2 endPosition;  // Solo para RayLight
+    glm::vec2 position;
+    glm::vec2 endPosition;
     glm::vec3 color;
     float intensity;
-    float radius;           // Para PointLight
-    float startRadius;      // Para RayLight
-    float endRadius;        // Para RayLight
-    int type;               // 0: Area, 1: Point, 2: Ray
+    float radius;
+    float startRadius;
+    float endRadius;
+    int type;
 };
 
 enum TextAlignment
@@ -195,7 +195,7 @@ public:
 	GLuint fbo;
 	
     GLuint fbo_lights;
-    GLuint lightRenderTexture;  // Textura donde se renderizan las luces
+    GLuint lightRenderTexture;
     GLuint rboLightsDepth;
 
 
@@ -228,14 +228,7 @@ public:
 
     void SetupLightRendering();
     void RenderLights();
-    void SubmitLight(const LightRenderData& light)
-    {
-        if (light.type == 0)
-            for (const auto& item : lightsToRender)
-                if (item.type == 0) return;
-
-        lightsToRender.push_back(light);
-    }
+    void SubmitLight(const LightRenderData& light);
 
     //text
     GLuint textShaderProgram;

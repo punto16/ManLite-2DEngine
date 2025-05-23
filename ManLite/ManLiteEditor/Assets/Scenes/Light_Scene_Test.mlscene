@@ -1,0 +1,232 @@
+{
+  "game_objects": [
+    {
+      "Components": [
+        {
+          "AspectRatio": 1.0,
+          "ComponentID": 3012452583,
+          "ComponentName": "Transform",
+          "ComponentType": 0,
+          "ContainerGOID": 1747641676,
+          "Enabled": true,
+          "LockAspect": true,
+          "Position": [
+            0.0,
+            0.0
+          ],
+          "Rotation": 0.0,
+          "Scale": [
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "ComponentID": 616984625,
+          "ComponentName": "Sprite2D",
+          "ComponentType": 2,
+          "ContainerGOID": 1747641676,
+          "Enabled": true,
+          "Offset": [
+            0.0,
+            0.0
+          ],
+          "PixelArtRender": false,
+          "TexturePath": "Assets\\Textures\\image.png",
+          "TextureSection": [
+            0,
+            0,
+            640,
+            480
+          ],
+          "TextureSize": [
+            640,
+            480
+          ],
+          "TextureUVs": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ]
+        }
+      ],
+      "Enabled": true,
+      "ID": 1747641676,
+      "Name": "EmptyGameObject",
+      "ParentID": 3612509295,
+      "ParentLayerID": 0,
+      "Tag": "Default",
+      "Visible": true
+    },
+    {
+      "Components": [
+        {
+          "AspectRatio": 1.0,
+          "ComponentID": 3646170681,
+          "ComponentName": "Transform",
+          "ComponentType": 0,
+          "ContainerGOID": 2199418106,
+          "Enabled": true,
+          "LockAspect": true,
+          "Position": [
+            0.0,
+            0.0
+          ],
+          "Rotation": 0.0,
+          "Scale": [
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "ComponentID": 3122024619,
+          "ComponentName": "Light",
+          "ComponentType": 10,
+          "ContainerGOID": 2199418106,
+          "Enabled": true,
+          "LightColor": [
+            255,
+            0,
+            0,
+            255
+          ],
+          "LightEndPosition": [
+            0.0,
+            0.0
+          ],
+          "LightEndRadius": 0.0,
+          "LightIntensity": 0.2549999952316284,
+          "LightRadius": 1.0,
+          "LightStaticEndPosition": true,
+          "LightType": 0
+        }
+      ],
+      "Enabled": true,
+      "ID": 2199418106,
+      "Name": "ambient_light",
+      "ParentID": 3612509295,
+      "ParentLayerID": 0,
+      "Tag": "Default",
+      "Visible": true
+    },
+    {
+      "Components": [
+        {
+          "AspectRatio": 1.0,
+          "ComponentID": 1628926616,
+          "ComponentName": "Transform",
+          "ComponentType": 0,
+          "ContainerGOID": 1488616861,
+          "Enabled": true,
+          "LockAspect": true,
+          "Position": [
+            0.0,
+            0.0
+          ],
+          "Rotation": 0.0,
+          "Scale": [
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "ComponentID": 3317081025,
+          "ComponentName": "Light",
+          "ComponentType": 10,
+          "ContainerGOID": 1488616861,
+          "Enabled": true,
+          "LightColor": [
+            0,
+            171,
+            255,
+            255
+          ],
+          "LightEndPosition": [
+            0.0,
+            0.0
+          ],
+          "LightEndRadius": 0.0,
+          "LightIntensity": 1.4800000190734863,
+          "LightRadius": 1.909999966621399,
+          "LightStaticEndPosition": true,
+          "LightType": 1
+        }
+      ],
+      "Enabled": true,
+      "ID": 1488616861,
+      "Name": "point_light",
+      "ParentID": 3612509295,
+      "ParentLayerID": 0,
+      "Tag": "Default",
+      "Visible": true
+    },
+    {
+      "Components": [
+        {
+          "AspectRatio": 1.0,
+          "ComponentID": 4169851745,
+          "ComponentName": "Transform",
+          "ComponentType": 0,
+          "ContainerGOID": 1010520260,
+          "Enabled": true,
+          "LockAspect": true,
+          "Position": [
+            8.0,
+            -3.0
+          ],
+          "Rotation": 0.0,
+          "Scale": [
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "ComponentID": 3344088548,
+          "ComponentName": "Light",
+          "ComponentType": 10,
+          "ContainerGOID": 1010520260,
+          "Enabled": true,
+          "LightColor": [
+            255,
+            255,
+            255,
+            255
+          ],
+          "LightEndPosition": [
+            0.0,
+            0.0
+          ],
+          "LightEndRadius": 0.4359999895095825,
+          "LightIntensity": 0.8199999928474426,
+          "LightRadius": 1.2999999523162842,
+          "LightStaticEndPosition": true,
+          "LightType": 2
+        }
+      ],
+      "Enabled": true,
+      "ID": 1010520260,
+      "Name": "spot_light",
+      "ParentID": 3612509295,
+      "ParentLayerID": 0,
+      "Tag": "Default",
+      "Visible": true
+    }
+  ],
+  "layers": [
+    {
+      "Layer_children_go_id": [
+        1747641676,
+        2199418106,
+        1488616861,
+        1010520260
+      ],
+      "children_count": 4,
+      "layer_id": 0,
+      "layer_name": "DefaultLayer_0",
+      "visible": true
+    }
+  ],
+  "scene_id": 3612509295,
+  "scene_name": "Untitled_Scene",
+  "scene_path": "Assets\\Scenes\\Light_Scene_Test.mlscene"
+}
