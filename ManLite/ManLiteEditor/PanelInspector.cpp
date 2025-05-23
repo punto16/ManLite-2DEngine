@@ -535,6 +535,7 @@ void PanelInspector::AnimatorOptions(GameObject& go)
 		{
 			go.RemoveComponent(ComponentType::Animator);
 			ImGui::EndPopup();
+			ImGui::EndGroup();
 			return;
 		}
 		ImGui::EndPopup();
@@ -755,6 +756,7 @@ void PanelInspector::AudioSourceOptions(GameObject& go)
 		{
 			go.RemoveComponent(ComponentType::AudioSource);
 			ImGui::EndPopup();
+			ImGui::EndGroup();
 			return;
 		}
 		ImGui::EndPopup();
@@ -1841,6 +1843,7 @@ void PanelInspector::ParticleSystemOptions(GameObject& go)
 		if (ImGui::MenuItem(context_label.c_str())) {
 			go.RemoveComponent(ComponentType::ParticleSystem);
 			ImGui::EndPopup();
+			ImGui::EndGroup();
 			return;
 		}
 		ImGui::EndPopup();
@@ -2693,17 +2696,17 @@ void PanelInspector::LightOptions(GameObject& go)
 			float endRadius = light->GetEndRadius();
 
 			ImGui::Dummy(ImVec2(0, 4));
-			if (ImGui::DragFloat2("End Position", &endPos.x, 1.0f)) {
+			if (ImGui::DragFloat2("End Position", &endPos.x, 0.05f)) {
 				light->SetEndPosition(endPos);
 			}
 
 			ImGui::Dummy(ImVec2(0, 4));
-			if (ImGui::DragFloat("Start Radius", &startRadius, 1.0f, 0.1f, 1000.0f)) {
+			if (ImGui::DragFloat("Start Radius", &startRadius, 0.05f, 0.001f, 1000.0f)) {
 				light->SetRadius(startRadius);
 			}
 
 			ImGui::Dummy(ImVec2(0, 4));
-			if (ImGui::DragFloat("End Radius", &endRadius, 1.0f, 0.1f, 1000.0f)) {
+			if (ImGui::DragFloat("End Radius", &endRadius, 0.005f, 0.001f, 1000.0f)) {
 				light->SetEndRadius(endRadius);
 			}
 			break;

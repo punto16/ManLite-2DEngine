@@ -26,7 +26,6 @@ struct SpriteRenderData {
     float u1, v1, u2, v2;
     bool pixel_art;
     glm::vec4 color;
-    bool text;
 };
 
 struct LightRenderData {
@@ -169,7 +168,7 @@ public:
     void RenderDebugColliders();
     template<typename T>
     void RenderBatchShapes(const std::vector<T>& instances, GLuint VAO, GLenum mode, int vertexCount);
-    void SubmitText(std::string text, FontData* font, const mat3f& modelMatrix, const ML_Color& color, TextAlignment ta = TextAlignment::TEXT_ALIGN_LEFT);
+    void SubmitText(std::string text, FontData* font, const mat3f& modelMatrix, const ML_Color& color, TextAlignment ta = TextAlignment::TEXT_ALIGN_LEFT, int order_in_layer = 0, int order_in_component = 0);
 
     static glm::mat4 ConvertMat3fToGlmMat4(const mat3f& mat, float z = 0.0f);
 private:

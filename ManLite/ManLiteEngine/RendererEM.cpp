@@ -541,62 +541,6 @@ void RendererEM::RenderBatch()
 		bool pixelArt = key.second;
 		const auto& sprites = entry.second;
 
-		// Filtrar sprites de texto
-		bool hasText = std::any_of(sprites.begin(), sprites.end(), [](const SpriteRenderData& s) { return s.text; });
-		if (hasText) continue; // Los procesaremos después
-
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, textureID);
-		if (pixelArt) glBindSampler(0, samplerNearest);
-		else glBindSampler(0, samplerLinear);
-
-		// Recolectar datos de instancias
-		std::vector<glm::mat4> models;
-		std::vector<glm::vec4> uvRects;
-		std::vector<glm::vec4> colors;
-		for (const auto& sprite : sprites) {
-			models.push_back(sprite.modelMatrix);
-			uvRects.emplace_back(sprite.u1, sprite.v1, sprite.u2, sprite.v2);
-			colors.push_back(sprite.color);
-		}
-
-		// Actualizar buffers de instancias
-		glBindBuffer(GL_ARRAY_BUFFER, instanceModelVBO);
-		glBufferData(GL_ARRAY_BUFFER, models.size() * sizeof(glm::mat4), models.data(), GL_DYNAMIC_DRAW);
-
-		glBindBuffer(GL_ARRAY_BUFFER, instanceUVRectVBO);
-		glBufferData(GL_ARRAY_BUFFER, uvRects.size() * sizeof(glm::vec4), uvRects.data(), GL_DYNAMIC_DRAW);
-
-		glBindBuffer(GL_ARRAY_BUFFER, instanceColorVBO);
-		glBufferData(GL_ARRAY_BUFFER, colors.size() * sizeof(glm::vec4), colors.data(), GL_DYNAMIC_DRAW);
-
-		// Dibujar TODAS las instancias en 1 llamada
-		glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, sprites.size());
-	}
-
-	// =============================================
-	// 2. Renderizar TEXTOS (shader de texto)
-	// =============================================
-	glUseProgram(textShaderProgram);
-	GLuint text_uViewProj = glGetUniformLocation(textShaderProgram, "uViewProj");
-	GLuint text_uModel = glGetUniformLocation(textShaderProgram, "uModel");
-	GLuint text_uTexture = glGetUniformLocation(textShaderProgram, "uTexture");
-	GLuint text_uUVRect = glGetUniformLocation(textShaderProgram, "uUVRect");
-	GLuint text_uColor = glGetUniformLocation(textShaderProgram, "uTextColor");
-
-	glUniformMatrix4fv(text_uViewProj, 1, GL_FALSE, glm::value_ptr(viewProj));
-	glUniform1i(text_uTexture, 0);
-
-	for (const auto& entry : spritesToRender) {
-		const auto& key = entry.first;
-		GLuint textureID = key.first;
-		bool pixelArt = key.second;
-		const auto& sprites = entry.second;
-
-		// Filtrar sprites NO textuales
-		bool allText = std::all_of(sprites.begin(), sprites.end(), [](const SpriteRenderData& s) { return s.text; });
-		if (!allText) continue;
-
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, textureID);
 		if (pixelArt) glBindSampler(0, samplerNearest);
@@ -1058,8 +1002,7 @@ void RendererEM::SubmitSprite(GLuint textureID, const mat3f& modelMatrix, float 
 		ConvertMat3fToGlmMat4(modelMatrix, -pos_z),
 		u1, v1, u2, v2,
 		pixel_art,
-		{ 1.0f, 1.0f, 1.0f, 1.0f },
-		false
+		{ 1.0f, 1.0f, 1.0f, 1.0f }
 		});
 }
 
@@ -1146,7 +1089,7 @@ void RendererEM::RenderDebugColliders()
 	}
 }
 
-void RendererEM::SubmitText(std::string text, FontData* font, const mat3f& modelMatrix, const ML_Color& color, TextAlignment ta)
+void RendererEM::SubmitText(std::string text, FontData* font, const mat3f& modelMatrix, const ML_Color& color, TextAlignment ta, int order_in_layer, int order_in_component)
 {
 	if (font == nullptr) return;
 
@@ -1215,9 +1158,17 @@ void RendererEM::SubmitText(std::string text, FontData* font, const mat3f& model
 
 			auto key = std::make_pair(ch->textureID, true);
 
+			int layer_index = order_in_layer / 10000;
+			int game_object_index = order_in_layer % 10000;
+
+			float pos_z = 10.0f +
+				(float)layer_index * 1.0f +
+				(float)game_object_index * 0.001f +
+				(float)(1000 - order_in_component) * 0.000001f;
+
 			spritesToRender[key].push_back({
 				ch->textureID,
-				ConvertMat3fToGlmMat4(charModel),
+				ConvertMat3fToGlmMat4(charModel, -pos_z),
 				0.0f, 1.0f,
 				1.0f, 0.0f,
 				true,
@@ -1226,8 +1177,7 @@ void RendererEM::SubmitText(std::string text, FontData* font, const mat3f& model
 					color.g / 255.0f,
 					color.b / 255.0f,
 					color.a / 255.0f
-				},
-				true
+				}
 				});
 
 			cursorX += ch->advance >> 6;
