@@ -71,7 +71,6 @@ bool RendererEM::Start()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, lightRenderTexture, 0);
 
-	GLuint rboLightsDepth;
 	glGenRenderbuffers(1, &rboLightsDepth);
 	glBindRenderbuffer(GL_RENDERBUFFER, rboLightsDepth);
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, fbSize.x, fbSize.y);
@@ -564,19 +563,17 @@ void RendererEM::ResizeFBO(int width, int height)
 	glBindTexture(GL_TEXTURE_2D, renderTexture);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
 
+	glBindTexture(GL_TEXTURE_2D, lightRenderTexture);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+
 	glBindRenderbuffer(GL_RENDERBUFFER, rbo);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
+
+	glBindRenderbuffer(GL_RENDERBUFFER, rboLightsDepth);
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-
-	glBindTexture(GL_TEXTURE_2D, lightRenderTexture);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-	glBindRenderbuffer(GL_RENDERBUFFER, rboLightsDepth);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
-
-	glBindRenderbuffer(GL_RENDERBUFFER, rboLightsDepth);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
 }
 
 void RendererEM::UseSceneViewCam()
@@ -730,6 +727,7 @@ void RendererEM::RenderLights()
 
 	glUseProgram(lightShaderProgram);
 
+
 	glm::mat4 viewProj;
 	float zoom = 0;
 	if (use_scene_cam && engine->GetEditorOrBuild()) {
@@ -741,6 +739,7 @@ void RendererEM::RenderLights()
 		if (cam_go && cam_go->GetComponent<Camera>())
 		{
 			auto camera = cam_go->GetComponent<Camera>();
+
 			viewProj = camera->GetProjectionMatrix() * camera->GetViewMatrix();
 			zoom = camera->GetZoom();
 		}
@@ -751,7 +750,7 @@ void RendererEM::RenderLights()
 		}
 	}
 
-	float baseCamWidth = DEFAULT_CAM_WIDTH;
+	float baseCamWidth = fbSize.x;
 
 	GLuint uZoomLoc = glGetUniformLocation(lightShaderProgram, "uZoom");
 	GLuint uBaseCamWidthLoc = glGetUniformLocation(lightShaderProgram, "uBaseCamWidth");

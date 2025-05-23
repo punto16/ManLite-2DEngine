@@ -1,4 +1,5 @@
 {
+  "CurrentCamID": 3741496996,
   "game_objects": [
     {
       "Components": [
@@ -210,6 +211,47 @@
       "ParentLayerID": 0,
       "Tag": "Default",
       "Visible": true
+    },
+    {
+      "Components": [
+        {
+          "AspectRatio": 1.0,
+          "ComponentID": 3714456899,
+          "ComponentName": "Transform",
+          "ComponentType": 0,
+          "ContainerGOID": 3741496996,
+          "Enabled": true,
+          "LockAspect": true,
+          "Position": [
+            0.0,
+            0.0
+          ],
+          "Rotation": 0.0,
+          "Scale": [
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "CameraZoom": 86.0,
+          "ComponentID": 462874235,
+          "ComponentName": "Camera",
+          "ComponentType": 1,
+          "ContainerGOID": 3741496996,
+          "Enabled": true,
+          "ViewportSize": [
+            1700,
+            900
+          ]
+        }
+      ],
+      "Enabled": true,
+      "ID": 3741496996,
+      "Name": "cam",
+      "ParentID": 3612509295,
+      "ParentLayerID": 0,
+      "Tag": "Default",
+      "Visible": true
     }
   ],
   "layers": [
@@ -218,9 +260,10 @@
         1747641676,
         2199418106,
         1488616861,
-        1010520260
+        1010520260,
+        3741496996
       ],
-      "children_count": 4,
+      "children_count": 5,
       "layer_id": 0,
       "layer_name": "DefaultLayer_0",
       "visible": true

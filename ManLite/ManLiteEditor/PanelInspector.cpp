@@ -2738,7 +2738,7 @@ void PanelInspector::LightOptions(GameObject& go)
 void PanelInspector::AddComponent(GameObject& go)
 {
 	const ImVec2 button_size_default = ImVec2(150, 0);
-	const ImVec2 panel_size_default = ImVec2(200, 212);
+	const ImVec2 panel_size_default = ImVec2(200, 232);
 	ImGui::Dummy(ImVec2(0, 10));
 	ImGui::Dummy(ImVec2((ImGui::GetWindowWidth() - button_size_default.x - 30) * 0.5, 0));
 	ImGui::SameLine();
