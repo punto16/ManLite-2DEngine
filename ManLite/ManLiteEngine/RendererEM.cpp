@@ -86,7 +86,6 @@ bool RendererEM::Start()
 	glGenFramebuffers(1, &fbo);
 	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 
-	if (engine->GetEditorOrBuild())
 	{
 		glGenTextures(1, &renderTexture);
 		glBindTexture(GL_TEXTURE_2D, renderTexture);
@@ -317,27 +316,20 @@ void main() {
 
 bool RendererEM::PreUpdate()
 {
-	bool ret = true;
 
-	if (engine->GetEditorOrBuild())
-	{
-		glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-		glViewport(0, 0, fbSize.x, fbSize.y);
+	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+
+	unsigned int w, h;
+	engine->window_em->GetWindowSize(w, h);
+	if (w != fbSize.x || h != fbSize.y) {
+		ResizeFBO(w, h);
 	}
-	else
-	{
-		unsigned int w, h;
-		engine->window_em->GetWindowSize(w, h);
-		if (w != fbSize.x || h != fbSize.y)
-		{
-			ResizeFBO(w, h);
-		}
-		glViewport(0, 0, w, h);
-	}
+	glViewport(0, 0, w, h);
+
 	glClearColor(0.4f, 0.4f, 0.4f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	return ret;
+	return true;
 }
 
 bool RendererEM::Update(double dt)
@@ -358,8 +350,6 @@ bool RendererEM::Update(double dt)
 
 bool RendererEM::PostUpdate()
 {
-	bool ret = true;
-
 	if (engine->GetEditorOrBuild())
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -369,10 +359,16 @@ bool RendererEM::PostUpdate()
 	}
 	else
 	{
+		glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo);
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+		glBlitFramebuffer(
+			0, 0, fbSize.x, fbSize.y,
+			0, 0, fbSize.x, fbSize.y,
+			GL_COLOR_BUFFER_BIT, GL_NEAREST
+		);
 		SDL_GL_SwapWindow(engine->window_em->GetSDLWindow());
 	}
-
-	return ret;
+	return true;
 }
 
 bool RendererEM::CleanUp()
@@ -817,8 +813,6 @@ void RendererEM::RenderLights()
 		0, 0, fbSize.x, fbSize.y,
 		GL_COLOR_BUFFER_BIT, GL_NEAREST
 	);
-
-	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 }
 
 void RendererEM::SubmitLight(const LightRenderData& light)
