@@ -108,6 +108,9 @@ void PanelGame::DrawTopBarControls()
         ImGui::EndCombo();
     }
 
+	ImGui::SameLine();
+	ImGui::Checkbox("Rend Lights##LightsFunctionality", &engine->renderer_em->rend_lights);
+
     ImGui::PopStyleColor();
     ImGui::PopStyleVar();
 }

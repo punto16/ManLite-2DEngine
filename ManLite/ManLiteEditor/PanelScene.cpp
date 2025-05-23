@@ -412,6 +412,9 @@ void PanelScene::DrawTopBarControls()
 		ImGui::EndCombo();
 	}
 
+	ImGui::SameLine();
+	ImGui::Checkbox("Rend Lights##ImGuizmoFunctionality", &engine->renderer_em->rend_lights);
+
 	ImGui::PopStyleColor();
 	ImGui::PopStyleVar();
 }

@@ -192,6 +192,9 @@ private:
 
     void SetupQuad();
 public:
+    //bool useful in editor to edit the scene without needing to disable or un-visible every light go in scene
+    bool rend_lights = true;
+
 	GLuint fbo;
 	
     GLuint fbo_lights;

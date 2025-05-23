@@ -716,6 +716,7 @@ void RendererEM::SetupLightRendering()
 void RendererEM::RenderLights()
 {
 	if (lightsToRender.empty()) return;
+	if (!engine->GetEditorOrBuild() || !rend_lights) return;
 
 	glBindFramebuffer(GL_FRAMEBUFFER, fbo_lights);
 	glViewport(0, 0, fbSize.x, fbSize.y);
