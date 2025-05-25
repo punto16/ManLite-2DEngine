@@ -20,6 +20,8 @@
             "ComponentName": "Sprite2D",
             "ComponentType": 2,
             "Enabled": true,
+            "FlipHorizontal": false,
+            "FlipVertical": false,
             "Offset": [
                 0.0,
                 0.07400000095367432

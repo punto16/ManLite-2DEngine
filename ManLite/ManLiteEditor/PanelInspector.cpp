@@ -188,7 +188,6 @@ void PanelInspector::PrefabOptions(GameObject& go)
 
 	const float buttonWidth = (ImGui::GetContentRegionAvail().x - ImGui::GetStyle().ItemSpacing.x) / 2.0f;
 
-	// Revertir
 	ImGui::PushStyleColor(ImGuiCol_Button, IM_COL32(255, 203, 0, 100));
 	if (ImGui::Button("Revert to Prefab", ImVec2(buttonWidth, 0)))
 	{
@@ -495,6 +494,28 @@ void PanelInspector::SpriteOptions(GameObject& go)
 			}
 
 
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0);
+			ImGui::Text("Flip");
+			ImGui::TableSetColumnIndex(1);
+
+			bool flipH = sprite->IsDefaultFlipHorizontal();
+			if (ImGui::Checkbox(("Horizontal##FlipH" + headerLabel).c_str(), &flipH))
+			{
+				sprite->SetDefaultFlipHorizontal(flipH);
+				sprite->SetFlipHorizontal(flipH);
+			}
+			ImGui::SameLine();
+
+			bool flipV = sprite->IsDefaultFlipVertical();
+			if (ImGui::Checkbox(("Vertical##FlipV" + headerLabel).c_str(), &flipV))
+			{
+				sprite->SetDefaultFlipVertical(flipV);
+				sprite->SetFlipVertical(flipV);
+			}
+			ImGui::SameLine();
+			Gui::HelpMarker("Flip texture coordinates");
+
 
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0);
@@ -688,7 +709,12 @@ void PanelInspector::AnimatorOptions(GameObject& go)
 					selected_animation = animName;
 					if (animator->GetAnimations().size() == 1)
 					{
-						animator->Play(filePath);
+						animator->Play(animName);
+						if (animator->GetAnimations()[animName].animation->totalFrames > 0)
+						{
+							ML_Rect init_section = animator->GetAnimations()[animName].animation->frames[0];
+							sprite->SetTextureSection(init_section.x, init_section.y, init_section.w, init_section.h);
+						}
 					}
 				}
 				else
@@ -2573,7 +2599,6 @@ void PanelInspector::ScriptsOptions(GameObject& go)
 							goPtr->GetName() + " (" + std::to_string(goPtr->GetID()) + ")" :
 							"None";
 
-						// Botón para mostrar/editar
 						if (ImGui::Button(label.c_str(), ImVec2(-FLT_MIN, 0)))
 						{
 

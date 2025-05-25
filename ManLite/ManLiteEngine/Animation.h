@@ -5,7 +5,7 @@
 #include "fstream"
 #include "nlohmann/json.hpp"
 
-#define MAX_FRAMES 32
+#define MAX_FRAMES 64
 
 class Animation
 {
@@ -15,6 +15,9 @@ public:
     bool loop = true;
     bool pingpong = false;
     int totalFrames = 0;
+
+    bool flip_h = false;
+    bool flip_v = false;
 
 private:
     int pingpongDirection = 1;
@@ -107,6 +110,8 @@ public:
         animationJSON["loop"] = loop;
         animationJSON["pingpong"] = pingpong;
         animationJSON["totalFrames"] = totalFrames;
+        animationJSON["flipVertical"] = flip_v;
+        animationJSON["flipHorizontal"] = flip_h;
 
         for (int i = 0; i < totalFrames; ++i) {
             animationJSON["frames"][i]["x"] = frames[i].x;
@@ -118,10 +123,12 @@ public:
         return animationJSON;
     }
     void Load(const nlohmann::json& animationJSON) {
-        speed = animationJSON["speed"];
-        loop = animationJSON["loop"];
-        pingpong = animationJSON["pingpong"];
-        totalFrames = animationJSON["totalFrames"];
+        if (animationJSON.contains("speed"))            speed = animationJSON["speed"];
+        if (animationJSON.contains("loop"))             loop = animationJSON["loop"];
+        if (animationJSON.contains("pingpong"))         pingpong = animationJSON["pingpong"];
+        if (animationJSON.contains("totalFrames"))      totalFrames = animationJSON["totalFrames"];
+        if (animationJSON.contains("flipVertical"))     flip_v = animationJSON["flipVertical"];
+        if (animationJSON.contains("flipHorizontal"))   flip_h = animationJSON["flipHorizontal"];
 
         for (int i = 0; i < totalFrames; ++i) {
             frames[i].x = animationJSON["frames"][i]["x"];

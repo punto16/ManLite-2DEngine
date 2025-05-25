@@ -140,7 +140,6 @@ void PanelAnimation::DrawSpriteSection()
 	const float availableWidth = ImGui::GetContentRegionAvail().x;
 	const float panelWidth = availableWidth * 0.4f;
 
-	// Left Panel - Sprite Sheet
 	ImGui::BeginChild("SpriteSheet", ImVec2(panelWidth, 0), true);
 	{
 		ImGui::Text("Current Sprite Sheet: ");
@@ -150,37 +149,29 @@ void PanelAnimation::DrawSpriteSection()
 		ImGui::Text("| Texture: %dx%d", w, h);
 		ImGui::Separator();
 
-		// Sprite preview
 		animation->Update(app->GetDT(), this->currentFrame);
 		ML_Rect section = animation->GetCurrentFrame(currentFrame);
 		ML_Rect uvs = GetUVs(section, w, h);
 
-		// Calcular aspect ratio del frame actual
 		const float frameAspect = (section.h > 0) ? static_cast<float>(section.h) / section.w : 1.0f;
 
-		// Obtener espacio disponible en el panel
 		const ImVec2 availableSpace = ImGui::GetContentRegionAvail();
 		const float panelAspect = availableSpace.y / availableSpace.x;
 
-		// Calcular tamaño automático manteniendo aspect ratio
 		float imageWidth, imageHeight;
 
 		if (frameAspect > panelAspect) {
-			// Limit by height
-			imageHeight = availableSpace.y - 30.0f; // Margen vertical
+			imageHeight = availableSpace.y - 30.0f;
 			imageWidth = imageHeight / frameAspect;
 		}
 		else {
-			// Limit by width
-			imageWidth = availableSpace.x - 30.0f; // Margen horizontal
+			imageWidth = availableSpace.x - 30.0f;
 			imageHeight = imageWidth * frameAspect;
 		}
 
-		// Asegurar que no exceda el espacio disponible
 		imageWidth = std::min(imageWidth, availableSpace.x - 10.0f);
 		imageHeight = std::min(imageHeight, availableSpace.y - 10.0f);
 
-		// Centrado
 		ImGui::SetCursorPosX((availableSpace.x - imageWidth) * 0.5f);
 		ImGui::SetCursorPosY((availableSpace.y - imageHeight + 60) * 0.5f);
 
@@ -219,6 +210,10 @@ void PanelAnimation::DrawSpriteSection()
 			ImGui::Checkbox("Loop", &animation->loop);
 			ImGui::SameLine();
 			ImGui::Checkbox("Ping Pong", &animation->pingpong);
+
+			ImGui::Checkbox("Flip Horizontal", &animation->flip_h);
+			ImGui::SameLine();
+			ImGui::Checkbox("Flip Vertical", &animation->flip_v);
 
 			ImGui::Separator();
 			ImGui::Text("Frame List");
@@ -303,34 +298,30 @@ void PanelAnimation::DrawFrameProperties()
 	{
 		ImGui::Text("Frame %d Settings", selected_frame);
 
-		// Contenedor principal dividido en 2 columnas
 		ImGui::BeginChild("FrameProperties", ImVec2(0, 0), true);
 		{
 			const float columnWidth = ImGui::GetContentRegionAvail().x * 0.4f;
 
-			// Columna izquierda - Controles
 			ImGui::BeginChild("FrameControls", ImVec2(columnWidth, 0), true);
 			{
 				ML_Rect& frame = animation->frames[selected_frame];
 
-				// Controles verticales
-				ImGui::SetNextItemWidth(columnWidth - 25);
+				ImGui::SetNextItemWidth(columnWidth - 35);
 				ImGui::DragFloat("X", &frame.x, 1.0f, 0, w, "%.0f");
 
-				ImGui::SetNextItemWidth(columnWidth - 25);
+				ImGui::SetNextItemWidth(columnWidth - 35);
 				ImGui::DragFloat("Y", &frame.y, 1.0f, 0, h, "%.0f");
 
-				ImGui::SetNextItemWidth(columnWidth - 25);
+				ImGui::SetNextItemWidth(columnWidth - 35);
 				ImGui::DragFloat("W", &frame.w, 1.0f, 1, w - frame.x, "%.0f");
 
-				ImGui::SetNextItemWidth(columnWidth - 25);
+				ImGui::SetNextItemWidth(columnWidth - 35);
 				ImGui::DragFloat("H", &frame.h, 1.0f, 1, h - frame.y, "%.0f");
 			}
 			ImGui::EndChild();
 
 			ImGui::SameLine();
 
-			// Columna derecha - Preview
 			ImGui::BeginChild("FramePreview", ImVec2(0, 0), true);
 			{
 				if (sprite != 0)
@@ -338,7 +329,6 @@ void PanelAnimation::DrawFrameProperties()
 					ML_Rect frame = animation->frames[selected_frame];
 					ML_Rect uvs = GetUVs(frame, w, h);
 
-					// Tamaño automático manteniendo aspect ratio
 					const float availableWidth = ImGui::GetContentRegionAvail().x - 10;
 					const float availableHeight = ImGui::GetContentRegionAvail().y - 10;
 					const float aspect = frame.h / frame.w;
@@ -352,7 +342,6 @@ void PanelAnimation::DrawFrameProperties()
 						imageWidth = imageHeight / aspect;
 					}
 
-					// Centrado
 					ImGui::SetCursorPosX((ImGui::GetContentRegionAvail().x - imageWidth) * 0.5f);
 					ImGui::SetCursorPosY((ImGui::GetContentRegionAvail().y - imageHeight) * 0.5f);
 

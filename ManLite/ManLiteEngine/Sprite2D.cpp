@@ -12,7 +12,11 @@
 
 Sprite2D::Sprite2D(std::weak_ptr<GameObject> container_go, const std::string& texture_path, std::string name, bool enable)
     : Component(container_go, ComponentType::Sprite, name, enable),
-    texturePath(texture_path), pixel_art(false), offset({0.0f, 0.0f})
+    texturePath(texture_path), pixel_art(false), offset({0.0f, 0.0f}),
+    default_flip_horizontal(false),
+    default_flip_vertical(false),
+    flip_horizontal(false),
+    flip_vertical(false)
 {
     ResourceManager::GetInstance().LoadTexture("Config\\placeholder.png", tex_width, tex_height);//load placeholder
     if (std::this_thread::get_id() == engine->main_thread_id)
@@ -29,7 +33,11 @@ Sprite2D::Sprite2D(const Sprite2D& component_to_copy, std::shared_ptr<GameObject
     : Component(component_to_copy, container_go),
     texturePath(component_to_copy.texturePath),
     pixel_art(component_to_copy.pixel_art),
-    offset(component_to_copy.offset)
+    offset(component_to_copy.offset),
+    default_flip_horizontal(component_to_copy.default_flip_horizontal),
+    default_flip_vertical(component_to_copy.default_flip_vertical),
+    flip_horizontal(component_to_copy.flip_horizontal),
+    flip_vertical(component_to_copy.flip_vertical)
 {
     ResourceManager::GetInstance().LoadTexture("Config\\placeholder.png", tex_width, tex_height);//load placeholder
     if (std::this_thread::get_id() == engine->main_thread_id)
@@ -100,7 +108,10 @@ void Sprite2D::Draw()
         engine->renderer_em->SubmitSprite(
             textureID,
             model_mat,
-            u1, v1, u2, v2,
+            flip_horizontal     ? u2 : u1,
+            flip_vertical       ? v2 : v1,
+            flip_horizontal     ? u1 : u2,
+            flip_vertical       ? v1 : v2,
             pixel_art,
             engine->scene_manager_em->GetCurrentScene().GetGOOrderInLayer(container_go.lock()),
             0.0f
@@ -141,6 +152,8 @@ nlohmann::json Sprite2D::SaveComponent()
     componentJSON["TextureSection"] = { sectionX, sectionY,sectionW, sectionH };
     componentJSON["TextureUVs"] = { u1, v1, u2, v2 };
     componentJSON["Offset"] = { offset.x, offset.y };
+    componentJSON["FlipVertical"] = default_flip_vertical;
+    componentJSON["FlipHorizontal"] = default_flip_horizontal;
 
     return componentJSON;
 }
@@ -171,6 +184,11 @@ void Sprite2D::LoadComponent(const nlohmann::json& componentJSON)
     if (componentJSON.contains("TextureUVs")) v2 = componentJSON["TextureUVs"][3];
     if (componentJSON.contains("Offset")) offset.x = componentJSON["Offset"][0];
     if (componentJSON.contains("Offset")) offset.y = componentJSON["Offset"][1];
+    if (componentJSON.contains("FlipVertical")) default_flip_vertical = componentJSON["FlipVertical"];
+    if (componentJSON.contains("FlipHorizontal")) default_flip_horizontal = componentJSON["FlipHorizontal"];
+
+    flip_horizontal = default_flip_horizontal;
+    flip_vertical = default_flip_vertical;
 }
 
 void Sprite2D::SetTextureSection(int x, int y, int w, int h) {

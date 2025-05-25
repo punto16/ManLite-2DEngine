@@ -41,6 +41,16 @@ public:
     void SetOffset(vec2f offset) { this->offset = offset; }
     vec2f GetOffset() { return offset; }
 
+    void SetFlipVertical(bool flip) { flip_vertical = flip; }
+    bool IsFlipVertical() { return flip_vertical; }
+    void SetFlipHorizontal(bool flip) { flip_horizontal = flip; }
+    bool IsFlipHorizontal() { return flip_horizontal; }
+
+    void SetDefaultFlipVertical(bool flip) { default_flip_vertical = flip; }
+    bool IsDefaultFlipVertical() { return default_flip_vertical; }
+    void SetDefaultFlipHorizontal(bool flip) { default_flip_horizontal = flip; }
+    bool IsDefaultFlipHorizontal() { return default_flip_horizontal; }
+
 private:
     std::string texturePath;
     GLuint textureID = 0;
@@ -52,6 +62,11 @@ private:
 
     float u1 = 0.0f, v1 = 0.0f, u2 = 1.0f, v2 = 1.0f;
 
+    bool flip_vertical = false;
+    bool flip_horizontal = false;
+
+    bool default_flip_vertical = false;
+    bool default_flip_horizontal = false;
 
     std::future<GLuint> textureFuture;
     std::atomic<bool> textureLoading{ false };

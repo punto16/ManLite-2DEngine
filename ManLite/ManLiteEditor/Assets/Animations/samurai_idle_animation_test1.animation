@@ -1,4 +1,6 @@
 {
+  "flipHorizontal": false,
+  "flipVertical": false,
   "frames": [
     {
       "h": 39.0,

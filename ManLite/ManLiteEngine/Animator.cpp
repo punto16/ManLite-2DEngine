@@ -35,6 +35,17 @@ bool Animator::Update(float deltaTime)
         currentAnimation->Update(deltaTime, currentFrame);
         ML_Rect r = currentAnimation->GetCurrentFrame(currentFrame);
         sprite->SetTextureSection(r.x, r.y, r.w, r.h);
+
+
+        if (currentAnimation->flip_h)
+            sprite->SetFlipHorizontal(!sprite->IsDefaultFlipHorizontal());
+        else
+            sprite->SetFlipHorizontal(sprite->IsDefaultFlipHorizontal());
+
+        if (currentAnimation->flip_v)
+            sprite->SetFlipVertical(!sprite->IsDefaultFlipVertical());
+        else
+            sprite->SetFlipVertical(sprite->IsDefaultFlipVertical());
     }
 
     return true;
