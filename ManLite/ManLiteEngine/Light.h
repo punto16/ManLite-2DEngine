@@ -44,7 +44,6 @@ public:
     bool IsFinalPosStatic() { return static_end_pos; }
     void SetFinalPosStatic(bool b) { static_end_pos = b; }
 
-    // Propiedades específicas para RayLight
     void SetRayProperties(const vec2f& endPos, float startRad, float endRad)
     {
         endPosition = endPos;
@@ -55,11 +54,11 @@ public:
 private:
     LightType light_type = LightType::POINT_LIGHT;
     float intensity = 0.6f;
-    float radius = 1.0f; // Para PointLight
+    float radius = 1.0f;
     bool static_end_pos = true;
-    vec2f endPosition; // Solo para RayLight
-    float endRadius = 0.0f; // Solo para RayLight
-    ML_Color color = { 255, 255, 255, 255 }; // Blanco por defecto
+    vec2f endPosition;
+    float endRadius = 0.0f;
+    ML_Color color = { 255, 255, 255, 255 };
 };
 
 #endif // !__LIGHT_H__

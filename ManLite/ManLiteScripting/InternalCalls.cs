@@ -216,6 +216,22 @@ namespace ManLiteScripting
         [MethodImpl(MethodImplOptions.InternalCall)] public extern static void UnpauseParticleSystem(IntPtr go);
         [MethodImpl(MethodImplOptions.InternalCall)] public extern static void StopParticleSystem(IntPtr go);
         #endregion
+
+
+        #region Lights
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void SetLightColor(IntPtr go, Vec4f color);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void GetLightColor(IntPtr go, out Vec4f color);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void SetLightIntensity(IntPtr go, float intensity);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static float GetLightIntensity(IntPtr go);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void SetLightRadius(IntPtr go, float radius);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static float GetLightRadius(IntPtr go);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void SetLightEndRadius(IntPtr go, float radius);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static float GetLightEndRadius(IntPtr go);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void SetLightEndPosition(IntPtr go, Vec2f pos);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void GetLightEndPosition(IntPtr go, out Vec2f pos);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void SetLightFinalPosStatic(IntPtr go, bool b);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static bool GetLightFinalPosStatic(IntPtr go);
+        #endregion
     }
 
 

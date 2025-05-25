@@ -11,9 +11,12 @@ public class PlayerScript : MonoBehaviour
 
     private Collider2D collider;
 
+    private Light light;
+
     public override void Start()
     {
         collider = new Collider2D(attached_game_object);
+        light = new Light(attached_game_object);
 
         ML_System.Log("Start PlayerScript");
         ML_System.Log("Log Test | Int: {0}", 69);
@@ -47,6 +50,23 @@ public class PlayerScript : MonoBehaviour
             speed.Y = 10;
 
             jump_available = false;
+        }
+
+        if (Input.GetKeyboardKey(KeyboardKey.SDL_SCANCODE_W) == KeyState.KEY_REPEAT)
+        {
+            float intensity = light.GetIntensity();
+
+            intensity += 0.01f;
+
+            light.SetIntensity(intensity);
+        }
+        if (Input.GetKeyboardKey(KeyboardKey.SDL_SCANCODE_S) == KeyState.KEY_REPEAT)
+        {
+            float intensity = light.GetIntensity();
+
+            intensity -= 0.01f;
+
+            light.SetIntensity(intensity);
         }
 
         collider.SetSpeed(speed);

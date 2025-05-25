@@ -24,6 +24,7 @@
 #include "TileMap.h"
 #include "Prefab.h"
 #include "Layer.h"
+#include "Light.h"
 
 #include "Defs.h"
 #include "SDL2/SDL.h"
@@ -558,8 +559,10 @@ static void GetTextureSection(GameObject* go, vec4f* section)
 	ML_Rect r;
 	if (!go) return;
 	if (auto c = go->GetComponent<Sprite2D>())
+	{
 		ML_Rect r = c->GetTextureSection();
-	*section = { r.x, r.y, r.w, r.h };
+		*section = { r.x, r.y, r.w, r.h };
+	}
 }
 static void SetTextureSection(GameObject* go, vec4f section)
 {
@@ -1306,6 +1309,83 @@ static void StopParticleSystem(GameObject* go)
 }
 
 
+static void SetLightColor(GameObject* go, vec4f color)
+{
+	if (!go) return;
+	if (auto c = go->GetComponent<Light>())
+		c->SetColor({ color.x, color.y, color.z, color.w});
+}
+static void GetLightColor(GameObject* go, vec4f* color)
+{
+	if (!go) return;
+	if (auto c = go->GetComponent<Light>())
+	{
+		ML_Color tc = c->GetColor();
+		*color = { tc.r, tc.g, tc.b, tc.a };
+	}
+}
+static void SetLightIntensity(GameObject* go, float i)
+{
+	if (!go) return;
+	if (auto c = go->GetComponent<Light>())
+		c->SetIntensity(i);
+}
+static float GetLightIntensity(GameObject* go)
+{
+	if (!go) return 0.0f;
+	if (auto c = go->GetComponent<Light>())
+		return c->GetIntensity();
+}
+static void SetLightRadius(GameObject* go, float r)
+{
+	if (!go) return;
+	if (auto c = go->GetComponent<Light>())
+		c->SetRadius(r);
+}
+static float GetLightRadius(GameObject* go)
+{
+	if (!go) return 0.0f;
+	if (auto c = go->GetComponent<Light>())
+		return c->GetRadius();
+}
+static void SetLightEndRadius(GameObject* go, float i)
+{
+	if (!go) return;
+	if (auto c = go->GetComponent<Light>())
+		c->SetEndRadius(i);
+}
+static float GetLightEndRadius(GameObject* go)
+{
+	if (!go) return 0.0f;
+	if (auto c = go->GetComponent<Light>())
+		return c->GetEndRadius();
+}
+static void SetLightEndPosition(GameObject* go, vec2f pos)
+{
+	if (!go) return;
+	if (auto c = go->GetComponent<Light>())
+		c->SetEndPosition({ pos.x, pos.y });
+}
+static void GetLightEndPosition(GameObject* go, vec2f* pos)
+{
+	if (!go) return;
+	if (auto c = go->GetComponent<Light>())
+		*pos = c->GetEndPosition();
+}
+static void SetLightFinalPosStatic(GameObject* go, bool b)
+{
+	if (!go) return;
+	if (auto c = go->GetComponent<Light>())
+		c->SetFinalPosStatic(b);
+}
+static bool GetLightFinalPosStatic(GameObject* go)
+{
+	if (!go) return 0.0f;
+	if (auto c = go->GetComponent<Light>())
+		return c->IsFinalPosStatic();
+}
+
+
 void MonoBehaviour_Ctor(MonoObject* self)
 {
 
@@ -1476,6 +1556,20 @@ void MonoRegisterer::RegisterFunctions()
 	mono_add_internal_call("ManLiteScripting.InternalCalls::PauseParticleSystem", (void*)PauseParticleSystem);
 	mono_add_internal_call("ManLiteScripting.InternalCalls::UnpauseParticleSystem", (void*)UnpauseParticleSystem);
 	mono_add_internal_call("ManLiteScripting.InternalCalls::StopParticleSystem", (void*)StopParticleSystem);
+
+	//lights
+	mono_add_internal_call("ManLiteScripting.InternalCalls::SetLightColor", (void*)SetLightColor);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::GetLightColor", (void*)GetLightColor);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::SetLightIntensity", (void*)SetLightIntensity);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::GetLightIntensity", (void*)GetLightIntensity);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::SetLightRadius", (void*)SetLightRadius);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::GetLightRadius", (void*)GetLightRadius);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::SetLightEndRadius", (void*)SetLightEndRadius);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::GetLightEndRadius", (void*)GetLightEndRadius);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::SetLightEndPosition", (void*)SetLightEndPosition);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::GetLightEndPosition", (void*)GetLightEndPosition);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::SetLightFinalPosStatic", (void*)SetLightFinalPosStatic);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::GetLightFinalPosStatic", (void*)GetLightFinalPosStatic);
 
 	//others
 	mono_add_internal_call("ManLiteScripting.ManLiteScripting.MonoBehaviour::.ctor", (void*)MonoBehaviour_Ctor);

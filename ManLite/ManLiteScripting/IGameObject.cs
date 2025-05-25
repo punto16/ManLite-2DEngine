@@ -852,4 +852,78 @@ namespace ManLiteScripting
             InternalCalls.StopParticleSystem(container_go.game_object_ptr);
         }
     }
+
+    public class Light
+    {
+        public IGameObject container_go;
+
+        public Light(IGameObject go)
+        {
+            container_go = go;
+        }
+
+        public void SetColor(Vec4f color)
+        {
+            InternalCalls.SetLightColor(container_go.game_object_ptr, color);
+        }
+
+        public Vec4f GetColor()
+        {
+            Vec4f color = new Vec4f();
+            InternalCalls.GetLightColor(container_go.game_object_ptr, out color);
+            return color;
+        }
+
+        public void SetIntensity(float intensity)
+        {
+            InternalCalls.SetLightIntensity(container_go.game_object_ptr, intensity);
+        }
+
+        public float GetIntensity()
+        {
+            return InternalCalls.GetLightIntensity(container_go.game_object_ptr);
+        }
+
+        public void SetRadius(float r)
+        {
+            InternalCalls.SetLightRadius(container_go.game_object_ptr, r);
+        }
+
+        public float GetRadius()
+        {
+            return InternalCalls.GetLightRadius(container_go.game_object_ptr);
+        }
+
+        public void SetEndRadius(float r)
+        {
+            InternalCalls.SetLightEndRadius(container_go.game_object_ptr, r);
+        }
+
+        public float GetEndRadius()
+        {
+            return InternalCalls.GetLightEndRadius(container_go.game_object_ptr);
+        }
+
+        public void SetEndPosition(Vec2f pos)
+        {
+            InternalCalls.SetLightEndPosition(container_go.game_object_ptr, pos);
+        }
+
+        public Vec2f GetEndPosition()
+        {
+            Vec2f pos = new Vec2f();
+            InternalCalls.GetLightEndPosition(container_go.game_object_ptr, out pos);
+            return pos;
+        }
+
+        public void SetFinalPositionStatic(bool b)
+        {
+            InternalCalls.SetLightFinalPosStatic(container_go.game_object_ptr, b);
+        }
+
+        public bool GetFinalPositionStatic()
+        {
+            return InternalCalls.GetLightFinalPosStatic(container_go.game_object_ptr);
+        }
+    }
 }
