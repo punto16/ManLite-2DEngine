@@ -28,6 +28,8 @@ Collider2D::Collider2D(std::weak_ptr<GameObject> container_go,
     m_useGravity(true)
 {
     RecreateBody();
+
+    WaitUntilSafe();
     m_body->SetEnabled(false);
 }
 
@@ -51,9 +53,12 @@ Collider2D::Collider2D(const Collider2D& component_to_copy, std::shared_ptr<Game
 
     if (m_isDynamic && component_to_copy.m_body)
     {
+        WaitUntilSafe();
         m_body->SetLinearVelocity(component_to_copy.m_body->GetLinearVelocity());
         m_body->SetAngularVelocity(component_to_copy.m_body->GetAngularVelocity());
     }
+
+    WaitUntilSafe();
     m_body->SetEnabled(false);
 }
 
@@ -61,6 +66,7 @@ Collider2D::~Collider2D()
 {
     if (m_body)
     {
+        WaitUntilSafe();
         PhysicsEM::GetWorld()->DestroyBody(m_body);
         m_body = nullptr;
     }
@@ -98,6 +104,7 @@ bool Collider2D::CleanUp()
 {
     if (m_body)
     {
+        WaitUntilSafe();
         PhysicsEM::GetWorld()->DestroyBody(m_body);
         m_body = nullptr;
     }
@@ -432,11 +439,14 @@ void Collider2D::LoadComponent(const nlohmann::json& componentJSON)
 
     if (m_body)
     {
-        PhysicsEM::GetWorld()->DestroyBody(m_body);
+        WaitUntilSafe();
+        if (PhysicsEM::GetWorld())
+            PhysicsEM::GetWorld()->DestroyBody(m_body);
         m_body = nullptr;
     }
     //
     RecreateBody();
+    WaitUntilSafe();
     m_body->SetEnabled(false);
 
     SetSensor(m_isSensor);
@@ -546,14 +556,17 @@ void Collider2D::RecreateBody()
     bodyDef.fixedRotation = m_lockRotation;
     bodyDef.gravityScale = m_useGravity ? 1.0f : 0.0f;
 
-    m_body = PhysicsEM::GetWorld()->CreateBody(&bodyDef);
+
+    WaitUntilSafe();
+    if (PhysicsEM::GetWorld())
+        m_body = PhysicsEM::GetWorld()->CreateBody(&bodyDef);
 
     RecreateFixture();
 }
 
 void Collider2D::RecreateFixture()
 {
-    if (!m_body) return;
+    if (!m_body || !PhysicsEM::GetWorld()) return;
 
     while (m_body->GetFixtureList()) m_body->DestroyFixture(m_body->GetFixtureList());
 
@@ -591,10 +604,24 @@ void Collider2D::RecreateFixture()
     }
     fixtureDef.density = density;
 
+    WaitUntilSafe();
     b2Fixture* fixture = m_body->CreateFixture(&fixtureDef);
     fixture->GetUserData().pointer = reinterpret_cast<uintptr_t>(this);
 
     if (m_isDynamic) m_body->ResetMassData();
 
     delete shape;
+}
+
+void Collider2D::WaitUntilSafe()
+{
+    //if we process things while world is stepping it will crash
+    if (std::this_thread::get_id() != engine->main_thread_id ||
+        PhysicsEM::IsWorldStepping())
+    {
+        while (PhysicsEM::IsWorldStepping())
+        {
+            //wait untill world has finished stepping
+        }
+    }
 }

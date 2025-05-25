@@ -54,9 +54,17 @@ public class TestScript_1 : MonoBehaviour
             force2.Y = -players_speed;
         }
 
-        if (InternalCalls.GetKeyboardKeyRepeat((int)KeyboardKey.SDL_SCANCODE_P))
+        if (InternalCalls.GetKeyboardKeyDown((int)KeyboardKey.SDL_SCANCODE_P))
         {
-            InternalCalls.LoadScene("Assets/Scenes/Prefab_Scene_Test.mlscene");
+            Scene.LoadSceneAsync("Assets/Scenes/AnormalWalkinelPueblo_Scene_test.mlscene", false);
+        }
+        if (InternalCalls.GetKeyboardKeyDown((int)KeyboardKey.SDL_SCANCODE_O))
+        {
+            Scene.SetBackGroundLoadedScene();
+        }
+        if (InternalCalls.GetKeyboardKeyDown((int)KeyboardKey.SDL_SCANCODE_I))
+        {
+            InternalCalls.LoadScene("Assets/Scenes/AnormalWalkinelPueblo_Scene_test.mlscene");
         }
 
         if (!AllowUpdate)

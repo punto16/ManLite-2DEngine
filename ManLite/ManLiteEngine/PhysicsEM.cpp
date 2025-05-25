@@ -10,6 +10,7 @@ ContactListener* PhysicsEM::m_contactListener = nullptr;
 b2World* PhysicsEM::m_world = nullptr;
 int32 PhysicsEM::m_velocityIterations = 6;
 int32 PhysicsEM::m_positionIterations = 2;
+bool PhysicsEM::world_stepping = false;
 
 PhysicsEM::PhysicsEM(EngineCore* parent) : EngineModule(parent)
 {
@@ -40,7 +41,9 @@ bool PhysicsEM::Update(double dt)
 	bool ret = true;
 	if (m_world && engine->GetEngineState() == EngineState::PLAY)
 	{
+        world_stepping = true;
 		m_world->Step(dt, m_velocityIterations, m_positionIterations);
+        world_stepping = false;
 	}
 	return ret;
 }

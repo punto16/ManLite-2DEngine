@@ -25,7 +25,6 @@ public:
 
     // load scene async
     static void LoadSceneBackGround(MonoString* path, bool set_on_finish_loading);
-    static void SetBackGroundLoadedSceneAsync();
     static void SetBackGroundLoadedScene();
     static std::future<void> loading_task;
     static std::atomic<bool> is_loading;

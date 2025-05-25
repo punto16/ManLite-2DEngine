@@ -30,7 +30,7 @@ public:
 	std::shared_ptr<GameObject> CreateEmptyGO(GameObject& parent);
 	std::shared_ptr<GameObject> DuplicateGO(GameObject& go_to_copy, bool scene_duplication = false);
 	//general functions for layers
-	std::shared_ptr<Layer> CreateEmptyLayer();
+	std::shared_ptr<Layer> CreateEmptyLayer(bool insert_first_or_last = true);
 	std::shared_ptr<Layer> DuplicateLayer(Layer& layer_to_copy);
 
 	//safely adds a game object to a pending to delete list

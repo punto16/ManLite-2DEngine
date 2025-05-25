@@ -43,12 +43,16 @@ public:
 	static b2World* GetWorld() { return m_world; }
 	static ContactListener* GetContactListener() { return m_contactListener; }
 
+	static bool IsWorldStepping() { return world_stepping; }
+
 private:
 
 	static b2World* m_world;
 	static int32 m_velocityIterations;
 	static int32 m_positionIterations;
     static ContactListener* m_contactListener;
+
+	static bool world_stepping;
 };
 
 #endif // !__PHYSICS_EM_H__

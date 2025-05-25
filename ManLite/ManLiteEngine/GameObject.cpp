@@ -497,7 +497,7 @@ void GameObject::LoadGameObject(const nlohmann::json& goJSON)
     {
         std::string path = goJSON["PrefabPath"];
 
-        auto tempPrefab = Prefab::Instantiate(path, nullptr, !engine->GetEditorOrBuild());
+        auto tempPrefab = Prefab::Instantiate(path, nullptr, engine->GetEngineState() == EngineState::PLAY);
 
         if (tempPrefab)
         {

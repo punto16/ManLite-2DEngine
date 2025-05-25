@@ -191,7 +191,7 @@ void SceneManagerEM::LoadSceneFromJson(const std::string& file_name_const)
 
 		for (const auto& layerJSON : layersJSON)
 		{
-			std::shared_ptr<Layer> layer = current_scene->CreateEmptyLayer();
+			std::shared_ptr<Layer> layer = current_scene->CreateEmptyLayer(false);
 			layer->LoadLayer(layerJSON);
 
 			if (layerJSON.contains("Layer_children_go_id"))
@@ -286,7 +286,7 @@ void SceneManagerEM::LoadSceneToScene(const std::string& file_name_const, Scene&
 
 		for (const auto& layerJSON : layersJSON)
 		{
-			std::shared_ptr<Layer> layer = scene.CreateEmptyLayer();
+			std::shared_ptr<Layer> layer = scene.CreateEmptyLayer(false);
 			layer->LoadLayer(layerJSON);
 
 			if (layerJSON.contains("Layer_children_go_id"))
@@ -700,10 +700,13 @@ std::shared_ptr<GameObject> Scene::DuplicateGO(GameObject& go_to_copy, bool scen
 	return copy;
 }
 
-std::shared_ptr<Layer> Scene::CreateEmptyLayer()
+std::shared_ptr<Layer> Scene::CreateEmptyLayer(bool insert_first_or_last)
 {
 	std::shared_ptr<Layer> empty_layer = std::make_shared<Layer>(scene_layers.size(), std::string("Layer_" + std::to_string(scene_layers.size())));
-	scene_layers.insert(scene_layers.begin(), empty_layer);
+	if (insert_first_or_last)
+		scene_layers.insert(scene_layers.begin(), empty_layer);
+	else
+		scene_layers.emplace_back(empty_layer);
 	return empty_layer;
 }
 

@@ -15,7 +15,13 @@ Sprite2D::Sprite2D(std::weak_ptr<GameObject> container_go, const std::string& te
     texturePath(texture_path), pixel_art(false), offset({0.0f, 0.0f})
 {
     ResourceManager::GetInstance().LoadTexture("Config\\placeholder.png", tex_width, tex_height);//load placeholder
-    textureID = ResourceManager::GetInstance().LoadTexture(texturePath, tex_width, tex_height);
+    if (std::this_thread::get_id() == engine->main_thread_id)
+        textureID = ResourceManager::GetInstance().LoadTexture(texturePath, tex_width, tex_height);
+    else
+    {
+        textureLoading = true;
+        textureFuture = ResourceManager::GetInstance().LoadTextureAsync(texturePath, tex_width, tex_height);
+    }
     SetTextureSection(0, 0, tex_width, tex_height);
 }
 
@@ -26,7 +32,14 @@ Sprite2D::Sprite2D(const Sprite2D& component_to_copy, std::shared_ptr<GameObject
     offset(component_to_copy.offset)
 {
     ResourceManager::GetInstance().LoadTexture("Config\\placeholder.png", tex_width, tex_height);//load placeholder
-    textureID = ResourceManager::GetInstance().LoadTexture(texturePath, tex_width, tex_height);
+    if (std::this_thread::get_id() == engine->main_thread_id)
+        textureID = ResourceManager::GetInstance().LoadTexture(texturePath, tex_width, tex_height);
+    else
+    {
+        textureLoading = true;
+        textureFuture = ResourceManager::GetInstance().LoadTextureAsync(texturePath, tex_width, tex_height);
+    }
+
     this->tex_width = component_to_copy.tex_width;
     this->tex_height = component_to_copy.tex_height;
     SetTextureSection(component_to_copy.sectionX, component_to_copy.sectionY, component_to_copy.sectionW, component_to_copy.sectionH);

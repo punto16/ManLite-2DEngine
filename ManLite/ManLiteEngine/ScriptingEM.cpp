@@ -51,7 +51,23 @@ bool ScriptingEM::PreUpdate()
 {
     bool ret = true;
 
-    if (MonoRegisterer::set_scene) MonoRegisterer::SetBackGroundLoadedSceneAsync();
+    if (MonoRegisterer::set_scene && MonoRegisterer::new_scene.get() && !MonoRegisterer::is_loading)
+    {
+        bool engine_mode = engine->GetEditorOrBuild();
+        engine->SetEditorOrBuild(false);
+
+        engine->scene_manager_em->CleanUp();
+        engine->scene_manager_em->GetCurrentScene() = *MonoRegisterer::new_scene;
+        MonoRegisterer::new_scene.reset();
+        MonoRegisterer::set_scene = false;
+        if (engine->GetEngineState() == EngineState::PLAY)
+        {
+            ProcessInstantiateQueue();
+            engine->scene_manager_em->StartSession();
+            stop_process_instantiate_queue = false;
+        }
+        engine->SetEditorOrBuild(engine_mode);
+    }
 
     if (!stop_process_instantiate_queue) ProcessInstantiateQueue();
     

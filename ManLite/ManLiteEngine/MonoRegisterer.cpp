@@ -178,7 +178,7 @@ std::atomic<bool> MonoRegisterer::set_scene(false);
 std::shared_ptr<Scene> MonoRegisterer::new_scene = nullptr;
 void MonoRegisterer::LoadSceneBackGround(MonoString* path, bool set_on_finish_loading)
 {
-	if (is_loading) return;
+	if (new_scene.get()) return;
 	
 	std::string filePath = ToCppString(path);
 	
@@ -188,24 +188,14 @@ void MonoRegisterer::LoadSceneBackGround(MonoString* path, bool set_on_finish_lo
 	is_loading = true;
 	set_scene = false;
 
+	engine->scripting_em->stop_process_instantiate_queue = true;
+
 	loading_task = std::async(std::launch::async,
 		[filePath, scene_copy, set_on_finish_loading]() {
 			engine->scene_manager_em->LoadSceneToScene(filePath, *scene_copy);
 			is_loading = false;
 			if (!set_scene) set_scene = set_on_finish_loading;
 		});
-}
-void MonoRegisterer::SetBackGroundLoadedSceneAsync()
-{
-	set_scene = true;
-
-	if (!is_loading && new_scene)
-	{
-		engine->scene_manager_em->CleanUp();
-		engine->scene_manager_em->GetCurrentScene() = *new_scene;
-		new_scene.reset();
-		set_scene = false;
-	}
 }
 void MonoRegisterer::SetBackGroundLoadedScene()
 {

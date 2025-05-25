@@ -83,6 +83,26 @@
             "ComponentType": 4,
             "Enabled": true,
             "ScriptFields": null
+        },
+        {
+            "ComponentName": "Light",
+            "ComponentType": 10,
+            "Enabled": true,
+            "LightColor": [
+                255,
+                255,
+                255,
+                255
+            ],
+            "LightEndPosition": [
+                0.0,
+                0.0
+            ],
+            "LightEndRadius": 0.0,
+            "LightIntensity": 1.0,
+            "LightRadius": 1.0,
+            "LightStaticEndPosition": true,
+            "LightType": 0
         }
     ],
     "Enabled": true,
