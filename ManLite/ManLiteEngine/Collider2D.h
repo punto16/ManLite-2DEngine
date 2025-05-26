@@ -92,8 +92,6 @@ private:
     void RecreateBody();
     void RecreateFixture();
 
-    void WaitUntilSafe();
-
     b2Body* m_body = nullptr;
     ShapeType m_shapeType;
     bool m_isDynamic;

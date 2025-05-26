@@ -178,7 +178,7 @@ std::atomic<bool> MonoRegisterer::set_scene(false);
 std::shared_ptr<Scene> MonoRegisterer::new_scene = nullptr;
 void MonoRegisterer::LoadSceneBackGround(MonoString* path, bool set_on_finish_loading)
 {
-	if (new_scene.get()) return;
+	if (new_scene.get() || is_loading) return;
 	
 	std::string filePath = ToCppString(path);
 	

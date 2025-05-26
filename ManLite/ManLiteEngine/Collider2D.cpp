@@ -27,9 +27,9 @@ Collider2D::Collider2D(std::weak_ptr<GameObject> container_go,
     m_restitution(0.0f),
     m_useGravity(true)
 {
+    if (std::this_thread::get_id() != engine->main_thread_id) return;
     RecreateBody();
 
-    WaitUntilSafe();
     m_body->SetEnabled(false);
 }
 
@@ -49,24 +49,23 @@ Collider2D::Collider2D(const Collider2D& component_to_copy, std::shared_ptr<Game
     m_restitution(component_to_copy.m_restitution),
     m_useGravity(component_to_copy.m_useGravity)
 {
+    if (std::this_thread::get_id() != engine->main_thread_id) return;
     RecreateBody();
 
     if (m_isDynamic && component_to_copy.m_body)
     {
-        WaitUntilSafe();
         m_body->SetLinearVelocity(component_to_copy.m_body->GetLinearVelocity());
         m_body->SetAngularVelocity(component_to_copy.m_body->GetAngularVelocity());
     }
 
-    WaitUntilSafe();
     m_body->SetEnabled(false);
 }
 
 Collider2D::~Collider2D()
 {
+    if (std::this_thread::get_id() != engine->main_thread_id) return;
     if (m_body)
     {
-        WaitUntilSafe();
         PhysicsEM::GetWorld()->DestroyBody(m_body);
         m_body = nullptr;
     }
@@ -74,6 +73,7 @@ Collider2D::~Collider2D()
 
 bool Collider2D::Init()
 {
+    if (std::this_thread::get_id() != engine->main_thread_id) return true;
     bool ret = true;
 
     if (!m_body) RecreateBody();
@@ -102,9 +102,9 @@ bool Collider2D::Init()
 
 bool Collider2D::CleanUp()
 {
+    if (std::this_thread::get_id() != engine->main_thread_id) return true;
     if (m_body)
     {
-        WaitUntilSafe();
         PhysicsEM::GetWorld()->DestroyBody(m_body);
         m_body = nullptr;
     }
@@ -113,6 +113,7 @@ bool Collider2D::CleanUp()
 
 bool Collider2D::Update(float dt)
 {
+    if (std::this_thread::get_id() != engine->main_thread_id) return true;
     if (!m_body) RecreateBody();
     b2Vec2 position = m_body->GetPosition();
     Transform* t = container_go.lock()->GetComponent<Transform>();
@@ -129,6 +130,7 @@ bool Collider2D::Update(float dt)
 
 void Collider2D::Draw()
 {
+    if (std::this_thread::get_id() != engine->main_thread_id) return;
     if (!engine->GetEditorOrBuild()) return;
     if (!m_body) RecreateBody();
 
@@ -175,6 +177,7 @@ void Collider2D::Draw()
 
 bool Collider2D::Pause()
 {
+    if (std::this_thread::get_id() != engine->main_thread_id) return true;
     bool ret = true;
 
     if (!m_body) RecreateBody();
@@ -186,6 +189,7 @@ bool Collider2D::Pause()
 
 bool Collider2D::Unpause()
 {
+    if (std::this_thread::get_id() != engine->main_thread_id) return true;
     bool ret = true;
 
     if (!m_body) RecreateBody();
@@ -197,6 +201,7 @@ bool Collider2D::Unpause()
 
 void Collider2D::SetShapeType(ShapeType newType)
 {
+    if (std::this_thread::get_id() != engine->main_thread_id) return;
     if (m_shapeType != newType)
     {
         m_shapeType = newType;
@@ -206,6 +211,7 @@ void Collider2D::SetShapeType(ShapeType newType)
 
 void Collider2D::SetSize(float width, float height)
 {
+    if (std::this_thread::get_id() != engine->main_thread_id) return;
     if (width <= 0 || height <= 0) return;
     if (m_shapeType == ShapeType::RECTANGLE &&
         (m_width != width || m_height != height))
@@ -218,6 +224,7 @@ void Collider2D::SetSize(float width, float height)
 
 void Collider2D::SetRadius(float radius)
 {
+    if (std::this_thread::get_id() != engine->main_thread_id) return;
     if (radius <= 0) return;
     if (m_shapeType == ShapeType::CIRCLE && m_radius != radius)
     {
@@ -228,6 +235,7 @@ void Collider2D::SetRadius(float radius)
 
 void Collider2D::SetDynamic(bool isDynamic)
 {
+    if (std::this_thread::get_id() != engine->main_thread_id) return;
     if (m_isDynamic != isDynamic)
     {
         m_isDynamic = isDynamic;
@@ -249,6 +257,7 @@ void Collider2D::SetDynamic(bool isDynamic)
 
 void Collider2D::SetSensor(bool sensor)
 {
+    if (std::this_thread::get_id() != engine->main_thread_id) return;
     if (m_isSensor == sensor) return;
     m_isSensor = sensor;
 
@@ -279,16 +288,19 @@ void Collider2D::SetSensor(bool sensor)
 
 void Collider2D::ApplyForce(float x, float y)
 {
+    if (std::this_thread::get_id() != engine->main_thread_id) return;
     m_body->ApplyForceToCenter(b2Vec2(x, y), true);
 }
 
 void Collider2D::SetVelocity(float x, float y)
 {
+    if (std::this_thread::get_id() != engine->main_thread_id) return;
     m_body->SetLinearVelocity(b2Vec2(x, y));
 }
 
 vec2f Collider2D::GetVelocity()
 {
+    if (std::this_thread::get_id() != engine->main_thread_id) return { 0,0 };
     if (!m_body) RecreateBody();
     return { m_body->GetLinearVelocity().x, m_body->GetLinearVelocity().y };
 }
@@ -437,16 +449,15 @@ void Collider2D::LoadComponent(const nlohmann::json& componentJSON)
         m_color.a = componentJSON["Color"]["A"];
     }
 
+    if (std::this_thread::get_id() != engine->main_thread_id) return;
     if (m_body)
     {
-        WaitUntilSafe();
         if (PhysicsEM::GetWorld())
             PhysicsEM::GetWorld()->DestroyBody(m_body);
         m_body = nullptr;
     }
     //
     RecreateBody();
-    WaitUntilSafe();
     m_body->SetEnabled(false);
 
     SetSensor(m_isSensor);
@@ -455,6 +466,7 @@ void Collider2D::LoadComponent(const nlohmann::json& componentJSON)
 
 void Collider2D::SetLockRotation(bool lockRotation)
 {
+    if (std::this_thread::get_id() != engine->main_thread_id) return;
     m_lockRotation = lockRotation;
     if (m_body)
     {
@@ -464,6 +476,7 @@ void Collider2D::SetLockRotation(bool lockRotation)
 
 void Collider2D::SetFriction(float friction)
 {
+    if (std::this_thread::get_id() != engine->main_thread_id) return;
     m_friction = friction;
     if (m_body && m_body->GetFixtureList()) {
         m_body->GetFixtureList()->SetFriction(friction);
@@ -472,6 +485,7 @@ void Collider2D::SetFriction(float friction)
 
 void Collider2D::SetLinearDamping(float damping)
 {
+    if (std::this_thread::get_id() != engine->main_thread_id) return;
     m_linearDamping = damping;
     if (m_body) {
         m_body->SetLinearDamping(damping);
@@ -480,6 +494,7 @@ void Collider2D::SetLinearDamping(float damping)
 
 void Collider2D::SetMass(float mass)
 {
+    if (std::this_thread::get_id() != engine->main_thread_id) return;
     m_mass = mass;
     if (m_body && m_isDynamic) {
         float area = 0.0f;
@@ -499,6 +514,7 @@ void Collider2D::SetMass(float mass)
 
 void Collider2D::SetRestitution(float restitution)
 {
+    if (std::this_thread::get_id() != engine->main_thread_id) return;
     m_restitution = restitution;
     if (m_body) {
         b2Fixture* fixture = m_body->GetFixtureList();
@@ -512,6 +528,7 @@ void Collider2D::SetRestitution(float restitution)
 
 void Collider2D::SetUseGravity(bool useGravity)
 {
+    if (std::this_thread::get_id() != engine->main_thread_id) return;
     m_useGravity = useGravity;
     if (m_body) {
         m_body->SetGravityScale(m_useGravity ? 1.0f : 0.0f);
@@ -528,6 +545,7 @@ void Collider2D::SetEnabled(bool enable)
 
 void Collider2D::UpdateBodyActivation()
 {
+    if (std::this_thread::get_id() != engine->main_thread_id) return;
     if (!m_body) return;
 
     if (enabled)
@@ -545,6 +563,7 @@ void Collider2D::UpdateBodyActivation()
 
 void Collider2D::RecreateBody()
 {
+    if (std::this_thread::get_id() != engine->main_thread_id) return;
     b2BodyDef bodyDef;
     Transform* t = container_go.lock()->GetComponent<Transform>();
     bodyDef.type = m_isDynamic ? b2_dynamicBody : b2_staticBody;
@@ -557,7 +576,6 @@ void Collider2D::RecreateBody()
     bodyDef.gravityScale = m_useGravity ? 1.0f : 0.0f;
 
 
-    WaitUntilSafe();
     if (PhysicsEM::GetWorld())
         m_body = PhysicsEM::GetWorld()->CreateBody(&bodyDef);
 
@@ -566,6 +584,7 @@ void Collider2D::RecreateBody()
 
 void Collider2D::RecreateFixture()
 {
+    if (std::this_thread::get_id() != engine->main_thread_id) return;
     if (!m_body || !PhysicsEM::GetWorld()) return;
 
     while (m_body->GetFixtureList()) m_body->DestroyFixture(m_body->GetFixtureList());
@@ -604,24 +623,10 @@ void Collider2D::RecreateFixture()
     }
     fixtureDef.density = density;
 
-    WaitUntilSafe();
     b2Fixture* fixture = m_body->CreateFixture(&fixtureDef);
     fixture->GetUserData().pointer = reinterpret_cast<uintptr_t>(this);
 
     if (m_isDynamic) m_body->ResetMassData();
 
     delete shape;
-}
-
-void Collider2D::WaitUntilSafe()
-{
-    //if we process things while world is stepping it will crash
-    if (std::this_thread::get_id() != engine->main_thread_id ||
-        PhysicsEM::IsWorldStepping())
-    {
-        while (PhysicsEM::IsWorldStepping())
-        {
-            //wait untill world has finished stepping
-        }
-    }
 }
