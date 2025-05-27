@@ -247,7 +247,7 @@ bool ScriptingEM::CompileUserScripts()
         LOG(LogType::LOG_ERROR, "Error searching .cs files in directory");
     }
 
-    if (csFiles.empty()) return false;
+    if (csFiles.empty()) return true;
 
     std::string outputDll = fs::absolute(GetUserAssemblyPath()).string();
     std::string referenceDll = fs::absolute(GetAssemblyPath()).string();
