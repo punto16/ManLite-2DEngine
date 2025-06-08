@@ -1,5 +1,11 @@
 {
   "CurrentCamID": 365540813,
+  "background_color": [
+    102,
+    102,
+    102,
+    255
+  ],
   "game_objects": [
     {
       "Components": [

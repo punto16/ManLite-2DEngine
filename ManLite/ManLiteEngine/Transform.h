@@ -27,9 +27,9 @@ public:
 
     //getters // setters
     vec2f GetPosition() const { return position; }
-    void SetPosition(vec2f pos);
+    void SetPosition(vec2f pos, bool ignore_collider = false);
     float GetAngle() const { return angle_rotation; }
-    void SetAngle(float angle);
+    void SetAngle(float angle, bool ignore_collider = false);
     vec2f GetScale() const { return scale; }
     void SetScale(vec2f new_scale);
     bool IsAspectRatioLocked() const { return lock_aspect_ratio; }
@@ -45,9 +45,9 @@ public:
         vec2f pos = GetWorldPosition();
         return glm::vec3(pos.x, pos.y, 0.0f);
     }
-    void SetWorldPosition(vec2f pos);
+    void SetWorldPosition(vec2f pos, bool ignore_collider = false);
     float GetWorldAngle();
-    void SetWorldAngle(float angle);
+    void SetWorldAngle(float angle, bool ignore_collider = false);
     vec2f GetWorldScale();
     void SetWorldScale(vec2f scale);
 

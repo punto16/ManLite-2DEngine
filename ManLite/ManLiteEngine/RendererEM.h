@@ -162,7 +162,7 @@ public:
     void UseSceneViewCam();
     void UseGameViewCam();
     //
-    ML_Color GetBackGroundColor() const { return bg_color; }
+    ML_Color GetBackGroundColor() { return bg_color; }
     void SetBackGroundColor(ML_Color c) { bg_color = c; }
 
     void SetupDebugShapes();

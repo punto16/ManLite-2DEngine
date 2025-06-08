@@ -437,7 +437,9 @@ void PanelScene::DrawTopBarControls()
 		ImGuiColorEditFlags_NoLabel |
 		ImGuiColorEditFlags_NoTooltip);
 
-	engine->renderer_em->SetBackGroundColor({
+	Scene* scene = &engine->scene_manager_em->GetCurrentScene();
+
+	scene->SetBackGroundColor({
 		background_color.x * 255,
 		background_color.y * 255,
 		background_color.z * 255,
@@ -447,7 +449,7 @@ void PanelScene::DrawTopBarControls()
 	ImGui::SameLine();
 	if (ImGui::Button("Default"))
 	{
-		engine->renderer_em->SetBackGroundColor({
+		scene->SetBackGroundColor({
 			102,
 			102,
 			102,

@@ -66,23 +66,25 @@ void Transform::LoadComponent(const nlohmann::json& componentJSON)
     if (componentJSON.contains("AspectRatio")) aspect_ratio = componentJSON["AspectRatio"];
 }
 
-void Transform::SetPosition(vec2f pos)
+void Transform::SetPosition(vec2f pos, bool ignore_collider)
 {
     position = pos;
-    if (auto c = container_go.lock()->GetComponent<Collider2D>())
-    {
-        c->SetPosition(GetWorldPosition());
-    }
+    if (!ignore_collider)
+        if (auto c = container_go.lock()->GetComponent<Collider2D>())
+        {
+            c->SetPosition(GetWorldPosition());
+        }
 }
 
-void Transform::SetAngle(float angle)
+void Transform::SetAngle(float angle, bool ignore_collider)
 {
     angle_rotation = fmod(angle, 360.0f);
     if (angle_rotation < 0) angle_rotation += 360.0f;
-    if (auto c = container_go.lock()->GetComponent<Collider2D>())
-    {
-        c->SetAngle(GetWorldAngle());
-    }
+    if (!ignore_collider)
+        if (auto c = container_go.lock()->GetComponent<Collider2D>())
+        {
+            c->SetAngle(GetWorldAngle());
+        }
 }
 
 void Transform::SetScale(vec2f new_scale)
@@ -132,7 +134,7 @@ vec2f Transform::GetWorldPosition()
     return GetWorldMatrix().GetTranslation();
 }
 
-void Transform::SetWorldPosition(vec2f world_pos)
+void Transform::SetWorldPosition(vec2f world_pos, bool ignore_collider)
 {
     position = world_pos;
     if (auto go = container_go.lock()) {
@@ -143,10 +145,11 @@ void Transform::SetWorldPosition(vec2f world_pos)
             }
         }
     }
-    if (auto c = container_go.lock()->GetComponent<Collider2D>())
-    {
-        c->SetPosition(world_pos);
-    }
+    if (!ignore_collider)
+        if (auto c = container_go.lock()->GetComponent<Collider2D>())
+        {
+            c->SetPosition(world_pos);
+        }
 }
 
 float Transform::GetWorldAngle()
@@ -154,7 +157,7 @@ float Transform::GetWorldAngle()
     return GetWorldMatrix().GetRotation() * (180.0f / PI);
 }
 
-void Transform::SetWorldAngle(float world_angle)
+void Transform::SetWorldAngle(float world_angle, bool ignore_collider)
 {
     if (container_go.lock()->GetParentGO().lock().get())
     {
@@ -167,10 +170,11 @@ void Transform::SetWorldAngle(float world_angle)
     {
         SetAngle(world_angle);
     }
-    if (auto c = container_go.lock()->GetComponent<Collider2D>())
-    {
-        c->SetAngle(world_angle);
-    }
+    if (!ignore_collider)
+        if (auto c = container_go.lock()->GetComponent<Collider2D>())
+        {
+            c->SetAngle(world_angle);
+        }
 }
 
 vec2f Transform::GetWorldScale()

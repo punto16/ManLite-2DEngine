@@ -1,4 +1,10 @@
 {
+  "background_color": [
+    102,
+    102,
+    102,
+    255
+  ],
   "game_objects": [
     {
       "Components": [
@@ -72,7 +78,7 @@
           "LockRotation": false,
           "Mass": 0.0,
           "Radius": 0.5,
-          "Restitution": 0.0,
+          "Restitution": 1.0,
           "ShapeType": "RECTANGLE",
           "UseGravity": false,
           "Width": 1.0

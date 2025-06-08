@@ -3,6 +3,9 @@
 #pragma once
 
 #include "EngineModule.h"
+
+#include "Defs.h"
+
 #include <string>
 #include <memory>
 #include <vector>
@@ -98,6 +101,12 @@ public:
 	bool HasCameraSet() { return current_camera_go ? true : false; }
 	void SetCurrentCameraGO(std::shared_ptr<GameObject> new_cam_go) { this->current_camera_go = new_cam_go; }
 
+	ML_Color GetBackGroundColor();
+	void SetBackGroundColor(ML_Color c);
+
+	vec2f GetSceneGravity();
+	void SetSceneGravity(vec2f g);
+
 private:
 	std::string scene_name;
 	std::string scene_path;
@@ -120,6 +129,10 @@ private:
 
 	float prefab_check_timer = 0.0f;
 	float prefab_check_frequency = 1.5;
+
+	//
+	ML_Color bg_color = { 102, 102, 102, 255 };
+	vec2f world_gravity = { 0.0f, -9.81f };
 };
 
 class SceneManagerEM : public EngineModule

@@ -120,10 +120,10 @@ bool Collider2D::Update(float dt)
     t->SetWorldPosition({
     (position.x),
     (position.y)
-        });
+        }, true);
 
     if (!m_lockRotation)
-        t->SetWorldAngle(m_body->GetAngle() * RADTODEG);
+        t->SetWorldAngle(m_body->GetAngle() * RADTODEG, true);
 
     return true;
 }
@@ -586,9 +586,9 @@ void Collider2D::SetGravityScale(float gravity)
 vec2f Collider2D::GetWorldGravity()
 {
     if (std::this_thread::get_id() != engine->main_thread_id) return { 0.0f, 0.0f };
-    if (PhysicsEM::GetWorld())
+    if (engine->scene_manager_em->CurrentSceneAvailable())
     {
-        return { PhysicsEM::GetWorld()->GetGravity().x, PhysicsEM::GetWorld()->GetGravity().y };
+        return engine->scene_manager_em->GetCurrentScene().GetSceneGravity();
     }
     return { 0.0f, 0.0f };
 }
@@ -596,10 +596,9 @@ vec2f Collider2D::GetWorldGravity()
 void Collider2D::SetWorldGravity(vec2f g)
 {
     if (std::this_thread::get_id() != engine->main_thread_id) return;
-    if (PhysicsEM::GetWorld())
+    if (engine->scene_manager_em->CurrentSceneAvailable())
     {
-        b2Vec2 g2 = { g.x, g.y };
-        PhysicsEM::GetWorld()->SetGravity(g2);
+        engine->scene_manager_em->GetCurrentScene().SetSceneGravity(g);
     }
     return;
 }

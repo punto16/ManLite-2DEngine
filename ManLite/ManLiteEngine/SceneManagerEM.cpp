@@ -42,6 +42,11 @@ bool SceneManagerEM::Awake()
 	cam_go->AddComponent<Camera>();
 	current_scene->SetCurrentCameraGO(cam_go);
 
+	ML_Color bg_color = { 102, 102, 102, 255 };
+	vec2f world_gravity = { 0.0f, -9.81f };
+	current_scene->SetBackGroundColor(bg_color);
+	current_scene->SetSceneGravity(world_gravity);
+
 	return ret;
 }
 
@@ -648,6 +653,9 @@ Scene::Scene(const Scene& other)
 	: scene_name(other.scene_name),
 	scene_path(other.scene_path)
 {
+	SetBackGroundColor(other.bg_color);
+	SetSceneGravity(other.world_gravity);
+
 	this->scene_root = std::make_shared<GameObject>(other.scene_root->GetSharedPtr());
 	this->scene_root->Awake();
 	this->scene_root->SetID(other.scene_root->GetID());
@@ -1086,4 +1094,35 @@ void Scene::SetSceneName(std::string name)
 {
 	this->scene_name = name;
 	scene_root->SetName(name);
+}
+
+ML_Color Scene::GetBackGroundColor()
+{
+	bg_color = engine->renderer_em->GetBackGroundColor();
+	return bg_color;
+}
+
+void Scene::SetBackGroundColor(ML_Color c)
+{
+	bg_color = c;
+	engine->renderer_em->SetBackGroundColor(bg_color);
+}
+
+vec2f Scene::GetSceneGravity()
+{
+	if (std::this_thread::get_id() != engine->main_thread_id) return world_gravity;
+	if (PhysicsEM::GetWorld())
+		world_gravity = { PhysicsEM::GetWorld()->GetGravity().x, PhysicsEM::GetWorld()->GetGravity().y };
+
+	return world_gravity;
+}
+
+void Scene::SetSceneGravity(vec2f g)
+{
+	world_gravity = g;
+	if (std::this_thread::get_id() != engine->main_thread_id) return;
+	if (PhysicsEM::GetWorld())
+	{
+		PhysicsEM::GetWorld()->SetGravity({ world_gravity.x, world_gravity.y });
+	}
 }

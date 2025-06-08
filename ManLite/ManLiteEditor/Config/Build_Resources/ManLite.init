@@ -1,15 +1,14 @@
 {
-    "app_name": "_Samurai_Pong2",
+    "app_name": "___dynamic_collider_test1",
     "icon_path": "Config\\Icons\\build_icon.png",
     "scenes": {
         "included": [
-            "Assets/Scenes/Prefab_Scene_Test.mlscene",
-            "Assets/Scenes/Pong_Scene_test.mlscene"
+            "Assets/Scenes/Physics_Scene_Test.mlscene"
         ],
-        "main": "Assets/Scenes/Prefab_Scene_Test.mlscene"
+        "main": "Assets/Scenes/Physics_Scene_Test.mlscene"
     },
     "window": {
-        "fullscreen": true,
+        "fullscreen": false,
         "vsync": false
     }
 }

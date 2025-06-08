@@ -1,4 +1,10 @@
 {
+  "background_color": [
+    102,
+    102,
+    102,
+    255
+  ],
   "game_objects": [
     {
       "Components": [
@@ -33,6 +39,7 @@
           "ContainerGOID": 1347331140,
           "Enabled": true,
           "Friction": 0.30000001192092896,
+          "GravityScale": 1.0,
           "Height": 1.0,
           "IsDynamic": false,
           "IsSensor": false,
@@ -87,6 +94,7 @@
           "ContainerGOID": 3839558901,
           "Enabled": true,
           "Friction": 0.30000001192092896,
+          "GravityScale": 1.0,
           "Height": 1.0,
           "IsDynamic": false,
           "IsSensor": false,
@@ -141,6 +149,7 @@
           "ContainerGOID": 611948391,
           "Enabled": true,
           "Friction": 0.30000001192092896,
+          "GravityScale": 1.0,
           "Height": 3.450000047683716,
           "IsDynamic": true,
           "IsSensor": false,
@@ -159,6 +168,8 @@
           "ComponentType": 2,
           "ContainerGOID": 611948391,
           "Enabled": true,
+          "FlipHorizontal": false,
+          "FlipVertical": false,
           "Offset": [
             0.0,
             0.04699999839067459
@@ -218,6 +229,10 @@
       "layer_name": "DefaultLayer_0",
       "visible": true
     }
+  ],
+  "scene_gravity": [
+    0.0,
+    -9.8100004196167
   ],
   "scene_id": 4018205084,
   "scene_name": "Untitled_Scene",
