@@ -47,7 +47,8 @@ Collider2D::Collider2D(const Collider2D& component_to_copy, std::shared_ptr<Game
     m_linearDamping(component_to_copy.m_linearDamping),
     m_mass(component_to_copy.m_mass),
     m_restitution(component_to_copy.m_restitution),
-    m_useGravity(component_to_copy.m_useGravity)
+    m_useGravity(component_to_copy.m_useGravity),
+    m_gravity_scale(component_to_copy.m_gravity_scale)
 {
     if (std::this_thread::get_id() != engine->main_thread_id) return;
     RecreateBody();
@@ -212,11 +213,14 @@ void Collider2D::SetPosition(vec2f pos)
 
     m_body->SetTransform(new_pos, m_body->GetAngle());
 
-    bool was_enabled = IsEnabled();
-    if (was_enabled)
+    if (engine->GetEngineState() == EngineState::PLAY)
     {
-        SetEnabled(false);
-        SetEnabled(was_enabled);
+        bool was_enabled = IsEnabled();
+        if (was_enabled)
+        {
+            SetEnabled(false);
+            SetEnabled(was_enabled);
+        }
     }
 }
 
@@ -228,11 +232,14 @@ void Collider2D::SetAngle(float angle)
 
     m_body->SetTransform(m_body->GetPosition(), DEGTORAD * angle);
 
-    bool was_enabled = m_body->IsEnabled();
-    if (was_enabled)
+    if (engine->GetEngineState() == EngineState::PLAY)
     {
-        m_body->SetEnabled(false);
-        m_body->SetEnabled(was_enabled);
+        bool was_enabled = m_body->IsEnabled();
+        if (was_enabled)
+        {
+            m_body->SetEnabled(false);
+            m_body->SetEnabled(was_enabled);
+        }
     }
 }
 

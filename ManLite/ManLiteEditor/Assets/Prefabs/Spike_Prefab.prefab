@@ -1,0 +1,76 @@
+{
+    "Components": [
+        {
+            "AspectRatio": 1.0,
+            "ComponentName": "Transform",
+            "ComponentType": 0,
+            "Enabled": true,
+            "LockAspect": true,
+            "Position": [
+                0.0,
+                0.0
+            ],
+            "Rotation": 0.0,
+            "Scale": [
+                1.399999976158142,
+                1.399999976158142
+            ]
+        },
+        {
+            "ComponentName": "Sprite2D",
+            "ComponentType": 2,
+            "Enabled": true,
+            "FlipHorizontal": false,
+            "FlipVertical": false,
+            "Offset": [
+                -0.017000000923871994,
+                -0.07500000298023224
+            ],
+            "PixelArtRender": false,
+            "TexturePath": "Assets\\Textures\\spike.png",
+            "TextureSection": [
+                0,
+                0,
+                1280,
+                1280
+            ],
+            "TextureSize": [
+                1280,
+                1280
+            ],
+            "TextureUVs": [
+                0.0,
+                0.0,
+                1.0,
+                1.0
+            ]
+        },
+        {
+            "Color": {
+                "A": 255,
+                "B": 0,
+                "G": 0,
+                "R": 255
+            },
+            "ComponentName": "Collider2D",
+            "ComponentType": 5,
+            "Enabled": true,
+            "Friction": 0.30000001192092896,
+            "Height": 0.550000011920929,
+            "IsDynamic": false,
+            "IsSensor": true,
+            "LinearDamping": 0.0,
+            "LockRotation": false,
+            "Mass": 0.0,
+            "Radius": 0.5,
+            "Restitution": 0.0,
+            "ShapeType": "RECTANGLE",
+            "UseGravity": false,
+            "Width": 0.15000000596046448
+        }
+    ],
+    "Enabled": true,
+    "Name": "Spike",
+    "Tag": "Kill",
+    "Visible": true
+}

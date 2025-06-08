@@ -166,9 +166,8 @@ bool Emitter::Update(float dt)
 	const size_t num_active = active_copy.size();
 	std::atomic<size_t> current_idx(0);
 	std::vector<std::future<void>> futures;
-	const size_t num_threads = thread_pool.GetThreadCount(); // Asegúrate de implementar esto
+	const size_t num_threads = thread_pool.GetThreadCount();
 
-	// Dividir el trabajo en tareas
 	for (size_t t = 0; t < num_threads; ++t) {
 		futures.emplace_back(thread_pool.enqueue([&, dt]() {
 			std::vector<size_t> local_to_remove;
@@ -188,10 +187,8 @@ bool Emitter::Update(float dt)
 			}));
 	}
 
-	// Esperar a que todas las tareas terminen
 	for (auto& future : futures) future.wait();
 
-	// Procesar partículas terminadas
 	{
 		std::lock_guard<std::mutex> lock(pool_mutex);
 		for (auto idx : to_remove_global) {

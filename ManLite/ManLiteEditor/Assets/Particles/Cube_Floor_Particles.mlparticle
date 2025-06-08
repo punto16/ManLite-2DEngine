@@ -1,0 +1,118 @@
+[
+    {
+        "Characters": "",
+        "EmitterName": "main_particles",
+        "EmitterTypeManager": [
+            0,
+            [
+                false,
+                true,
+                false,
+                false,
+                false,
+                false,
+                false
+            ],
+            0
+        ],
+        "Enabled": true,
+        "FinalAngleSpeedMax": 0.0,
+        "FinalAngleSpeedMin": 0.0,
+        "FinalColorMax": [
+            255,
+            255,
+            255,
+            255
+        ],
+        "FinalColorMin": [
+            255,
+            255,
+            255,
+            255
+        ],
+        "FinalDirectionMax": [
+            -1.0,
+            -0.6000000238418579
+        ],
+        "FinalDirectionMin": [
+            -2.0,
+            -1.0
+        ],
+        "FinalPositionMax": [
+            0.0,
+            0.0
+        ],
+        "FinalPositionMin": [
+            0.0,
+            0.0
+        ],
+        "FinalScaleMax": [
+            0.20000000298023224,
+            0.20000000298023224
+        ],
+        "FinalScaleMin": [
+            0.20000000298023224,
+            0.20000000298023224
+        ],
+        "FinalSpeedMax": 1.0,
+        "FinalSpeedMin": 1.0,
+        "FontPath": "",
+        "InitAnglMax": 0.0,
+        "InitAnglMin": 0.0,
+        "InitAngleSpeedMax": 0.0,
+        "InitAngleSpeedMin": 0.0,
+        "InitColorMax": [
+            255,
+            255,
+            255,
+            255
+        ],
+        "InitColorMin": [
+            255,
+            255,
+            255,
+            133
+        ],
+        "InitDirectionMax": [
+            -1.0,
+            1.899999976158142
+        ],
+        "InitDirectionMin": [
+            -2.0,
+            1.0
+        ],
+        "InitPositionMax": [
+            -0.4000000059604645,
+            -0.5
+        ],
+        "InitPositionMin": [
+            -0.5,
+            -0.5
+        ],
+        "InitScaleMax": [
+            0.10000000149011612,
+            0.10000000149011612
+        ],
+        "InitScaleMin": [
+            0.10000000149011612,
+            0.10000000149011612
+        ],
+        "InitSpeedMax": 1.0,
+        "InitSpeedMin": 1.0,
+        "MaxParticles": 10000,
+        "ParticleDurationMax": 0.5,
+        "ParticleDurationMin": 0.20000000298023224,
+        "ParticlesPerSpawn": 2,
+        "PixelArt": false,
+        "SpawnRate": 0.10000000149011612,
+        "TexturePath": "",
+        "WindEffectMax": [
+            0.0,
+            0.0
+        ],
+        "WindEffectMin": [
+            0.0,
+            0.0
+        ]
+    }
+]

@@ -162,13 +162,13 @@ void Transform::SetWorldAngle(float world_angle, bool ignore_collider)
     if (container_go.lock()->GetParentGO().lock().get())
     {
         if (auto parent_transform = container_go.lock()->GetParentGO().lock()->GetComponent<Transform>())
-            SetAngle(world_angle - parent_transform->GetWorldAngle());
+            SetAngle(world_angle - parent_transform->GetWorldAngle(), ignore_collider);
         else
-            SetAngle(world_angle);
+            SetAngle(world_angle, ignore_collider);
     }
     else
     {
-        SetAngle(world_angle);
+        SetAngle(world_angle, ignore_collider);
     }
     if (!ignore_collider)
         if (auto c = container_go.lock()->GetComponent<Collider2D>())

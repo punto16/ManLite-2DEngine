@@ -1,4 +1,4 @@
-﻿using ManLiteScripting;
+using ManLiteScripting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,88 +8,129 @@ using System.Threading.Tasks;
 public class PlayerScript : MonoBehaviour
 {
     private bool jump_available = false;
+    private bool orb_jump_available = false;
 
+    private bool alive = true;
+    private float death_time = 2.0f; //2 seconds
+    private float death_timer = 0.0f;
+
+    private Vec2f spawn_pos;
+
+    //components
+
+    private Transform transform;
     private Collider2D collider;
-
-    private Light light;
+    private Particles friction_floor_particles;
+    private Audio level_music;
 
     public override void Start()
     {
-        collider = new Collider2D(attached_game_object);
-        light = new Light(attached_game_object);
+        spawn_pos = new Vec2f();
+        spawn_pos.X = 0;
+        spawn_pos.Y = 0;
 
-        ML_System.Log("Start PlayerScript");
-        ML_System.Log("Log Test | Int: {0}", 69);
-        ML_System.Log("Log Test | Float: {0}", 69.420f);
-        ML_System.Log("Log Test | String: {0}", "Kilo Niga");
-        ML_System.Log("Log Test | Bool: {0}", true);
+        transform = new Transform(attached_game_object);
+        collider = new Collider2D(attached_game_object);
+        friction_floor_particles = new Particles(attached_game_object);
+        level_music = new Audio(attached_game_object);
     }
 
     public override void Update()
     {
-        
         Vec2f speed = collider.GetSpeed();
-
-        if (Input.GetKeyboardKey(KeyboardKey.KEY_A) == KeyState.KEY_REPEAT)
+        if (!alive)
         {
-            ML_System.Log("PlayerScript Left");
+            speed.X = 0;
+            speed.Y = 0;
+            collider.SetSpeed(speed);
 
-            speed.X = -10;
+            death_timer = death_timer + ML_System.GetDT();
+            if (death_timer >= death_time)
+            {
+                death_timer = 0.0f;
+                alive = true;
+                level_music.PlayMusic("Polargeist");
+                transform.SetWorldPosition(spawn_pos);
+            }
+            return;
         }
-        if (Input.GetKeyboardKey(KeyboardKey.KEY_D) == KeyState.KEY_REPEAT)
+        else
         {
-            ML_System.Log("PlayerScript Right");
-
-            speed.X = 10;
-        }
-
-        if (jump_available && Input.GetKeyboardKey(KeyboardKey.KEY_SPACE) == KeyState.KEY_DOWN)
-        {
-            ML_System.Log("PlayerScript Jump");
-
-            speed.Y = 10;
-
-            jump_available = false;
+            death_timer = 0;
         }
 
-        if (Input.GetKeyboardKey(KeyboardKey.KEY_W) == KeyState.KEY_REPEAT)
+        speed.X = 7;
+
+        if (orb_jump_available)
         {
-            float intensity = light.GetIntensity();
-
-            intensity += 0.01f;
-
-            light.SetIntensity(intensity);
+            if (Input.GetKeyboardKey(KeyboardKey.KEY_SPACE) == KeyState.KEY_DOWN)
+            {
+                speed.Y = 11.2f;
+            }
+            if (Input.GetMouseButton(MouseButton.MOUSE_BUTTON_LEFT) == KeyState.KEY_DOWN)
+            {
+                speed.Y = 11.2f;
+            }
         }
-        if (Input.GetKeyboardKey(KeyboardKey.KEY_S) == KeyState.KEY_REPEAT)
+        else if (jump_available)
         {
-            float intensity = light.GetIntensity();
-
-            intensity -= 0.01f;
-
-            light.SetIntensity(intensity);
+            if (Input.GetKeyboardKey(KeyboardKey.KEY_SPACE) == KeyState.KEY_REPEAT)
+            {
+                speed.Y = 11.2f;
+            }
+            if (Input.GetMouseButton(MouseButton.MOUSE_BUTTON_LEFT) == KeyState.KEY_REPEAT)
+            {
+                speed.Y = 11.2f;
+            }
         }
 
         collider.SetSpeed(speed);
+
     }
 
     public override void OnTriggerCollision(IGameObject other)
     {
-        ML_System.Log("Collision IN");
+        if (other.tag == "block")
+        {
+            jump_available = true;
+            friction_floor_particles.Play();
+	    ML_System.Log("Collision with block now");
+        }
     }
     public override void OnTriggerSensor(IGameObject other)
     {
-        ML_System.Log("Sensor IN");
-
-        jump_available = true;
+        if (other.tag == "Kill" || other.tag == "block_left")
+        {
+            //die
+            alive = false;
+            level_music.StopMusic("Polargeist");
+	    ML_System.Log("Player Killed");
+        }
+        if (other.tag == "yellow_orb")
+        {
+            orb_jump_available = true;
+        }
+        if (other.tag == "yellow_pad")
+        {
+            Vec2f speed = collider.GetSpeed();
+            speed.Y = 15;
+            collider.SetSpeed(speed);
+        }
     }
     public override void OnExitCollision(IGameObject other)
     {
-        ML_System.Log("Collision OUT");
+        if (other.tag == "block")
+        {
+            jump_available = false;
+            friction_floor_particles.Stop();
+	    ML_System.Log("END Collision with block now");
+        }
     }
     public override void OnExitSensor(IGameObject other)
     {
-        ML_System.Log("Sensor OUT");
-
-        jump_available = false;
+        if (other.tag == "yellow_orb")
+        {
+            orb_jump_available = false;
+        }
     }
 }
