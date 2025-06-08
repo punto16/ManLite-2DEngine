@@ -135,8 +135,8 @@ private:
     std::atomic<bool> textureLoading{ false };
 
     int min_value = 0;
-    int current_value = 0;
-    int max_value = 0;
+    int current_value = 10;
+    int max_value = 10;
 
     float element_width = 0.0f;
     float element_height = 0.0f;

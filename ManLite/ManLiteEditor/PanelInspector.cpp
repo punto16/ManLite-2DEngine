@@ -29,6 +29,9 @@
 #include "Script.h"
 #include "Prefab.h"
 #include "Light.h"
+#include "FilesManager.h"
+#include "PanelProject.h"
+#include "ScriptingEM.h"
 
 #include "ResourceManager.h"
 
@@ -201,10 +204,9 @@ void PanelInspector::PrefabOptions(GameObject& go)
 	ImGui::PushStyleColor(ImGuiCol_Button, IM_COL32(0, 255, 0, 100));
 	if (ImGui::Button("Overwrite Prefab", ImVec2(buttonWidth, 0)))
 	{
-		Prefab::SaveAsPrefab(go.GetSharedPtr(), go.GetPrefabPath());
-		nlohmann::json newOriginal = go.SaveGameObject();
-		Prefab::RemoveIDs(newOriginal);
-		go.GetPrefabOriginalData() = newOriginal;
+		nlohmann::json prefab_data;
+		Prefab::SaveAsPrefab(go.GetSharedPtr(), go.GetPrefabPath(), prefab_data);
+		go.GetPrefabOriginalData() = prefab_data;
 		go.SetPrefabModified(false);
 	}
 	ImGui::PopStyleColor();
@@ -266,16 +268,16 @@ void PanelInspector::TransformOptions(GameObject& go)
 					{
 						float pos_x = transform->GetPosition().x;
 						std::string pos_x_label = std::string("x##position_x" + std::to_string(go.GetID()));
-						ImGui::DragFloat(pos_x_label.c_str(), &pos_x, 0.05f);
-						transform->SetPosition(vec2f(pos_x, transform->GetPosition().y));
+						if (ImGui::DragFloat(pos_x_label.c_str(), &pos_x, 0.05f))
+							transform->SetPosition(vec2f(pos_x, transform->GetPosition().y));
 						ImGui::Separator();
 					}
 					else if (column == 1 && row == 1)
 					{
 						float angle = transform->GetAngle();
 						std::string angle_label = std::string("##angle_degree" + std::to_string(go.GetID()));
-						ImGui::DragFloat(angle_label.c_str(), &angle, 0.2f);
-						transform->SetAngle(angle);
+						if (ImGui::DragFloat(angle_label.c_str(), &angle, 0.2f))
+							transform->SetAngle(angle);
 						ImGui::Separator();
 					}
 					else if (column == 1 && row == 2)
@@ -291,8 +293,8 @@ void PanelInspector::TransformOptions(GameObject& go)
 					{
 						float pos_y = transform->GetPosition().y;
 						std::string pos_y_label = std::string("y##position_y" + std::to_string(go.GetID()));
-						ImGui::DragFloat(pos_y_label.c_str(), &pos_y, 0.05f);
-						transform->SetPosition(vec2f(transform->GetPosition().x, pos_y));
+						if (ImGui::DragFloat(pos_y_label.c_str(), &pos_y, 0.05f))
+							transform->SetPosition(vec2f(transform->GetPosition().x, pos_y));
 						ImGui::Separator();
 					}
 					else if (column == 2 && row == 1)
@@ -336,6 +338,11 @@ void PanelInspector::CameraOptions(GameObject& go)
 	if (cam == nullptr) return;
 	std::string camLabel = std::string("Camera##" + std::to_string(go.GetID()));
 
+	bool camera_enable = cam->IsEnabled();
+	if (ImGui::Checkbox("##CameraEnable", &camera_enable))
+		cam->SetEnabled(camera_enable);
+
+	ImGui::SameLine();
 	bool header_open = ImGui::CollapsingHeader(camLabel.c_str(), treeFlags);
 
 	if (ImGui::BeginPopupContextItem())
@@ -380,6 +387,11 @@ void PanelInspector::SpriteOptions(GameObject& go)
 
 	const std::string headerLabel = "Sprite2D##" + std::to_string(go.GetID());
 
+	bool component_enable = sprite->IsEnabled();
+	if (ImGui::Checkbox("##SpriteEnable", &component_enable))
+		sprite->SetEnabled(component_enable);
+
+	ImGui::SameLine();
 	bool header_open = ImGui::CollapsingHeader(headerLabel.c_str(), treeFlags);
 
 	if (ImGui::BeginPopupContextItem())
@@ -547,6 +559,11 @@ void PanelInspector::AnimatorOptions(GameObject& go)
 	std::string animatorLabel = std::string("Animator##" + std::to_string(go.GetID()));
 
 	ImGui::BeginGroup();
+	bool component_enable = animator->IsEnabled();
+	if (ImGui::Checkbox("##AnimatorEnable", &component_enable))
+		animator->SetEnabled(component_enable);
+
+	ImGui::SameLine();
 	bool header_open = ImGui::CollapsingHeader(animatorLabel.c_str(), treeFlags);
 
 	if (ImGui::BeginPopupContextItem())
@@ -774,6 +791,11 @@ void PanelInspector::AudioSourceOptions(GameObject& go)
 
 	const std::string headerLabel = "Audio Source##" + std::to_string(go.GetID());
 	ImGui::BeginGroup();
+	bool component_enable = audio->IsEnabled();
+	if (ImGui::Checkbox("##AudioEnable", &component_enable))
+		audio->SetEnabled(component_enable);
+
+	ImGui::SameLine();
 	bool header_open = ImGui::CollapsingHeader(headerLabel.c_str(), treeFlags);
 
 	if (ImGui::BeginPopupContextItem())
@@ -1050,6 +1072,11 @@ void PanelInspector::Collider2DOptions(GameObject& go)
 	if (collider2d == nullptr) return;
 	std::string collider2dLabel = std::string("Collider2D##" + std::to_string(go.GetID()));
 
+	bool component_enable = collider2d->IsEnabled();
+	if (ImGui::Checkbox("##ColliderEnable", &component_enable))
+		collider2d->SetEnabled(component_enable);
+
+	ImGui::SameLine();
 	bool header_open = ImGui::CollapsingHeader(collider2dLabel.c_str(), treeFlags);
 
 	if (ImGui::BeginPopupContextItem())
@@ -1193,6 +1220,17 @@ void PanelInspector::Collider2DOptions(GameObject& go)
 
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0);
+			ImGui::Text("Gravity Scale");
+			ImGui::TableSetColumnIndex(1);
+
+			float gravityScale = collider2d->GetGravityScale();
+			if (ImGui::DragFloat("##GravityScale", &gravityScale, 0.01f, -10.0f, 10.0f, "%.2f"))
+			{
+				collider2d->SetGravityScale(gravityScale);
+			}
+
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0);
 			ImGui::Text("Dimensions");
 			ImGui::TableSetColumnIndex(1);
 
@@ -1214,6 +1252,25 @@ void PanelInspector::Collider2DOptions(GameObject& go)
 				}
 			}
 
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0);
+			ImGui::Text("World Gravity");
+			ImGui::SameLine();
+			Gui::HelpMarker("Global Gravity, it will affect every physic body in the scene");
+			ImGui::TableSetColumnIndex(1);
+
+			vec2f worldGravity = collider2d->GetWorldGravity();
+			float gravityArr[2] = { worldGravity.x, worldGravity.y };
+			if (ImGui::DragFloat2("##WorldGravity", gravityArr, 0.1f, -50.0f, 50.0f, "%.2f"))
+			{
+				collider2d->SetWorldGravity({ gravityArr[0], gravityArr[1] });
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("Set Default"))
+			{
+				collider2d->SetWorldGravity({ 0.0f, -9.81f });
+			}
+
 			ImGui::EndTable();
 		}
 		ImGui::Dummy(ImVec2(0, 4));
@@ -1228,6 +1285,11 @@ void PanelInspector::CanvasOptions(GameObject& go)
 	if (canvas == nullptr) return;
 	std::string canvasLabel = std::string("Canvas##" + std::to_string(go.GetID()));
 
+	bool component_enable = canvas->IsEnabled();
+	if (ImGui::Checkbox("##CanvasEnable", &component_enable))
+		canvas->SetEnabled(component_enable);
+
+	ImGui::SameLine();
 	bool header_open = ImGui::CollapsingHeader(canvasLabel.c_str(), treeFlags);
 
 	if (ImGui::BeginPopupContextItem())
@@ -1862,6 +1924,12 @@ void PanelInspector::ParticleSystemOptions(GameObject& go)
 	std::string psystemLabel = std::string("Particle System##" + std::to_string(go.GetID()));
 
 	ImGui::BeginGroup();
+
+	bool component_enable = psystem->IsEnabled();
+	if (ImGui::Checkbox("##ParticleSystemEnable", &component_enable))
+		psystem->SetEnabled(component_enable);
+
+	ImGui::SameLine();
 	bool header_open = ImGui::CollapsingHeader(psystemLabel.c_str(), treeFlags);
 
 	if (ImGui::BeginPopupContextItem()) {
@@ -2360,6 +2428,12 @@ void PanelInspector::TileMapOptions(GameObject& go)
 	TileMap* tilemap = go.GetComponent<TileMap>();
 	if (tilemap == nullptr) return;
 	std::string tilemapLabel = std::string("TileMap##" + std::to_string(go.GetID()));
+
+	bool component_enable = tilemap->IsEnabled();
+	if (ImGui::Checkbox("##TileMapEnable", &component_enable))
+		tilemap->SetEnabled(component_enable);
+
+	ImGui::SameLine();
 	bool header_open = ImGui::CollapsingHeader(tilemapLabel.c_str(), treeFlags);
 
 	if (ImGui::BeginPopupContextItem())
@@ -2514,6 +2588,13 @@ void PanelInspector::ScriptsOptions(GameObject& go)
 		ImGui::PushID(script->GetID());
 
 		std::string scriptLabel = "Script: " + script->GetName() + "##" + std::to_string(script->GetID());
+
+		bool component_enable = script->IsEnabled();
+		std::string enable_label = "##ScriptEnable" + script->GetName() + std::to_string(script->GetID());
+		if (ImGui::Checkbox(enable_label.c_str(), &component_enable))
+			script->SetEnabled(component_enable);
+
+		ImGui::SameLine();
 		bool headerOpen = ImGui::CollapsingHeader(scriptLabel.c_str(), ImGuiTreeNodeFlags_DefaultOpen);
 
 		if (ImGui::BeginPopupContextItem())
@@ -2652,6 +2733,11 @@ void PanelInspector::LightOptions(GameObject& go)
 	if (light == nullptr) return;
 	std::string camLabel = std::string("Light##" + std::to_string(go.GetID()));
 
+	bool component_enable = light->IsEnabled();
+	if (ImGui::Checkbox("##LightEnable", &component_enable))
+		light->SetEnabled(component_enable);
+
+	ImGui::SameLine();
 	bool header_open = ImGui::CollapsingHeader(camLabel.c_str(), treeFlags);
 
 	if (ImGui::BeginPopupContextItem())
@@ -2669,7 +2755,7 @@ void PanelInspector::LightOptions(GameObject& go)
 	if (header_open)
 	{
 		int currentType = static_cast<int>(light->GetType());
-		const char* lightTypes[] = { "Area Light", "Point Light", "Ray Light" };
+		const char* lightTypes[] = { "Area Light", "Point Light", "Spot Light" };
 
 		ImGui::Dummy(ImVec2(0, 4));
 		std::string generic_unique_label = std::string("Light Type##" + std::to_string(go.GetID()));
@@ -2763,7 +2849,7 @@ void PanelInspector::LightOptions(GameObject& go)
 void PanelInspector::AddComponent(GameObject& go)
 {
 	const ImVec2 button_size_default = ImVec2(150, 0);
-	const ImVec2 panel_size_default = ImVec2(200, 232);
+	const ImVec2 panel_size_default = ImVec2(200, 256);
 	ImGui::Dummy(ImVec2(0, 10));
 	ImGui::Dummy(ImVec2((ImGui::GetWindowWidth() - button_size_default.x - 30) * 0.5, 0));
 	ImGui::SameLine();
@@ -2873,12 +2959,60 @@ void PanelInspector::AddComponent(GameObject& go)
 			show_component_window = false;
 		}
 
-		if (ImGui::Selectable("Script"))
+		if (ImGui::Selectable("Add Script"))
 		{
 			std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Open ManLite Script file (*.cs)\0*.cs\0", "Assets\\Scripts")).string();
 			if (!filePath.empty() && filePath.ends_with(".cs"))
 			{
 				std::string script_name = std::filesystem::path(filePath).stem().string();
+				go.AddComponent<Script>(script_name);
+			}
+			show_component_window = false;
+		}
+
+		if (ImGui::Selectable("Create Script"))
+		{
+			std::string filePath = std::filesystem::relative(FileDialog::SaveFile("Save ManLite Script file (*.cs)\0*.cs\0", "Assets\\Scripts")).string();
+			if (!filePath.empty())
+			{
+				if (!filePath.ends_with(".cs")) filePath += ".cs";
+
+				std::filesystem::path fullPath(filePath);
+				std::string script_name = fullPath.stem().string();
+				std::string directory = fullPath.parent_path().string();
+
+				std::replace(script_name.begin(), script_name.end(), ' ', '_');
+
+				script_name.erase(std::remove_if(script_name.begin(), script_name.end(),
+					[](char c) { return !std::isalnum(c) && c != '_'; }),
+					script_name.end());
+
+				if (!script_name.empty() && std::isdigit(static_cast<unsigned char>(script_name[0])))
+				{
+					size_t first_non_digit = 0;
+					while (first_non_digit < script_name.size() &&
+						std::isdigit(static_cast<unsigned char>(script_name[first_non_digit])))
+					{
+						first_non_digit++;
+					}
+
+					if (first_non_digit < script_name.size()) {
+						script_name = script_name.substr(first_non_digit);
+					}
+					else
+					{
+						script_name = "Script_" + script_name;
+					}
+				}
+
+				if (script_name.empty()) {
+					script_name = "NewScript";
+				}
+
+				if (!directory.empty() && directory.back() != std::filesystem::path::preferred_separator)
+					directory += std::filesystem::path::preferred_separator;
+
+				engine->scripting_em->CreateScriptFile(script_name, directory);
 				go.AddComponent<Script>(script_name);
 			}
 			show_component_window = false;

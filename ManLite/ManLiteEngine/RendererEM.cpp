@@ -325,7 +325,12 @@ bool RendererEM::PreUpdate()
 	}
 	glViewport(0, 0, w, h);
 
-	glClearColor(0.4f, 0.4f, 0.4f, 1.0f);
+	glClearColor(
+		(float)((float)bg_color.r / 255),
+		(float)((float)bg_color.g / 255),
+		(float)((float)bg_color.b / 255),
+		(float)((float)bg_color.a / 255));
+
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	return true;

@@ -30,20 +30,20 @@ public class PlayerScript : MonoBehaviour
         
         Vec2f speed = collider.GetSpeed();
 
-        if (Input.GetKeyboardKey(KeyboardKey.SDL_SCANCODE_A) == KeyState.KEY_REPEAT)
+        if (Input.GetKeyboardKey(KeyboardKey.KEY_A) == KeyState.KEY_REPEAT)
         {
             ML_System.Log("PlayerScript Left");
 
             speed.X = -10;
         }
-        if (Input.GetKeyboardKey(KeyboardKey.SDL_SCANCODE_D) == KeyState.KEY_REPEAT)
+        if (Input.GetKeyboardKey(KeyboardKey.KEY_D) == KeyState.KEY_REPEAT)
         {
             ML_System.Log("PlayerScript Right");
 
             speed.X = 10;
         }
 
-        if (jump_available && Input.GetKeyboardKey(KeyboardKey.SDL_SCANCODE_SPACE) == KeyState.KEY_DOWN)
+        if (jump_available && Input.GetKeyboardKey(KeyboardKey.KEY_SPACE) == KeyState.KEY_DOWN)
         {
             ML_System.Log("PlayerScript Jump");
 
@@ -52,7 +52,7 @@ public class PlayerScript : MonoBehaviour
             jump_available = false;
         }
 
-        if (Input.GetKeyboardKey(KeyboardKey.SDL_SCANCODE_W) == KeyState.KEY_REPEAT)
+        if (Input.GetKeyboardKey(KeyboardKey.KEY_W) == KeyState.KEY_REPEAT)
         {
             float intensity = light.GetIntensity();
 
@@ -60,7 +60,7 @@ public class PlayerScript : MonoBehaviour
 
             light.SetIntensity(intensity);
         }
-        if (Input.GetKeyboardKey(KeyboardKey.SDL_SCANCODE_S) == KeyState.KEY_REPEAT)
+        if (Input.GetKeyboardKey(KeyboardKey.KEY_S) == KeyState.KEY_REPEAT)
         {
             float intensity = light.GetIntensity();
 

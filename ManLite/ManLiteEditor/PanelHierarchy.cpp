@@ -9,6 +9,14 @@
 #include "ManLiteEngine/TileMap.h"
 #include "ManLiteEngine/Prefab.h"
 #include "ManLiteEngine/FileDialog.h"
+#include "ManLiteEngine/Light.h"
+#include "ManLiteEngine/Sprite2D.h"
+#include "ManLiteEngine/AudioSource.h"
+#include "ManLiteEngine/ParticleSystem.h"
+#include "ManLiteEngine/Collider2D.h"
+#include "ManLiteEngine/Camera.h"
+#include "ManLiteEngine/Script.h"
+#include "ManLiteEngine/Canvas.h"
 
 #include "Defs.h"
 #include "algorithm"
@@ -188,10 +196,138 @@ void PanelHierarchy::BlankContext(GameObject& parent)
 {
 	if (ImGui::BeginPopupContextWindow())
 	{
+		// Create Empty
 		if (ImGui::MenuItem("Create Empty"))
 		{
-			engine->scene_manager_em->GetCurrentScene().SelectGameObject(engine->scene_manager_em->GetCurrentScene().CreateEmptyGO(parent));
+			auto newGO = engine->scene_manager_em->GetCurrentScene().CreateEmptyGO(parent);
+			engine->scene_manager_em->GetCurrentScene().SelectGameObject(newGO);
 		}
+
+		ImGui::Separator();
+
+		// Camera
+		if (ImGui::MenuItem("Create Camera"))
+		{
+			auto newGO = engine->scene_manager_em->GetCurrentScene().CreateEmptyGO(parent);
+			newGO->SetName("Camera");
+			newGO->AddComponent<Camera>();
+			engine->scene_manager_em->GetCurrentScene().SelectGameObject(newGO);
+		}
+
+		// Collider 2D
+		if (ImGui::MenuItem("Create Collider2D"))
+		{
+			auto newGO = engine->scene_manager_em->GetCurrentScene().CreateEmptyGO(parent);
+			newGO->SetName("Collider2D");
+			newGO->AddComponent<Collider2D>();
+			engine->scene_manager_em->GetCurrentScene().SelectGameObject(newGO);
+		}
+
+		// Script
+		if (ImGui::MenuItem("Create Script"))
+		{
+			std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Open ManLite Script file (*.cs)\0*.cs\0", "Assets\\Scripts")).string();
+			if (!filePath.empty() && filePath.ends_with(".cs"))
+			{
+				auto newGO = engine->scene_manager_em->GetCurrentScene().CreateEmptyGO(parent);
+				newGO->SetName("Script");
+				std::filesystem::path fullPath(filePath);
+				std::string script_name = fullPath.stem().string();
+				newGO->AddComponent<Script>(script_name);
+				engine->scene_manager_em->GetCurrentScene().SelectGameObject(newGO);
+			}
+		}
+
+		ImGui::Separator();
+
+		// Canvas
+		if (ImGui::MenuItem("Create Canvas"))
+		{
+			auto newGO = engine->scene_manager_em->GetCurrentScene().CreateEmptyGO(parent);
+			newGO->SetName("Canvas");
+			newGO->AddComponent<Canvas>();
+			engine->scene_manager_em->GetCurrentScene().SelectGameObject(newGO);
+		}
+
+		ImGui::Separator();
+
+		// Particle System
+		if (ImGui::MenuItem("Create Particle System"))
+		{
+			auto newGO = engine->scene_manager_em->GetCurrentScene().CreateEmptyGO(parent);
+			newGO->SetName("ParticleSystem");
+			newGO->AddComponent<ParticleSystem>();
+			engine->scene_manager_em->GetCurrentScene().SelectGameObject(newGO);
+		}
+
+		ImGui::Separator();
+
+		// Audio Source
+		if (ImGui::MenuItem("Create Audio Source"))
+		{
+			auto newGO = engine->scene_manager_em->GetCurrentScene().CreateEmptyGO(parent);
+			newGO->SetName("AudioSource");
+			newGO->AddComponent<AudioSource>();
+			engine->scene_manager_em->GetCurrentScene().SelectGameObject(newGO);
+		}
+
+		ImGui::Separator();
+
+		// Sprite
+		if (ImGui::MenuItem("Create Sprite"))
+		{
+			std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Open Sprite file (*.png)\0*.png\0", "Assets\\Textures")).string();
+			if (!filePath.empty() && filePath.ends_with(".png"))
+			{
+				auto newGO = engine->scene_manager_em->GetCurrentScene().CreateEmptyGO(parent);
+				newGO->SetName("Sprite");
+				newGO->AddComponent<Sprite2D>(filePath);
+				engine->scene_manager_em->GetCurrentScene().SelectGameObject(newGO);
+			}
+		}
+
+		// TileMap
+		if (ImGui::MenuItem("Create TileMap"))
+		{
+			std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Open TileSet (*.png)\0*.png\0", "Assets\\TileMaps")).string();
+			if (!filePath.empty() && filePath.ends_with(".png"))
+			{
+				auto newGO = engine->scene_manager_em->GetCurrentScene().CreateEmptyGO(parent);
+				newGO->SetName("TileMap");
+				newGO->AddComponent<TileMap>();
+				newGO->GetComponent<TileMap>()->SwapTexture(filePath);
+				engine->scene_manager_em->GetCurrentScene().SelectGameObject(newGO);
+			}
+		}
+
+		ImGui::Separator();
+
+		// Lights
+		if (ImGui::MenuItem("Ambient Light"))
+		{
+			auto newGO = engine->scene_manager_em->GetCurrentScene().CreateEmptyGO(parent);
+			newGO->SetName("AmbientLight");
+			newGO->AddComponent<Light>();
+			newGO->GetComponent<Light>()->SetType(LightType::AREA_LIGHT);
+			engine->scene_manager_em->GetCurrentScene().SelectGameObject(newGO);
+		}
+		if (ImGui::MenuItem("Point Light"))
+		{
+			auto newGO = engine->scene_manager_em->GetCurrentScene().CreateEmptyGO(parent);
+			newGO->SetName("PointLight");
+			newGO->AddComponent<Light>();
+			newGO->GetComponent<Light>()->SetType(LightType::POINT_LIGHT);
+			engine->scene_manager_em->GetCurrentScene().SelectGameObject(newGO);
+		}
+		if (ImGui::MenuItem("Spot Light"))
+		{
+			auto newGO = engine->scene_manager_em->GetCurrentScene().CreateEmptyGO(parent);
+			newGO->SetName("SpotLight");
+			newGO->AddComponent<Light>();
+			newGO->GetComponent<Light>()->SetType(LightType::RAY_LIGHT);
+			engine->scene_manager_em->GetCurrentScene().SelectGameObject(newGO);
+		}
+
 		ImGui::EndPopup();
 	}
 }
@@ -204,7 +340,7 @@ void PanelHierarchy::Context(GameObject& parent)
 		const auto& selected = scene.GetSelectedGOs();
 		int selectedCount = selected.size();
 
-		if (selectedCount > 1 && !IsSelected(parent.GetSharedPtr()))
+		if (selectedCount > 1 && IsSelected(parent.GetSharedPtr()))
 		{
 			if (ImGui::MenuItem(("Duplicate (" + std::to_string(selectedCount) + ")").c_str()))
 			{
@@ -260,6 +396,7 @@ void PanelHierarchy::Context(GameObject& parent)
 						app->gui->tile_map_panel->SetMap(nullptr);
 				}
 				parent.Delete();
+				scene.UnselectAll();
 			}
 			if (ImGui::MenuItem("Create Empty"))
 			{
@@ -284,10 +421,9 @@ void PanelHierarchy::Context(GameObject& parent)
 
 				if (ImGui::MenuItem("Overwrite Prefab"))
 				{
-					Prefab::SaveAsPrefab(parent.GetSharedPtr(), parent.GetPrefabPath());
-					nlohmann::json newOriginalData = parent.SaveGameObject();
-					Prefab::RemoveIDs(newOriginalData);
-					parent.GetPrefabOriginalData() = newOriginalData;
+					nlohmann::json prefab_data;
+					Prefab::SaveAsPrefab(parent.GetSharedPtr(), parent.GetPrefabPath(), prefab_data);
+					parent.GetPrefabOriginalData() = prefab_data;
 					parent.SetPrefabModified(false);
 				}
 
@@ -307,11 +443,16 @@ void PanelHierarchy::Context(GameObject& parent)
 					{
 						std::string stem_name = std::filesystem::path(filePath).stem().string();
 
+						nlohmann::json prefab_data;
 						if (!filePath.ends_with(".prefab")) filePath += ".prefab";
-						if (Prefab::SaveAsPrefab(parent.GetSharedPtr(), filePath))
+						if (Prefab::SaveAsPrefab(parent.GetSharedPtr(), filePath, prefab_data))
 						{
 							parent.SetPrefabPath(filePath);
-							LOG(LogType::LOG_OK, "Prefab file saved to: %s", filePath.c_str());
+							if (!parent.GetPrefabPath().empty())
+							{
+								parent.GetPrefabOriginalData() = prefab_data;
+								LOG(LogType::LOG_OK, "Prefab file saved to: %s", filePath.c_str());
+							}
 						}
 					}
 				}
@@ -404,7 +545,10 @@ void PanelHierarchy::GameObjectSelection(GameObject& go)
 
 		if (ImGui::GetIO().KeyCtrl)
 		{
-			scene.SelectGameObject(itemShared, true);
+			if (IsSelected(itemShared))
+				scene.DeselectGameObject(itemShared);
+			else
+				scene.SelectGameObject(itemShared, true);
 		}
 		else if (ImGui::GetIO().KeyShift)
 		{

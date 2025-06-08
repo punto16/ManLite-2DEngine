@@ -5,6 +5,8 @@
 #include "../ManLiteEngine/EngineCore.h"
 #include "../ManLiteEngine/Defs.h"
 #include "../ManLiteEngine/WindowEM.h"
+#include "../ManLiteEngine/SceneManagerEM.h"
+#include "../ManLiteEngine/InputEM.h"	
 
 EngineCore* engine = NULL;
 
@@ -46,7 +48,6 @@ bool App::Awake()
 	targetFrameDuration = (std::chrono::duration<double>)1 / frameRate;
 	title = TITLE;
 	organization = ORGANIZATION;
-
 
 	engine->Awake();
 	for (auto& item : modules)
@@ -99,6 +100,26 @@ void App::PrepareUpdate()
 bool App::PreUpdate()
 {
 	bool ret = true;
+
+	//use idling
+	if (engine->GetEngineState() != EngineState::PLAY)
+	{
+		if (engine->input_em->GetWindowEvent(EventWindow::WindowEvent_Show))
+		{
+			idling = false;
+			targetFrameDuration = (std::chrono::duration<double>)1 / frameRate;
+		}
+		else if (engine->input_em->GetWindowEvent(EventWindow::WindowEvent_Hide))
+		{
+			idling = true;
+			targetFrameDuration = (std::chrono::duration<double>)1 / 10;
+		}
+	}
+	else
+	{
+		idling = false;
+		targetFrameDuration = (std::chrono::duration<double>)1 / frameRate;
+	}
 
 	if (!engine->PreUpdate()) return false;
 
@@ -164,7 +185,20 @@ void App::FinishUpdate()
 		frameCount = 0;
 		dtCount = 0;
 	}
-	engine->window_em->SetTitle(std::string(TITLE) + " | FPS: " + std::to_string(fps));
+	std::string new_title = std::string(TITLE) + " | FPS: " + std::to_string(fps);
+	if (idling) new_title += " (idling)";
+	if (engine->scene_manager_em->CurrentSceneAvailable())
+	{
+		if (engine->scene_manager_em->GetCurrentScene().GetScenePath().empty())
+			new_title += " | Editing Unsaved Scene \"" +
+			engine->scene_manager_em->GetCurrentScene().GetSceneName() + "\" with no path";
+		else
+			new_title += 
+			" | Editing Scene \"" + engine->scene_manager_em->GetCurrentScene().GetSceneName() +
+			"\" from path \"" + engine->scene_manager_em->GetCurrentScene().GetScenePath() + "\"";
+	}
+
+	engine->window_em->SetTitle(new_title);
 }
 
 bool App::CleanUp()

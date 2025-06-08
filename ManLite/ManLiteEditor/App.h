@@ -63,6 +63,7 @@ private:
 	float time_since_start;
 
 	int frameRate = 5000;
+	bool idling = false;
 	double dt = 0;
 	double dtCount = 0;
 	int frameCount = 0;

@@ -1,0 +1,2051 @@
+{
+  "CurrentCamID": 1783546399,
+  "background_color": [
+    102,
+    102,
+    102,
+    255
+  ],
+  "game_objects": [
+    {
+      "Components": [
+        {
+          "AspectRatio": 1.0,
+          "ComponentID": 3537720016,
+          "ComponentName": "Transform",
+          "ComponentType": 0,
+          "ContainerGOID": 1218945955,
+          "Enabled": true,
+          "LockAspect": true,
+          "Position": [
+            0.0,
+            0.0
+          ],
+          "Rotation": 0.0,
+          "Scale": [
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "ComponentID": 4031050419,
+          "ComponentName": "TileMap",
+          "ComponentType": 9,
+          "ContainerGOID": 1218945955,
+          "Enabled": true,
+          "GridData": [
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            130,
+            131,
+            132,
+            133,
+            134,
+            134,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            144,
+            147,
+            144,
+            144,
+            148,
+            149,
+            150,
+            151,
+            152,
+            153,
+            -1,
+            144,
+            144,
+            144,
+            144,
+            144,
+            -1,
+            147,
+            147,
+            147,
+            153,
+            147,
+            -1,
+            147,
+            147,
+            -1,
+            135,
+            -1,
+            147,
+            135,
+            184,
+            185,
+            164,
+            165,
+            166,
+            167,
+            168,
+            169,
+            170,
+            171,
+            172,
+            173,
+            174,
+            175,
+            176,
+            177,
+            169,
+            170,
+            170,
+            171,
+            170,
+            171,
+            172,
+            173,
+            174,
+            184,
+            185,
+            177,
+            178,
+            166,
+            162,
+            184,
+            185,
+            162,
+            162,
+            182,
+            183,
+            162,
+            162,
+            179,
+            162,
+            162,
+            182,
+            183,
+            162,
+            179,
+            162,
+            179,
+            162,
+            182,
+            183,
+            162,
+            162,
+            179,
+            162,
+            188,
+            189,
+            162,
+            162,
+            179,
+            182,
+            183,
+            162,
+            162,
+            184,
+            185,
+            162,
+            162,
+            182,
+            183,
+            162,
+            184,
+            185,
+            162,
+            188,
+            189,
+            162,
+            162,
+            184,
+            185,
+            162,
+            162,
+            184,
+            185,
+            162,
+            162,
+            182,
+            183,
+            162,
+            162,
+            184,
+            185,
+            162,
+            188,
+            189,
+            162,
+            188,
+            189,
+            162,
+            162,
+            188,
+            189,
+            162,
+            162,
+            182,
+            183,
+            162,
+            162,
+            162,
+            188,
+            189,
+            162,
+            162,
+            188,
+            189,
+            162,
+            162,
+            182,
+            183,
+            162,
+            162,
+            162,
+            182,
+            183,
+            162,
+            162,
+            162,
+            182,
+            183,
+            162,
+            184,
+            185,
+            162,
+            162,
+            188,
+            189,
+            162,
+            184,
+            185,
+            162,
+            182,
+            183,
+            162,
+            162,
+            184,
+            185,
+            162,
+            184,
+            185,
+            162
+          ],
+          "GridSize": [
+            30.0,
+            10.0
+          ],
+          "ImageSectionSize": [
+            16.0,
+            16.0
+          ],
+          "PixelArt": true,
+          "TexturePath": "Assets\\TileMaps\\dark_forest\\tileset.png",
+          "TileSize": [
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "ComponentID": 238225774,
+          "ComponentName": "Light",
+          "ComponentType": 10,
+          "ContainerGOID": 1218945955,
+          "Enabled": true,
+          "LightColor": [
+            121,
+            134,
+            255,
+            255
+          ],
+          "LightEndPosition": [
+            0.0,
+            0.0
+          ],
+          "LightEndRadius": 0.0,
+          "LightIntensity": 0.8899999856948853,
+          "LightRadius": 1.0,
+          "LightStaticEndPosition": true,
+          "LightType": 0
+        },
+        {
+          "ComponentID": 1407983503,
+          "ComponentName": "AudioSource",
+          "ComponentType": 7,
+          "ContainerGOID": 1218945955,
+          "Enabled": true,
+          "Musics": null,
+          "Sounds": [
+            {
+              "loop": true,
+              "name": "night_ambient_sound",
+              "path": "Assets\\Audio\\SoundEffects\\night_ambient_sound.wav",
+              "play_on_awake": true,
+              "spatial": false,
+              "spatial_distance": 10,
+              "volume": 100
+            }
+          ]
+        }
+      ],
+      "Enabled": true,
+      "GameObjects": [
+        {
+          "Components": [
+            {
+              "AspectRatio": 1.0,
+              "ComponentID": 1250373686,
+              "ComponentName": "Transform",
+              "ComponentType": 0,
+              "ContainerGOID": 1561128497,
+              "Enabled": true,
+              "LockAspect": true,
+              "Position": [
+                10.0,
+                4.0
+              ],
+              "Rotation": 0.0,
+              "Scale": [
+                1.0,
+                1.0
+              ]
+            },
+            {
+              "ComponentID": 1987534551,
+              "ComponentName": "TileMap",
+              "ComponentType": 9,
+              "ContainerGOID": 1561128497,
+              "Enabled": true,
+              "GridData": [
+                11,
+                12,
+                13,
+                14,
+                15,
+                16,
+                17,
+                29,
+                30,
+                31,
+                32,
+                33,
+                34,
+                35,
+                47,
+                48,
+                49,
+                50,
+                51,
+                52,
+                53,
+                65,
+                66,
+                67,
+                68,
+                69,
+                70,
+                71,
+                83,
+                84,
+                85,
+                86,
+                87,
+                88,
+                89,
+                101,
+                102,
+                103,
+                104,
+                105,
+                106,
+                107,
+                119,
+                120,
+                121,
+                122,
+                123,
+                124,
+                125,
+                137,
+                138,
+                139,
+                140,
+                141,
+                142,
+                143,
+                155,
+                156,
+                157,
+                158,
+                159,
+                160,
+                161
+              ],
+              "GridSize": [
+                7.0,
+                9.0
+              ],
+              "ImageSectionSize": [
+                16.0,
+                16.0
+              ],
+              "PixelArt": true,
+              "TexturePath": "Assets\\TileMaps\\dark_forest\\tileset.png",
+              "TileSize": [
+                1.0,
+                1.0
+              ]
+            }
+          ],
+          "Enabled": true,
+          "ID": 1561128497,
+          "Name": "tree",
+          "ParentID": 1218945955,
+          "ParentLayerID": 0,
+          "Tag": "Default",
+          "Visible": true
+        },
+        {
+          "Components": [
+            {
+              "AspectRatio": 1.0,
+              "ComponentID": 2803034203,
+              "ComponentName": "Transform",
+              "ComponentType": 0,
+              "ContainerGOID": 3278147615,
+              "Enabled": true,
+              "LockAspect": true,
+              "Position": [
+                15.0,
+                3.0
+              ],
+              "Rotation": 0.0,
+              "Scale": [
+                18.75,
+                18.75
+              ]
+            },
+            {
+              "ComponentID": 208150535,
+              "ComponentName": "Sprite2D",
+              "ComponentType": 2,
+              "ContainerGOID": 3278147615,
+              "Enabled": true,
+              "FlipHorizontal": false,
+              "FlipVertical": false,
+              "Offset": [
+                0.0,
+                0.0
+              ],
+              "PixelArtRender": true,
+              "TexturePath": "Assets\\TileMaps\\dark_forest\\background_2.png",
+              "TextureSection": [
+                0,
+                0,
+                288,
+                180
+              ],
+              "TextureSize": [
+                288,
+                180
+              ],
+              "TextureUVs": [
+                0.0,
+                0.0,
+                1.0,
+                1.0
+              ]
+            }
+          ],
+          "Enabled": true,
+          "ID": 3278147615,
+          "Name": "bg1",
+          "ParentID": 1218945955,
+          "ParentLayerID": 0,
+          "Tag": "Default",
+          "Visible": true
+        },
+        {
+          "Components": [
+            {
+              "AspectRatio": 1.0,
+              "ComponentID": 4028061035,
+              "ComponentName": "Transform",
+              "ComponentType": 0,
+              "ContainerGOID": 1971077749,
+              "Enabled": true,
+              "LockAspect": true,
+              "Position": [
+                15.0,
+                3.0
+              ],
+              "Rotation": 0.0,
+              "Scale": [
+                18.75,
+                18.75
+              ]
+            },
+            {
+              "ComponentID": 3409797787,
+              "ComponentName": "Sprite2D",
+              "ComponentType": 2,
+              "ContainerGOID": 1971077749,
+              "Enabled": true,
+              "FlipHorizontal": false,
+              "FlipVertical": false,
+              "Offset": [
+                0.0,
+                0.0
+              ],
+              "PixelArtRender": true,
+              "TexturePath": "Assets\\TileMaps\\dark_forest\\background_1.png",
+              "TextureSection": [
+                0,
+                0,
+                288,
+                180
+              ],
+              "TextureSize": [
+                288,
+                180
+              ],
+              "TextureUVs": [
+                0.0,
+                0.0,
+                1.0,
+                1.0
+              ]
+            }
+          ],
+          "Enabled": true,
+          "ID": 1971077749,
+          "Name": "bg2",
+          "ParentID": 1218945955,
+          "ParentLayerID": 0,
+          "Tag": "Default",
+          "Visible": true
+        },
+        {
+          "Components": [
+            {
+              "AspectRatio": 1.0,
+              "ComponentID": 8689751,
+              "ComponentName": "Transform",
+              "ComponentType": 0,
+              "ContainerGOID": 1114639073,
+              "Enabled": true,
+              "LockAspect": true,
+              "Position": [
+                15.0,
+                0.0
+              ],
+              "Rotation": 0.0,
+              "Scale": [
+                18.75,
+                18.75
+              ]
+            },
+            {
+              "ComponentID": 1046023192,
+              "ComponentName": "Sprite2D",
+              "ComponentType": 2,
+              "ContainerGOID": 1114639073,
+              "Enabled": true,
+              "FlipHorizontal": false,
+              "FlipVertical": false,
+              "Offset": [
+                0.0,
+                0.0
+              ],
+              "PixelArtRender": true,
+              "TexturePath": "Assets\\TileMaps\\dark_forest\\background_0.png",
+              "TextureSection": [
+                0,
+                0,
+                288,
+                180
+              ],
+              "TextureSize": [
+                288,
+                180
+              ],
+              "TextureUVs": [
+                0.0,
+                0.0,
+                1.0,
+                1.0
+              ]
+            }
+          ],
+          "Enabled": true,
+          "ID": 1114639073,
+          "Name": "bg3",
+          "ParentID": 1218945955,
+          "ParentLayerID": 0,
+          "Tag": "Default",
+          "Visible": true
+        },
+        {
+          "Components": [
+            {
+              "AspectRatio": 1.0,
+              "ComponentID": 2724147953,
+              "ComponentName": "Transform",
+              "ComponentType": 0,
+              "ContainerGOID": 3669955671,
+              "Enabled": true,
+              "LockAspect": true,
+              "Position": [
+                12.660906791687012,
+                -3.4730613231658936
+              ],
+              "Rotation": 0.0,
+              "Scale": [
+                1.0,
+                1.0
+              ]
+            },
+            {
+              "ComponentID": 3417606951,
+              "ComponentName": "Light",
+              "ComponentType": 10,
+              "ContainerGOID": 3669955671,
+              "Enabled": true,
+              "LightColor": [
+                255,
+                255,
+                255,
+                255
+              ],
+              "LightEndPosition": [
+                0.0,
+                0.0
+              ],
+              "LightEndRadius": 0.0,
+              "LightIntensity": 0.44999998807907104,
+              "LightRadius": 1.409999966621399,
+              "LightStaticEndPosition": true,
+              "LightType": 1
+            }
+          ],
+          "Enabled": true,
+          "GameObjects": [
+            {
+              "Components": [
+                {
+                  "AspectRatio": 1.0,
+                  "ComponentID": 4164134486,
+                  "ComponentName": "Transform",
+                  "ComponentType": 0,
+                  "ContainerGOID": 480282496,
+                  "Enabled": true,
+                  "LockAspect": true,
+                  "Position": [
+                    0.0,
+                    0.0
+                  ],
+                  "Rotation": 0.0,
+                  "Scale": [
+                    1.0,
+                    1.0
+                  ]
+                },
+                {
+                  "ComponentID": 450102740,
+                  "ComponentName": "Light",
+                  "ComponentType": 10,
+                  "ContainerGOID": 480282496,
+                  "Enabled": true,
+                  "LightColor": [
+                    195,
+                    255,
+                    2,
+                    255
+                  ],
+                  "LightEndPosition": [
+                    0.0,
+                    0.0
+                  ],
+                  "LightEndRadius": 0.0,
+                  "LightIntensity": 1.434999942779541,
+                  "LightRadius": 0.18000000715255737,
+                  "LightStaticEndPosition": true,
+                  "LightType": 1
+                }
+              ],
+              "Enabled": true,
+              "ID": 480282496,
+              "Name": "light_(1)",
+              "ParentID": 3669955671,
+              "ParentLayerID": 0,
+              "Tag": "Default",
+              "Visible": true
+            }
+          ],
+          "ID": 3669955671,
+          "Name": "light",
+          "ParentID": 1218945955,
+          "ParentLayerID": 1,
+          "Tag": "Default",
+          "Visible": true
+        },
+        {
+          "Components": [
+            {
+              "AspectRatio": 1.0,
+              "ComponentID": 2206285990,
+              "ComponentName": "Transform",
+              "ComponentType": 0,
+              "ContainerGOID": 3523910544,
+              "Enabled": true,
+              "LockAspect": true,
+              "Position": [
+                11.52702808380127,
+                -2.026698112487793
+              ],
+              "Rotation": 0.0,
+              "Scale": [
+                1.0,
+                1.0
+              ]
+            },
+            {
+              "ComponentID": 2210591325,
+              "ComponentName": "Light",
+              "ComponentType": 10,
+              "ContainerGOID": 3523910544,
+              "Enabled": true,
+              "LightColor": [
+                255,
+                255,
+                255,
+                255
+              ],
+              "LightEndPosition": [
+                0.0,
+                0.0
+              ],
+              "LightEndRadius": 0.0,
+              "LightIntensity": 0.44999998807907104,
+              "LightRadius": 1.409999966621399,
+              "LightStaticEndPosition": true,
+              "LightType": 1
+            }
+          ],
+          "Enabled": true,
+          "GameObjects": [
+            {
+              "Components": [
+                {
+                  "AspectRatio": 1.0,
+                  "ComponentID": 830868046,
+                  "ComponentName": "Transform",
+                  "ComponentType": 0,
+                  "ContainerGOID": 2215732315,
+                  "Enabled": true,
+                  "LockAspect": true,
+                  "Position": [
+                    0.0,
+                    0.0
+                  ],
+                  "Rotation": 0.0,
+                  "Scale": [
+                    1.0,
+                    1.0
+                  ]
+                },
+                {
+                  "ComponentID": 981785879,
+                  "ComponentName": "Light",
+                  "ComponentType": 10,
+                  "ContainerGOID": 2215732315,
+                  "Enabled": true,
+                  "LightColor": [
+                    195,
+                    255,
+                    2,
+                    255
+                  ],
+                  "LightEndPosition": [
+                    0.0,
+                    0.0
+                  ],
+                  "LightEndRadius": 0.0,
+                  "LightIntensity": 1.434999942779541,
+                  "LightRadius": 0.18000000715255737,
+                  "LightStaticEndPosition": true,
+                  "LightType": 1
+                }
+              ],
+              "Enabled": true,
+              "ID": 2215732315,
+              "Name": "light_(2)",
+              "ParentID": 3523910544,
+              "ParentLayerID": 0,
+              "Tag": "Default",
+              "Visible": true
+            }
+          ],
+          "ID": 3523910544,
+          "Name": "light_(1)",
+          "ParentID": 1218945955,
+          "ParentLayerID": 1,
+          "Tag": "Default",
+          "Visible": true
+        },
+        {
+          "Components": [
+            {
+              "AspectRatio": 1.0,
+              "ComponentID": 3567784578,
+              "ComponentName": "Transform",
+              "ComponentType": 0,
+              "ContainerGOID": 948536450,
+              "Enabled": true,
+              "LockAspect": true,
+              "Position": [
+                13.782164573669434,
+                -1.7306256294250488
+              ],
+              "Rotation": 0.0,
+              "Scale": [
+                1.0,
+                1.0
+              ]
+            },
+            {
+              "ComponentID": 3540882179,
+              "ComponentName": "Light",
+              "ComponentType": 10,
+              "ContainerGOID": 948536450,
+              "Enabled": true,
+              "LightColor": [
+                255,
+                255,
+                255,
+                255
+              ],
+              "LightEndPosition": [
+                0.0,
+                0.0
+              ],
+              "LightEndRadius": 0.0,
+              "LightIntensity": 0.44999998807907104,
+              "LightRadius": 1.409999966621399,
+              "LightStaticEndPosition": true,
+              "LightType": 1
+            }
+          ],
+          "Enabled": true,
+          "GameObjects": [
+            {
+              "Components": [
+                {
+                  "AspectRatio": 1.0,
+                  "ComponentID": 4275522860,
+                  "ComponentName": "Transform",
+                  "ComponentType": 0,
+                  "ContainerGOID": 187369309,
+                  "Enabled": true,
+                  "LockAspect": true,
+                  "Position": [
+                    0.0,
+                    0.0
+                  ],
+                  "Rotation": 0.0,
+                  "Scale": [
+                    1.0,
+                    1.0
+                  ]
+                },
+                {
+                  "ComponentID": 2940082840,
+                  "ComponentName": "Light",
+                  "ComponentType": 10,
+                  "ContainerGOID": 187369309,
+                  "Enabled": true,
+                  "LightColor": [
+                    195,
+                    255,
+                    2,
+                    255
+                  ],
+                  "LightEndPosition": [
+                    0.0,
+                    0.0
+                  ],
+                  "LightEndRadius": 0.0,
+                  "LightIntensity": 1.434999942779541,
+                  "LightRadius": 0.18000000715255737,
+                  "LightStaticEndPosition": true,
+                  "LightType": 1
+                }
+              ],
+              "Enabled": true,
+              "ID": 187369309,
+              "Name": "light_(3)",
+              "ParentID": 948536450,
+              "ParentLayerID": 0,
+              "Tag": "Default",
+              "Visible": true
+            }
+          ],
+          "ID": 948536450,
+          "Name": "light_(2)",
+          "ParentID": 1218945955,
+          "ParentLayerID": 1,
+          "Tag": "Default",
+          "Visible": true
+        },
+        {
+          "Components": [
+            {
+              "AspectRatio": 1.0,
+              "ComponentID": 1280574311,
+              "ComponentName": "Transform",
+              "ComponentType": 0,
+              "ContainerGOID": 363573173,
+              "Enabled": true,
+              "LockAspect": true,
+              "Position": [
+                14.652593612670898,
+                -1.5973968505859375
+              ],
+              "Rotation": 0.0,
+              "Scale": [
+                1.0,
+                1.0
+              ]
+            },
+            {
+              "ComponentID": 970520784,
+              "ComponentName": "Light",
+              "ComponentType": 10,
+              "ContainerGOID": 363573173,
+              "Enabled": true,
+              "LightColor": [
+                255,
+                255,
+                255,
+                255
+              ],
+              "LightEndPosition": [
+                0.0,
+                0.0
+              ],
+              "LightEndRadius": 0.0,
+              "LightIntensity": 0.44999998807907104,
+              "LightRadius": 1.409999966621399,
+              "LightStaticEndPosition": true,
+              "LightType": 1
+            }
+          ],
+          "Enabled": true,
+          "GameObjects": [
+            {
+              "Components": [
+                {
+                  "AspectRatio": 1.0,
+                  "ComponentID": 1327511975,
+                  "ComponentName": "Transform",
+                  "ComponentType": 0,
+                  "ContainerGOID": 1561572165,
+                  "Enabled": true,
+                  "LockAspect": true,
+                  "Position": [
+                    0.0,
+                    0.0
+                  ],
+                  "Rotation": 0.0,
+                  "Scale": [
+                    1.0,
+                    1.0
+                  ]
+                },
+                {
+                  "ComponentID": 3068013910,
+                  "ComponentName": "Light",
+                  "ComponentType": 10,
+                  "ContainerGOID": 1561572165,
+                  "Enabled": true,
+                  "LightColor": [
+                    195,
+                    255,
+                    2,
+                    255
+                  ],
+                  "LightEndPosition": [
+                    0.0,
+                    0.0
+                  ],
+                  "LightEndRadius": 0.0,
+                  "LightIntensity": 1.434999942779541,
+                  "LightRadius": 0.18000000715255737,
+                  "LightStaticEndPosition": true,
+                  "LightType": 1
+                }
+              ],
+              "Enabled": true,
+              "ID": 1561572165,
+              "Name": "light_(4)",
+              "ParentID": 363573173,
+              "ParentLayerID": 0,
+              "Tag": "Default",
+              "Visible": true
+            }
+          ],
+          "ID": 363573173,
+          "Name": "light_(3)",
+          "ParentID": 1218945955,
+          "ParentLayerID": 1,
+          "Tag": "Default",
+          "Visible": true
+        },
+        {
+          "Components": [
+            {
+              "AspectRatio": 1.0,
+              "ComponentID": 902719806,
+              "ComponentName": "Transform",
+              "ComponentType": 0,
+              "ContainerGOID": 3323842477,
+              "Enabled": true,
+              "LockAspect": true,
+              "Position": [
+                15.23233413696289,
+                -2.522947311401367
+              ],
+              "Rotation": 0.0,
+              "Scale": [
+                1.0,
+                1.0
+              ]
+            },
+            {
+              "ComponentID": 2678790598,
+              "ComponentName": "Light",
+              "ComponentType": 10,
+              "ContainerGOID": 3323842477,
+              "Enabled": true,
+              "LightColor": [
+                255,
+                255,
+                255,
+                255
+              ],
+              "LightEndPosition": [
+                0.0,
+                0.0
+              ],
+              "LightEndRadius": 0.0,
+              "LightIntensity": 0.44999998807907104,
+              "LightRadius": 1.409999966621399,
+              "LightStaticEndPosition": true,
+              "LightType": 1
+            }
+          ],
+          "Enabled": true,
+          "GameObjects": [
+            {
+              "Components": [
+                {
+                  "AspectRatio": 1.0,
+                  "ComponentID": 4199652095,
+                  "ComponentName": "Transform",
+                  "ComponentType": 0,
+                  "ContainerGOID": 4066498698,
+                  "Enabled": true,
+                  "LockAspect": true,
+                  "Position": [
+                    0.0,
+                    0.0
+                  ],
+                  "Rotation": 0.0,
+                  "Scale": [
+                    1.0,
+                    1.0
+                  ]
+                },
+                {
+                  "ComponentID": 1098375214,
+                  "ComponentName": "Light",
+                  "ComponentType": 10,
+                  "ContainerGOID": 4066498698,
+                  "Enabled": true,
+                  "LightColor": [
+                    195,
+                    255,
+                    2,
+                    255
+                  ],
+                  "LightEndPosition": [
+                    0.0,
+                    0.0
+                  ],
+                  "LightEndRadius": 0.0,
+                  "LightIntensity": 1.434999942779541,
+                  "LightRadius": 0.18000000715255737,
+                  "LightStaticEndPosition": true,
+                  "LightType": 1
+                }
+              ],
+              "Enabled": true,
+              "ID": 4066498698,
+              "Name": "light_(5)",
+              "ParentID": 3323842477,
+              "ParentLayerID": 0,
+              "Tag": "Default",
+              "Visible": true
+            }
+          ],
+          "ID": 3323842477,
+          "Name": "light_(4)",
+          "ParentID": 1218945955,
+          "ParentLayerID": 1,
+          "Tag": "Default",
+          "Visible": true
+        },
+        {
+          "Components": [
+            {
+              "AspectRatio": 1.0,
+              "ComponentID": 3174249939,
+              "ComponentName": "Transform",
+              "ComponentType": 0,
+              "ContainerGOID": 2565062722,
+              "Enabled": true,
+              "LockAspect": true,
+              "Position": [
+                7.040289878845215,
+                11.627582550048828
+              ],
+              "Rotation": 0.0,
+              "Scale": [
+                1.0,
+                1.0
+              ]
+            },
+            {
+              "ComponentID": 1826038197,
+              "ComponentName": "Light",
+              "ComponentType": 10,
+              "ContainerGOID": 2565062722,
+              "Enabled": true,
+              "LightColor": [
+                255,
+                255,
+                255,
+                255
+              ],
+              "LightEndPosition": [
+                13.850000381469727,
+                -7.300000190734863
+              ],
+              "LightEndRadius": 12.050000190734863,
+              "LightIntensity": 0.3449999988079071,
+              "LightRadius": 4.250999927520752,
+              "LightStaticEndPosition": true,
+              "LightType": 2
+            }
+          ],
+          "Enabled": true,
+          "ID": 2565062722,
+          "Name": "moonlight",
+          "ParentID": 1218945955,
+          "ParentLayerID": 0,
+          "Tag": "Default",
+          "Visible": true
+        },
+        {
+          "Components": [
+            {
+              "AspectRatio": 1.0,
+              "ComponentID": 487529996,
+              "ComponentName": "Transform",
+              "ComponentType": 0,
+              "ContainerGOID": 2931036971,
+              "Enabled": true,
+              "LockAspect": true,
+              "Position": [
+                24.48569107055664,
+                -4.143948554992676
+              ],
+              "Rotation": 0.0,
+              "Scale": [
+                2.9499998092651367,
+                2.9499998092651367
+              ]
+            },
+            {
+              "ComponentID": 3705410517,
+              "ComponentName": "Sprite2D",
+              "ComponentType": 2,
+              "ContainerGOID": 2931036971,
+              "Enabled": true,
+              "FlipHorizontal": false,
+              "FlipVertical": false,
+              "Offset": [
+                0.0,
+                0.0
+              ],
+              "PixelArtRender": true,
+              "TexturePath": "Assets\\Textures\\campfire\\campfire-sheet.png",
+              "TextureSection": [
+                0,
+                0,
+                32,
+                64
+              ],
+              "TextureSize": [
+                256,
+                64
+              ],
+              "TextureUVs": [
+                0.0,
+                0.0,
+                0.125,
+                1.0
+              ]
+            },
+            {
+              "Animations": [
+                {
+                  "name": "firecamp_idle",
+                  "path": "Assets\\Animations\\firecamp_idle.animation"
+                }
+              ],
+              "ComponentID": 44785806,
+              "ComponentName": "Animator",
+              "ComponentType": 3,
+              "ContainerGOID": 2931036971,
+              "CurrentAnimation": "firecamp_idle",
+              "Enabled": true
+            },
+            {
+              "ComponentID": 2264169575,
+              "ComponentName": "AudioSource",
+              "ComponentType": 7,
+              "ContainerGOID": 2931036971,
+              "Enabled": true,
+              "Musics": null,
+              "Sounds": [
+                {
+                  "listener_id": 368918538,
+                  "loop": true,
+                  "name": "fire_camp_sound_effect",
+                  "path": "Assets\\Audio\\SoundEffects\\fire_camp_sound_effect.wav",
+                  "play_on_awake": true,
+                  "spatial": true,
+                  "spatial_distance": 5,
+                  "volume": 21
+                }
+              ]
+            }
+          ],
+          "Enabled": true,
+          "GameObjects": [
+            {
+              "Components": [
+                {
+                  "AspectRatio": 1.0,
+                  "ComponentID": 2721450204,
+                  "ComponentName": "Transform",
+                  "ComponentType": 0,
+                  "ContainerGOID": 1259443718,
+                  "Enabled": true,
+                  "LockAspect": true,
+                  "Position": [
+                    -0.008557319641113281,
+                    -0.23532569408416748
+                  ],
+                  "Rotation": 0.0,
+                  "Scale": [
+                    0.30000001192092896,
+                    0.30000001192092896
+                  ]
+                },
+                {
+                  "ComponentID": 2118586503,
+                  "ComponentName": "ParticleSystem",
+                  "ComponentType": 8,
+                  "ContainerGOID": 1259443718,
+                  "Enabled": true,
+                  "ParticlePath": "Assets\\Particles\\FireCamp_Particles.mlparticle"
+                }
+              ],
+              "Enabled": true,
+              "ID": 1259443718,
+              "Name": "firecamp_particles",
+              "ParentID": 2931036971,
+              "ParentLayerID": 0,
+              "Tag": "Default",
+              "Visible": true
+            },
+            {
+              "Components": [
+                {
+                  "AspectRatio": 1.0,
+                  "ComponentID": 4105964702,
+                  "ComponentName": "Transform",
+                  "ComponentType": 0,
+                  "ContainerGOID": 3058614910,
+                  "Enabled": true,
+                  "LockAspect": true,
+                  "Position": [
+                    -9.5367431640625e-07,
+                    -0.11669039726257324
+                  ],
+                  "Rotation": 0.0,
+                  "Scale": [
+                    1.0,
+                    1.0
+                  ]
+                },
+                {
+                  "ComponentID": 1508696489,
+                  "ComponentName": "Light",
+                  "ComponentType": 10,
+                  "ContainerGOID": 3058614910,
+                  "Enabled": true,
+                  "LightColor": [
+                    255,
+                    246,
+                    117,
+                    255
+                  ],
+                  "LightEndPosition": [
+                    0.0,
+                    0.0
+                  ],
+                  "LightEndRadius": 0.0,
+                  "LightIntensity": 0.875,
+                  "LightRadius": 0.7799999713897705,
+                  "LightStaticEndPosition": true,
+                  "LightType": 1
+                }
+              ],
+              "Enabled": true,
+              "ID": 3058614910,
+              "Name": "firecamp_light_1",
+              "ParentID": 2931036971,
+              "ParentLayerID": 0,
+              "Tag": "Default",
+              "Visible": true
+            },
+            {
+              "Components": [
+                {
+                  "AspectRatio": 1.0,
+                  "ComponentID": 4070450119,
+                  "ComponentName": "Transform",
+                  "ComponentType": 0,
+                  "ContainerGOID": 897274028,
+                  "Enabled": true,
+                  "LockAspect": true,
+                  "Position": [
+                    -9.5367431640625e-07,
+                    -0.11669039726257324
+                  ],
+                  "Rotation": 0.0,
+                  "Scale": [
+                    1.0,
+                    1.0
+                  ]
+                },
+                {
+                  "ComponentID": 782076929,
+                  "ComponentName": "Light",
+                  "ComponentType": 10,
+                  "ContainerGOID": 897274028,
+                  "Enabled": true,
+                  "LightColor": [
+                    255,
+                    249,
+                    116,
+                    255
+                  ],
+                  "LightEndPosition": [
+                    0.0,
+                    0.0
+                  ],
+                  "LightEndRadius": 0.0,
+                  "LightIntensity": 0.5,
+                  "LightRadius": 2.5199999809265137,
+                  "LightStaticEndPosition": true,
+                  "LightType": 1
+                }
+              ],
+              "Enabled": true,
+              "ID": 897274028,
+              "Name": "firecamp_light_1_(1)",
+              "ParentID": 2931036971,
+              "ParentLayerID": 0,
+              "Tag": "Default",
+              "Visible": true
+            }
+          ],
+          "ID": 2931036971,
+          "Name": "firecamp",
+          "ParentID": 1218945955,
+          "ParentLayerID": 0,
+          "Tag": "Default",
+          "Visible": true
+        },
+        {
+          "Components": [
+            {
+              "AspectRatio": 1.0,
+              "ComponentID": 2648074479,
+              "ComponentName": "Transform",
+              "ComponentType": 0,
+              "ContainerGOID": 77110649,
+              "Enabled": true,
+              "LockAspect": true,
+              "Position": [
+                0.0,
+                0.0
+              ],
+              "Rotation": 0.0,
+              "Scale": [
+                1.0,
+                1.0
+              ]
+            }
+          ],
+          "Enabled": true,
+          "GameObjects": [
+            {
+              "Components": [
+                {
+                  "AspectRatio": 1.0,
+                  "ComponentID": 1708348089,
+                  "ComponentName": "Transform",
+                  "ComponentType": 0,
+                  "ContainerGOID": 1295384391,
+                  "Enabled": true,
+                  "LockAspect": true,
+                  "Position": [
+                    15.0,
+                    -6.0
+                  ],
+                  "Rotation": 0.0,
+                  "Scale": [
+                    1.0,
+                    1.0
+                  ]
+                },
+                {
+                  "Color": {
+                    "A": 255,
+                    "B": 0,
+                    "G": 255,
+                    "R": 0
+                  },
+                  "ComponentID": 3052127102,
+                  "ComponentName": "Collider2D",
+                  "ComponentType": 5,
+                  "ContainerGOID": 1295384391,
+                  "Enabled": true,
+                  "Friction": 11.920000076293945,
+                  "GravityScale": 1.0,
+                  "Height": 2.0,
+                  "IsDynamic": false,
+                  "IsSensor": false,
+                  "LinearDamping": 0.0,
+                  "LockRotation": false,
+                  "Mass": 0.0,
+                  "Radius": 0.5,
+                  "Restitution": 0.0,
+                  "ShapeType": "RECTANGLE",
+                  "UseGravity": false,
+                  "Width": 30.0
+                }
+              ],
+              "Enabled": true,
+              "ID": 1295384391,
+              "Name": "floor_collider",
+              "ParentID": 77110649,
+              "ParentLayerID": 0,
+              "Tag": "Default",
+              "Visible": true
+            },
+            {
+              "Components": [
+                {
+                  "AspectRatio": 1.0,
+                  "ComponentID": 3877925153,
+                  "ComponentName": "Transform",
+                  "ComponentType": 0,
+                  "ContainerGOID": 2372357423,
+                  "Enabled": true,
+                  "LockAspect": true,
+                  "Position": [
+                    0.0,
+                    2.0
+                  ],
+                  "Rotation": 0.0,
+                  "Scale": [
+                    1.0,
+                    1.0
+                  ]
+                },
+                {
+                  "Color": {
+                    "A": 255,
+                    "B": 0,
+                    "G": 255,
+                    "R": 0
+                  },
+                  "ComponentID": 3321777923,
+                  "ComponentName": "Collider2D",
+                  "ComponentType": 5,
+                  "ContainerGOID": 2372357423,
+                  "Enabled": true,
+                  "Friction": 0.30000001192092896,
+                  "GravityScale": 1.0,
+                  "Height": 14.0,
+                  "IsDynamic": false,
+                  "IsSensor": false,
+                  "LinearDamping": 0.0,
+                  "LockRotation": false,
+                  "Mass": 0.0,
+                  "Radius": 0.5,
+                  "Restitution": 0.0,
+                  "ShapeType": "RECTANGLE",
+                  "UseGravity": false,
+                  "Width": 0.25
+                }
+              ],
+              "Enabled": true,
+              "ID": 2372357423,
+              "Name": "left_limit_collider",
+              "ParentID": 77110649,
+              "ParentLayerID": 0,
+              "Tag": "Default",
+              "Visible": true
+            },
+            {
+              "Components": [
+                {
+                  "AspectRatio": 1.0,
+                  "ComponentID": 421149243,
+                  "ComponentName": "Transform",
+                  "ComponentType": 0,
+                  "ContainerGOID": 2729101281,
+                  "Enabled": true,
+                  "LockAspect": true,
+                  "Position": [
+                    30.0,
+                    2.0
+                  ],
+                  "Rotation": 0.0,
+                  "Scale": [
+                    1.0,
+                    1.0
+                  ]
+                },
+                {
+                  "Color": {
+                    "A": 255,
+                    "B": 0,
+                    "G": 255,
+                    "R": 0
+                  },
+                  "ComponentID": 369115343,
+                  "ComponentName": "Collider2D",
+                  "ComponentType": 5,
+                  "ContainerGOID": 2729101281,
+                  "Enabled": true,
+                  "Friction": 0.30000001192092896,
+                  "GravityScale": 1.0,
+                  "Height": 14.0,
+                  "IsDynamic": false,
+                  "IsSensor": false,
+                  "LinearDamping": 0.0,
+                  "LockRotation": false,
+                  "Mass": 0.0,
+                  "Radius": 0.5,
+                  "Restitution": 0.0,
+                  "ShapeType": "RECTANGLE",
+                  "UseGravity": false,
+                  "Width": 0.25
+                }
+              ],
+              "Enabled": true,
+              "ID": 2729101281,
+              "Name": "right_limit_collider",
+              "ParentID": 77110649,
+              "ParentLayerID": 0,
+              "Tag": "Default",
+              "Visible": true
+            }
+          ],
+          "ID": 77110649,
+          "Name": "colliders",
+          "ParentID": 1218945955,
+          "ParentLayerID": 0,
+          "Tag": "Default",
+          "Visible": true
+        },
+        {
+          "Components": [
+            {
+              "AspectRatio": 1.0,
+              "ComponentID": 4129352266,
+              "ComponentName": "Transform",
+              "ComponentType": 0,
+              "ContainerGOID": 3444206266,
+              "Enabled": true,
+              "LockAspect": true,
+              "Position": [
+                15.0,
+                0.0
+              ],
+              "Rotation": 0.0,
+              "Scale": [
+                1.0,
+                1.0
+              ]
+            },
+            {
+              "ComponentID": 1159765729,
+              "ComponentName": "ParticleSystem",
+              "ComponentType": 8,
+              "ContainerGOID": 3444206266,
+              "Enabled": true,
+              "ParticlePath": "Assets\\Particles\\FireFly_Particles.mlparticle"
+            }
+          ],
+          "Enabled": true,
+          "ID": 3444206266,
+          "Name": "firefly_particles",
+          "ParentID": 1218945955,
+          "ParentLayerID": 1,
+          "Tag": "Default",
+          "Visible": true
+        },
+        {
+          "Components": [
+            {
+              "AspectRatio": 1.0,
+              "ComponentID": 777507831,
+              "ComponentName": "Transform",
+              "ComponentType": 0,
+              "ContainerGOID": 1804231468,
+              "Enabled": true,
+              "LockAspect": true,
+              "Position": [
+                13.5,
+                -2.0
+              ],
+              "Rotation": 0.0,
+              "Scale": [
+                1.0,
+                1.0
+              ]
+            },
+            {
+              "ComponentID": 3802013322,
+              "ComponentName": "ParticleSystem",
+              "ComponentType": 8,
+              "ContainerGOID": 1804231468,
+              "Enabled": true,
+              "ParticlePath": "Assets\\Particles\\FireFly_Concentred_Particles.mlparticle"
+            }
+          ],
+          "Enabled": true,
+          "ID": 1804231468,
+          "Name": "firefly_concentred_particles",
+          "ParentID": 1218945955,
+          "ParentLayerID": 1,
+          "Tag": "Default",
+          "Visible": true
+        }
+      ],
+      "ID": 1218945955,
+      "Name": "map",
+      "ParentID": 795024505,
+      "ParentLayerID": 0,
+      "Tag": "Default",
+      "Visible": true
+    },
+    {
+      "Components": [
+        {
+          "AspectRatio": 1.0,
+          "ComponentID": 1027863085,
+          "ComponentName": "Transform",
+          "ComponentType": 0,
+          "ContainerGOID": 368918538,
+          "Enabled": true,
+          "LockAspect": true,
+          "Position": [
+            2.0,
+            -3.799999952316284
+          ],
+          "Rotation": 0.0,
+          "Scale": [
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "Color": {
+            "A": 255,
+            "B": 0,
+            "G": 255,
+            "R": 0
+          },
+          "ComponentID": 1954217192,
+          "ComponentName": "Collider2D",
+          "ComponentType": 5,
+          "ContainerGOID": 368918538,
+          "Enabled": true,
+          "Friction": 0.30000001192092896,
+          "GravityScale": 1.0,
+          "Height": 2.299999952316284,
+          "IsDynamic": true,
+          "IsSensor": false,
+          "LinearDamping": 0.0,
+          "LockRotation": true,
+          "Mass": 0.0,
+          "Radius": 0.5,
+          "Restitution": 0.0,
+          "ShapeType": "RECTANGLE",
+          "UseGravity": true,
+          "Width": 0.8500000238418579
+        },
+        {
+          "ComponentID": 1160839752,
+          "ComponentName": "SamuraiMovement",
+          "ComponentType": 4,
+          "ContainerGOID": 368918538,
+          "Enabled": true,
+          "ScriptFields": {
+            "samurai_animations": {
+              "type": 5,
+              "value": 773180722
+            }
+          }
+        },
+        {
+          "ComponentID": 1346206519,
+          "ComponentName": "AudioSource",
+          "ComponentType": 7,
+          "ContainerGOID": 368918538,
+          "Enabled": true,
+          "Musics": null,
+          "Sounds": [
+            {
+              "loop": true,
+              "name": "walk_on_grass_sound_effect",
+              "path": "Assets\\Audio\\SoundEffects\\walk_on_grass_sound_effect.wav",
+              "play_on_awake": false,
+              "spatial": false,
+              "spatial_distance": 10,
+              "volume": 21
+            }
+          ]
+        }
+      ],
+      "Enabled": true,
+      "GameObjects": [
+        {
+          "Components": [
+            {
+              "AspectRatio": 1.0,
+              "ComponentID": 3239889888,
+              "ComponentName": "Transform",
+              "ComponentType": 0,
+              "ContainerGOID": 773180722,
+              "Enabled": true,
+              "LockAspect": true,
+              "Position": [
+                0.0,
+                1.149999976158142
+              ],
+              "Rotation": 0.0,
+              "Scale": [
+                6.699999809265137,
+                6.699999809265137
+              ]
+            },
+            {
+              "ComponentID": 3476120396,
+              "ComponentName": "Sprite2D",
+              "ComponentType": 2,
+              "ContainerGOID": 773180722,
+              "Enabled": true,
+              "FlipHorizontal": false,
+              "FlipVertical": false,
+              "Offset": [
+                0.0,
+                0.0
+              ],
+              "PixelArtRender": true,
+              "TexturePath": "Assets\\Textures\\samurai\\samurai_spritesheet.png",
+              "TextureSection": [
+                0,
+                0,
+                96,
+                96
+              ],
+              "TextureSize": [
+                1536,
+                288
+              ],
+              "TextureUVs": [
+                0.0,
+                0.6666666865348816,
+                0.0625,
+                1.0
+              ]
+            },
+            {
+              "Animations": [
+                {
+                  "name": "samurai_idle",
+                  "path": "Assets\\Animations\\samurai_idle.animation"
+                },
+                {
+                  "name": "samurai_run_left",
+                  "path": "Assets\\Animations\\samurai_run_left.animation"
+                },
+                {
+                  "name": "samurai_run_right",
+                  "path": "Assets\\Animations\\samurai_run_right.animation"
+                }
+              ],
+              "ComponentID": 2116197687,
+              "ComponentName": "Animator",
+              "ComponentType": 3,
+              "ContainerGOID": 773180722,
+              "CurrentAnimation": "samurai_idle",
+              "Enabled": true
+            },
+            {
+              "ComponentID": 1642598136,
+              "ComponentName": "Test_Communicative_Script",
+              "ComponentType": 4,
+              "ContainerGOID": 773180722,
+              "Enabled": true,
+              "ScriptFields": null
+            }
+          ],
+          "Enabled": true,
+          "ID": 773180722,
+          "Name": "sprite",
+          "ParentID": 368918538,
+          "ParentLayerID": 1,
+          "Tag": "Default",
+          "Visible": true
+        }
+      ],
+      "ID": 368918538,
+      "Name": "Player",
+      "ParentID": 795024505,
+      "ParentLayerID": 1,
+      "Tag": "Default",
+      "Visible": true
+    },
+    {
+      "Components": [
+        {
+          "AspectRatio": 1.0,
+          "ComponentID": 3526328983,
+          "ComponentName": "Transform",
+          "ComponentType": 0,
+          "ContainerGOID": 1783546399,
+          "Enabled": true,
+          "LockAspect": true,
+          "Position": [
+            15.0,
+            0.0
+          ],
+          "Rotation": 0.0,
+          "Scale": [
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "CameraZoom": 57.0,
+          "ComponentID": 3729678674,
+          "ComponentName": "Camera",
+          "ComponentType": 1,
+          "ContainerGOID": 1783546399,
+          "Enabled": true,
+          "ViewportSize": [
+            1700,
+            900
+          ]
+        }
+      ],
+      "Enabled": true,
+      "ID": 1783546399,
+      "Name": "mapcam",
+      "ParentID": 795024505,
+      "ParentLayerID": 1,
+      "Tag": "Default",
+      "Visible": true
+    }
+  ],
+  "layers": [
+    {
+      "Layer_children_go_id": [
+        773180722,
+        368918538,
+        1783546399,
+        3444206266,
+        3669955671,
+        3523910544,
+        948536450,
+        363573173,
+        3323842477,
+        1804231468
+      ],
+      "children_count": 10,
+      "layer_id": 1,
+      "layer_name": "Layer_1",
+      "visible": true
+    },
+    {
+      "Layer_children_go_id": [
+        2372357423,
+        2729101281,
+        1295384391,
+        2931036971,
+        1259443718,
+        1218945955,
+        1561128497,
+        3278147615,
+        1971077749,
+        1114639073,
+        480282496,
+        2215732315,
+        187369309,
+        1561572165,
+        4066498698,
+        2565062722,
+        3058614910,
+        897274028,
+        77110649
+      ],
+      "children_count": 19,
+      "layer_id": 0,
+      "layer_name": "DefaultLayer_0",
+      "visible": true
+    }
+  ],
+  "scene_gravity": [
+    0.0,
+    -9.8100004196167
+  ],
+  "scene_id": 795024505,
+  "scene_name": "Prototype2_DarkForest",
+  "scene_path": "Assets\\Scenes\\Prototype2_DarkForest.mlscene"
+}

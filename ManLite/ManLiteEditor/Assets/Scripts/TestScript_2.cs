@@ -20,11 +20,11 @@ public class TestScript_2 : MonoBehaviour
 
     public override void Update()
     {
-        if (InternalCalls.GetKeyboardKeyDown((int)KeyboardKey.SDL_SCANCODE_Q))
+        if (InternalCalls.GetKeyboardKeyDown((int)KeyboardKey.KEY_Q))
         {
             InternalCalls.InstantiatePrefab(prefab_path);
         }
-        if (InternalCalls.GetKeyboardKeyDown((int)KeyboardKey.SDL_SCANCODE_E))
+        if (InternalCalls.GetKeyboardKeyDown((int)KeyboardKey.KEY_E))
         {
             InternalCalls.LoadScene(scene_path);
         }

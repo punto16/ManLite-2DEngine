@@ -66,6 +66,7 @@ bool ScriptingEM::PreUpdate()
             engine->scene_manager_em->StartSession();
             stop_process_instantiate_queue = false;
         }
+        engine->scene_manager_em->FinishLoad();
         engine->SetEditorOrBuild(engine_mode);
     }
 
@@ -122,6 +123,73 @@ bool ScriptingEM::CleanUp()
     }
 
 	return ret;
+}
+
+void ScriptingEM::CreateScriptFile(std::string script_name, std::string script_directory)
+{
+    std::string file_path = "Assets\\Scripts\\" + script_name + ".cs";
+    if (!script_directory.empty())
+        file_path = script_directory + script_name + ".cs";
+
+    if (fs::exists(file_path))
+    {
+        LOG(LogType::LOG_ERROR, "File %s already exists", file_path.c_str());
+        return;
+    }
+
+    std::string file_content = R"(
+using ManLiteScripting;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+public class CLASS_NAME_PLACEHOLDER : MonoBehaviour
+{
+    //create variables here
+
+    //will be called once
+    public override void Start()
+    {
+    }
+
+    //it is called every frame
+    public override void Update()
+    {
+    }
+
+    //functions for colliders
+    public override void OnTriggerCollision(IGameObject other)
+    {
+    }
+    public override void OnExitCollision(IGameObject other)
+    {
+    }
+
+    public override void OnTriggerSensor(IGameObject other)
+    {
+    }
+    public override void OnExitSensor(IGameObject other)
+    {
+    }
+})";
+
+    const std::string placeholder = "CLASS_NAME_PLACEHOLDER";
+    size_t pos = file_content.find(placeholder);
+    if (pos != std::string::npos) {
+        file_content.replace(pos, placeholder.length(), script_name);
+    }
+
+    std::ofstream out_file(file_path);
+    if (out_file.is_open()) {
+        out_file << file_content;
+        out_file.close();
+    }
+    else
+    {
+        LOG(LogType::LOG_ERROR, "Error creating Script File at %s", file_path.c_str());
+    }
 }
 
 MonoObject* ScriptingEM::InstantiateClass(const std::string& class_name, Script* container_script)

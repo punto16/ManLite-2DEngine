@@ -158,8 +158,12 @@ public:
 	mat4f GetProjection() const { return this->projection; }
 	Camera2D& GetSceneCamera() { return scene_camera; }
 
+    //
     void UseSceneViewCam();
     void UseGameViewCam();
+    //
+    ML_Color GetBackGroundColor() const { return bg_color; }
+    void SetBackGroundColor(ML_Color c) { bg_color = c; }
 
     void SetupDebugShapes();
     void SetupInstancedAttributes(GLuint VAO);
@@ -172,6 +176,8 @@ public:
 
     static glm::mat4 ConvertMat3fToGlmMat4(const mat3f& mat, float z = 0.0f);
 private:
+
+    ML_Color bg_color = { 102, 102, 102, 255 };
 
 	bool vsync;
 
@@ -194,6 +200,7 @@ private:
 public:
     //bool useful in editor to edit the scene without needing to disable or un-visible every light go in scene
     bool rend_lights = true;
+    bool rend_colliders = true;
 
 	GLuint fbo;
 	

@@ -26,11 +26,13 @@
 #include "GameObject.h"
 #include "Canvas.h"
 #include "Camera.h"
+#include "Sprite2D.h"
 #include "Collider2D.h"
 #include "AudioSource.h"
 #include "Animator.h"
 #include "ParticleSystem.h"
 #include "TileMap.h"
+#include "Light.h"
 #include "FilesManager.h"
 
 #if defined(_WIN32)
@@ -250,14 +252,15 @@ bool Gui::PreUpdate()
 bool Gui::Update(double dt)
 {
 	bool ret = true;
-
+	AutoSaveSceneBg((float)dt);
 	HandleShortcut();
 
 	MainMenuBar();
 	BuildPanel();
+	AutoSaveScenePanel();
 
 	//test window
-	ImGui::ShowDemoWindow();
+	if (show_demo_panel) ImGui::ShowDemoWindow();
 
 	for (const auto& panel : panels)
 	{
@@ -272,9 +275,11 @@ bool Gui::Update(double dt)
 		engine->scene_manager_em->CleanUp();
 		engine->scene_manager_em->GetCurrentScene() = *save_scene_panel->new_scene;
 		LOG(LogType::LOG_INFO, "Scene <%s> created", save_scene_panel->new_scene->GetSceneName().c_str());
+		engine->scene_manager_em->FinishLoad();
 		save_scene_panel->set_scene = false;
 		ResourceManager::GetInstance().ReleaseTexture("Config\\placeholder.png");
 		engine->scripting_em->stop_process_instantiate_queue = false;
+		RestartAutoSaveTimer();
 	}
 
 	return ret;
@@ -517,6 +522,8 @@ void Gui::FileMenu()
 	if (ImGui::MenuItem("Save Scene", "Ctrl+S"))
 	{
 		std::string filePath = engine->scene_manager_em->GetCurrentScene().GetScenePath();
+		if (filePath.empty() || filePath == "")
+			filePath = "Assets\\Scenes\\" + engine->scene_manager_em->GetCurrentScene().GetSceneName() + ".mlscene";
 		if (!filePath.empty() && filePath != "")
 		{
 			std::filesystem::path fullPath(filePath);
@@ -527,6 +534,7 @@ void Gui::FileMenu()
 				directory += std::filesystem::path::preferred_separator;
 
 			engine->scene_manager_em->SaveScene(directory, sceneName);
+			RestartAutoSaveTimer();
 		}
 	}
 	if (ImGui::MenuItem("Save As...", 0))
@@ -542,13 +550,14 @@ void Gui::FileMenu()
 				directory += std::filesystem::path::preferred_separator;
 
 			engine->scene_manager_em->SaveScene(directory, sceneName);
+			RestartAutoSaveTimer();
 		}
 	}
 	if (ImGui::BeginMenu("Import"))
 	{
 		bool tiled_file = ImGui::MenuItem("Tiled File");
 		ImGui::SameLine();
-		Gui::HelpMarker("Import a tiled file exported as .json\nIMPORTANT: the tiled file must contain only 1 TileSet and Orthogonal");
+		Gui::HelpMarker("Import a tiled file exported as .json\nIMPORTANT: the tiled file must contain only 1 TileSet and Orthogonal and must be embed to the TileMap");
 		if (tiled_file)
 		{
 			std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Open Tiled file (*.json)\0*.json\0", "Assets\\TileMaps\\Tiled")).string();
@@ -636,22 +645,74 @@ void Gui::EditMenu()
 
 void Gui::AssetsMenu()
 {
+
 	if (ImGui::BeginMenu("Create"))
 	{
-		if (ImGui::MenuItem("Folder", 0, false, false))
+		if (ImGui::MenuItem("Folder"))
 		{
-
+			std::string folder_path = project_panel->current_directory->absolute_path + "\\" + "New Folder";
+			if (FilesManager::GetInstance().CreateFolder(folder_path))
+			{
+				FilesManager::GetInstance().ProcessFromRoot();
+				project_panel->UpdateCurrentDirectory(project_panel->current_directory);
+				project_panel->RequestFocus();
+			}
 		}
 
 		ImGui::Separator();
 
-		if (ImGui::MenuItem("Script", 0, false, false))
+		if (ImGui::BeginMenu("Script"))
 		{
+			static char script_name_input[128] = "NewScript";
+			ImGui::SetNextItemWidth(200.0f);
 
-		}
-		if (ImGui::MenuItem("Shader", 0, false, false))
-		{
+			if (ImGui::InputText("##script_name_input", script_name_input, IM_ARRAYSIZE(script_name_input),
+				ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_AutoSelectAll | ImGuiInputTextFlags_CharsNoBlank))
+			{
+				std::string script_name = script_name_input;
 
+				std::replace(script_name.begin(), script_name.end(), ' ', '_');
+
+				script_name.erase(std::remove_if(script_name.begin(), script_name.end(),
+					[](char c) { return !std::isalnum(c) && c != '_'; }),
+					script_name.end());
+
+				if (!script_name.empty() && std::isdigit(static_cast<unsigned char>(script_name[0]))) {
+					script_name = "Script_" + script_name;
+				}
+
+				if (script_name.empty()) {
+					script_name = "NewScript";
+				}
+
+				if (script_name.length() < 3) {
+					script_name = "NewScript";
+				}
+
+				engine->scripting_em->CreateScriptFile(script_name);
+
+				FilesManager::GetInstance().ProcessFromRoot();
+				project_panel->UpdateCurrentDirectory(project_panel->current_directory);
+
+				// Resetear el input
+				strcpy(script_name_input, "NewScript");
+			}
+
+			std::string name_str(script_name_input);
+			bool valid_name = !name_str.empty() &&
+				name_str.length() >= 3 &&
+				std::all_of(name_str.begin(), name_str.end(), [](char c) {
+				return std::isalnum(c) || c == '_';
+					}) &&
+				(!std::isdigit(static_cast<unsigned char>(name_str[0])));
+
+					if (!valid_name) {
+						ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.4f, 0.4f, 1.0f));
+						ImGui::Text("Use letters, numbers and _. Min 3 chars. Can't start with number.");
+						ImGui::PopStyleColor();
+					}
+
+					ImGui::EndMenu();
 		}
 
 		ImGui::EndMenu();
@@ -678,11 +739,88 @@ void Gui::GameObjectMenu()
 		e_go->SetName("Camera");
 		e_go->AddComponent<Camera>();
 	}
+	if (ImGui::MenuItem("Sprite"))
+	{
+		std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Open Sprite file (*.png)\0*.png\0", "Assets\\Textures")).string();
+		if (!filePath.empty() && filePath.ends_with(".png"))
+		{
+			GameObject* e_go = engine->scene_manager_em->GetCurrentScene().CreateEmptyGO(engine->scene_manager_em->GetCurrentScene().GetSceneRoot()).get();
+			e_go->SetName("Sprite");
+			e_go->AddComponent<Sprite2D>(filePath);
+		}
+	}
+	if (ImGui::MenuItem("Audio Source"))
+	{
+		GameObject* e_go = engine->scene_manager_em->GetCurrentScene().CreateEmptyGO(engine->scene_manager_em->GetCurrentScene().GetSceneRoot()).get();
+		e_go->SetName("AudioSource");
+		e_go->AddComponent<AudioSource>();
+	}
+	if (ImGui::MenuItem("Collider 2D"))
+	{
+		GameObject* e_go = engine->scene_manager_em->GetCurrentScene().CreateEmptyGO(engine->scene_manager_em->GetCurrentScene().GetSceneRoot()).get();
+		e_go->SetName("Collider2D");
+		e_go->AddComponent<Collider2D>();
+	}
 	if (ImGui::MenuItem("Canvas"))
 	{
 		GameObject* e_go = engine->scene_manager_em->GetCurrentScene().CreateEmptyGO(engine->scene_manager_em->GetCurrentScene().GetSceneRoot()).get();
 		e_go->SetName("Canvas");
 		e_go->AddComponent<Canvas>();
+	}
+	if (ImGui::MenuItem("Particle System"))
+	{
+		GameObject* e_go = engine->scene_manager_em->GetCurrentScene().CreateEmptyGO(engine->scene_manager_em->GetCurrentScene().GetSceneRoot()).get();
+		e_go->SetName("ParticleSystem");
+		e_go->AddComponent<ParticleSystem>();
+	}
+	if (ImGui::MenuItem("TileMap"))
+	{
+		std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Open TileSet (*.png)\0*.png\0", "Assets\\TileMaps")).string();
+		if (!filePath.empty() && filePath.ends_with(".png"))
+		{
+			GameObject* e_go = engine->scene_manager_em->GetCurrentScene().CreateEmptyGO(engine->scene_manager_em->GetCurrentScene().GetSceneRoot()).get();
+			e_go->SetName("TileMap");
+			e_go->AddComponent<TileMap>();
+			e_go->GetComponent<TileMap>()->SwapTexture(filePath);
+		}
+	}
+	if (ImGui::MenuItem("Script"))
+	{
+		std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Open ManLite Script file (*.cs)\0*.cs\0", "Assets\\Scripts")).string();
+		if (!filePath.empty() && filePath.ends_with(".png"))
+		{
+			GameObject* e_go = engine->scene_manager_em->GetCurrentScene().CreateEmptyGO(engine->scene_manager_em->GetCurrentScene().GetSceneRoot()).get();
+			e_go->SetName("Script");
+			std::filesystem::path fullPath(filePath);
+			std::string script_name = fullPath.stem().string();
+			e_go->AddComponent<Script>(script_name);
+		}
+	}
+	if (ImGui::BeginMenu("Light"))
+	{
+		if (ImGui::MenuItem("Ambient Light"))
+		{
+			GameObject* e_go = engine->scene_manager_em->GetCurrentScene().CreateEmptyGO(engine->scene_manager_em->GetCurrentScene().GetSceneRoot()).get();
+			e_go->SetName("AmbientLight");
+			e_go->AddComponent<Light>();
+			e_go->GetComponent<Light>()->SetType(LightType::AREA_LIGHT);
+		}
+		if (ImGui::MenuItem("Point Light"))
+		{
+			GameObject* e_go = engine->scene_manager_em->GetCurrentScene().CreateEmptyGO(engine->scene_manager_em->GetCurrentScene().GetSceneRoot()).get();
+			e_go->SetName("PointLight");
+			e_go->AddComponent<Light>();
+			e_go->GetComponent<Light>()->SetType(LightType::POINT_LIGHT);
+		}
+		if (ImGui::MenuItem("Spot Light"))
+		{
+			GameObject* e_go = engine->scene_manager_em->GetCurrentScene().CreateEmptyGO(engine->scene_manager_em->GetCurrentScene().GetSceneRoot()).get();
+			e_go->SetName("SpotLight");
+			e_go->AddComponent<Light>();
+			e_go->GetComponent<Light>()->SetType(LightType::RAY_LIGHT);
+		}
+
+		ImGui::EndMenu();
 	}
 }
 
@@ -740,18 +878,57 @@ void Gui::ComponentMenu()
 
 	ImGui::Separator();
 
+	if (ImGui::MenuItem("Sprite"))
+	{
+		std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Open Sprite file (*.png)\0*.png\0", "Assets\\Textures")).string();
+		if (!filePath.empty() && filePath.ends_with(".png"))
+		{
+			for (const auto& item : engine->scene_manager_em->GetCurrentScene().GetSelectedGOs())
+				item.lock()->AddComponent<Sprite2D>(filePath);
+		}
+	}
 	if (ImGui::MenuItem("Animator"))
 	{
 		for (const auto& item : engine->scene_manager_em->GetCurrentScene().GetSelectedGOs())
-			item.lock()->AddComponent<Animator>();
+			if (item.lock()->GetComponent<Sprite2D>())
+				item.lock()->AddComponent<Animator>();
 	}
-
 	if (ImGui::MenuItem("TileMap"))
+	{
+		std::string filePath = std::filesystem::relative(FileDialog::OpenFile("Open TileSet file (*.png)\0*.png\0", "Assets\\TileMaps")).string();
+		if (!filePath.empty() && filePath.ends_with(".png"))
+		{
+			for (const auto& item : engine->scene_manager_em->GetCurrentScene().GetSelectedGOs())
+			{
+				item.lock()->AddComponent<TileMap>();
+				item.lock()->GetComponent<TileMap>()->SwapTexture(filePath);
+			}
+		}
+	}
+	ImGui::Separator();
+
+	if (ImGui::MenuItem("Ambient Light"))
 	{
 		for (const auto& item : engine->scene_manager_em->GetCurrentScene().GetSelectedGOs())
 		{
-			item.lock()->AddComponent<TileMap>();
-			item.lock()->GetComponent<TileMap>()->SwapTexture("Assets\\TileMaps\\platformer_tileset.png");
+			item.lock()->AddComponent<Light>();
+			item.lock()->GetComponent<Light>()->SetType(LightType::AREA_LIGHT);
+		}
+	}
+	if (ImGui::MenuItem("Point Light"))
+	{
+		for (const auto& item : engine->scene_manager_em->GetCurrentScene().GetSelectedGOs())
+		{
+			item.lock()->AddComponent<Light>();
+			item.lock()->GetComponent<Light>()->SetType(LightType::POINT_LIGHT);
+		}
+	}
+	if (ImGui::MenuItem("Spot Light"))
+	{
+		for (const auto& item : engine->scene_manager_em->GetCurrentScene().GetSelectedGOs())
+		{
+			item.lock()->AddComponent<Light>();
+			item.lock()->GetComponent<Light>()->SetType(LightType::RAY_LIGHT);
 		}
 	}
 }
@@ -769,6 +946,9 @@ void Gui::WindowMenu()
 		if (ImGui::MenuItem(panel->GetName().c_str(), NULL, panel->GetState()))
 			panel->SwitchState();
 	}
+
+	if (ImGui::MenuItem("ImGuiDemo", NULL, show_demo_panel))
+		show_demo_panel = !show_demo_panel;
 }
 
 void Gui::HelpMenu()
@@ -1077,6 +1257,123 @@ void Gui::BuildPanel()
 	}
 }
 
+void Gui::AutoSaveScenePanel()
+{
+	if (show_auto_save_panel)
+	{
+		ImGuiViewport* viewport = ImGui::GetMainViewport();
+		ImVec2 viewport_pos = viewport->Pos;
+		ImVec2 viewport_size = viewport->Size;
+
+		const ImVec2 PADDING(20, 200);
+		const ImVec2 PANEL_SIZE(400, 40);
+		ImVec2 window_pos(
+			viewport_pos.x + viewport_size.x - PADDING.x - PANEL_SIZE.x,
+			viewport_pos.y + viewport_size.y - PADDING.y - PANEL_SIZE.y
+		);
+
+		ImGui::SetNextWindowPos(window_pos, ImGuiCond_Always);
+		ImGui::SetNextWindowSize(PANEL_SIZE, ImGuiCond_Always);
+		ImGui::SetNextWindowViewport(viewport->ID);
+
+		ImGuiWindowFlags flags =
+			ImGuiWindowFlags_NoTitleBar |
+			ImGuiWindowFlags_NoResize |
+			ImGuiWindowFlags_NoMove |
+			ImGuiWindowFlags_NoScrollbar |
+			ImGuiWindowFlags_NoCollapse;
+
+		ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.12f, 0.12f, 0.12f, 0.95f));
+		ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.65f, 0.15f, 0.55f, 1.0f));
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 1.5f);
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 10.0f);
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(15, 10));
+
+		if (ImGui::Begin("AutoSave", nullptr, flags))
+		{
+			ImGui::Columns(2, "##autosave_columns", false);
+			ImGui::SetColumnWidth(0, 120.0f);
+
+			ImGui::AlignTextToFramePadding();
+			ImGui::TextColored(ImVec4(0.85f, 0.35f, 0.75f, 1.0f), "AUTO SAVE");
+
+			ImGui::NextColumn();
+
+			ImGui::SetCursorPosX(ImGui::GetCursorPosX() + (ImGui::GetColumnWidth() - 30) * 0.5f - 15);
+			ImGui::TextColored(ImVec4(1.0f, 0.7f, 0.9f, 1.0f), "%d", static_cast<int>(countdown_timer) + 1);
+
+			ImGui::Columns(1);
+
+			ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2);
+			ImGui::Text("Saving scene in %d seconds...", static_cast<int>(countdown_timer) + 1);
+
+			ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5);
+			float progress = 1.0f - (countdown_timer / 5.0f);
+			ImGui::PushStyleColor(ImGuiCol_PlotHistogram, ImVec4(0.75f, 0.25f, 0.65f, 1.0f));
+			ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0.25f, 0.25f, 0.25f, 1.0f));
+
+			char progress_text[32];
+			sprintf(progress_text, "%.0f%%", progress * 100);
+			ImGui::ProgressBar(progress, ImVec2(-1, 16), progress_text);
+
+			ImGui::PopStyleColor(2);
+		}
+		ImGui::End();
+
+		ImGui::PopStyleVar(3);
+		ImGui::PopStyleColor(2);
+	}
+}
+
+void Gui::AutoSaveSceneBg(float dt)
+{
+	if (engine->GetEngineState() == EngineState::STOP)
+	{
+		auto_save_timer += dt;
+
+		//auto save every 5 minutes
+		if (auto_save_timer >= (60.0f * 5) && !show_auto_save_panel)
+		{
+			show_auto_save_panel = true;
+			countdown_timer = 5.0f;
+			auto_save_timer = 0.0f;
+		}
+
+		if (show_auto_save_panel)
+		{
+			countdown_timer -= dt;
+
+			if (countdown_timer <= 0.0f)
+			{
+				show_auto_save_panel = false;
+
+				std::string filePath = engine->scene_manager_em->GetCurrentScene().GetScenePath();
+				if (filePath.empty())
+					filePath = "Assets\\Scenes\\" + engine->scene_manager_em->GetCurrentScene().GetSceneName() + ".mlscene";
+
+				if (!filePath.empty())
+				{
+					std::filesystem::path fullPath(filePath);
+					std::string sceneName = fullPath.stem().string();
+					std::string directory = fullPath.parent_path().string();
+
+					if (!directory.empty() && directory.back() != std::filesystem::path::preferred_separator)
+						directory += std::filesystem::path::preferred_separator;
+
+					engine->scene_manager_em->SaveScene(directory, sceneName);
+				}
+			}
+		}
+	}
+}
+
+void Gui::RestartAutoSaveTimer()
+{
+	auto_save_timer = 0.0f;
+	countdown_timer = 0.0f;
+	show_auto_save_panel = false;
+}
+
 void Gui::HandleShortcut()
 {
 	if (ImGui::GetIO().WantTextInput) return;
@@ -1111,6 +1408,8 @@ void Gui::HandleShortcut()
 		engine->input_em->GetKey(SDL_SCANCODE_S) == KEY_DOWN)
 	{
 		std::string filePath = engine->scene_manager_em->GetCurrentScene().GetScenePath();
+		if (filePath.empty() || filePath == "")
+			filePath = "Assets\\Scenes\\" + engine->scene_manager_em->GetCurrentScene().GetSceneName() + ".mlscene";
 		if (!filePath.empty() && filePath != "")
 		{
 			std::filesystem::path fullPath(filePath);
@@ -1121,6 +1420,7 @@ void Gui::HandleShortcut()
 				directory += std::filesystem::path::preferred_separator;
 
 			engine->scene_manager_em->SaveScene(directory, sceneName);
+			RestartAutoSaveTimer();
 		}
 	}
 	else if (engine->input_em->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT &&

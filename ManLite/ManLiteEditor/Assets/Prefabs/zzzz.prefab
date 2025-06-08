@@ -1,0 +1,218 @@
+{
+    "Components": [
+        {
+            "AspectRatio": 1.0,
+            "ComponentName": "Transform",
+            "ComponentType": 0,
+            "Enabled": true,
+            "LockAspect": true,
+            "Position": [
+                0.0,
+                0.0
+            ],
+            "Rotation": 0.0,
+            "Scale": [
+                3.799999952316284,
+                3.799999952316284
+            ]
+        },
+        {
+            "ComponentName": "Sprite2D",
+            "ComponentType": 2,
+            "Enabled": true,
+            "FlipHorizontal": false,
+            "FlipVertical": false,
+            "Offset": [
+                0.0,
+                0.0
+            ],
+            "PixelArtRender": false,
+            "TexturePath": "Assets\\Textures\\image.png",
+            "TextureSection": [
+                0,
+                0,
+                640,
+                480
+            ],
+            "TextureSize": [
+                640,
+                480
+            ],
+            "TextureUVs": [
+                0.0,
+                0.0,
+                1.0,
+                1.0
+            ]
+        }
+    ],
+    "Enabled": true,
+    "GameObjects": [
+        {
+            "Components": [
+                {
+                    "AspectRatio": 1.0,
+                    "ComponentName": "Transform",
+                    "ComponentType": 0,
+                    "Enabled": true,
+                    "LockAspect": true,
+                    "Position": [
+                        0.0,
+                        -0.5
+                    ],
+                    "Rotation": 0.0,
+                    "Scale": [
+                        0.6000000238418579,
+                        0.6000000238418579
+                    ]
+                },
+                {
+                    "ComponentName": "Sprite2D",
+                    "ComponentType": 2,
+                    "Enabled": true,
+                    "FlipHorizontal": false,
+                    "FlipVertical": false,
+                    "Offset": [
+                        0.0,
+                        0.0
+                    ],
+                    "PixelArtRender": false,
+                    "TexturePath": "Assets\\Textures\\image2.png",
+                    "TextureSection": [
+                        0,
+                        0,
+                        1200,
+                        1200
+                    ],
+                    "TextureSize": [
+                        1200,
+                        1200
+                    ],
+                    "TextureUVs": [
+                        0.0,
+                        0.0,
+                        1.0,
+                        1.0
+                    ]
+                }
+            ],
+            "Enabled": true,
+            "GameObjects": [
+                {
+                    "Components": [
+                        {
+                            "AspectRatio": 1.0,
+                            "ComponentName": "Transform",
+                            "ComponentType": 0,
+                            "Enabled": true,
+                            "LockAspect": true,
+                            "Position": [
+                                -0.6499999761581421,
+                                0.6499999761581421
+                            ],
+                            "Rotation": 0.0,
+                            "Scale": [
+                                0.6000000238418579,
+                                0.6000000238418579
+                            ]
+                        },
+                        {
+                            "ComponentName": "Sprite2D",
+                            "ComponentType": 2,
+                            "Enabled": true,
+                            "FlipHorizontal": false,
+                            "FlipVertical": false,
+                            "Offset": [
+                                0.0,
+                                0.0
+                            ],
+                            "PixelArtRender": false,
+                            "TexturePath": "Assets\\Textures\\image2.png",
+                            "TextureSection": [
+                                0,
+                                0,
+                                1200,
+                                1200
+                            ],
+                            "TextureSize": [
+                                1200,
+                                1200
+                            ],
+                            "TextureUVs": [
+                                0.0,
+                                0.0,
+                                1.0,
+                                1.0
+                            ]
+                        }
+                    ],
+                    "Enabled": true,
+                    "GameObjects": [
+                        {
+                            "Components": [
+                                {
+                                    "AspectRatio": 1.0,
+                                    "ComponentName": "Transform",
+                                    "ComponentType": 0,
+                                    "Enabled": true,
+                                    "LockAspect": true,
+                                    "Position": [
+                                        1.8143274784088135,
+                                        -0.4254385530948639
+                                    ],
+                                    "Rotation": 0.0,
+                                    "Scale": [
+                                        0.6000000238418579,
+                                        0.6000000238418579
+                                    ]
+                                },
+                                {
+                                    "ComponentName": "Sprite2D",
+                                    "ComponentType": 2,
+                                    "Enabled": true,
+                                    "FlipHorizontal": false,
+                                    "FlipVertical": false,
+                                    "Offset": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "PixelArtRender": false,
+                                    "TexturePath": "Assets\\Textures\\image2.png",
+                                    "TextureSection": [
+                                        0,
+                                        0,
+                                        1200,
+                                        1200
+                                    ],
+                                    "TextureSize": [
+                                        1200,
+                                        1200
+                                    ],
+                                    "TextureUVs": [
+                                        0.0,
+                                        0.0,
+                                        1.0,
+                                        1.0
+                                    ]
+                                }
+                            ],
+                            "Enabled": true,
+                            "Name": "image_test3",
+                            "Tag": "Default",
+                            "Visible": true
+                        }
+                    ],
+                    "Name": "image_test2",
+                    "Tag": "Default",
+                    "Visible": true
+                }
+            ],
+            "Name": "image_test",
+            "Tag": "Default",
+            "Visible": true
+        }
+    ],
+    "Name": "zzzz",
+    "Tag": "Default",
+    "Visible": true
+}

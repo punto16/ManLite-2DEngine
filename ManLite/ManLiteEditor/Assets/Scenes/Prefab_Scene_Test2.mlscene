@@ -1,0 +1,106 @@
+{
+  "background_color": [
+    102,
+    102,
+    102,
+    255
+  ],
+  "game_objects": [
+    {
+      "ID": 971639640,
+      "ParentID": 3669440505,
+      "ParentLayerID": 1,
+      "PrefabPath": "Assets\\Prefabs\\zzzz.prefab"
+    },
+    {
+      "Components": [
+        {
+          "AspectRatio": 1.0,
+          "ComponentID": 1284109937,
+          "ComponentName": "Transform",
+          "ComponentType": 0,
+          "ContainerGOID": 1482007557,
+          "Enabled": true,
+          "LockAspect": true,
+          "Position": [
+            0.0,
+            0.0
+          ],
+          "Rotation": 0.0,
+          "Scale": [
+            10.300000190734863,
+            10.300000190734863
+          ]
+        },
+        {
+          "ComponentID": 869015989,
+          "ComponentName": "Sprite2D",
+          "ComponentType": 2,
+          "ContainerGOID": 1482007557,
+          "Enabled": true,
+          "FlipHorizontal": false,
+          "FlipVertical": false,
+          "Offset": [
+            0.0,
+            0.0
+          ],
+          "PixelArtRender": false,
+          "TexturePath": "Assets\\TileMaps\\dark_forest\\background_0.png",
+          "TextureSection": [
+            0,
+            0,
+            288,
+            180
+          ],
+          "TextureSize": [
+            288,
+            180
+          ],
+          "TextureUVs": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ]
+        }
+      ],
+      "Enabled": true,
+      "ID": 1482007557,
+      "Name": "barrier",
+      "ParentID": 3669440505,
+      "ParentLayerID": 0,
+      "Tag": "Default",
+      "Visible": true
+    }
+  ],
+  "layers": [
+    {
+      "Layer_children_go_id": [
+        971639640,
+        508866323,
+        2279469002,
+        2586229594
+      ],
+      "children_count": 4,
+      "layer_id": 1,
+      "layer_name": "barrier layer",
+      "visible": true
+    },
+    {
+      "Layer_children_go_id": [
+        1482007557
+      ],
+      "children_count": 1,
+      "layer_id": 0,
+      "layer_name": "DefaultLayer_0",
+      "visible": true
+    }
+  ],
+  "scene_gravity": [
+    0.0,
+    -9.8100004196167
+  ],
+  "scene_id": 3669440505,
+  "scene_name": "Prefab_Scene_Test2",
+  "scene_path": "Assets\\Scenes\\Prefab_Scene_Test2.mlscene"
+}

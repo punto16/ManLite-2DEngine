@@ -15,8 +15,13 @@ void Log(const char file[], int line, LogType type, const char* format, ...)
 	static va_list ap;
 
 	va_start(ap, format);
-	vsprintf_s(tmpString1, BUFFER_SIZE, format, ap);
+	int count = _vsnprintf_s(tmpString1, BUFFER_SIZE, _TRUNCATE, format, ap);
 	va_end(ap);
+
+	if (count == -1) {
+		strcpy_s(tmpString1, BUFFER_SIZE, "LogSystem: Log to print is too long");
+		type = LogType::LOG_ERROR;
+	}
 
 	sprintf_s(tmpString2, BUFFER_SIZE, "\n%s(%d) : %s", file, line, tmpString1);
 	OutputDebugStringA(tmpString2);

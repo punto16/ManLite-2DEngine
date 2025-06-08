@@ -21,6 +21,7 @@ public:
 	void SetTitle(std::string title);
 	void SetIcon(std::string path);
 	void GetWindowSize(unsigned int& w, unsigned int& h) const;
+	void GetWindowPos(int& x, int& y) const;
 	SDL_Window* GetSDLWindow() const { return this->window; }
 	SDL_GLContext GetGLContext() const { return this->gl_context; }
 	bool GetVsync() { return vsync; }

@@ -248,6 +248,7 @@ GameObject* MonoRegisterer::InstantiatePrefab(MonoString* path)
 	engine->scene_manager_em->GetCurrentScene().SafeAddGO(instantiated_prefab);
 	engine->scene_manager_em->GetCurrentScene().GetSceneLayers()[0]->AddChild(instantiated_prefab);
 	instantiated_prefab->SetParentLayer(engine->scene_manager_em->GetCurrentScene().GetSceneLayers()[0]);
+	instantiated_prefab->CheckForEmptyLayers(&engine->scene_manager_em->GetCurrentScene());
 	return instantiated_prefab.get();
 }
 
@@ -353,8 +354,7 @@ static void SetEnableComponent(GameObject* go, int component_type, bool enable)
 	{
 	case ComponentType::Transform:
 	{
-		if (auto c = go->GetComponent<Transform>())
-			c->SetEnabled(enable);
+		//transform is main component, it can NOT be disabled
 		break;
 	}
 	case ComponentType::Camera:
@@ -591,6 +591,46 @@ static void SwapTexture(GameObject* go, MonoString* path)
 	if (auto c = go->GetComponent<Sprite2D>())
 		c->SwapTexture(MonoRegisterer::ToCppString(path));
 }
+static void FlipTextureVertical(GameObject* go, bool v)
+{
+	if (!go) return;
+	if (auto c = go->GetComponent<Sprite2D>())
+		c->SetFlipVertical(v);
+}
+static bool GetFlipTextureVertical(GameObject* go)
+{
+	if (!go) return false;
+	if (auto c = go->GetComponent<Sprite2D>())
+		return c->IsFlipVertical();
+	return false;
+}
+static void FlipTextureHorizontal(GameObject* go, bool h)
+{
+	if (!go) return;
+	if (auto c = go->GetComponent<Sprite2D>())
+		c->SetFlipHorizontal(h);
+}
+static bool GetFlipTextureHorizontal(GameObject* go)
+{
+	if (!go) return false;
+	if (auto c = go->GetComponent<Sprite2D>())
+		return c->IsFlipHorizontal();
+	return false;
+}
+static bool GetDefaultFlipTextureVertical(GameObject* go)
+{
+	if (!go) return false;
+	if (auto c = go->GetComponent<Sprite2D>())
+		return c->IsDefaultFlipVertical();
+	return false;
+}
+static bool GetDefaultFlipTextureHorizontal(GameObject* go)
+{
+	if (!go) return false;
+	if (auto c = go->GetComponent<Sprite2D>())
+		return c->IsDefaultFlipHorizontal();
+	return false;
+}
 
 
 static void PlayAnimation(GameObject* go, MonoString* animation)
@@ -598,6 +638,11 @@ static void PlayAnimation(GameObject* go, MonoString* animation)
 	if (!go) return;
 	if (auto c = go->GetComponent<Animator>())
 		c->Play(MonoRegisterer::ToCppString(animation));
+}static void RePlayAnimation(GameObject* go, MonoString* animation)
+{
+	if (!go) return;
+	if (auto c = go->GetComponent<Animator>())
+		c->RePlay(MonoRegisterer::ToCppString(animation));
 }
 static void StopAnimation(GameObject* go)
 {
@@ -1221,6 +1266,18 @@ static void PlaySound(GameObject* go, MonoString* audio)
 	if (auto c = go->GetComponent<AudioSource>())
 		c->PlaySound(MonoRegisterer::ToCppString(audio));
 }
+static void RePlayMusic(GameObject* go, MonoString* audio)
+{
+	if (!go) return;
+	if (auto c = go->GetComponent<AudioSource>())
+		c->RePlayMusic(MonoRegisterer::ToCppString(audio));
+}
+static void RePlaySound(GameObject* go, MonoString* audio)
+{
+	if (!go) return;
+	if (auto c = go->GetComponent<AudioSource>())
+		c->RePlaySound(MonoRegisterer::ToCppString(audio));
+}
 static void PauseMusic(GameObject* go, MonoString* audio)
 {
 	if (!go) return;
@@ -1232,6 +1289,18 @@ static void PauseSound(GameObject* go, MonoString* audio)
 	if (!go) return;
 	if (auto c = go->GetComponent<AudioSource>())
 		c->PauseSound(MonoRegisterer::ToCppString(audio));
+}
+static void UnpauseMusic(GameObject* go, MonoString* audio)
+{
+	if (!go) return;
+	if (auto c = go->GetComponent<AudioSource>())
+		c->UnpauseMusic(MonoRegisterer::ToCppString(audio));
+}
+static void UnpauseSound(GameObject* go, MonoString* audio)
+{
+	if (!go) return;
+	if (auto c = go->GetComponent<AudioSource>())
+		c->UnpauseSound(MonoRegisterer::ToCppString(audio));
 }
 static void StopMusic(GameObject* go, MonoString* audio)
 {
@@ -1466,9 +1535,16 @@ void MonoRegisterer::RegisterFunctions()
 	mono_add_internal_call("ManLiteScripting.InternalCalls::IsPixelArt", (void*)IsPixelArt);
 	mono_add_internal_call("ManLiteScripting.InternalCalls::SetPixelArtRender", (void*)SetPixelArtRender);
 	mono_add_internal_call("ManLiteScripting.InternalCalls::SwapTexture", (void*)SwapTexture);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::FlipTextureVertical", (void*)FlipTextureVertical);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::GetFlipTextureVertical", (void*)GetFlipTextureVertical);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::FlipTextureHorizontal", (void*)FlipTextureHorizontal);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::GetFlipTextureHorizontal", (void*)GetFlipTextureHorizontal);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::GetDefaultFlipTextureVertical", (void*)GetDefaultFlipTextureVertical);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::GetDefaultFlipTextureHorizontal", (void*)GetDefaultFlipTextureHorizontal);
 
 	//animator
 	mono_add_internal_call("ManLiteScripting.InternalCalls::PlayAnimation", (void*)PlayAnimation);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::RePlayAnimation", (void*)RePlayAnimation);
 	mono_add_internal_call("ManLiteScripting.InternalCalls::StopAnimation", (void*)StopAnimation);
 	mono_add_internal_call("ManLiteScripting.InternalCalls::IsAnimationPlaying", (void*)IsAnimationPlaying);
 
@@ -1532,8 +1608,12 @@ void MonoRegisterer::RegisterFunctions()
 	mono_add_internal_call("ManLiteScripting.InternalCalls::StopAudioSource", (void*)StopAudioSource);
 	mono_add_internal_call("ManLiteScripting.InternalCalls::PlayMusic", (void*)PlayMusic);
 	mono_add_internal_call("ManLiteScripting.InternalCalls::PlaySound", (void*)PlaySound);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::RePlayMusic", (void*)RePlayMusic);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::RePlaySound", (void*)RePlaySound);
 	mono_add_internal_call("ManLiteScripting.InternalCalls::PauseMusic", (void*)PauseMusic);
 	mono_add_internal_call("ManLiteScripting.InternalCalls::PauseSound", (void*)PauseSound);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::UnpauseMusic", (void*)UnpauseMusic);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::UnpauseSound", (void*)UnpauseSound);
 	mono_add_internal_call("ManLiteScripting.InternalCalls::StopMusic", (void*)StopMusic);
 	mono_add_internal_call("ManLiteScripting.InternalCalls::StopSound", (void*)StopSound);
 	mono_add_internal_call("ManLiteScripting.InternalCalls::GetMusicVolume", (void*)GetMusicVolume);

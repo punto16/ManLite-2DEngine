@@ -36,6 +36,9 @@ private:
 	int dragged_layer_index = -1;
 	bool dragging_layer = false;
 
+	bool rename_layer = false;
+	Layer* layer_to_rename = nullptr;
+
 	std::weak_ptr<GameObject> dragged_gameobject;
 };
 

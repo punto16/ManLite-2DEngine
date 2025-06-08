@@ -46,6 +46,27 @@ void Layer::AddChild(std::shared_ptr<GameObject> child, bool add_to_front)
 	}
 }
 
+void Layer::AddChild(std::shared_ptr<GameObject> child, std::shared_ptr<GameObject> reference, bool add_to_front)
+{
+	auto it = std::find(children_gameobject.begin(), children_gameobject.end(), reference);
+
+	if (it != children_gameobject.end())
+	{
+		if (add_to_front)
+		{
+			children_gameobject.insert(it, child);
+		}
+		else
+		{
+			children_gameobject.insert(it + 1, child);
+		}
+	}
+	else
+	{
+		AddChild(child, add_to_front);
+	}
+}
+
 bool Layer::RemoveChild(const std::shared_ptr<GameObject>& child)
 {
 	const size_t initial_size = children_gameobject.size();

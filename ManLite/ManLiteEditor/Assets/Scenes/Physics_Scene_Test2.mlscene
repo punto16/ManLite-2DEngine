@@ -34,6 +34,7 @@
           "ContainerGOID": 4138794320,
           "Enabled": true,
           "Friction": 0.30000001192092896,
+          "GravityScale": 1.0,
           "Height": 1.0,
           "IsDynamic": true,
           "IsSensor": false,
@@ -52,6 +53,8 @@
           "ComponentType": 2,
           "ContainerGOID": 4138794320,
           "Enabled": true,
+          "FlipHorizontal": false,
+          "FlipVertical": false,
           "Offset": [
             0.0,
             0.0
@@ -117,6 +120,7 @@
           "ContainerGOID": 1220738609,
           "Enabled": true,
           "Friction": 0.30000001192092896,
+          "GravityScale": 1.0,
           "Height": 1.0,
           "IsDynamic": true,
           "IsSensor": false,
@@ -135,6 +139,8 @@
           "ComponentType": 2,
           "ContainerGOID": 1220738609,
           "Enabled": true,
+          "FlipHorizontal": false,
+          "FlipVertical": false,
           "Offset": [
             0.0,
             0.0
@@ -200,6 +206,7 @@
           "ContainerGOID": 3498053229,
           "Enabled": true,
           "Friction": 0.30000001192092896,
+          "GravityScale": 1.0,
           "Height": 1.0,
           "IsDynamic": false,
           "IsSensor": false,
@@ -276,6 +283,10 @@
       "layer_name": "DefaultLayer_0",
       "visible": true
     }
+  ],
+  "scene_gravity": [
+    0.0,
+    -9.8100004196167
   ],
   "scene_id": 1866580616,
   "scene_name": "physics_scene_test2",

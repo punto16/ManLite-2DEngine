@@ -72,6 +72,7 @@ public:
 	bool ContainsLayer(const std::shared_ptr<Layer>& layer) const;
 	//
 	void SelectGameObject(std::shared_ptr<GameObject> go, bool additive = false, bool unselect_all = false);
+	void DeselectGameObject(std::shared_ptr<GameObject> go);
 	void SelectRange(std::shared_ptr<GameObject> endGO);
 	void TraverseRecursive(std::shared_ptr<GameObject> go, const std::function<void(std::shared_ptr<GameObject>)>& func);
 	void TraverseHierarchy(const std::function<void(std::shared_ptr<GameObject>)>& func)
@@ -145,6 +146,10 @@ public:
 	void LoadSceneToScene(const std::string& file_name, Scene& scene);
 	void RuntimeLoadScene(const std::string& file_name);
 	void ImportTiledFile(const std::string& file_name);
+
+
+	void FinishLoad();
+
 
 	//engine state scene manager
 	void StartSession();

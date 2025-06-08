@@ -1,5 +1,4 @@
 {
-  "CamerasAmount": 0,
   "game_objects": [
     {
       "Components": [
@@ -27,6 +26,12 @@
           "ComponentType": 2,
           "ContainerGOID": 3613049865,
           "Enabled": true,
+          "FlipHorizontal": false,
+          "FlipVertical": false,
+          "Offset": [
+            0.0,
+            0.0
+          ],
           "PixelArtRender": false,
           "TexturePath": "Assets\\Textures\\image.png",
           "TextureSection": [
@@ -59,6 +64,7 @@
           "ContainerGOID": 3613049865,
           "Enabled": true,
           "Friction": 0.30000001192092896,
+          "GravityScale": 1.0,
           "Height": 1.0,
           "IsDynamic": false,
           "IsSensor": false,
@@ -66,6 +72,7 @@
           "LockRotation": false,
           "Mass": 0.0,
           "Radius": 0.5,
+          "Restitution": 0.0,
           "ShapeType": "RECTANGLE",
           "UseGravity": false,
           "Width": 1.0
@@ -74,7 +81,7 @@
       "Enabled": true,
       "ID": 3613049865,
       "Name": "Ground",
-      "ParentID": 168259370,
+      "ParentID": 2139903159,
       "ParentLayerID": 0,
       "Tag": "Default",
       "Visible": true
@@ -95,8 +102,8 @@
           ],
           "Rotation": 0.0,
           "Scale": [
-            1.0,
-            1.0
+            0.9999977350234985,
+            0.9999977350234985
           ]
         },
         {
@@ -105,6 +112,12 @@
           "ComponentType": 2,
           "ContainerGOID": 1245056060,
           "Enabled": true,
+          "FlipHorizontal": false,
+          "FlipVertical": false,
+          "Offset": [
+            0.0,
+            0.0
+          ],
           "PixelArtRender": false,
           "TexturePath": "Assets\\Textures\\image.png",
           "TextureSection": [
@@ -137,6 +150,7 @@
           "ContainerGOID": 1245056060,
           "Enabled": true,
           "Friction": 0.30000001192092896,
+          "GravityScale": 1.0,
           "Height": 1.0,
           "IsDynamic": true,
           "IsSensor": false,
@@ -144,6 +158,7 @@
           "LockRotation": true,
           "Mass": 5.0,
           "Radius": 0.5,
+          "Restitution": 0.0,
           "ShapeType": "RECTANGLE",
           "UseGravity": true,
           "Width": 1.0
@@ -152,7 +167,7 @@
       "Enabled": true,
       "ID": 1245056060,
       "Name": "movable",
-      "ParentID": 168259370,
+      "ParentID": 2139903159,
       "ParentLayerID": 0,
       "Tag": "Default",
       "Visible": true
@@ -170,6 +185,11 @@
       "visible": true
     }
   ],
+  "scene_gravity": [
+    0.0,
+    -9.8100004196167
+  ],
+  "scene_id": 2139903159,
   "scene_name": "Untitled_Scene",
   "scene_path": "Assets\\Scenes\\Physics_Scene_Test.mlscene"
 }

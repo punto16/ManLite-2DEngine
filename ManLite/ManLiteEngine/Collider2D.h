@@ -24,6 +24,10 @@ public:
     bool Pause() override;
     bool Unpause() override;
 
+
+    void SetPosition(vec2f pos);
+    void SetAngle(float angle);
+
     // Shape management
     ShapeType GetShapeType() const { return m_shapeType; }
     float GetWidth() const { return m_width; }
@@ -85,6 +89,12 @@ public:
     bool GetUseGravity() const { return m_useGravity; }
     void SetUseGravity(bool useGravity);
 
+    float GetGravityScale() const { return m_gravity_scale; }
+    void SetGravityScale(float gravity);
+
+    vec2f GetWorldGravity();
+    void SetWorldGravity(vec2f g);
+
     void SetEnabled(bool enable);
 
 private:
@@ -111,5 +121,6 @@ private:
     //1 -> no energy-loss bounce
     float m_restitution = 0.0f;
     bool m_useGravity = true;
+    float m_gravity_scale = 1.0f;
     ML_Color m_color = { 0,255,0,255 };//green default
 };

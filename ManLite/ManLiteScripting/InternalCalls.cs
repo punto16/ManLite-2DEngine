@@ -10,19 +10,165 @@ namespace ManLiteScripting
 {
     #region Structs
     [StructLayout(LayoutKind.Sequential)]
-    public struct Vec2f
+    public struct Vec2f : IEquatable<Vec2f>
     {
         public float X;
         public float Y;
+
+        public Vec2f(float x, float y)
+        {
+            X = x;
+            Y = y;
+        }
+
+        public static bool operator ==(Vec2f left, Vec2f right) => left.Equals(right);
+        public static bool operator !=(Vec2f left, Vec2f right) => !(left == right);
+
+        public static Vec2f operator +(Vec2f left, Vec2f right) =>
+            new Vec2f(left.X + right.X, left.Y + right.Y);
+
+        public static Vec2f operator -(Vec2f left, Vec2f right) =>
+            new Vec2f(left.X - right.X, left.Y - right.Y);
+
+        public static Vec2f operator *(Vec2f left, Vec2f right) =>
+            new Vec2f(left.X * right.X, left.Y * right.Y);
+
+        public static Vec2f operator *(Vec2f left, float scalar) =>
+            new Vec2f(left.X * scalar, left.Y * scalar);
+
+        public static Vec2f operator *(float scalar, Vec2f right) =>
+            right * scalar;
+
+        public static Vec2f operator /(Vec2f vector, float scalar)
+        {
+            if (Math.Abs(scalar) < 1e-8f)
+                throw new DivideByZeroException("Scalar cannot be zero");
+
+            float inv = 1.0f / scalar;
+            return new Vec2f(vector.X * inv, vector.Y * inv);
+        }
+
+        public static Vec2f operator /(Vec2f left, Vec2f right)
+        {
+            if (Math.Abs(right.X) < 1e-8f || Math.Abs(right.Y) < 1e-8f)
+                throw new DivideByZeroException("Vector component cannot be zero");
+
+            return new Vec2f(left.X / right.X, left.Y / right.Y);
+        }
+
+        public bool Equals(Vec2f other)
+        {
+            const float tolerance = 1e-6f;
+            return Math.Abs(X - other.X) < tolerance &&
+                   Math.Abs(Y - other.Y) < tolerance;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is Vec2f other && Equals(other);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                int hash = 17;
+                hash = hash * 31 + X.GetHashCode();
+                hash = hash * 31 + Y.GetHashCode();
+                return hash;
+            }
+        }
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    public struct Vec4f
+    public struct Vec4f : IEquatable<Vec4f>
     {
         public float X;
         public float Y;
         public float Z;
         public float W;
+
+        public Vec4f(float x, float y, float z, float w)
+        {
+            X = x;
+            Y = y;
+            Z = z;
+            W = w;
+        }
+
+        public static bool operator ==(Vec4f left, Vec4f right)
+        {
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(Vec4f left, Vec4f right)
+        {
+            return !(left == right);
+        }
+
+        public static Vec4f operator +(Vec4f left, Vec4f right) =>
+            new Vec4f(left.X + right.X, left.Y + right.Y, left.Z + right.Z, left.W + right.W);
+
+        public static Vec4f operator -(Vec4f left, Vec4f right) =>
+            new Vec4f(left.X - right.X, left.Y - right.Y, left.Z - right.Z, left.W - right.W);
+
+        public static Vec4f operator *(Vec4f left, Vec4f right) =>
+            new Vec4f(left.X * right.X, left.Y * right.Y, left.Z * right.Z, left.W * right.W);
+
+        public static Vec4f operator *(Vec4f left, float scalar) =>
+            new Vec4f(left.X * scalar, left.Y * scalar, left.Z * scalar, left.W * scalar);
+
+        public static Vec4f operator *(float scalar, Vec4f right) =>
+            right * scalar;
+
+        public static Vec4f operator /(Vec4f vector, float scalar)
+        {
+            if (Math.Abs(scalar) < 1e-8f)
+                throw new DivideByZeroException("Scalar cannot be zero");
+
+            float inv = 1.0f / scalar;
+            return new Vec4f(vector.X * inv, vector.Y * inv, vector.Z * inv, vector.W * inv);
+        }
+
+        public static Vec4f operator /(Vec4f left, Vec4f right)
+        {
+            if (Math.Abs(right.X) < 1e-8f || Math.Abs(right.Y) < 1e-8f ||
+                Math.Abs(right.Z) < 1e-8f || Math.Abs(right.W) < 1e-8f)
+                throw new DivideByZeroException("Vector component cannot be zero");
+
+            return new Vec4f(
+                left.X / right.X,
+                left.Y / right.Y,
+                left.Z / right.Z,
+                left.W / right.W);
+        }
+
+        public bool Equals(Vec4f other)
+        {
+            const float tolerance = 1e-6f;
+            return Math.Abs(X - other.X) < tolerance &&
+                   Math.Abs(Y - other.Y) < tolerance &&
+                   Math.Abs(Z - other.Z) < tolerance &&
+                   Math.Abs(W - other.W) < tolerance;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is Vec4f other && Equals(other);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                int hash = 17;
+                hash = hash * 31 + X.GetHashCode();
+                hash = hash * 31 + Y.GetHashCode();
+                hash = hash * 31 + Z.GetHashCode();
+                hash = hash * 31 + W.GetHashCode();
+                return hash;
+            }
+        }
     }
     #endregion
 
@@ -126,11 +272,18 @@ namespace ManLiteScripting
         [MethodImpl(MethodImplOptions.InternalCall)] public extern static bool IsPixelArt(IntPtr go);
         [MethodImpl(MethodImplOptions.InternalCall)] public extern static void SetPixelArtRender(IntPtr go, bool enable);
         [MethodImpl(MethodImplOptions.InternalCall)] public extern static void SwapTexture(IntPtr go, string path);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void FlipTextureVertical(IntPtr go, bool v);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static bool GetFlipTextureVertical(IntPtr go);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void FlipTextureHorizontal(IntPtr go, bool h);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static bool GetFlipTextureHorizontal(IntPtr go);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static bool GetDefaultFlipTextureVertical(IntPtr go);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static bool GetDefaultFlipTextureHorizontal(IntPtr go);
         #endregion
 
 
         #region Animator
         [MethodImpl(MethodImplOptions.InternalCall)] public extern static void PlayAnimation(IntPtr go, string animation);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void RePlayAnimation(IntPtr go, string animation);
         [MethodImpl(MethodImplOptions.InternalCall)] public extern static void StopAnimation(IntPtr go);
         [MethodImpl(MethodImplOptions.InternalCall)] public extern static bool IsAnimationPlaying(IntPtr go, string animation);
         #endregion
@@ -201,6 +354,8 @@ namespace ManLiteScripting
         [MethodImpl(MethodImplOptions.InternalCall)] public extern static void PlaySound(IntPtr go, string audio);
         [MethodImpl(MethodImplOptions.InternalCall)] public extern static void PauseMusic(IntPtr go, string audio);
         [MethodImpl(MethodImplOptions.InternalCall)] public extern static void PauseSound(IntPtr go, string audio);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void UnpauseMusic(IntPtr go, string audio);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void UnpauseSound(IntPtr go, string audio);
         [MethodImpl(MethodImplOptions.InternalCall)] public extern static void StopMusic(IntPtr go, string audio);
         [MethodImpl(MethodImplOptions.InternalCall)] public extern static void StopSound(IntPtr go, string audio);
         [MethodImpl(MethodImplOptions.InternalCall)] public extern static int GetMusicVolume(IntPtr go, string audio);
@@ -247,6 +402,7 @@ namespace ManLiteScripting
         AudioSource = 7,
         ParticleSystem = 8,
         TileMap = 9,
+        Light = 10,
 
 
         Unkown
@@ -302,287 +458,287 @@ namespace ManLiteScripting
 
     public enum MouseButton
     {
-        SDL_BUTTON_UNKNOWN = 0,
-        SDL_BUTTON_LEFT = 1,
-        SDL_BUTTON_MIDDLE = 2,
-        SDL_BUTTON_RIGHT = 3,
-        SDL_BUTTON_X1 = 4,
-        SDL_BUTTON_X2 = 5
+        MOUSE_BUTTON_UNKNOWN = 0,
+        MOUSE_BUTTON_LEFT = 1,
+        MOUSE_BUTTON_MIDDLE = 2,
+        MOUSE_BUTTON_RIGHT = 3,
+        MOUSE_BUTTON_X1 = 4,
+        MOUSE_BUTTON_X2 = 5
     };
 
     public enum KeyboardKey
     {
-        SDL_SCANCODE_UNKNOWN = 0,
-        SDL_SCANCODE_A = 4,
-        SDL_SCANCODE_B = 5,
-        SDL_SCANCODE_C = 6,
-        SDL_SCANCODE_D = 7,
-        SDL_SCANCODE_E = 8,
-        SDL_SCANCODE_F = 9,
-        SDL_SCANCODE_G = 10,
-        SDL_SCANCODE_H = 11,
-        SDL_SCANCODE_I = 12,
-        SDL_SCANCODE_J = 13,
-        SDL_SCANCODE_K = 14,
-        SDL_SCANCODE_L = 15,
-        SDL_SCANCODE_M = 16,
-        SDL_SCANCODE_N = 17,
-        SDL_SCANCODE_O = 18,
-        SDL_SCANCODE_P = 19,
-        SDL_SCANCODE_Q = 20,
-        SDL_SCANCODE_R = 21,
-        SDL_SCANCODE_S = 22,
-        SDL_SCANCODE_T = 23,
-        SDL_SCANCODE_U = 24,
-        SDL_SCANCODE_V = 25,
-        SDL_SCANCODE_W = 26,
-        SDL_SCANCODE_X = 27,
-        SDL_SCANCODE_Y = 28,
-        SDL_SCANCODE_Z = 29,
+        KEY_UNKNOWN = 0,
+        KEY_A = 4,
+        KEY_B = 5,
+        KEY_C = 6,
+        KEY_D = 7,
+        KEY_E = 8,
+        KEY_F = 9,
+        KEY_G = 10,
+        KEY_H = 11,
+        KEY_I = 12,
+        KEY_J = 13,
+        KEY_K = 14,
+        KEY_L = 15,
+        KEY_M = 16,
+        KEY_N = 17,
+        KEY_O = 18,
+        KEY_P = 19,
+        KEY_Q = 20,
+        KEY_R = 21,
+        KEY_S = 22,
+        KEY_T = 23,
+        KEY_U = 24,
+        KEY_V = 25,
+        KEY_W = 26,
+        KEY_X = 27,
+        KEY_Y = 28,
+        KEY_Z = 29,
 
-        SDL_SCANCODE_1 = 30,
-        SDL_SCANCODE_2 = 31,
-        SDL_SCANCODE_3 = 32,
-        SDL_SCANCODE_4 = 33,
-        SDL_SCANCODE_5 = 34,
-        SDL_SCANCODE_6 = 35,
-        SDL_SCANCODE_7 = 36,
-        SDL_SCANCODE_8 = 37,
-        SDL_SCANCODE_9 = 38,
-        SDL_SCANCODE_0 = 39,
+        KEY_1 = 30,
+        KEY_2 = 31,
+        KEY_3 = 32,
+        KEY_4 = 33,
+        KEY_5 = 34,
+        KEY_6 = 35,
+        KEY_7 = 36,
+        KEY_8 = 37,
+        KEY_9 = 38,
+        KEY_0 = 39,
 
-        SDL_SCANCODE_RETURN = 40,
-        SDL_SCANCODE_ESCAPE = 41,
-        SDL_SCANCODE_BACKSPACE = 42,
-        SDL_SCANCODE_TAB = 43,
-        SDL_SCANCODE_SPACE = 44,
+        KEY_RETURN = 40,
+        KEY_ESCAPE = 41,
+        KEY_BACKSPACE = 42,
+        KEY_TAB = 43,
+        KEY_SPACE = 44,
 
-        SDL_SCANCODE_MINUS = 45,
-        SDL_SCANCODE_EQUALS = 46,
-        SDL_SCANCODE_LEFTBRACKET = 47,
-        SDL_SCANCODE_RIGHTBRACKET = 48,
-        SDL_SCANCODE_BACKSLASH = 49,
-        SDL_SCANCODE_NONUSHASH = 50,
-        SDL_SCANCODE_SEMICOLON = 51,
-        SDL_SCANCODE_APOSTROPHE = 52,
-        SDL_SCANCODE_GRAVE = 53,
-        SDL_SCANCODE_COMMA = 54,
-        SDL_SCANCODE_PERIOD = 55,
-        SDL_SCANCODE_SLASH = 56,
+        KEY_MINUS = 45,
+        KEY_EQUALS = 46,
+        KEY_LEFTBRACKET = 47,
+        KEY_RIGHTBRACKET = 48,
+        KEY_BACKSLASH = 49,
+        KEY_NONUSHASH = 50,
+        KEY_SEMICOLON = 51,
+        KEY_APOSTROPHE = 52,
+        KEY_GRAVE = 53,
+        KEY_COMMA = 54,
+        KEY_PERIOD = 55,
+        KEY_SLASH = 56,
 
-        SDL_SCANCODE_CAPSLOCK = 57,
+        KEY_CAPSLOCK = 57,
 
-        SDL_SCANCODE_F1 = 58,
-        SDL_SCANCODE_F2 = 59,
-        SDL_SCANCODE_F3 = 60,
-        SDL_SCANCODE_F4 = 61,
-        SDL_SCANCODE_F5 = 62,
-        SDL_SCANCODE_F6 = 63,
-        SDL_SCANCODE_F7 = 64,
-        SDL_SCANCODE_F8 = 65,
-        SDL_SCANCODE_F9 = 66,
-        SDL_SCANCODE_F10 = 67,
-        SDL_SCANCODE_F11 = 68,
-        SDL_SCANCODE_F12 = 69,
+        KEY_F1 = 58,
+        KEY_F2 = 59,
+        KEY_F3 = 60,
+        KEY_F4 = 61,
+        KEY_F5 = 62,
+        KEY_F6 = 63,
+        KEY_F7 = 64,
+        KEY_F8 = 65,
+        KEY_F9 = 66,
+        KEY_F10 = 67,
+        KEY_F11 = 68,
+        KEY_F12 = 69,
 
-        SDL_SCANCODE_PRINTSCREEN = 70,
-        SDL_SCANCODE_SCROLLLOCK = 71,
-        SDL_SCANCODE_PAUSE = 72,
-        SDL_SCANCODE_INSERT = 73,
-        SDL_SCANCODE_HOME = 74,
-        SDL_SCANCODE_PAGEUP = 75,
-        SDL_SCANCODE_DELETE = 76,
-        SDL_SCANCODE_END = 77,
-        SDL_SCANCODE_PAGEDOWN = 78,
-        SDL_SCANCODE_RIGHT = 79,
-        SDL_SCANCODE_LEFT = 80,
-        SDL_SCANCODE_DOWN = 81,
-        SDL_SCANCODE_UP = 82,
+        KEY_PRINTSCREEN = 70,
+        KEY_SCROLLLOCK = 71,
+        KEY_PAUSE = 72,
+        KEY_INSERT = 73,
+        KEY_HOME = 74,
+        KEY_PAGEUP = 75,
+        KEY_DELETE = 76,
+        KEY_END = 77,
+        KEY_PAGEDOWN = 78,
+        KEY_RIGHT = 79,
+        KEY_LEFT = 80,
+        KEY_DOWN = 81,
+        KEY_UP = 82,
 
-        SDL_SCANCODE_NUMLOCKCLEAR = 83,
-        SDL_SCANCODE_KP_DIVIDE = 84,
-        SDL_SCANCODE_KP_MULTIPLY = 85,
-        SDL_SCANCODE_KP_MINUS = 86,
-        SDL_SCANCODE_KP_PLUS = 87,
-        SDL_SCANCODE_KP_ENTER = 88,
-        SDL_SCANCODE_KP_1 = 89,
-        SDL_SCANCODE_KP_2 = 90,
-        SDL_SCANCODE_KP_3 = 91,
-        SDL_SCANCODE_KP_4 = 92,
-        SDL_SCANCODE_KP_5 = 93,
-        SDL_SCANCODE_KP_6 = 94,
-        SDL_SCANCODE_KP_7 = 95,
-        SDL_SCANCODE_KP_8 = 96,
-        SDL_SCANCODE_KP_9 = 97,
-        SDL_SCANCODE_KP_0 = 98,
-        SDL_SCANCODE_KP_PERIOD = 99,
+        KEY_NUMLOCKCLEAR = 83,
+        KEY_KP_DIVIDE = 84,
+        KEY_KP_MULTIPLY = 85,
+        KEY_KP_MINUS = 86,
+        KEY_KP_PLUS = 87,
+        KEY_KP_ENTER = 88,
+        KEY_KP_1 = 89,
+        KEY_KP_2 = 90,
+        KEY_KP_3 = 91,
+        KEY_KP_4 = 92,
+        KEY_KP_5 = 93,
+        KEY_KP_6 = 94,
+        KEY_KP_7 = 95,
+        KEY_KP_8 = 96,
+        KEY_KP_9 = 97,
+        KEY_KP_0 = 98,
+        KEY_KP_PERIOD = 99,
 
-        SDL_SCANCODE_NONUSBACKSLASH = 100,
-        SDL_SCANCODE_APPLICATION = 101,
-        SDL_SCANCODE_POWER = 102,
+        KEY_NONUSBACKSLASH = 100,
+        KEY_APPLICATION = 101,
+        KEY_POWER = 102,
 
-        SDL_SCANCODE_KP_EQUALS = 103,
-        SDL_SCANCODE_F13 = 104,
-        SDL_SCANCODE_F14 = 105,
-        SDL_SCANCODE_F15 = 106,
-        SDL_SCANCODE_F16 = 107,
-        SDL_SCANCODE_F17 = 108,
-        SDL_SCANCODE_F18 = 109,
-        SDL_SCANCODE_F19 = 110,
-        SDL_SCANCODE_F20 = 111,
-        SDL_SCANCODE_F21 = 112,
-        SDL_SCANCODE_F22 = 113,
-        SDL_SCANCODE_F23 = 114,
-        SDL_SCANCODE_F24 = 115,
-        SDL_SCANCODE_EXECUTE = 116,
-        SDL_SCANCODE_HELP = 117,
-        SDL_SCANCODE_MENU = 118,
-        SDL_SCANCODE_SELECT = 119,
-        SDL_SCANCODE_STOP = 120,
-        SDL_SCANCODE_AGAIN = 121,
-        SDL_SCANCODE_UNDO = 122,
-        SDL_SCANCODE_CUT = 123,
-        SDL_SCANCODE_COPY = 124,
-        SDL_SCANCODE_PASTE = 125,
-        SDL_SCANCODE_FIND = 126,
-        SDL_SCANCODE_MUTE = 127,
-        SDL_SCANCODE_VOLUMEUP = 128,
-        SDL_SCANCODE_VOLUMEDOWN = 129,
+        KEY_KP_EQUALS = 103,
+        KEY_F13 = 104,
+        KEY_F14 = 105,
+        KEY_F15 = 106,
+        KEY_F16 = 107,
+        KEY_F17 = 108,
+        KEY_F18 = 109,
+        KEY_F19 = 110,
+        KEY_F20 = 111,
+        KEY_F21 = 112,
+        KEY_F22 = 113,
+        KEY_F23 = 114,
+        KEY_F24 = 115,
+        KEY_EXECUTE = 116,
+        KEY_HELP = 117,
+        KEY_MENU = 118,
+        KEY_SELECT = 119,
+        KEY_STOP = 120,
+        KEY_AGAIN = 121,
+        KEY_UNDO = 122,
+        KEY_CUT = 123,
+        KEY_COPY = 124,
+        KEY_PASTE = 125,
+        KEY_FIND = 126,
+        KEY_MUTE = 127,
+        KEY_VOLUMEUP = 128,
+        KEY_VOLUMEDOWN = 129,
 
-        SDL_SCANCODE_KP_COMMA = 133,
-        SDL_SCANCODE_KP_EQUALSAS400 = 134,
+        KEY_KP_COMMA = 133,
+        KEY_KP_EQUALSAS400 = 134,
 
-        SDL_SCANCODE_INTERNATIONAL1 = 135,
+        KEY_INTERNATIONAL1 = 135,
 
-        SDL_SCANCODE_INTERNATIONAL2 = 136,
-        SDL_SCANCODE_INTERNATIONAL3 = 137,
-        SDL_SCANCODE_INTERNATIONAL4 = 138,
-        SDL_SCANCODE_INTERNATIONAL5 = 139,
-        SDL_SCANCODE_INTERNATIONAL6 = 140,
-        SDL_SCANCODE_INTERNATIONAL7 = 141,
-        SDL_SCANCODE_INTERNATIONAL8 = 142,
-        SDL_SCANCODE_INTERNATIONAL9 = 143,
-        SDL_SCANCODE_LANG1 = 144,
-        SDL_SCANCODE_LANG2 = 145,
-        SDL_SCANCODE_LANG3 = 146,
-        SDL_SCANCODE_LANG4 = 147,
-        SDL_SCANCODE_LANG5 = 148,
-        SDL_SCANCODE_LANG6 = 149,
-        SDL_SCANCODE_LANG7 = 150,
-        SDL_SCANCODE_LANG8 = 151,
-        SDL_SCANCODE_LANG9 = 152,
+        KEY_INTERNATIONAL2 = 136,
+        KEY_INTERNATIONAL3 = 137,
+        KEY_INTERNATIONAL4 = 138,
+        KEY_INTERNATIONAL5 = 139,
+        KEY_INTERNATIONAL6 = 140,
+        KEY_INTERNATIONAL7 = 141,
+        KEY_INTERNATIONAL8 = 142,
+        KEY_INTERNATIONAL9 = 143,
+        KEY_LANG1 = 144,
+        KEY_LANG2 = 145,
+        KEY_LANG3 = 146,
+        KEY_LANG4 = 147,
+        KEY_LANG5 = 148,
+        KEY_LANG6 = 149,
+        KEY_LANG7 = 150,
+        KEY_LANG8 = 151,
+        KEY_LANG9 = 152,
 
-        SDL_SCANCODE_ALTERASE = 153,
-        SDL_SCANCODE_SYSREQ = 154,
-        SDL_SCANCODE_CANCEL = 155,
-        SDL_SCANCODE_CLEAR = 156,
-        SDL_SCANCODE_PRIOR = 157,
-        SDL_SCANCODE_RETURN2 = 158,
-        SDL_SCANCODE_SEPARATOR = 159,
-        SDL_SCANCODE_OUT = 160,
-        SDL_SCANCODE_OPER = 161,
-        SDL_SCANCODE_CLEARAGAIN = 162,
-        SDL_SCANCODE_CRSEL = 163,
-        SDL_SCANCODE_EXSEL = 164,
+        KEY_ALTERASE = 153,
+        KEY_SYSREQ = 154,
+        KEY_CANCEL = 155,
+        KEY_CLEAR = 156,
+        KEY_PRIOR = 157,
+        KEY_RETURN2 = 158,
+        KEY_SEPARATOR = 159,
+        KEY_OUT = 160,
+        KEY_OPER = 161,
+        KEY_CLEARAGAIN = 162,
+        KEY_CRSEL = 163,
+        KEY_EXSEL = 164,
 
-        SDL_SCANCODE_KP_00 = 176,
-        SDL_SCANCODE_KP_000 = 177,
-        SDL_SCANCODE_THOUSANDSSEPARATOR = 178,
-        SDL_SCANCODE_DECIMALSEPARATOR = 179,
-        SDL_SCANCODE_CURRENCYUNIT = 180,
-        SDL_SCANCODE_CURRENCYSUBUNIT = 181,
-        SDL_SCANCODE_KP_LEFTPAREN = 182,
-        SDL_SCANCODE_KP_RIGHTPAREN = 183,
-        SDL_SCANCODE_KP_LEFTBRACE = 184,
-        SDL_SCANCODE_KP_RIGHTBRACE = 185,
-        SDL_SCANCODE_KP_TAB = 186,
-        SDL_SCANCODE_KP_BACKSPACE = 187,
-        SDL_SCANCODE_KP_A = 188,
-        SDL_SCANCODE_KP_B = 189,
-        SDL_SCANCODE_KP_C = 190,
-        SDL_SCANCODE_KP_D = 191,
-        SDL_SCANCODE_KP_E = 192,
-        SDL_SCANCODE_KP_F = 193,
-        SDL_SCANCODE_KP_XOR = 194,
-        SDL_SCANCODE_KP_POWER = 195,
-        SDL_SCANCODE_KP_PERCENT = 196,
-        SDL_SCANCODE_KP_LESS = 197,
-        SDL_SCANCODE_KP_GREATER = 198,
-        SDL_SCANCODE_KP_AMPERSAND = 199,
-        SDL_SCANCODE_KP_DBLAMPERSAND = 200,
-        SDL_SCANCODE_KP_VERTICALBAR = 201,
-        SDL_SCANCODE_KP_DBLVERTICALBAR = 202,
-        SDL_SCANCODE_KP_COLON = 203,
-        SDL_SCANCODE_KP_HASH = 204,
-        SDL_SCANCODE_KP_SPACE = 205,
-        SDL_SCANCODE_KP_AT = 206,
-        SDL_SCANCODE_KP_EXCLAM = 207,
-        SDL_SCANCODE_KP_MEMSTORE = 208,
-        SDL_SCANCODE_KP_MEMRECALL = 209,
-        SDL_SCANCODE_KP_MEMCLEAR = 210,
-        SDL_SCANCODE_KP_MEMADD = 211,
-        SDL_SCANCODE_KP_MEMSUBTRACT = 212,
-        SDL_SCANCODE_KP_MEMMULTIPLY = 213,
-        SDL_SCANCODE_KP_MEMDIVIDE = 214,
-        SDL_SCANCODE_KP_PLUSMINUS = 215,
-        SDL_SCANCODE_KP_CLEAR = 216,
-        SDL_SCANCODE_KP_CLEARENTRY = 217,
-        SDL_SCANCODE_KP_BINARY = 218,
-        SDL_SCANCODE_KP_OCTAL = 219,
-        SDL_SCANCODE_KP_DECIMAL = 220,
-        SDL_SCANCODE_KP_HEXADECIMAL = 221,
+        KEY_KP_00 = 176,
+        KEY_KP_000 = 177,
+        KEY_THOUSANDSSEPARATOR = 178,
+        KEY_DECIMALSEPARATOR = 179,
+        KEY_CURRENCYUNIT = 180,
+        KEY_CURRENCYSUBUNIT = 181,
+        KEY_KP_LEFTPAREN = 182,
+        KEY_KP_RIGHTPAREN = 183,
+        KEY_KP_LEFTBRACE = 184,
+        KEY_KP_RIGHTBRACE = 185,
+        KEY_KP_TAB = 186,
+        KEY_KP_BACKSPACE = 187,
+        KEY_KP_A = 188,
+        KEY_KP_B = 189,
+        KEY_KP_C = 190,
+        KEY_KP_D = 191,
+        KEY_KP_E = 192,
+        KEY_KP_F = 193,
+        KEY_KP_XOR = 194,
+        KEY_KP_POWER = 195,
+        KEY_KP_PERCENT = 196,
+        KEY_KP_LESS = 197,
+        KEY_KP_GREATER = 198,
+        KEY_KP_AMPERSAND = 199,
+        KEY_KP_DBLAMPERSAND = 200,
+        KEY_KP_VERTICALBAR = 201,
+        KEY_KP_DBLVERTICALBAR = 202,
+        KEY_KP_COLON = 203,
+        KEY_KP_HASH = 204,
+        KEY_KP_SPACE = 205,
+        KEY_KP_AT = 206,
+        KEY_KP_EXCLAM = 207,
+        KEY_KP_MEMSTORE = 208,
+        KEY_KP_MEMRECALL = 209,
+        KEY_KP_MEMCLEAR = 210,
+        KEY_KP_MEMADD = 211,
+        KEY_KP_MEMSUBTRACT = 212,
+        KEY_KP_MEMMULTIPLY = 213,
+        KEY_KP_MEMDIVIDE = 214,
+        KEY_KP_PLUSMINUS = 215,
+        KEY_KP_CLEAR = 216,
+        KEY_KP_CLEARENTRY = 217,
+        KEY_KP_BINARY = 218,
+        KEY_KP_OCTAL = 219,
+        KEY_KP_DECIMAL = 220,
+        KEY_KP_HEXADECIMAL = 221,
 
-        SDL_SCANCODE_LCTRL = 224,
-        SDL_SCANCODE_LSHIFT = 225,
-        SDL_SCANCODE_LALT = 226,
-        SDL_SCANCODE_LGUI = 227,
-        SDL_SCANCODE_RCTRL = 228,
-        SDL_SCANCODE_RSHIFT = 229,
-        SDL_SCANCODE_RALT = 230,
-        SDL_SCANCODE_RGUI = 231,
+        KEY_LCTRL = 224,
+        KEY_LSHIFT = 225,
+        KEY_LALT = 226,
+        KEY_LGUI = 227,
+        KEY_RCTRL = 228,
+        KEY_RSHIFT = 229,
+        KEY_RALT = 230,
+        KEY_RGUI = 231,
 
-        SDL_SCANCODE_MODE = 257,
+        KEY_MODE = 257,
 
-        SDL_SCANCODE_AUDIONEXT = 258,
-        SDL_SCANCODE_AUDIOPREV = 259,
-        SDL_SCANCODE_AUDIOSTOP = 260,
-        SDL_SCANCODE_AUDIOPLAY = 261,
-        SDL_SCANCODE_AUDIOMUTE = 262,
-        SDL_SCANCODE_MEDIASELECT = 263,
-        SDL_SCANCODE_WWW = 264,
-        SDL_SCANCODE_MAIL = 265,
-        SDL_SCANCODE_CALCULATOR = 266,
-        SDL_SCANCODE_COMPUTER = 267,
-        SDL_SCANCODE_AC_SEARCH = 268,
-        SDL_SCANCODE_AC_HOME = 269,
-        SDL_SCANCODE_AC_BACK = 270,
-        SDL_SCANCODE_AC_FORWARD = 271,
-        SDL_SCANCODE_AC_STOP = 272,
-        SDL_SCANCODE_AC_REFRESH = 273,
-        SDL_SCANCODE_AC_BOOKMARKS = 274,
+        KEY_AUDIONEXT = 258,
+        KEY_AUDIOPREV = 259,
+        KEY_AUDIOSTOP = 260,
+        KEY_AUDIOPLAY = 261,
+        KEY_AUDIOMUTE = 262,
+        KEY_MEDIASELECT = 263,
+        KEY_WWW = 264,
+        KEY_MAIL = 265,
+        KEY_CALCULATOR = 266,
+        KEY_COMPUTER = 267,
+        KEY_AC_SEARCH = 268,
+        KEY_AC_HOME = 269,
+        KEY_AC_BACK = 270,
+        KEY_AC_FORWARD = 271,
+        KEY_AC_STOP = 272,
+        KEY_AC_REFRESH = 273,
+        KEY_AC_BOOKMARKS = 274,
 
-        SDL_SCANCODE_BRIGHTNESSDOWN = 275,
-        SDL_SCANCODE_BRIGHTNESSUP = 276,
-        SDL_SCANCODE_DISPLAYSWITCH = 277,
+        KEY_BRIGHTNESSDOWN = 275,
+        KEY_BRIGHTNESSUP = 276,
+        KEY_DISPLAYSWITCH = 277,
 
-        SDL_SCANCODE_KBDILLUMTOGGLE = 278,
-        SDL_SCANCODE_KBDILLUMDOWN = 279,
-        SDL_SCANCODE_KBDILLUMUP = 280,
-        SDL_SCANCODE_EJECT = 281,
-        SDL_SCANCODE_SLEEP = 282,
+        KEY_KBDILLUMTOGGLE = 278,
+        KEY_KBDILLUMDOWN = 279,
+        KEY_KBDILLUMUP = 280,
+        KEY_EJECT = 281,
+        KEY_SLEEP = 282,
 
-        SDL_SCANCODE_APP1 = 283,
-        SDL_SCANCODE_APP2 = 284,
+        KEY_APP1 = 283,
+        KEY_APP2 = 284,
 
-        SDL_SCANCODE_AUDIOREWIND = 285,
-        SDL_SCANCODE_AUDIOFASTFORWARD = 286,
+        KEY_AUDIOREWIND = 285,
+        KEY_AUDIOFASTFORWARD = 286,
 
-        SDL_SCANCODE_SOFTLEFT = 287,
+        KEY_SOFTLEFT = 287,
 
-        SDL_SCANCODE_SOFTRIGHT = 288,
+        KEY_SOFTRIGHT = 288,
 
-        SDL_SCANCODE_CALL = 289,
-        SDL_SCANCODE_ENDCALL = 290,
-        SDL_NUM_SCANCODES = 512
+        KEY_CALL = 289,
+        KEY_ENDCALL = 290,
+        NUM_SCANCODES = 512
     };
 }

@@ -59,6 +59,10 @@ private:
 	int mouseX, mouseY, mouse_motionX, mouse_motionY, mouse_wheelY;
 
 	std::vector<SDL_Event> events;
+
+	//
+	float window_ev_fix_time = 5.0f;
+	float window_ev_fix_timer = 0.0f;
 };
 
 #endif // __INPUT_EM_H__

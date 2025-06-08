@@ -7,12 +7,15 @@
 #include "GameObject.h"
 #include "Layer.h"
 
-bool Prefab::SaveAsPrefab(std::shared_ptr<GameObject> gameObject, const std::string& filePath_const)
+bool Prefab::SaveAsPrefab(std::shared_ptr<GameObject> gameObject, const std::string& filePath_const, nlohmann::json& prefabJson)
 {
     std::string filePath = filePath_const;
     std::replace(filePath.begin(), filePath.end(), '/', '\\');
 
-    nlohmann::json prefabJson = gameObject->SaveGameObject();
+    bool is_prefab_modified = gameObject->IsPrefabModified();
+    gameObject->SetPrefabModified(true);
+    prefabJson = gameObject->SaveGameObject();
+    gameObject->SetPrefabModified(is_prefab_modified);
     RemoveIDs(prefabJson);
 
     std::ofstream file(filePath);
@@ -66,6 +69,7 @@ std::shared_ptr<GameObject> Prefab::Instantiate(const std::string& filePath_cons
         {
             engine->scene_manager_em->GetCurrentScene().GetSceneLayers()[0]->AddChild(instance);
             instance->SetParentLayer(engine->scene_manager_em->GetCurrentScene().GetSceneLayers()[0]);
+            instance->CheckForEmptyLayers(&engine->scene_manager_em->GetCurrentScene());
         }
     }
 

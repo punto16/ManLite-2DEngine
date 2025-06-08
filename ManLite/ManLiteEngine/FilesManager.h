@@ -59,6 +59,8 @@ public:
 	//file watcher
 	void StartWatching();
 	void StopWatching();
+	void StartWatchingIfItWasnt();
+	void StopWatchingIfItWasnt();
 
 	FileData& GetFileData() { return assets_folder; }
 	FileData* GetFileDataByPath(std::string path);

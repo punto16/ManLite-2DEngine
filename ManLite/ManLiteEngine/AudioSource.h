@@ -37,8 +37,12 @@ public:
     bool Init() override;
     bool Update(float dt) override;
 
+    void Draw() override;
+
     bool Pause() override;
     bool Unpause() override;
+
+    void FinishLoad() override;
 
     // sound
     void AddSound(const std::string& name, const std::string& filePath, int volume = 100, bool loop = false, bool play_on_awake = false, bool spatial = false, int spatial_distance = 10);
@@ -55,6 +59,9 @@ public:
     // general
     void PlaySound(const std::string& name);
     void PlayMusic(const std::string& name);
+
+    void RePlaySound(const std::string& name);
+    void RePlayMusic(const std::string& name);
 
     void StopAll();
     void StopSound(const std::string& name);

@@ -271,6 +271,16 @@ void FilesManager::StopWatching()
     watch_timer = 0.0f;
 }
 
+void FilesManager::StartWatchingIfItWasnt()
+{
+    if (!watching) StartWatching();
+}
+
+void FilesManager::StopWatchingIfItWasnt()
+{
+    if (watching) StopWatching();
+}
+
 FileData* FilesManager::GetFileDataByPath(std::string path)
 {
     std::replace(path.begin(), path.end(), '\\', '/');
@@ -396,6 +406,15 @@ void FilesManager::ProcessChanges()
         if (path.starts_with("[DELETED]")) {
             const auto real_path = path.substr(9);
             HandleDeletedItem(real_path);
+            std::string ext = std::filesystem::path(real_path).extension().string();
+            if (ext == ".cs") {
+                scripts_changed = true;
+            }
+            else if (ext == ".png" || ext == ".jpg" || ext == ".jpeg" || ext == ".wav" ||
+                ext == ".mp3" || ext == ".ogg" || ext == ".ttf" || ext == ".otf" ||
+                ext == ".animation") {
+                resources_changed = true;
+            }
             continue;
         }
 

@@ -30,6 +30,8 @@
             "ComponentName": "Sprite2D",
             "ComponentType": 2,
             "Enabled": true,
+            "FlipHorizontal": false,
+            "FlipVertical": false,
             "Offset": [
                 0.0,
                 0.07999999821186066
@@ -101,6 +103,7 @@
             "ComponentType": 5,
             "Enabled": true,
             "Friction": 0.30000001192092896,
+            "GravityScale": 1.0,
             "Height": 3.299999952316284,
             "IsDynamic": true,
             "IsSensor": false,

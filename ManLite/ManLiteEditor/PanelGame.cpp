@@ -109,7 +109,9 @@ void PanelGame::DrawTopBarControls()
     }
 
 	ImGui::SameLine();
-	ImGui::Checkbox("Rend Lights##LightsFunctionality", &engine->renderer_em->rend_lights);
+	ImGui::Checkbox("Lights##LightsFunctionality", &engine->renderer_em->rend_lights);
+	ImGui::SameLine();
+	ImGui::Checkbox("Colliders##ImGuizmoFunctionality", &engine->renderer_em->rend_colliders);
 
     ImGui::PopStyleColor();
     ImGui::PopStyleVar();

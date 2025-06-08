@@ -30,6 +30,7 @@ public:
     bool HasAnimation(const std::string& name);
 
     void Play(const std::string& name);
+    void RePlay(const std::string& name);
     void Stop() { currentAnimation = nullptr; currentAnimationName.clear(); }
 
     bool IsPlaying(const std::string& name) const {

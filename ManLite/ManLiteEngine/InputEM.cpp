@@ -1,5 +1,7 @@
 #include "InputEM.h"
 
+#include "EngineCore.h"
+
 #include <string.h>
 #include <SDL2/SDL.h>
 #include <imgui_impl_sdl2.h>
@@ -39,6 +41,15 @@ bool InputEM::Start()
 bool InputEM::PreUpdate()
 {
 	bool ret = true;
+
+	window_ev_fix_timer += engine->GetDT();
+	if (window_ev_fix_timer >= window_ev_fix_time)
+	{
+		window_ev_fix_timer = 0.0f;
+	}
+	else
+		memset(windowEvents, 0, sizeof(bool) * WindowEvent_Count);
+
 	mouse_wheelY = 0;
 
 	static SDL_Event event;

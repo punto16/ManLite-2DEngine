@@ -80,7 +80,7 @@ void Sprite2D::Draw()
             0, 1, 1, 0,
             pixel_art,
             engine->scene_manager_em->GetCurrentScene().GetGOOrderInLayer(container_go.lock()),
-            0.0f
+            0
         );
         return;
     }

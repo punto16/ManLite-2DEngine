@@ -85,6 +85,7 @@ bool Animator::HasAnimation(const std::string& name)
 
 void Animator::Play(const std::string& name)
 {
+    if (name == currentAnimationName) return;
     Animation* anim = nullptr;
 
     auto it = animations.find(name);
@@ -92,6 +93,29 @@ void Animator::Play(const std::string& name)
 
     if (!anim) anim = ResourceManager::GetInstance().GetAnimation(name);
     if (!anim) 
+    {
+        std::string anim_name = std::filesystem::path(name).stem().string();
+        auto it2 = animations.find(anim_name);
+        if (it2 != animations.end())
+            anim = ResourceManager::GetInstance().GetAnimation(it2->second.filePath);
+    }
+    if (anim)
+    {
+        currentAnimation = anim;
+        currentAnimationName = name;
+        currentAnimation->Reset(currentFrame);
+    }
+}
+
+void Animator::RePlay(const std::string& name)
+{
+    Animation* anim = nullptr;
+
+    auto it = animations.find(name);
+    if (it != animations.end()) anim = it->second.animation;
+
+    if (!anim) anim = ResourceManager::GetInstance().GetAnimation(name);
+    if (!anim)
     {
         std::string anim_name = std::filesystem::path(name).stem().string();
         auto it2 = animations.find(anim_name);

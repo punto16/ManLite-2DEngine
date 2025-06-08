@@ -11,6 +11,7 @@
 #include "nlohmann/json.hpp"
 
 class Layer;
+class Scene;
 
 class GameObject : public std::enable_shared_from_this<GameObject>
 {
@@ -29,6 +30,8 @@ public:
 
 	void Draw();
 	void PrefabChecker();
+
+	void FinishLoad();
 
 	//DO NOT call this function to delete a game object
 	//instead, call current_scene->SafeDeleteGO(this);
@@ -151,6 +154,8 @@ public:
 	nlohmann::json SaveGameObject();
 	void LoadGameObject(const nlohmann::json& goJSON);
 
+	void CheckForEmptyLayers(Scene* scene);
+
 	//getters // setters
 	std::string GetName() const { return this->gameobject_name; }
 	void SetName(std::string name, bool unique_name = true) { this->gameobject_name = unique_name ? GenerateUniqueName(name, this) : name; }
@@ -160,7 +165,7 @@ public:
 	void SetID(uint32_t id) { this->gameobject_id = id; }
 	std::weak_ptr<GameObject> GetParentGO() const { return this->parent_gameobject; }
 	std::weak_ptr<Layer> GetParentLayer() const { return this->parent_layer; }
-	void SetParentLayer(std::shared_ptr<Layer> layer) { this->parent_layer = layer; }
+	void SetParentLayer(std::shared_ptr<Layer> layer);
 	std::vector<std::shared_ptr<GameObject>>& GetChildren() { return children_gameobject; }
 	std::vector<std::unique_ptr<Component>>& GetComponents() { return components_gameobject; }
 	bool IsVisible() const { return this->visible; }
@@ -184,7 +189,7 @@ public:
 	}
 	void SwitchEnabled() { SetEnabled(!this->enabled); }
 
-	void SetPrefabPath(std::string& path) { std::replace(path.begin(), path.end(), '/', '\\'); prefab_path = path; }
+	void SetPrefabPath(std::string& path);
 	const std::string& GetPrefabPath() const { return prefab_path; }
 	bool IsPrefabInstance() const { return !prefab_path.empty(); }
 	bool IsPrefabModified() const { return prefab_modified; }

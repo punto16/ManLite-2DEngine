@@ -66,10 +66,135 @@
           "Visible": true
         },
         {
+          "Components": [
+            {
+              "AspectRatio": 1.0,
+              "ComponentID": 846949058,
+              "ComponentName": "Transform",
+              "ComponentType": 0,
+              "ContainerGOID": 869044798,
+              "Enabled": true,
+              "LockAspect": true,
+              "Position": [
+                0.0,
+                0.0
+              ],
+              "Rotation": 0.0,
+              "Scale": [
+                3.25,
+                3.25
+              ]
+            },
+            {
+              "ComponentID": 738807449,
+              "ComponentName": "Sprite2D",
+              "ComponentType": 2,
+              "ContainerGOID": 869044798,
+              "Enabled": true,
+              "FlipHorizontal": false,
+              "FlipVertical": false,
+              "Offset": [
+                0.0,
+                0.07400000095367432
+              ],
+              "PixelArtRender": true,
+              "TexturePath": "Assets\\Textures\\IDLE.png",
+              "TextureSection": [
+                35,
+                43,
+                26,
+                39
+              ],
+              "TextureSize": [
+                960,
+                96
+              ],
+              "TextureUVs": [
+                0.0364583320915699,
+                0.1458333283662796,
+                0.06354166567325592,
+                0.5520833134651184
+              ]
+            },
+            {
+              "Animations": [
+                {
+                  "name": "samurai_idle_animation_test1",
+                  "path": "Assets\\Animations\\samurai_idle_animation_test1.animation"
+                }
+              ],
+              "ComponentID": 2831855573,
+              "ComponentName": "Animator",
+              "ComponentType": 3,
+              "ContainerGOID": 869044798,
+              "CurrentAnimation": "samurai_idle_animation_test1",
+              "Enabled": true
+            },
+            {
+              "Color": {
+                "A": 255,
+                "B": 0,
+                "G": 255,
+                "R": 0
+              },
+              "ComponentID": 3956108537,
+              "ComponentName": "Collider2D",
+              "ComponentType": 5,
+              "ContainerGOID": 869044798,
+              "Enabled": true,
+              "Friction": 0.30000001192092896,
+              "GravityScale": 1.0,
+              "Height": 2.5999999046325684,
+              "IsDynamic": true,
+              "IsSensor": false,
+              "LinearDamping": 0.0,
+              "LockRotation": true,
+              "Mass": 70.0,
+              "Radius": 0.5,
+              "Restitution": 0.0,
+              "ShapeType": "RECTANGLE",
+              "UseGravity": true,
+              "Width": 1.0
+            },
+            {
+              "ComponentID": 3120067577,
+              "ComponentName": "PlayerScript",
+              "ComponentType": 4,
+              "ContainerGOID": 869044798,
+              "Enabled": true,
+              "ScriptFields": null
+            },
+            {
+              "ComponentID": 1230980272,
+              "ComponentName": "Light",
+              "ComponentType": 10,
+              "ContainerGOID": 869044798,
+              "Enabled": true,
+              "LightColor": [
+                255,
+                255,
+                255,
+                255
+              ],
+              "LightEndPosition": [
+                0.0,
+                0.0
+              ],
+              "LightEndRadius": 0.0,
+              "LightIntensity": 1.0,
+              "LightRadius": 1.0,
+              "LightStaticEndPosition": true,
+              "LightType": 0
+            }
+          ],
+          "Enabled": true,
           "ID": 869044798,
+          "Name": "Samurai_Prefab_Test",
+          "OriginalPrefabPath": "Assets\\Prefabs\\Samurai_Prefab_Test.prefab",
           "ParentID": 3010753683,
           "ParentLayerID": 0,
-          "PrefabPath": "Assets\\Prefabs\\Samurai_Prefab_Test.prefab"
+          "Tag": "Player",
+          "Visible": true
         }
       ],
       "ID": 3010753683,
@@ -4922,6 +5047,7 @@
                   "ContainerGOID": 2785842632,
                   "Enabled": true,
                   "Friction": 0.30000001192092896,
+                  "GravityScale": 1.0,
                   "Height": 0.009999999776482582,
                   "IsDynamic": false,
                   "IsSensor": true,
@@ -4976,6 +5102,7 @@
                   "ContainerGOID": 34319879,
                   "Enabled": true,
                   "Friction": 0.30000001192092896,
+                  "GravityScale": 1.0,
                   "Height": 0.009999999776482582,
                   "IsDynamic": false,
                   "IsSensor": true,
@@ -5030,6 +5157,7 @@
                   "ContainerGOID": 3178657617,
                   "Enabled": true,
                   "Friction": 0.30000001192092896,
+                  "GravityScale": 1.0,
                   "Height": 0.009999999776482582,
                   "IsDynamic": false,
                   "IsSensor": true,
@@ -5084,6 +5212,7 @@
                   "ContainerGOID": 1018860532,
                   "Enabled": true,
                   "Friction": 0.30000001192092896,
+                  "GravityScale": 1.0,
                   "Height": 0.009999999776482582,
                   "IsDynamic": false,
                   "IsSensor": true,
@@ -5138,6 +5267,7 @@
                   "ContainerGOID": 1820395792,
                   "Enabled": true,
                   "Friction": 0.30000001192092896,
+                  "GravityScale": 1.0,
                   "Height": 0.009999999776482582,
                   "IsDynamic": false,
                   "IsSensor": true,
@@ -5192,6 +5322,7 @@
                   "ContainerGOID": 2547743783,
                   "Enabled": true,
                   "Friction": 0.30000001192092896,
+                  "GravityScale": 1.0,
                   "Height": 0.009999999776482582,
                   "IsDynamic": false,
                   "IsSensor": true,
@@ -5246,6 +5377,7 @@
                   "ContainerGOID": 3953097307,
                   "Enabled": true,
                   "Friction": 0.30000001192092896,
+                  "GravityScale": 1.0,
                   "Height": 0.009999999776482582,
                   "IsDynamic": false,
                   "IsSensor": true,
@@ -5300,6 +5432,7 @@
                   "ContainerGOID": 3669747384,
                   "Enabled": true,
                   "Friction": 0.30000001192092896,
+                  "GravityScale": 1.0,
                   "Height": 0.009999999776482582,
                   "IsDynamic": false,
                   "IsSensor": true,
@@ -5354,6 +5487,7 @@
                   "ContainerGOID": 4041813884,
                   "Enabled": true,
                   "Friction": 0.30000001192092896,
+                  "GravityScale": 1.0,
                   "Height": 0.009999999776482582,
                   "IsDynamic": false,
                   "IsSensor": true,
@@ -5408,6 +5542,7 @@
                   "ContainerGOID": 601829500,
                   "Enabled": true,
                   "Friction": 0.30000001192092896,
+                  "GravityScale": 1.0,
                   "Height": 0.009999999776482582,
                   "IsDynamic": false,
                   "IsSensor": true,
@@ -5462,6 +5597,7 @@
                   "ContainerGOID": 1503484482,
                   "Enabled": true,
                   "Friction": 0.30000001192092896,
+                  "GravityScale": 1.0,
                   "Height": 0.009999999776482582,
                   "IsDynamic": false,
                   "IsSensor": true,
@@ -5547,6 +5683,7 @@
                   "ContainerGOID": 207893860,
                   "Enabled": true,
                   "Friction": 0.30000001192092896,
+                  "GravityScale": 1.0,
                   "Height": 22.0,
                   "IsDynamic": false,
                   "IsSensor": false,
@@ -5601,6 +5738,7 @@
                   "ContainerGOID": 4151122286,
                   "Enabled": true,
                   "Friction": 0.30000001192092896,
+                  "GravityScale": 1.0,
                   "Height": 6.0,
                   "IsDynamic": false,
                   "IsSensor": false,
@@ -5655,6 +5793,7 @@
                   "ContainerGOID": 355967030,
                   "Enabled": true,
                   "Friction": 0.30000001192092896,
+                  "GravityScale": 1.0,
                   "Height": 3.0,
                   "IsDynamic": false,
                   "IsSensor": false,
@@ -5709,6 +5848,7 @@
                   "ContainerGOID": 1997061979,
                   "Enabled": true,
                   "Friction": 0.30000001192092896,
+                  "GravityScale": 1.0,
                   "Height": 6.0,
                   "IsDynamic": false,
                   "IsSensor": false,
@@ -5763,6 +5903,7 @@
                   "ContainerGOID": 1611949492,
                   "Enabled": true,
                   "Friction": 0.30000001192092896,
+                  "GravityScale": 1.0,
                   "Height": 7.0,
                   "IsDynamic": false,
                   "IsSensor": false,
@@ -5817,6 +5958,7 @@
                   "ContainerGOID": 2933483910,
                   "Enabled": true,
                   "Friction": 0.30000001192092896,
+                  "GravityScale": 1.0,
                   "Height": 14.0,
                   "IsDynamic": false,
                   "IsSensor": false,
@@ -5871,6 +6013,7 @@
                   "ContainerGOID": 2039880648,
                   "Enabled": true,
                   "Friction": 0.30000001192092896,
+                  "GravityScale": 1.0,
                   "Height": 0.009999999776482582,
                   "IsDynamic": false,
                   "IsSensor": false,
@@ -5925,6 +6068,7 @@
                   "ContainerGOID": 2081003815,
                   "Enabled": true,
                   "Friction": 0.30000001192092896,
+                  "GravityScale": 1.0,
                   "Height": 2.0,
                   "IsDynamic": false,
                   "IsSensor": false,
@@ -6010,6 +6154,7 @@
                   "ContainerGOID": 1095192977,
                   "Enabled": true,
                   "Friction": 0.30000001192092896,
+                  "GravityScale": 1.0,
                   "Height": 1.0,
                   "IsDynamic": false,
                   "IsSensor": false,
@@ -6064,6 +6209,7 @@
                   "ContainerGOID": 3415110149,
                   "Enabled": true,
                   "Friction": 0.30000001192092896,
+                  "GravityScale": 1.0,
                   "Height": 1.0,
                   "IsDynamic": false,
                   "IsSensor": false,
@@ -6118,6 +6264,7 @@
                   "ContainerGOID": 3748243012,
                   "Enabled": true,
                   "Friction": 0.30000001192092896,
+                  "GravityScale": 1.0,
                   "Height": 1.0,
                   "IsDynamic": false,
                   "IsSensor": false,
@@ -6172,6 +6319,7 @@
                   "ContainerGOID": 1989166517,
                   "Enabled": true,
                   "Friction": 0.30000001192092896,
+                  "GravityScale": 1.0,
                   "Height": 1.0,
                   "IsDynamic": false,
                   "IsSensor": false,
@@ -6226,6 +6374,7 @@
                   "ContainerGOID": 59947759,
                   "Enabled": true,
                   "Friction": 0.30000001192092896,
+                  "GravityScale": 1.0,
                   "Height": 1.0,
                   "IsDynamic": false,
                   "IsSensor": false,
@@ -6280,6 +6429,7 @@
                   "ContainerGOID": 2183227348,
                   "Enabled": true,
                   "Friction": 0.30000001192092896,
+                  "GravityScale": 1.0,
                   "Height": 1.0,
                   "IsDynamic": false,
                   "IsSensor": false,
@@ -6365,6 +6515,7 @@
                   "ContainerGOID": 179480566,
                   "Enabled": true,
                   "Friction": 0.30000001192092896,
+                  "GravityScale": 1.0,
                   "Height": 0.009999999776482582,
                   "IsDynamic": false,
                   "IsSensor": true,
@@ -6419,6 +6570,7 @@
                   "ContainerGOID": 2317648667,
                   "Enabled": true,
                   "Friction": 0.30000001192092896,
+                  "GravityScale": 1.0,
                   "Height": 0.009999999776482582,
                   "IsDynamic": false,
                   "IsSensor": true,
@@ -6473,6 +6625,7 @@
                   "ContainerGOID": 4290734654,
                   "Enabled": true,
                   "Friction": 0.30000001192092896,
+                  "GravityScale": 1.0,
                   "Height": 0.009999999776482582,
                   "IsDynamic": false,
                   "IsSensor": true,
@@ -6558,6 +6711,7 @@
                   "ContainerGOID": 854488074,
                   "Enabled": true,
                   "Friction": 0.30000001192092896,
+                  "GravityScale": 1.0,
                   "Height": 1.0,
                   "IsDynamic": false,
                   "IsSensor": true,
@@ -6654,6 +6808,10 @@
       "layer_name": "Level1",
       "visible": true
     }
+  ],
+  "scene_gravity": [
+    0.0,
+    -9.8100004196167
   ],
   "scene_id": 1185669598,
   "scene_name": "NormalTestSceneInElPueblo",

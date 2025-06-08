@@ -4,6 +4,7 @@
 #include "Prefab.h"
 
 #include "EngineCore.h"
+#include "SceneManagerEM.h"
 #include "Component.h"
 #include "Transform.h"
 #include "Sprite2D.h"
@@ -16,6 +17,7 @@
 #include "TileMap.h"
 #include "Script.h"
 #include "Light.h"
+#include "Layer.h"
 
 #include "Log.h"
 #include "Defs.h"
@@ -158,13 +160,22 @@ void GameObject::PrefabChecker()
 
         if (cleanCurrent.dump() != cleanOriginal.dump())
         {
-            //LOG(LogType::LOG_INFO, "Current: %s\n\n\n", cleanCurrent.dump().c_str());
-            //LOG(LogType::LOG_INFO, "Original: %s", cleanOriginal.dump().c_str());
+            LOG(LogType::LOG_INFO, "Prefab is now different from the file:\n\nCurrent: %s\n\n\n", cleanCurrent.dump().c_str());
+            LOG(LogType::LOG_INFO, "Original: %s", cleanOriginal.dump().c_str());
             prefab_modified = true;
         }
     }
 
     for (const auto& item : children_gameobject) if (item->IsEnabled()) item->PrefabChecker();
+}
+
+void GameObject::FinishLoad()
+{
+    //finish load components // scripts are finish-loaded separately
+    for (const auto& item : components_gameobject) if (item->GetType() != ComponentType::Script) item->FinishLoad();
+
+    //then, finish load children game objects
+    for (const auto& item : children_gameobject)item->FinishLoad();
 }
 
 void GameObject::Delete()
@@ -246,8 +257,20 @@ void GameObject::CloneChildrenHierarchy(const std::shared_ptr<GameObject>& origi
 {
     for (const auto& original_child : original->children_gameobject)
     {
+        //base copy
         auto child_copy = std::make_shared<GameObject>(original_child);
-        child_copy->parent_gameobject = shared_from_this();
+        child_copy->SetName(original_child->GetName(), false);
+        AddChild(child_copy);
+        //layer management
+        //if (original_child->GetParentLayer().lock().get())
+        //{
+        //    original_child->GetParentLayer().lock()->AddChild(child_copy);
+        //    child_copy->SetParentLayer(original_child->GetParentLayer().lock());
+        //}
+        //component management
+        child_copy->CloneComponents(original_child);
+        //children management
+        child_copy->CloneChildrenHierarchy(original_child);
     }
 }
 
@@ -514,6 +537,15 @@ void GameObject::LoadGameObject(const nlohmann::json& goJSON)
             prefab_path = path;
         }
     }
+    else if (goJSON.contains("OriginalPrefabPath") && !IsPrefabInstance())
+    {
+        std::string path = goJSON["OriginalPrefabPath"];
+        auto tempPrefab = Prefab::Instantiate(path, nullptr, engine->GetEngineState() == EngineState::PLAY);
+
+        prefab_original_data = tempPrefab->prefab_original_data;
+        prefab_path = path;
+        prefab_modified = true;
+    }
 
     //components
     if (goJSON.contains("Components"))
@@ -598,4 +630,64 @@ void GameObject::LoadGameObject(const nlohmann::json& goJSON)
             child_go->LoadGameObject(childJSON);
         }
     }
+}
+
+void GameObject::CheckForEmptyLayers(Scene* scene)
+{
+    for (const auto& child : children_gameobject)
+    {
+        auto child_layer = child->parent_layer.lock();
+        if (child_layer && child_layer->HasChild(child->gameobject_id))
+        {
+            child->CheckForEmptyLayers(scene);
+            continue;
+        }
+
+        auto parent_layer_ptr = parent_layer.lock();
+
+        if (!parent_layer_ptr)
+        {
+            if (!scene->GetSceneLayers().empty())
+            {
+                parent_layer_ptr = scene->GetSceneLayers()[0];
+            }
+            else
+            {
+                child->CheckForEmptyLayers(scene);
+                continue;
+            }
+        }
+
+        child->SetParentLayer(parent_layer_ptr);
+
+        auto& layer_children = parent_layer_ptr->GetChildren();
+        auto parent_pos = std::find(layer_children.begin(), layer_children.end(), shared_from_this());
+
+        if (parent_pos != layer_children.end())
+        {
+            layer_children.insert(parent_pos + 1, child);
+        }
+        else
+        {
+            layer_children.push_back(child);
+        }
+
+        child->CheckForEmptyLayers(scene);
+    }
+}
+
+void GameObject::SetParentLayer(std::shared_ptr<Layer> layer)
+{
+    if (auto old_layer = parent_layer.lock())
+    {
+        if (old_layer == layer) return;
+        old_layer->RemoveChild(shared_from_this());
+    }
+    parent_layer = layer;
+}
+
+void GameObject::SetPrefabPath(std::string& path)
+{
+    std::replace(path.begin(), path.end(), '/', '\\');
+    prefab_path = path;
 }

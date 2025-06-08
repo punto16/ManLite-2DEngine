@@ -68,6 +68,7 @@
             "ComponentType": 5,
             "Enabled": true,
             "Friction": 0.30000001192092896,
+            "GravityScale": 1.0,
             "Height": 2.5999999046325684,
             "IsDynamic": true,
             "IsSensor": false,

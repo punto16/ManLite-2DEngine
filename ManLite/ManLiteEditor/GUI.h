@@ -59,6 +59,9 @@ public:
 	void HelpMenu();
 
 	void BuildPanel();
+	void AutoSaveScenePanel();
+	void AutoSaveSceneBg(float dt);
+	void RestartAutoSaveTimer();
 
 	//shortcut handler
 	void HandleShortcut();
@@ -92,6 +95,14 @@ public:
 
 private:
 	std::list<Panel*> panels;
+
+	//
+	bool show_demo_panel = false;
+
+	// Auto-save
+	float auto_save_timer = 0.0f;
+	float countdown_timer = 0.0f;
+	bool show_auto_save_panel = false;
 
 	//build settings
 	bool showBuildPanel = false;

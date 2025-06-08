@@ -70,6 +70,8 @@ bool PanelSaveScene::Update()
 				{
 					//
 					std::string filePath = engine->scene_manager_em->GetCurrentScene().GetScenePath();
+					if (filePath.empty() || filePath == "")
+						filePath = "Assets\\Scenes\\" + engine->scene_manager_em->GetCurrentScene().GetSceneName() + ".mlscene";
 					if (!filePath.empty() && filePath != "")
 					{
 						std::filesystem::path fullPath(filePath);
@@ -80,12 +82,16 @@ bool PanelSaveScene::Update()
 							directory += std::filesystem::path::preferred_separator;
 
 						engine->scene_manager_em->SaveScene(directory, sceneName);
+						app->gui->RestartAutoSaveTimer();
 					}
 					//
 					engine->SetEngineState(EngineState::STOP);
 					//
 					if (save_panel_action == SavePanelAction::NEW_SCENE)
+					{
 						engine->scene_manager_em->CreateEmptyScene();
+						app->gui->RestartAutoSaveTimer();
+					}
 					else if (save_panel_action == SavePanelAction::CLOSE_APP)
 						return false;
 					else
@@ -137,13 +143,17 @@ bool PanelSaveScene::Update()
 							directory += std::filesystem::path::preferred_separator;
 
 						engine->scene_manager_em->SaveScene(directory, sceneName);
+						app->gui->RestartAutoSaveTimer();
 						//
 						ImGui::CloseCurrentPopup();
 						ResourceManager::GetInstance().ReleaseTexture("Config\\Icons\\icon.png");
 						enabled = false;
 						//
 						if (save_panel_action == SavePanelAction::NEW_SCENE)
+						{
 							engine->scene_manager_em->CreateEmptyScene();
+							app->gui->RestartAutoSaveTimer();
+						}
 						else if (save_panel_action == SavePanelAction::CLOSE_APP)
 							return false;
 						else
@@ -181,7 +191,10 @@ bool PanelSaveScene::Update()
 					engine->SetEngineState(EngineState::STOP);
 					//
 					if (save_panel_action == SavePanelAction::NEW_SCENE)
+					{
 						engine->scene_manager_em->CreateEmptyScene();
+						app->gui->RestartAutoSaveTimer();
+					}
 					else if (save_panel_action == SavePanelAction::CLOSE_APP)
 						return false;
 					else

@@ -70,6 +70,12 @@ bool PanelLayer::Update()
 
             if (ImGui::BeginPopupContextItem())
             {
+                if (ImGui::MenuItem("Rename Layer"))
+                {
+                    rename_layer = true;
+                    layer_to_rename = layer.get();
+                }
+                ImGui::Separator();
                 if (layer->GetChildren().empty())
                 {
                     if (ImGui::MenuItem("Delete Layer"))
@@ -98,6 +104,46 @@ bool PanelLayer::Update()
             {
                 IterateChildren(*layer, layer_visible);
             }
+        }
+
+        if (rename_layer)
+        {
+            ImGui::OpenPopup("Rename Layer");
+        }
+
+        if (ImGui::BeginPopupModal("Rename Layer", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+        {
+            static char new_name[128];
+            strcpy_s(new_name, layer_to_rename->GetLayerName().c_str());
+
+            ImGui::Text("New name:");
+            ImGui::SetNextItemWidth(300.0f);
+            if (ImGui::InputText("##edit", new_name, IM_ARRAYSIZE(new_name),
+                ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_AutoSelectAll))
+            {
+                layer_to_rename->SetLayerName(new_name);
+                rename_layer = false;
+                layer_to_rename = nullptr;
+                ImGui::CloseCurrentPopup();
+            }
+
+            if (ImGui::Button("OK", ImVec2(120, 0)))
+            {
+                layer_to_rename->SetLayerName(new_name);
+                rename_layer = false;
+                layer_to_rename = nullptr;
+                ImGui::CloseCurrentPopup();
+            }
+
+            ImGui::SameLine();
+            if (ImGui::Button("Cancel", ImVec2(120, 0)))
+            {
+                rename_layer = false;
+                layer_to_rename = nullptr;
+                ImGui::CloseCurrentPopup();
+            }
+
+            ImGui::EndPopup();
         }
     }
     ImGui::End();

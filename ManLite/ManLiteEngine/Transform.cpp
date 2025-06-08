@@ -3,6 +3,8 @@
 #include "mat3f.h"
 #include "Defs.h"
 
+#include "Collider2D.h"
+
 #include <cmath>
 
 Transform::Transform(std::weak_ptr<GameObject> container_go, std::string name, bool enable) :
@@ -64,10 +66,23 @@ void Transform::LoadComponent(const nlohmann::json& componentJSON)
     if (componentJSON.contains("AspectRatio")) aspect_ratio = componentJSON["AspectRatio"];
 }
 
+void Transform::SetPosition(vec2f pos)
+{
+    position = pos;
+    if (auto c = container_go.lock()->GetComponent<Collider2D>())
+    {
+        c->SetPosition(GetWorldPosition());
+    }
+}
+
 void Transform::SetAngle(float angle)
 {
     angle_rotation = fmod(angle, 360.0f);
     if (angle_rotation < 0) angle_rotation += 360.0f;
+    if (auto c = container_go.lock()->GetComponent<Collider2D>())
+    {
+        c->SetAngle(GetWorldAngle());
+    }
 }
 
 void Transform::SetScale(vec2f new_scale)
@@ -119,16 +134,19 @@ vec2f Transform::GetWorldPosition()
 
 void Transform::SetWorldPosition(vec2f world_pos)
 {
+    position = world_pos;
     if (auto go = container_go.lock()) {
         if (auto parent = go->GetParentGO().lock()) {
             if (auto parent_transform = parent->GetComponent<Transform>()) {
                 mat3f parent_inverse = parent_transform->GetWorldMatrix().Inverted();
                 position = parent_inverse.TransformPoint(world_pos);
-                return;
             }
         }
     }
-    position = world_pos;
+    if (auto c = container_go.lock()->GetComponent<Collider2D>())
+    {
+        c->SetPosition(world_pos);
+    }
 }
 
 float Transform::GetWorldAngle()
@@ -148,6 +166,10 @@ void Transform::SetWorldAngle(float world_angle)
     else
     {
         SetAngle(world_angle);
+    }
+    if (auto c = container_go.lock()->GetComponent<Collider2D>())
+    {
+        c->SetAngle(world_angle);
     }
 }
 

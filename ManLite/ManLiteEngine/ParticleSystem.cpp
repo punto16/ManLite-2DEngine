@@ -2,6 +2,10 @@
 
 #include "GameObject.h"
 #include "Emitter.h"
+#include "EngineCore.h"
+#include "ResourceManager.h"
+#include "RendererEM.h"
+#include "Transform.h"
 
 #include "filesystem"
 #include "fstream"
@@ -60,6 +64,38 @@ void ParticleSystem::Draw()
 {
     for (const auto& emitter : emitters)
         emitter->Draw();
+
+    //gizmo
+    if (!engine->GetEditorOrBuild() || !engine->renderer_em->rend_colliders) return;
+    if (auto gizmo_img = ResourceManager::GetInstance().GetTexture("Config\\Icons\\particles_gizmo.png"))
+    {
+        if (auto t = container_go.lock()->GetComponent<Transform>())
+        {
+            vec2f scale = t->GetScale();
+            bool a_lock = t->IsAspectRatioLocked();
+            float angle = t->GetAngle();
+
+            t->SetAspectRatioLock(false);
+            t->SetWorldScale({ 0.6f, 0.6f });
+            t->SetWorldAngle(0.0f);
+
+            mat3f worldMat = t->GetWorldMatrix();
+
+            t->SetAngle(angle);
+            t->SetScale(scale);
+            t->SetAspectRatioLock(a_lock);
+
+
+            engine->renderer_em->SubmitSprite(
+                gizmo_img,
+                worldMat,
+                0, 0, 1, 1,
+                true,
+                0,
+                0
+            );
+        }
+    }
 }
 
 bool ParticleSystem::Pause()

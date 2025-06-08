@@ -5,6 +5,8 @@
 #include "Transform.h"
 #include "EngineCore.h"
 #include "SceneManagerEM.h"
+#include "ResourceManager.h"
+#include "RendererEM.h"
 
 #include "SDL2/SDL_mixer.h"
 
@@ -70,6 +72,41 @@ bool AudioSource::Update(float dt)
     return true;
 }
 
+void AudioSource::Draw()
+{
+    //gizmo
+    if (!engine->GetEditorOrBuild() || !engine->renderer_em->rend_colliders) return;
+    if (auto gizmo_img = ResourceManager::GetInstance().GetTexture("Config\\Icons\\audio_gizmo.png"))
+    {
+        if (auto t = container_go.lock()->GetComponent<Transform>())
+        {
+            vec2f scale = t->GetScale();
+            bool a_lock = t->IsAspectRatioLocked();
+            float angle = t->GetAngle();
+
+            t->SetAspectRatioLock(false);
+            t->SetWorldScale({ 0.6f, 0.6f });
+            t->SetWorldAngle(0.0f);
+
+            mat3f worldMat = t->GetWorldMatrix();
+
+            t->SetAngle(angle);
+            t->SetScale(scale);
+            t->SetAspectRatioLock(a_lock);
+            
+
+            engine->renderer_em->SubmitSprite(
+                gizmo_img,
+                worldMat,
+                0, 0, 1, 1,
+                true,
+                0,
+                0
+            );
+        }
+    }
+}
+
 bool AudioSource::Pause()
 {
     bool ret = true;
@@ -86,6 +123,12 @@ bool AudioSource::Unpause()
     UnpauseAll();
 
     return ret;
+}
+
+void AudioSource::FinishLoad()
+{
+    for (auto& pair : sounds)
+        pair.second.listener = engine->scene_manager_em->GetCurrentScene().FindGameObjectByID(pair.second.listener_id);
 }
 
 void AudioSource::AddSound(const std::string& name, const std::string& filePath, int volume, bool loop, bool play_on_awake, bool spatial, int spatial_distance)
@@ -153,12 +196,18 @@ void AudioSource::PlaySound(const std::string& name)
     auto it = sounds.find(name);
     if (it != sounds.end())
     {
+        if (it->second.channel != -1 &&
+            (Mix_Playing(it->second.channel) || Mix_Paused(it->second.channel)))
+        {
+            return;
+        }
+
         Mix_VolumeChunk(it->second.chunk, it->second.volume * 1.28);
         it->second.channel = Mix_PlayChannel(-1, it->second.chunk, it->second.loop ? -1 : 0);
 
         if (it->second.channel != -1 && it->second.spatial)
         {
-            if (it->second.listener_id != 0 && engine->scene_manager_em->CurrentSceneAvailable())
+            if (it->second.listener_id != 0 && !it->second.listener.lock().get() && engine->scene_manager_em->CurrentSceneAvailable())
             {
                 it->second.listener = engine->scene_manager_em->GetCurrentScene().FindGameObjectByID(it->second.listener_id);
             }
@@ -170,11 +219,30 @@ void AudioSource::PlaySound(const std::string& name)
 void AudioSource::PlayMusic(const std::string& name)
 {
     auto it = musics.find(name);
-    if (it != musics.end()) {
+    if (it != musics.end())
+    {
+        if (current_music == it->second.music &&
+            (Mix_PlayingMusic() || Mix_PausedMusic()))
+        {
+            return;
+        }
+
         current_music = it->second.music;
         Mix_VolumeMusic(it->second.volume * 1.28);
         Mix_PlayMusic(it->second.music, it->second.loop ? -1 : 0);
     }
+}
+
+void AudioSource::RePlaySound(const std::string& name)
+{
+    StopSound(name);
+    PlaySound(name);
+}
+
+void AudioSource::RePlayMusic(const std::string& name)
+{
+    StopMusic(name);
+    PlayMusic(name);
 }
 
 void AudioSource::StopAll()
@@ -209,20 +277,25 @@ void AudioSource::StopMusic(const std::string& name)
 
 void AudioSource::PauseAll()
 {
-    Mix_Pause(-1);
-    Mix_PauseMusic();
+    for (auto& pair : sounds)
+    {
+        if (pair.second.channel != -1 && Mix_Playing(pair.second.channel))
+        {
+            Mix_Pause(pair.second.channel);
+        }
+    }
+
+    if (current_music != nullptr && Mix_PlayingMusic())
+    {
+        Mix_PauseMusic();
+    }
 }
 
 void AudioSource::PauseSound(const std::string& name)
 {
     auto it = sounds.find(name);
-    if (it != sounds.end()) {
-        Mix_Chunk* targetChunk = it->second.chunk;
-        int numChannels = Mix_AllocateChannels(-1);
-        if (Mix_Playing(it->second.channel))
-        {
-            Mix_Pause(it->second.channel);
-        }
+    if (it != sounds.end() && it->second.channel != -1 && Mix_Playing(it->second.channel)) {
+        Mix_Pause(it->second.channel);
     }
 }
 
@@ -236,20 +309,25 @@ void AudioSource::PauseMusic(const std::string& name)
 
 void AudioSource::UnpauseAll()
 {
-    Mix_Resume(-1);
-    Mix_ResumeMusic();
+    for (auto& pair : sounds)
+    {
+        if (pair.second.channel != -1 && Mix_Paused(pair.second.channel))
+        {
+            Mix_Resume(pair.second.channel);
+        }
+    }
+
+    if (current_music != nullptr && Mix_PausedMusic())
+    {
+        Mix_ResumeMusic();
+    }
 }
 
 void AudioSource::UnpauseSound(const std::string& name)
 {
     auto it = sounds.find(name);
-    if (it != sounds.end()) {
-        Mix_Chunk* targetChunk = it->second.chunk;
-        int numChannels = Mix_AllocateChannels(-1);
-        if (Mix_Playing(it->second.channel))
-        {
-            Mix_Resume(it->second.channel);
-        }
+    if (it != sounds.end() && it->second.channel != -1 && Mix_Paused(it->second.channel)) {
+        Mix_Resume(it->second.channel);
     }
 }
 
@@ -389,7 +467,11 @@ void AudioSource::LoadComponent(const nlohmann::json& componentJSON)
             );
             if (soundJSON.contains("listener_id") && engine->scene_manager_em->CurrentSceneAvailable())
             {
-                SetListener(soundJSON["name"], engine->scene_manager_em->GetCurrentScene().FindGameObjectByID(soundJSON["listener_id"]));
+                auto it = sounds.find(soundJSON["name"]);
+                if (it != sounds.end())
+                {
+                    it->second.listener_id = soundJSON["listener_id"];
+                }
             }
         }
     }

@@ -56,7 +56,7 @@ public:
     void GetCurrentFieldValue(MonoClassField* field, ScriptField& sf);
     void SetValueDefault(std::string variable);
 
-    void FinishLoad();
+    void FinishLoad() override;
     void ReloadScript();
 
 private:

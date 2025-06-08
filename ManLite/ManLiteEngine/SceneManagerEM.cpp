@@ -9,13 +9,16 @@
 #include "TileMap.h"
 #include "Collider2D.h"
 #include "Script.h"
+#include "Camera.h"
 #include "MonoRegisterer.h"
+#include "RendererEM.h"
 
 #include "Defs.h"
 #include "Log.h"
 #include "algorithm"
 #include "filesystem"
 #include "fstream"
+#include <regex>
 
 namespace fs = std::filesystem;
 
@@ -33,6 +36,11 @@ bool SceneManagerEM::Awake()
 	bool ret = true;
 
 	this->current_scene = std::make_unique<Scene>();
+
+	auto cam_go = current_scene->CreateEmptyGO(current_scene->GetSceneRoot());
+	cam_go->SetName("MainCamera");
+	cam_go->AddComponent<Camera>();
+	current_scene->SetCurrentCameraGO(cam_go);
 
 	return ret;
 }
@@ -100,15 +108,60 @@ Scene* SceneManagerEM::DuplicateScene(Scene& scene_to_copy)
 void SceneManagerEM::SaveScene(std::string directory, std::string scene_name)
 {
 	std::string file_name_ext = scene_name + ".mlscene";
-	fs::path file_name = fs::path(directory) / file_name_ext;
-	fs::path folder_name = fs::path(directory);
-	fs::create_directories(folder_name);
+	fs::path original_file_path = fs::path(directory) / file_name_ext;
+	fs::path final_file_path = original_file_path;
+
+	if (fs::exists(original_file_path) &&
+		original_file_path.string() != current_scene->GetScenePath())
+	{
+		fs::path parentDir = original_file_path.parent_path();
+		std::string extension = original_file_path.extension().string();
+		std::string originalStem = original_file_path.stem().string();
+
+		int copyNumber = 1;
+		std::string newStem;
+		std::regex copyRegex(R"((.*) - Copy(?: \((\d+)\))?$)");
+
+		do {
+			std::smatch match;
+			std::string currentStem = (newStem.empty()) ? originalStem : newStem;
+
+			if (std::regex_match(currentStem, match, copyRegex)) {
+				std::string baseName = match[1].str();
+				if (match[2].matched) {
+					copyNumber = std::stoi(match[2].str()) + 1;
+				}
+				else {
+					copyNumber = 2;
+				}
+				newStem = baseName + " - Copy (" + std::to_string(copyNumber) + ")";
+			}
+			else {
+				newStem = originalStem + " - Copy";
+			}
+
+			final_file_path = parentDir / (newStem + extension);
+
+		} while (fs::exists(final_file_path));
+
+		file_name_ext = final_file_path.filename().string();
+	}
+
+	fs::create_directories(fs::path(directory));
 
 	nlohmann::json sceneJSON;
 
 	sceneJSON["scene_name"] = current_scene->GetSceneName();
 	sceneJSON["scene_id"] = current_scene->GetSceneRoot().GetID();
-	sceneJSON["scene_path"] = file_name;
+	sceneJSON["scene_path"] = final_file_path.string();
+	current_scene->SetScenePath(final_file_path.string());
+
+	sceneJSON["background_color"][0] = engine->renderer_em->GetBackGroundColor().r;
+	sceneJSON["background_color"][1] = engine->renderer_em->GetBackGroundColor().g;
+	sceneJSON["background_color"][2] = engine->renderer_em->GetBackGroundColor().b;
+	sceneJSON["background_color"][3] = engine->renderer_em->GetBackGroundColor().a;
+
+	sceneJSON["scene_gravity"] = { PhysicsEM::GetWorld()->GetGravity().x, PhysicsEM::GetWorld()->GetGravity().y };
 
 	nlohmann::json game_objectsJSON;
 	for (const auto& go : current_scene->GetSceneRoot().GetChildren())
@@ -128,7 +181,7 @@ void SceneManagerEM::SaveScene(std::string directory, std::string scene_name)
 
 	LOG(LogType::LOG_OK, "Succesfully Saved Scene at %s", (directory + file_name_ext).c_str());
 
-	std::ofstream(file_name) << sceneJSON.dump(2);
+	std::ofstream(final_file_path) << sceneJSON.dump(2);
 }
 
 void SceneManagerEM::LoadSceneFromJson(const std::string& file_name_const)
@@ -170,6 +223,17 @@ void SceneManagerEM::LoadSceneFromJson(const std::string& file_name_const)
 	}
 	if (sceneJSON.contains("scene_id")) current_scene->GetSceneRoot().SetID(sceneJSON["scene_id"]);
 
+	if (sceneJSON.contains("background_color"))
+	{
+		engine->renderer_em->SetBackGroundColor({
+			(int)sceneJSON["background_color"][0],
+			(int)sceneJSON["background_color"][1],
+			(int)sceneJSON["background_color"][2],
+			(int)sceneJSON["background_color"][3],
+			});
+	}
+
+	if (sceneJSON.contains("scene_gravity")) PhysicsEM::GetWorld()->SetGravity({ sceneJSON["scene_gravity"][0], sceneJSON["scene_gravity"][1] });
 
 	current_scene->GetSceneRoot().GetChildren().clear();
 
@@ -218,11 +282,17 @@ void SceneManagerEM::LoadSceneFromJson(const std::string& file_name_const)
 			}
 		}
 	}
+	current_scene->GetSceneRoot().CheckForEmptyLayers(current_scene.get());
+
 	if (sceneJSON.contains("CurrentCamID")) current_scene->SetCurrentCameraGO(current_scene->FindGameObjectByID(sceneJSON["CurrentCamID"]));
 
 	LOG(LogType::LOG_OK, "Succesfully Loaded Scene %s", file_name.c_str());
 
-	if (engine->GetEngineState() == EngineState::PLAY) StartSession();
+	if (engine->GetEngineState() == EngineState::PLAY)
+	{
+		FinishLoad();
+		StartSession();
+	}
 }
 
 void SceneManagerEM::LoadSceneToScene(const std::string& file_name_const, Scene& scene)
@@ -266,7 +336,20 @@ void SceneManagerEM::LoadSceneToScene(const std::string& file_name_const, Scene&
 	}
 	if (sceneJSON.contains("scene_id")) scene.GetSceneRoot().SetID(sceneJSON["scene_id"]);
 
+	if (sceneJSON.contains("background_color"))
+	{
+		engine->renderer_em->SetBackGroundColor({
+			(int)sceneJSON["background_color"][0],
+			(int)sceneJSON["background_color"][1],
+			(int)sceneJSON["background_color"][2],
+			(int)sceneJSON["background_color"][3],
+			});
+	}
+
+	if (sceneJSON.contains("scene_gravity")) PhysicsEM::GetWorld()->SetGravity({ sceneJSON["scene_gravity"][0], sceneJSON["scene_gravity"][1] });
+
 	scene.GetSceneRoot().GetChildren().clear();
+	scene.GetSceneLayers().clear();
 
 	if (sceneJSON.contains("game_objects"))
 	{
@@ -278,7 +361,6 @@ void SceneManagerEM::LoadSceneToScene(const std::string& file_name_const, Scene&
 			go->LoadGameObject(gameObjectJSON);
 		}
 	}
-	scene.GetSceneLayers().clear();
 
 	if (sceneJSON.contains("layers"))
 	{
@@ -313,6 +395,8 @@ void SceneManagerEM::LoadSceneToScene(const std::string& file_name_const, Scene&
 			}
 		}
 	}
+	scene.GetSceneRoot().CheckForEmptyLayers(&scene);
+
 	if (sceneJSON.contains("CurrentCamID")) scene.SetCurrentCameraGO(scene.FindGameObjectByID(sceneJSON["CurrentCamID"]));
 
 	engine->StopLogs(old_log_state);
@@ -368,14 +452,20 @@ void SceneManagerEM::ImportTiledFile(const std::string& file_name_const)
 		LOG(LogType::LOG_ERROR, "Tiled Incompatible Format: %s\nCorrect format uses:\n - orientation: orthogonal\n - type : map\n - tilesets size must be 1\n - infinite : false\n", file_name.c_str());
 		return;
 	}
+	if (tiledJSON["tilesets"][0].contains("source"))
+	{
+		LOG(LogType::LOG_ERROR, "Tiled Incompatible Format: %s\nCorrect format requires an embed TileSet to the TileMap, not an external .tsx file", file_name.c_str());
+		return;
+	}
+
 	std::shared_ptr<GameObject> parent = current_scene->CreateEmptyGO(current_scene->GetSceneRoot());
 	parent->SetName(tiledName);
 
 	std::shared_ptr<Layer> container_layer = current_scene->CreateEmptyLayer();
 	container_layer->SetLayerName(tiledName);
 
-	container_layer->AddChild(parent);
 	parent->GetParentLayer().lock()->RemoveChild(parent);
+	container_layer->AddChild(parent);
 	parent->SetParentLayer(container_layer);
 
 	int tile_width, tile_height, grid_width, grid_height;
@@ -402,8 +492,8 @@ void SceneManagerEM::ImportTiledFile(const std::string& file_name_const)
 				layer_go->SetName(layerJSON["name"]);
 				layer_go->SetVisible(layerJSON["visible"]);
 
-				container_layer->AddChild(layer_go, true);
 				layer_go->GetParentLayer().lock()->RemoveChild(layer_go);
+				container_layer->AddChild(layer_go, true);
 				layer_go->SetParentLayer(container_layer);
 
 				layer_go->AddComponent<TileMap>();
@@ -426,8 +516,8 @@ void SceneManagerEM::ImportTiledFile(const std::string& file_name_const)
 				bool parent_visible = layerJSON["visible"];
 				layer_go->SetVisible(parent_visible);
 
-				container_layer->AddChild(layer_go, true);
 				layer_go->GetParentLayer().lock()->RemoveChild(layer_go);
+				container_layer->AddChild(layer_go, true);
 				layer_go->SetParentLayer(container_layer);
 
 				ML_Color color = ML_Color(0, 0, 0, 255);
@@ -468,8 +558,8 @@ void SceneManagerEM::ImportTiledFile(const std::string& file_name_const)
 
 					object_go->SetVisible(parent_visible);
 
-					container_layer->AddChild(object_go, true);
 					object_go->GetParentLayer().lock()->RemoveChild(object_go);
+					container_layer->AddChild(object_go, true);
 					object_go->SetParentLayer(container_layer);
 
 					object_go->AddComponent<Collider2D>();
@@ -495,6 +585,12 @@ void SceneManagerEM::ImportTiledFile(const std::string& file_name_const)
 
 	//
 	LOG(LogType::LOG_OK, "Success Importing Tiled file <%s> from <%s>", tiledName.c_str(), file_name.c_str());
+}
+
+void SceneManagerEM::FinishLoad()
+{
+	if (!current_scene) return;
+	current_scene->GetSceneRoot().FinishLoad();
 }
 
 void SceneManagerEM::StartSession()
@@ -850,6 +946,7 @@ int Scene::GetLayerIndex(uint32_t layer_id)
 
 int Scene::GetGOOrderInLayer(std::shared_ptr<GameObject> go)
 {
+	if (!go->GetParentLayer().lock().get()) return 0;
 	int layer_index = GetLayerIndex(go->GetParentLayer().lock()->GetLayerID());
 	int game_object_index = go->GetParentLayer().lock()->GetGameObjectIndex(go);
 
@@ -901,6 +998,29 @@ void Scene::SelectGameObject(std::shared_ptr<GameObject> go, bool additive, bool
 	{
 		selected_gos.push_back(go);
 		last_selected = go;
+	}
+}
+
+void Scene::DeselectGameObject(std::shared_ptr<GameObject> go)
+{
+	auto it = std::find_if(selected_gos.begin(), selected_gos.end(),
+		[&](const auto& weak_go) { return weak_go.lock() == go; });
+
+	if (it != selected_gos.end())
+	{
+		selected_gos.erase(it);
+
+		if (last_selected == go)
+		{
+			if (selected_gos.empty())
+			{
+				last_selected = nullptr;
+			}
+			else
+			{
+				last_selected = selected_gos.back().lock();
+			}
+		}
 	}
 }
 

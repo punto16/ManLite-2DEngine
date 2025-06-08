@@ -40,6 +40,8 @@ public:
 	virtual bool Pause() { return true; }
 	virtual bool Unpause() { return true; }
 
+	virtual void FinishLoad() {}
+
 	static std::string ComponentTypeToString(ComponentType type)
 	{
 		switch (type)
@@ -53,6 +55,7 @@ public:
 		case ComponentType::AudioSource:	return "AudioSource"; break;
 		case ComponentType::ParticleSystem:	return "ParticleSystem"; break;
 		case ComponentType::TileMap:		return "TileMap"; break;
+		case ComponentType::Light:			return "Light"; break;
 		case ComponentType::Unkown:			return "Unknown"; break;
 		default:							return "Unknown"; break;
 		}

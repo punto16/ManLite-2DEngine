@@ -8,6 +8,9 @@
 #include "PanelSaveScene.h"
 #include "PanelAnimation.h"
 
+#include "Prefab.h"
+#include "GameObject.h"
+
 #include <imgui.h>
 
 
@@ -366,6 +369,30 @@ void PanelProject::RenderContentGrid()
 
     ImGui::Columns(1);
     ImGui::EndChild();
+    if (ImGui::BeginDragDropTarget())
+    {
+        ImGui::PushStyleColor(ImGuiCol_DragDropTarget, IM_COL32(45, 85, 230, 255));
+        if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_MULTI_NODE"))
+        {
+            GameObject* droppedGo = *(GameObject**)payload->Data;
+            if (droppedGo)
+            {
+                std::string filePath = current_path_string + "\\" + droppedGo->GetName() + ".prefab";
+                nlohmann::json prefab_data;
+                if (Prefab::SaveAsPrefab(droppedGo->GetSharedPtr(), filePath, prefab_data))
+                {
+                    droppedGo->SetPrefabPath(filePath);
+                    if (!droppedGo->GetPrefabPath().empty())
+                    {
+                        droppedGo->GetPrefabOriginalData() = prefab_data;
+                        LOG(LogType::LOG_OK, "Prefab file saved to: %s", filePath.c_str());
+                    }
+                }
+            }
+        }
+        ImGui::PopStyleColor();
+        ImGui::EndDragDropTarget();
+    }
 
     ImGui::Dummy({ 0, -100 });
     ImGui::Separator();

@@ -1,5 +1,11 @@
 {
   "CurrentCamID": 959569685,
+  "background_color": [
+    102,
+    102,
+    102,
+    255
+  ],
   "game_objects": [
     {
       "Components": [
@@ -68,6 +74,12 @@
           "ComponentType": 2,
           "ContainerGOID": 1667443374,
           "Enabled": true,
+          "FlipHorizontal": false,
+          "FlipVertical": false,
+          "Offset": [
+            0.0,
+            0.0
+          ],
           "PixelArtRender": true,
           "TexturePath": "Assets\\Textures\\IDLE.png",
           "TextureSection": [
@@ -173,6 +185,10 @@
       "layer_name": "DefaultLayer_0",
       "visible": true
     }
+  ],
+  "scene_gravity": [
+    0.0,
+    -9.8100004196167
   ],
   "scene_id": 826802489,
   "scene_name": "Test_Scene",

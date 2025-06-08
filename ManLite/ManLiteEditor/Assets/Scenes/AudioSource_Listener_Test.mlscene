@@ -1,0 +1,159 @@
+{
+  "game_objects": [
+    {
+      "Components": [
+        {
+          "AspectRatio": 1.0,
+          "ComponentID": 3329760549,
+          "ComponentName": "Transform",
+          "ComponentType": 0,
+          "ContainerGOID": 3024999254,
+          "Enabled": true,
+          "LockAspect": true,
+          "Position": [
+            -5.0,
+            0.0
+          ],
+          "Rotation": 0.0,
+          "Scale": [
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "ComponentID": 1235684680,
+          "ComponentName": "Sprite2D",
+          "ComponentType": 2,
+          "ContainerGOID": 3024999254,
+          "Enabled": true,
+          "FlipHorizontal": false,
+          "FlipVertical": false,
+          "Offset": [
+            0.0,
+            0.0
+          ],
+          "PixelArtRender": false,
+          "TexturePath": "Assets\\Textures\\image2.png",
+          "TextureSection": [
+            0,
+            0,
+            1200,
+            1200
+          ],
+          "TextureSize": [
+            1200,
+            1200
+          ],
+          "TextureUVs": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ]
+        }
+      ],
+      "Enabled": true,
+      "ID": 3024999254,
+      "Name": "listener",
+      "ParentID": 176824715,
+      "ParentLayerID": 0,
+      "Tag": "Default",
+      "Visible": true
+    },
+    {
+      "Components": [
+        {
+          "AspectRatio": 1.0,
+          "ComponentID": 1668967558,
+          "ComponentName": "Transform",
+          "ComponentType": 0,
+          "ContainerGOID": 1883572757,
+          "Enabled": true,
+          "LockAspect": true,
+          "Position": [
+            0.0,
+            0.0
+          ],
+          "Rotation": 0.0,
+          "Scale": [
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "ComponentID": 1464309407,
+          "ComponentName": "AudioSource",
+          "ComponentType": 7,
+          "ContainerGOID": 1883572757,
+          "Enabled": true,
+          "Musics": null,
+          "Sounds": [
+            {
+              "listener_id": 3024999254,
+              "loop": true,
+              "name": "fart",
+              "path": "Assets\\Audio\\SoundEffects\\fart.wav",
+              "play_on_awake": true,
+              "spatial": true,
+              "spatial_distance": 10,
+              "volume": 100
+            }
+          ]
+        },
+        {
+          "ComponentID": 4080257178,
+          "ComponentName": "Sprite2D",
+          "ComponentType": 2,
+          "ContainerGOID": 1883572757,
+          "Enabled": true,
+          "FlipHorizontal": false,
+          "FlipVertical": false,
+          "Offset": [
+            0.0,
+            0.0
+          ],
+          "PixelArtRender": false,
+          "TexturePath": "Assets\\Textures\\image.png",
+          "TextureSection": [
+            0,
+            0,
+            640,
+            480
+          ],
+          "TextureSize": [
+            640,
+            480
+          ],
+          "TextureUVs": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ]
+        }
+      ],
+      "Enabled": true,
+      "ID": 1883572757,
+      "Name": "audiosource",
+      "ParentID": 176824715,
+      "ParentLayerID": 0,
+      "Tag": "Default",
+      "Visible": true
+    }
+  ],
+  "layers": [
+    {
+      "Layer_children_go_id": [
+        3024999254,
+        1883572757
+      ],
+      "children_count": 2,
+      "layer_id": 0,
+      "layer_name": "DefaultLayer_0",
+      "visible": true
+    }
+  ],
+  "scene_id": 176824715,
+  "scene_name": "Untitled_Scene",
+  "scene_path": "Assets\\Scenes\\AudioSource_Listener_Test.mlscene"
+}

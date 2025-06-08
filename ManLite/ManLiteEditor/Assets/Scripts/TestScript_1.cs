@@ -37,32 +37,33 @@ public class TestScript_1 : MonoBehaviour
         Vec2f force2;
         force2.X = 0;
         force2.Y = 0;
-        if (InternalCalls.GetKeyboardKeyRepeat((int)KeyboardKey.SDL_SCANCODE_W))
+        if (InternalCalls.GetKeyboardKeyRepeat((int)KeyboardKey.KEY_W))
         {
             force.Y += players_speed;
         }
-        if (InternalCalls.GetKeyboardKeyRepeat((int)KeyboardKey.SDL_SCANCODE_S))
+        if (InternalCalls.GetKeyboardKeyRepeat((int)KeyboardKey.KEY_S))
         {
             force.Y = -players_speed;
         }
-        if (InternalCalls.GetKeyboardKeyRepeat((int)KeyboardKey.SDL_SCANCODE_UP))
+        if (InternalCalls.GetKeyboardKeyRepeat((int)KeyboardKey.KEY_UP))
         {
             force2.Y += players_speed;
         }
-        if (InternalCalls.GetKeyboardKeyRepeat((int)KeyboardKey.SDL_SCANCODE_DOWN))
+        if (InternalCalls.GetKeyboardKeyRepeat((int)KeyboardKey.KEY_DOWN))
+        if (InternalCalls.GetKeyboardKeyRepeat((int)KeyboardKey.KEY_DOWN))
         {
             force2.Y = -players_speed;
         }
 
-        if (InternalCalls.GetKeyboardKeyDown((int)KeyboardKey.SDL_SCANCODE_P))
+        if (InternalCalls.GetKeyboardKeyDown((int)KeyboardKey.KEY_P))
         {
             Scene.LoadSceneAsync("Assets/Scenes/AnormalWalkinelPueblo_Scene_test.mlscene", false);
         }
-        if (InternalCalls.GetKeyboardKeyDown((int)KeyboardKey.SDL_SCANCODE_O))
+        if (InternalCalls.GetKeyboardKeyDown((int)KeyboardKey.KEY_O))
         {
             Scene.SetBackGroundLoadedScene();
         }
-        if (InternalCalls.GetKeyboardKeyDown((int)KeyboardKey.SDL_SCANCODE_I))
+        if (InternalCalls.GetKeyboardKeyDown((int)KeyboardKey.KEY_I))
         {
             InternalCalls.LoadScene("Assets/Scenes/AnormalWalkinelPueblo_Scene_test.mlscene");
         }

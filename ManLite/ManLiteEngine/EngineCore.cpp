@@ -77,6 +77,14 @@ void EngineCore::Awake()
 
 void EngineCore::Start()
 {
+	if (editor_or_build)
+	{
+		int x = 0, y = 0;
+		ResourceManager::GetInstance().LoadTextureAsync("Config\\Icons\\camera_gizmo.png",		x, y);
+		ResourceManager::GetInstance().LoadTextureAsync("Config\\Icons\\particles_gizmo.png",	x, y);
+		ResourceManager::GetInstance().LoadTextureAsync("Config\\Icons\\audio_gizmo.png",		x, y);
+	}
+
 	for (auto& item : engine_modules)
 	{
 		if (!item->active) continue;
@@ -90,6 +98,14 @@ bool EngineCore::PreUpdate()
 
 	ResourceManager::GetInstance().ProcessTextures();
 	if (editor_or_build) FilesManager::GetInstance().Update(dt);
+
+	if (editor_or_build && engine_state != EngineState::PLAY)
+	{
+		if (input_em->GetWindowEvent(EventWindow::WindowEvent_Show))
+			FilesManager::GetInstance().StartWatchingIfItWasnt();
+		else if (input_em->GetWindowEvent(EventWindow::WindowEvent_Hide))
+			FilesManager::GetInstance().StopWatchingIfItWasnt();
+	}
 
 	for (auto& item : engine_modules)
 	{
@@ -134,6 +150,14 @@ bool EngineCore::PostUpdate()
 
 void EngineCore::CleanUp()
 {
+	if (editor_or_build)
+	{
+		int x = 0, y = 0;
+		ResourceManager::GetInstance().ReleaseTexture("Config\\Icons\\camera_gizmo.png");
+		ResourceManager::GetInstance().ReleaseTexture("Config\\Icons\\particles_gizmo.png");
+		ResourceManager::GetInstance().ReleaseTexture("Config\\Icons\\audio_gizmo.png");
+	}
+
 	RELEASE(game_timer);
 	if (editor_or_build) FilesManager::GetInstance().StopWatching();
 

@@ -54,7 +54,7 @@ bool PanelScene::Update()
 		
 		engine->renderer_em->UseSceneViewCam();
 
-		grid->Draw(engine->renderer_em->GetSceneCamera().GetViewProjMatrix());
+		if (render_grid) grid->Draw(engine->renderer_em->GetSceneCamera().GetViewProjMatrix());
 		
 		//movement of scene camera
 		InputToCamMovement();
@@ -385,7 +385,6 @@ void PanelScene::DrawTopBarControls()
 	const ImVec2 button_size_default = ImVec2(50, 0);
 	const float combo_width = button_size_default.x * 2.5;
 
-	// Botones de operación
 	if (ImGui::Button("None##ImGuizmoFunctionality", button_size_default)) op = (ImGuizmo::OPERATION)-1;
 	ImGui::SameLine();
 	if (ImGui::Button("Move##ImGuizmoFunctionality", button_size_default)) op = ImGuizmo::TRANSLATE;
@@ -413,7 +412,56 @@ void PanelScene::DrawTopBarControls()
 	}
 
 	ImGui::SameLine();
-	ImGui::Checkbox("Rend Lights##ImGuizmoFunctionality", &engine->renderer_em->rend_lights);
+	ImGui::Checkbox("Lights##ImGuizmoFunctionality", &engine->renderer_em->rend_lights);
+	ImGui::SameLine();
+	ImGui::Checkbox("Grid##ImGuizmoFunctionality", &render_grid);
+	ImGui::SameLine();
+	ImGui::Checkbox("Colliders##ImGuizmoFunctionality", &engine->renderer_em->rend_colliders);
+
+	ImGui::SameLine();
+	ImGui::Dummy(ImVec2(ImGui::GetContentRegionAvail().x - 170, 0));
+
+	ImGui::SameLine();
+	ImGui::Text("Background:");
+	ImGui::SameLine();
+	ML_Color bg_color = engine->renderer_em->GetBackGroundColor();
+	ImVec4 background_color = ImVec4(
+		(float)((float)bg_color.r / 255),
+		(float)((float)bg_color.g / 255),
+		(float)((float)bg_color.b / 255),
+		(float)((float)bg_color.a / 255));
+
+	ImGui::ColorEdit3("##BackgroundColor",
+		&background_color.x,
+		ImGuiColorEditFlags_NoInputs |
+		ImGuiColorEditFlags_NoLabel |
+		ImGuiColorEditFlags_NoTooltip);
+
+	engine->renderer_em->SetBackGroundColor({
+		background_color.x * 255,
+		background_color.y * 255,
+		background_color.z * 255,
+		background_color.w * 255
+		});
+
+	ImGui::SameLine();
+	if (ImGui::Button("Default"))
+	{
+		engine->renderer_em->SetBackGroundColor({
+			102,
+			102,
+			102,
+			255
+			});
+	}
+	if (ImGui::IsItemHovered())
+	{
+		ImGui::BeginTooltip();
+		ImGui::PushTextWrapPos(450.0f);
+		ImGui::TextUnformatted("Set Default Color to the Background");
+		ImGui::PopTextWrapPos();
+		ImGui::EndTooltip();
+	}
 
 	ImGui::PopStyleColor();
 	ImGui::PopStyleVar();

@@ -4,6 +4,7 @@
 #include "Transform.h"
 #include "GameObject.h"
 #include "RendererEM.h"
+#include "ResourceManager.h"
 
 #define GLM_ENABLE_EXPERIMENTAL
 
@@ -31,7 +32,7 @@ Camera::~Camera()
 
 void Camera::Draw()
 {
-    if (!engine->GetEditorOrBuild()) return;
+    if (!engine->GetEditorOrBuild() || !engine->renderer_em->rend_colliders) return;
     if (auto transform = container_go.lock()->GetComponent<Transform>())
     {
         vec2f o_scale = transform->GetWorldScale();
@@ -56,7 +57,19 @@ void Camera::Draw()
         );
 
         mat3f finalMat = worldMat * colliderMat;
-        engine->renderer_em->SubmitDebugCollider(finalMat, color, false, engine->scene_manager_em->GetCurrentScene().GetGOOrderInLayer(container_go.lock()));
+        engine->renderer_em->SubmitDebugCollider(finalMat, color, false, 0.0f);
+
+        if (auto gizmo_img = ResourceManager::GetInstance().GetTexture("Config\\Icons\\camera_gizmo.png"))
+        {
+            engine->renderer_em->SubmitSprite(
+                gizmo_img,
+                worldMat,
+                0, 0, 1, 1,
+                true,
+                0,
+                0
+                );
+        }
     }
 }
 

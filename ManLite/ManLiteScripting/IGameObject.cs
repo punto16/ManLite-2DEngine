@@ -93,6 +93,21 @@ namespace ManLiteScripting
             InternalCalls.ReparentGO(game_object_ptr, new_parent.game_object_ptr);
         }
 
+        public bool IsComponentEnabled(ComponentType type)
+        {
+            return InternalCalls.IsComponentEnabled(game_object_ptr, (int)type);
+        }
+
+        public void EnableComponent(ComponentType type)
+        {
+            InternalCalls.SetEnableComponent(game_object_ptr, (int)type, true);
+        }
+
+        public void DisableComponent(ComponentType type)
+        {
+            InternalCalls.SetEnableComponent(game_object_ptr, (int)type, false);
+        }
+
         public IGameObject()
         {
             game_object_ptr = InternalCalls.GetGOPtr();
@@ -246,31 +261,6 @@ namespace ManLiteScripting
         }
     }
 
-    public class Component
-    {
-        private IGameObject container_go;
-
-        public Component(IGameObject go)
-        {
-            container_go = go;
-        }
-
-        public bool IsComponentEnabled(ComponentType type)
-        {
-            return InternalCalls.IsComponentEnabled(container_go.game_object_ptr, (int)type);
-        }
-
-        public void EnableComponent(ComponentType type)
-        {
-            InternalCalls.SetEnableComponent(container_go.game_object_ptr, (int)type, true);
-        }
-
-        public void DisableComponent(ComponentType type)
-        {
-            InternalCalls.SetEnableComponent(container_go.game_object_ptr, (int)type, false);
-        }
-    }
-
     public class Transform
     {
         public IGameObject container_go;
@@ -392,6 +382,24 @@ namespace ManLiteScripting
         {
             InternalCalls.SetZoom(container_go.game_object_ptr, zoom);
         }
+
+        public bool IsComponentEnabled()
+        {
+            ComponentType type = ComponentType.Camera;
+            return InternalCalls.IsComponentEnabled(container_go.game_object_ptr, (int)type);
+        }
+
+        public void EnableComponent()
+        {
+            ComponentType type = ComponentType.Camera;
+            InternalCalls.SetEnableComponent(container_go.game_object_ptr, (int)type, true);
+        }
+
+        public void DisableComponent()
+        {
+            ComponentType type = ComponentType.Camera;
+            InternalCalls.SetEnableComponent(container_go.game_object_ptr, (int)type, false);
+        }
     }
 
     public class Sprite
@@ -448,6 +456,54 @@ namespace ManLiteScripting
         {
             InternalCalls.SwapTexture(container_go.game_object_ptr, path);
         }
+
+        public void FlipVertical(bool v)
+        {
+            InternalCalls.FlipTextureVertical(container_go.game_object_ptr, v);
+        }
+
+        public bool IsFlipVertical()
+        {
+            return InternalCalls.GetFlipTextureVertical(container_go.game_object_ptr);
+        }
+
+        public void FlipHorizontal(bool h)
+        {
+            InternalCalls.FlipTextureHorizontal(container_go.game_object_ptr, h);
+        }
+
+        public bool IsFlipHorizontal()
+        {
+            return InternalCalls.GetFlipTextureHorizontal(container_go.game_object_ptr);
+        }
+
+        public bool IsDefaultFlipVertical()
+        {
+            return InternalCalls.GetDefaultFlipTextureVertical(container_go.game_object_ptr);
+        }
+
+        public bool IsDefaultFlipHorizontal()
+        {
+            return InternalCalls.GetDefaultFlipTextureHorizontal(container_go.game_object_ptr);
+        }
+
+        public bool IsComponentEnabled()
+        {
+            ComponentType type = ComponentType.Sprite;
+            return InternalCalls.IsComponentEnabled(container_go.game_object_ptr, (int)type);
+        }
+
+        public void EnableComponent()
+        {
+            ComponentType type = ComponentType.Sprite;
+            InternalCalls.SetEnableComponent(container_go.game_object_ptr, (int)type, true);
+        }
+
+        public void DisableComponent()
+        {
+            ComponentType type = ComponentType.Sprite;
+            InternalCalls.SetEnableComponent(container_go.game_object_ptr, (int)type, false);
+        }
     }
 
     public class Animator
@@ -464,6 +520,11 @@ namespace ManLiteScripting
             InternalCalls.PlayAnimation(container_go.game_object_ptr, name);
         }
 
+        public void RePlayAnimation(string name)
+        {
+            InternalCalls.RePlayAnimation(container_go.game_object_ptr, name);
+        }
+
         public void StopAnimation()
         {
             InternalCalls.StopAnimation(container_go.game_object_ptr);
@@ -472,6 +533,24 @@ namespace ManLiteScripting
         public bool IsAnimationPlaying(string name)
         {
             return InternalCalls.IsAnimationPlaying(container_go.game_object_ptr, name);
+        }
+
+        public bool IsComponentEnabled()
+        {
+            ComponentType type = ComponentType.Animator;
+            return InternalCalls.IsComponentEnabled(container_go.game_object_ptr, (int)type);
+        }
+
+        public void EnableComponent()
+        {
+            ComponentType type = ComponentType.Animator;
+            InternalCalls.SetEnableComponent(container_go.game_object_ptr, (int)type, true);
+        }
+
+        public void DisableComponent()
+        {
+            ComponentType type = ComponentType.Animator;
+            InternalCalls.SetEnableComponent(container_go.game_object_ptr, (int)type, false);
         }
     }
 
@@ -583,6 +662,12 @@ namespace ManLiteScripting
             InternalCalls.SetSpeedCollider(container_go.game_object_ptr, speed);
         }
 
+        public void AddSpeed(Vec2f speed)
+        {
+            Vec2f new_speed = GetSpeed() + speed;
+            InternalCalls.SetSpeedCollider(container_go.game_object_ptr, new_speed);
+        }
+
         public float GetFriction()
         {
             return InternalCalls.GetColliderFriction(container_go.game_object_ptr);
@@ -621,6 +706,24 @@ namespace ManLiteScripting
         public void SetRestitution(float r)
         {
             InternalCalls.SetColliderRestitution(container_go.game_object_ptr, r);
+        }
+
+        public bool IsComponentEnabled()
+        {
+            ComponentType type = ComponentType.Collider2D;
+            return InternalCalls.IsComponentEnabled(container_go.game_object_ptr, (int)type);
+        }
+
+        public void EnableComponent()
+        {
+            ComponentType type = ComponentType.Collider2D;
+            InternalCalls.SetEnableComponent(container_go.game_object_ptr, (int)type, true);
+        }
+
+        public void DisableComponent()
+        {
+            ComponentType type = ComponentType.Collider2D;
+            InternalCalls.SetEnableComponent(container_go.game_object_ptr, (int)type, false);
         }
     }
 
@@ -746,6 +849,24 @@ namespace ManLiteScripting
         {
             InternalCalls.EnableItemUI(container_go.game_object_ptr, name, b);
         }
+
+        public bool IsComponentEnabled()
+        {
+            ComponentType type = ComponentType.Canvas;
+            return InternalCalls.IsComponentEnabled(container_go.game_object_ptr, (int)type);
+        }
+
+        public void EnableComponent()
+        {
+            ComponentType type = ComponentType.Canvas;
+            InternalCalls.SetEnableComponent(container_go.game_object_ptr, (int)type, true);
+        }
+
+        public void DisableComponent()
+        {
+            ComponentType type = ComponentType.Canvas;
+            InternalCalls.SetEnableComponent(container_go.game_object_ptr, (int)type, false);
+        }
     }
 
     public class Audio
@@ -792,6 +913,16 @@ namespace ManLiteScripting
             InternalCalls.PauseSound(container_go.game_object_ptr, audio);
         }
 
+        public void UnpauseMusic(string audio)
+        {
+            InternalCalls.UnpauseMusic(container_go.game_object_ptr, audio);
+        }
+
+        public void UnpauseSound(string audio)
+        {
+            InternalCalls.UnpauseSound(container_go.game_object_ptr, audio);
+        }
+
         public void StopMusic(string audio)
         {
             InternalCalls.StopMusic(container_go.game_object_ptr, audio);
@@ -820,6 +951,24 @@ namespace ManLiteScripting
         public void SetSoundVolume(string audio, int volume)
         {
             InternalCalls.SetSoundVolume(container_go.game_object_ptr, audio, volume);
+        }
+
+        public bool IsComponentEnabled()
+        {
+            ComponentType type = ComponentType.AudioSource;
+            return InternalCalls.IsComponentEnabled(container_go.game_object_ptr, (int)type);
+        }
+
+        public void EnableComponent()
+        {
+            ComponentType type = ComponentType.AudioSource;
+            InternalCalls.SetEnableComponent(container_go.game_object_ptr, (int)type, true);
+        }
+
+        public void DisableComponent()
+        {
+            ComponentType type = ComponentType.AudioSource;
+            InternalCalls.SetEnableComponent(container_go.game_object_ptr, (int)type, false);
         }
     }
 
@@ -850,6 +999,24 @@ namespace ManLiteScripting
         public void Stop()
         {
             InternalCalls.StopParticleSystem(container_go.game_object_ptr);
+        }
+
+        public bool IsComponentEnabled()
+        {
+            ComponentType type = ComponentType.ParticleSystem;
+            return InternalCalls.IsComponentEnabled(container_go.game_object_ptr, (int)type);
+        }
+
+        public void EnableComponent()
+        {
+            ComponentType type = ComponentType.ParticleSystem;
+            InternalCalls.SetEnableComponent(container_go.game_object_ptr, (int)type, true);
+        }
+
+        public void DisableComponent()
+        {
+            ComponentType type = ComponentType.ParticleSystem;
+            InternalCalls.SetEnableComponent(container_go.game_object_ptr, (int)type, false);
         }
     }
 
@@ -924,6 +1091,24 @@ namespace ManLiteScripting
         public bool GetFinalPositionStatic()
         {
             return InternalCalls.GetLightFinalPosStatic(container_go.game_object_ptr);
+        }
+
+        public bool IsComponentEnabled()
+        {
+            ComponentType type = ComponentType.Light;
+            return InternalCalls.IsComponentEnabled(container_go.game_object_ptr, (int)type);
+        }
+
+        public void EnableComponent()
+        {
+            ComponentType type = ComponentType.Light;
+            InternalCalls.SetEnableComponent(container_go.game_object_ptr, (int)type, true);
+        }
+
+        public void DisableComponent()
+        {
+            ComponentType type = ComponentType.Light;
+            InternalCalls.SetEnableComponent(container_go.game_object_ptr, (int)type, false);
         }
     }
 }

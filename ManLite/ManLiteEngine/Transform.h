@@ -27,7 +27,7 @@ public:
 
     //getters // setters
     vec2f GetPosition() const { return position; }
-    void SetPosition(vec2f pos) { position = pos; }
+    void SetPosition(vec2f pos);
     float GetAngle() const { return angle_rotation; }
     void SetAngle(float angle);
     vec2f GetScale() const { return scale; }

@@ -109,6 +109,11 @@ void WindowEM::GetWindowSize(unsigned int& w, unsigned int& h) const
 	h = (unsigned int)h_;
 }
 
+void WindowEM::GetWindowPos(int& x, int& y) const
+{
+	SDL_GetWindowPosition(window, &x, &y);
+}
+
 void WindowEM::SetVsync(bool vsync)
 {
 	this->vsync = vsync;

@@ -131,7 +131,7 @@ bool Collider2D::Update(float dt)
 void Collider2D::Draw()
 {
     if (std::this_thread::get_id() != engine->main_thread_id) return;
-    if (!engine->GetEditorOrBuild()) return;
+    if (!engine->GetEditorOrBuild() || !engine->renderer_em->rend_colliders) return;
     if (!m_body) RecreateBody();
 
     Transform* t = container_go.lock()->GetComponent<Transform>();
@@ -160,7 +160,7 @@ void Collider2D::Draw()
 
         mat3f finalMat = modelMat * colliderMat;
 
-        engine->renderer_em->SubmitDebugCollider(finalMat, color, false, engine->scene_manager_em->GetCurrentScene().GetGOOrderInLayer(container_go.lock()));
+        engine->renderer_em->SubmitDebugCollider(finalMat, color, false, 0.0f);
     }
     else
     {
@@ -171,7 +171,7 @@ void Collider2D::Draw()
         );
 
         mat3f finalMat = modelMat * colliderMat;
-        engine->renderer_em->SubmitDebugCollider(finalMat, color, true, engine->scene_manager_em->GetCurrentScene().GetGOOrderInLayer(container_go.lock()), 0.0f, m_radius);
+        engine->renderer_em->SubmitDebugCollider(finalMat, color, true, 0.0f, 0.0f, m_radius);
     }
 }
 
@@ -197,6 +197,43 @@ bool Collider2D::Unpause()
     m_body->SetEnabled(true);
 
     return ret;
+}
+
+void Collider2D::SetPosition(vec2f pos)
+{
+    if (std::this_thread::get_id() != engine->main_thread_id) return;
+
+    if (!m_body) RecreateBody();
+
+    b2Vec2 new_pos(
+        (pos.x),
+        (pos.y)
+    );
+
+    m_body->SetTransform(new_pos, m_body->GetAngle());
+
+    bool was_enabled = IsEnabled();
+    if (was_enabled)
+    {
+        SetEnabled(false);
+        SetEnabled(was_enabled);
+    }
+}
+
+void Collider2D::SetAngle(float angle)
+{
+    if (std::this_thread::get_id() != engine->main_thread_id) return;
+
+    if (!m_body) RecreateBody();
+
+    m_body->SetTransform(m_body->GetPosition(), DEGTORAD * angle);
+
+    bool was_enabled = m_body->IsEnabled();
+    if (was_enabled)
+    {
+        m_body->SetEnabled(false);
+        m_body->SetEnabled(was_enabled);
+    }
 }
 
 void Collider2D::SetShapeType(ShapeType newType)
@@ -408,6 +445,7 @@ nlohmann::json Collider2D::SaveComponent()
     componentJSON["Mass"] = m_mass;
     componentJSON["Restitution"] = m_restitution;
     componentJSON["UseGravity"] = m_useGravity;
+    componentJSON["GravityScale"] = m_gravity_scale;
 
     componentJSON["Color"]["R"] = m_color.r;
     componentJSON["Color"]["G"] = m_color.g;
@@ -441,6 +479,7 @@ void Collider2D::LoadComponent(const nlohmann::json& componentJSON)
     if (componentJSON.contains("Mass")) m_mass = componentJSON["Mass"];
     if (componentJSON.contains("Restitution")) m_restitution = componentJSON["Restitution"];
     if (componentJSON.contains("UseGravity")) m_useGravity = componentJSON["UseGravity"];
+    if (componentJSON.contains("GravityScale")) m_gravity_scale = componentJSON["GravityScale"];
 
     if (componentJSON.contains("Color")) {
         m_color.r = componentJSON["Color"]["R"];
@@ -531,8 +570,38 @@ void Collider2D::SetUseGravity(bool useGravity)
     if (std::this_thread::get_id() != engine->main_thread_id) return;
     m_useGravity = useGravity;
     if (m_body) {
-        m_body->SetGravityScale(m_useGravity ? 1.0f : 0.0f);
+        m_body->SetGravityScale(m_useGravity ? m_gravity_scale : 0.0f);
     }
+}
+
+void Collider2D::SetGravityScale(float gravity)
+{
+    if (std::this_thread::get_id() != engine->main_thread_id) return;
+    m_gravity_scale = gravity;
+    if (m_body) {
+        m_body->SetGravityScale(m_gravity_scale);
+    }
+}
+
+vec2f Collider2D::GetWorldGravity()
+{
+    if (std::this_thread::get_id() != engine->main_thread_id) return { 0.0f, 0.0f };
+    if (PhysicsEM::GetWorld())
+    {
+        return { PhysicsEM::GetWorld()->GetGravity().x, PhysicsEM::GetWorld()->GetGravity().y };
+    }
+    return { 0.0f, 0.0f };
+}
+
+void Collider2D::SetWorldGravity(vec2f g)
+{
+    if (std::this_thread::get_id() != engine->main_thread_id) return;
+    if (PhysicsEM::GetWorld())
+    {
+        b2Vec2 g2 = { g.x, g.y };
+        PhysicsEM::GetWorld()->SetGravity(g2);
+    }
+    return;
 }
 
 void Collider2D::SetEnabled(bool enable)

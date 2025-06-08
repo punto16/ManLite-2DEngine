@@ -47,6 +47,11 @@ public:
 
 	bool CleanUp();
 
+
+	//
+	void CreateScriptFile(std::string script_name, std::string script_directory = "");
+
+	//
 	static GameObject* GetGOPtr() { return mono_data.currentGOPtr; }
 	static MonoDomain* GetAppDomain() { return mono_data.monoDomain; }
 	static MonoImage* GetCoreAssemblyImage() { return mono_data.coreAssemblyImage; }
