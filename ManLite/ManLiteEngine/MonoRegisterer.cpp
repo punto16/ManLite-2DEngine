@@ -175,7 +175,7 @@ static void CloseApp()
 {
 	if (engine->GetEditorOrBuild())
 	{
-		engine->scene_manager_em->StopSession();
+		engine->SetEngineState(EngineState::STOP);
 	}
 	else
 	{
