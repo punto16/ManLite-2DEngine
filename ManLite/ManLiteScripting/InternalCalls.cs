@@ -68,6 +68,26 @@ namespace ManLiteScripting
             return obj is Vec2f other && Equals(other);
         }
 
+        public float Magnitude
+        {
+            get => (float)Math.Sqrt(X * X + Y * Y);
+        }
+
+        public void Normalize()
+        {
+            float magnitude = Magnitude;
+            if (magnitude > 1e-8f)
+            {
+                X /= magnitude;
+                Y /= magnitude;
+            }
+            else
+            {
+                X = 0;
+                Y = 0;
+            }
+        }
+
         public override int GetHashCode()
         {
             unchecked
@@ -157,6 +177,30 @@ namespace ManLiteScripting
             return obj is Vec4f other && Equals(other);
         }
 
+        public float Magnitude
+        {
+            get => (float)Math.Sqrt(X * X + Y * Y + Z * Z + W * W);
+        }
+
+        public void Normalize()
+        {
+            float magnitude = Magnitude;
+            if (magnitude > 1e-8f)
+            {
+                X /= magnitude;
+                Y /= magnitude;
+                Z /= magnitude;
+                W /= magnitude;
+            }
+            else
+            {
+                X = 0;
+                Y = 0;
+                Z = 0;
+                W = 0;
+            }
+        }
+
         public override int GetHashCode()
         {
             unchecked
@@ -183,6 +227,7 @@ namespace ManLiteScripting
         [MethodImpl(MethodImplOptions.InternalCall)] public extern static void SetGOTag(IntPtr go, string tag);
         [MethodImpl(MethodImplOptions.InternalCall)] public extern static uint GetGOID(IntPtr go);
         [MethodImpl(MethodImplOptions.InternalCall)] public extern static IntPtr GetGOParent(IntPtr go);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static IntPtr GetGOChild(IntPtr go, string name);
         [MethodImpl(MethodImplOptions.InternalCall)] public extern static bool GetGOEnabled(IntPtr go);
         [MethodImpl(MethodImplOptions.InternalCall)] public extern static void SetGOEnabled(IntPtr go, bool enable);
         [MethodImpl(MethodImplOptions.InternalCall)] public extern static void SwitchGOEnabled(IntPtr go);
@@ -308,6 +353,7 @@ namespace ManLiteScripting
         [MethodImpl(MethodImplOptions.InternalCall)] public extern static void SetCollierUsingGravity(IntPtr go, bool useGravity);
         [MethodImpl(MethodImplOptions.InternalCall)] public extern static void ApplyForceCollider(IntPtr go, Vec2f force);
         [MethodImpl(MethodImplOptions.InternalCall)] public extern static void GetSpeedCollider(IntPtr go, out Vec2f speed);
+        [MethodImpl(MethodImplOptions.InternalCall)] public extern static void SetPositionCollider(IntPtr go, Vec2f pos);
         [MethodImpl(MethodImplOptions.InternalCall)] public extern static void SetSpeedCollider(IntPtr go, Vec2f speed);
         [MethodImpl(MethodImplOptions.InternalCall)] public extern static float GetColliderFriction(IntPtr go);
         [MethodImpl(MethodImplOptions.InternalCall)] public extern static void SetColliderFriction(IntPtr go, float friction);

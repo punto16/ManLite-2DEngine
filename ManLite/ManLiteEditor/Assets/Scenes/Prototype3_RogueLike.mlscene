@@ -1,0 +1,1957 @@
+{
+  "CurrentCamID": 2881402769,
+  "background_color": [
+    0,
+    0,
+    0,
+    255
+  ],
+  "game_objects": [
+    {
+      "Components": [
+        {
+          "AspectRatio": 1.0,
+          "ComponentID": 1914708834,
+          "ComponentName": "Transform",
+          "ComponentType": 0,
+          "ContainerGOID": 2881402769,
+          "Enabled": true,
+          "LockAspect": true,
+          "Position": [
+            0.0,
+            0.0
+          ],
+          "Rotation": 0.0,
+          "Scale": [
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "CameraZoom": 80.0,
+          "ComponentID": 3566542905,
+          "ComponentName": "Camera",
+          "ComponentType": 1,
+          "ContainerGOID": 2881402769,
+          "Enabled": true,
+          "ViewportSize": [
+            1700,
+            900
+          ]
+        },
+        {
+          "ComponentID": 1842971465,
+          "ComponentName": "Canvas",
+          "ComponentType": 6,
+          "ContainerGOID": 2881402769,
+          "Enabled": true,
+          "UIElements": [
+            {
+              "ContainerCanvasID": 1842971465,
+              "PixelArtRender": true,
+              "SectionIdle": [
+                160.0,
+                96.0,
+                32.0,
+                32.0
+              ],
+              "TexturePath": "Assets\\Textures\\isaac\\isaac_spritesheet.png",
+              "TextureSize": [
+                256,
+                160
+              ],
+              "UIElementAngle": 1.0,
+              "UIElementAspectLocked": true,
+              "UIElementAspectLockedRatio": 1.0,
+              "UIElementEnabled": true,
+              "UIElementID": 1357449775,
+              "UIElementName": "HeartIcon",
+              "UIElementPosition": [
+                -7.900000095367432,
+                4.849999904632568
+              ],
+              "UIElementScale": [
+                1.5,
+                1.5
+              ],
+              "UIElementType": 0
+            },
+            {
+              "Color": [
+                0,
+                0,
+                0,
+                255
+              ],
+              "ContainerCanvasID": 1842971465,
+              "FontPath": "Assets\\Fonts\\Arial.ttf",
+              "Text": "x",
+              "TextAlignment": 1,
+              "UIElementAngle": 0.0,
+              "UIElementAspectLocked": true,
+              "UIElementAspectLockedRatio": 1.0,
+              "UIElementEnabled": true,
+              "UIElementID": 319479605,
+              "UIElementName": "x_factor",
+              "UIElementPosition": [
+                -7.150000095367432,
+                4.5
+              ],
+              "UIElementScale": [
+                0.25,
+                0.25
+              ],
+              "UIElementType": 4
+            },
+            {
+              "Color": [
+                0,
+                0,
+                0,
+                255
+              ],
+              "ContainerCanvasID": 1842971465,
+              "FontPath": "Assets\\Fonts\\Arial.ttf",
+              "Text": "3",
+              "TextAlignment": 1,
+              "UIElementAngle": 0.0,
+              "UIElementAspectLocked": true,
+              "UIElementAspectLockedRatio": 1.0,
+              "UIElementEnabled": true,
+              "UIElementID": 1983603239,
+              "UIElementName": "health_ui",
+              "UIElementPosition": [
+                -6.699999809265137,
+                4.5
+              ],
+              "UIElementScale": [
+                0.25,
+                0.25
+              ],
+              "UIElementType": 4
+            }
+          ]
+        }
+      ],
+      "Enabled": true,
+      "ID": 2881402769,
+      "Name": "MainCamera",
+      "ParentID": 1405544867,
+      "ParentLayerID": 8,
+      "Tag": "Default",
+      "Visible": true
+    },
+    {
+      "Components": [
+        {
+          "AspectRatio": 1.0,
+          "ComponentID": 2898741864,
+          "ComponentName": "Transform",
+          "ComponentType": 0,
+          "ContainerGOID": 1765880267,
+          "Enabled": true,
+          "LockAspect": true,
+          "Position": [
+            0.0,
+            0.0
+          ],
+          "Rotation": 0.0,
+          "Scale": [
+            11.300000190734863,
+            11.300000190734863
+          ]
+        },
+        {
+          "ComponentID": 3456155827,
+          "ComponentName": "Sprite2D",
+          "ComponentType": 2,
+          "ContainerGOID": 1765880267,
+          "Enabled": true,
+          "FlipHorizontal": false,
+          "FlipVertical": false,
+          "Offset": [
+            0.0,
+            0.0
+          ],
+          "PixelArtRender": true,
+          "TexturePath": "Assets\\Textures\\isaac\\latest.png",
+          "TextureSection": [
+            0,
+            0,
+            1213,
+            766
+          ],
+          "TextureSize": [
+            1213,
+            766
+          ],
+          "TextureUVs": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "ComponentID": 3066179948,
+          "ComponentName": "AudioSource",
+          "ComponentType": 7,
+          "ContainerGOID": 1765880267,
+          "Enabled": true,
+          "Musics": [
+            {
+              "loop": true,
+              "name": "basement_music",
+              "path": "Assets\\Audio\\Music\\basement_music.ogg",
+              "play_on_awake": true,
+              "volume": 8
+            }
+          ],
+          "Sounds": null
+        }
+      ],
+      "Enabled": true,
+      "GameObjects": [
+        {
+          "Components": [
+            {
+              "AspectRatio": 1.0,
+              "ComponentID": 899936762,
+              "ComponentName": "Transform",
+              "ComponentType": 0,
+              "ContainerGOID": 30561896,
+              "Enabled": true,
+              "LockAspect": true,
+              "Position": [
+                -0.3539822995662689,
+                -0.3539822995662689
+              ],
+              "Rotation": 0.0,
+              "Scale": [
+                1.0,
+                1.0
+              ]
+            },
+            {
+              "Color": {
+                "A": 255,
+                "B": 0,
+                "G": 255,
+                "R": 0
+              },
+              "ComponentID": 644553939,
+              "ComponentName": "Collider2D",
+              "ComponentType": 5,
+              "ContainerGOID": 30561896,
+              "Enabled": true,
+              "Friction": 0.30000001192092896,
+              "GravityScale": 1.0,
+              "Height": 0.25,
+              "IsDynamic": false,
+              "IsSensor": false,
+              "LinearDamping": 0.0,
+              "LockRotation": false,
+              "Mass": 0.0,
+              "Radius": 0.5,
+              "Restitution": 0.0,
+              "ShapeType": "RECTANGLE",
+              "UseGravity": false,
+              "Width": 7.0
+            }
+          ],
+          "Enabled": true,
+          "ID": 30561896,
+          "Name": "map_collider_down",
+          "ParentID": 1765880267,
+          "ParentLayerID": 6,
+          "Tag": "wall",
+          "Visible": true
+        },
+        {
+          "Components": [
+            {
+              "AspectRatio": 1.0,
+              "ComponentID": 1488600785,
+              "ComponentName": "Transform",
+              "ComponentType": 0,
+              "ContainerGOID": 2059651212,
+              "Enabled": true,
+              "LockAspect": true,
+              "Position": [
+                0.3539822995662689,
+                -0.3539822995662689
+              ],
+              "Rotation": 0.0,
+              "Scale": [
+                1.0,
+                1.0
+              ]
+            },
+            {
+              "Color": {
+                "A": 255,
+                "B": 0,
+                "G": 255,
+                "R": 0
+              },
+              "ComponentID": 3108463472,
+              "ComponentName": "Collider2D",
+              "ComponentType": 5,
+              "ContainerGOID": 2059651212,
+              "Enabled": true,
+              "Friction": 0.30000001192092896,
+              "GravityScale": 1.0,
+              "Height": 0.25,
+              "IsDynamic": false,
+              "IsSensor": false,
+              "LinearDamping": 0.0,
+              "LockRotation": false,
+              "Mass": 0.0,
+              "Radius": 0.5,
+              "Restitution": 0.0,
+              "ShapeType": "RECTANGLE",
+              "UseGravity": false,
+              "Width": 7.0
+            }
+          ],
+          "Enabled": true,
+          "ID": 2059651212,
+          "Name": "map_collider_down_(1)",
+          "ParentID": 1765880267,
+          "ParentLayerID": 6,
+          "Tag": "wall",
+          "Visible": true
+        },
+        {
+          "Components": [
+            {
+              "AspectRatio": 1.0,
+              "ComponentID": 3831356779,
+              "ComponentName": "Transform",
+              "ComponentType": 0,
+              "ContainerGOID": 1358213181,
+              "Enabled": true,
+              "LockAspect": true,
+              "Position": [
+                0.3539822995662689,
+                0.3539822995662689
+              ],
+              "Rotation": 0.0,
+              "Scale": [
+                1.0,
+                1.0
+              ]
+            },
+            {
+              "Color": {
+                "A": 255,
+                "B": 0,
+                "G": 255,
+                "R": 0
+              },
+              "ComponentID": 3118771690,
+              "ComponentName": "Collider2D",
+              "ComponentType": 5,
+              "ContainerGOID": 1358213181,
+              "Enabled": true,
+              "Friction": 0.30000001192092896,
+              "GravityScale": 1.0,
+              "Height": 0.25,
+              "IsDynamic": false,
+              "IsSensor": false,
+              "LinearDamping": 0.0,
+              "LockRotation": false,
+              "Mass": 0.0,
+              "Radius": 0.5,
+              "Restitution": 0.0,
+              "ShapeType": "RECTANGLE",
+              "UseGravity": false,
+              "Width": 7.0
+            }
+          ],
+          "Enabled": true,
+          "ID": 1358213181,
+          "Name": "map_collider_up",
+          "ParentID": 1765880267,
+          "ParentLayerID": 6,
+          "Tag": "wall",
+          "Visible": true
+        },
+        {
+          "Components": [
+            {
+              "AspectRatio": 1.0,
+              "ComponentID": 4140960699,
+              "ComponentName": "Transform",
+              "ComponentType": 0,
+              "ContainerGOID": 1760249697,
+              "Enabled": true,
+              "LockAspect": true,
+              "Position": [
+                -0.3539822995662689,
+                0.3539822995662689
+              ],
+              "Rotation": 0.0,
+              "Scale": [
+                1.0,
+                1.0
+              ]
+            },
+            {
+              "Color": {
+                "A": 255,
+                "B": 0,
+                "G": 255,
+                "R": 0
+              },
+              "ComponentID": 2004017485,
+              "ComponentName": "Collider2D",
+              "ComponentType": 5,
+              "ContainerGOID": 1760249697,
+              "Enabled": true,
+              "Friction": 0.30000001192092896,
+              "GravityScale": 1.0,
+              "Height": 0.25,
+              "IsDynamic": false,
+              "IsSensor": false,
+              "LinearDamping": 0.0,
+              "LockRotation": false,
+              "Mass": 0.0,
+              "Radius": 0.5,
+              "Restitution": 0.0,
+              "ShapeType": "RECTANGLE",
+              "UseGravity": false,
+              "Width": 7.0
+            }
+          ],
+          "Enabled": true,
+          "ID": 1760249697,
+          "Name": "map_collider_up_(1)",
+          "ParentID": 1765880267,
+          "ParentLayerID": 6,
+          "Tag": "wall",
+          "Visible": true
+        },
+        {
+          "Components": [
+            {
+              "AspectRatio": 1.0,
+              "ComponentID": 1063443019,
+              "ComponentName": "Transform",
+              "ComponentType": 0,
+              "ContainerGOID": 3710473962,
+              "Enabled": true,
+              "LockAspect": true,
+              "Position": [
+                -0.7079645991325378,
+                0.2654867172241211
+              ],
+              "Rotation": 0.0,
+              "Scale": [
+                1.0,
+                1.0
+              ]
+            },
+            {
+              "Color": {
+                "A": 255,
+                "B": 0,
+                "G": 255,
+                "R": 0
+              },
+              "ComponentID": 676964316,
+              "ComponentName": "Collider2D",
+              "ComponentType": 5,
+              "ContainerGOID": 3710473962,
+              "Enabled": true,
+              "Friction": 0.30000001192092896,
+              "GravityScale": 1.0,
+              "Height": 4.849999904632568,
+              "IsDynamic": false,
+              "IsSensor": false,
+              "LinearDamping": 0.0,
+              "LockRotation": false,
+              "Mass": 0.0,
+              "Radius": 0.5,
+              "Restitution": 0.0,
+              "ShapeType": "RECTANGLE",
+              "UseGravity": false,
+              "Width": 1.4500000476837158
+            }
+          ],
+          "Enabled": true,
+          "ID": 3710473962,
+          "Name": "map_collider_left",
+          "ParentID": 1765880267,
+          "ParentLayerID": 6,
+          "Tag": "wall",
+          "Visible": true
+        },
+        {
+          "Components": [
+            {
+              "AspectRatio": 1.0,
+              "ComponentID": 4260766088,
+              "ComponentName": "Transform",
+              "ComponentType": 0,
+              "ContainerGOID": 139031746,
+              "Enabled": true,
+              "LockAspect": true,
+              "Position": [
+                -0.7079645991325378,
+                -0.2654867172241211
+              ],
+              "Rotation": 0.0,
+              "Scale": [
+                1.0,
+                1.0
+              ]
+            },
+            {
+              "Color": {
+                "A": 255,
+                "B": 0,
+                "G": 255,
+                "R": 0
+              },
+              "ComponentID": 1511367644,
+              "ComponentName": "Collider2D",
+              "ComponentType": 5,
+              "ContainerGOID": 139031746,
+              "Enabled": true,
+              "Friction": 0.30000001192092896,
+              "GravityScale": 1.0,
+              "Height": 4.849999904632568,
+              "IsDynamic": false,
+              "IsSensor": false,
+              "LinearDamping": 0.0,
+              "LockRotation": false,
+              "Mass": 0.0,
+              "Radius": 0.5,
+              "Restitution": 0.0,
+              "ShapeType": "RECTANGLE",
+              "UseGravity": false,
+              "Width": 1.4500000476837158
+            }
+          ],
+          "Enabled": true,
+          "ID": 139031746,
+          "Name": "map_collider_left_(1)",
+          "ParentID": 1765880267,
+          "ParentLayerID": 6,
+          "Tag": "wall",
+          "Visible": true
+        },
+        {
+          "Components": [
+            {
+              "AspectRatio": 1.0,
+              "ComponentID": 2344228300,
+              "ComponentName": "Transform",
+              "ComponentType": 0,
+              "ContainerGOID": 3395891845,
+              "Enabled": true,
+              "LockAspect": true,
+              "Position": [
+                0.7079645991325378,
+                -0.2654867172241211
+              ],
+              "Rotation": 0.0,
+              "Scale": [
+                1.0,
+                1.0
+              ]
+            },
+            {
+              "Color": {
+                "A": 255,
+                "B": 0,
+                "G": 255,
+                "R": 0
+              },
+              "ComponentID": 2505743497,
+              "ComponentName": "Collider2D",
+              "ComponentType": 5,
+              "ContainerGOID": 3395891845,
+              "Enabled": true,
+              "Friction": 0.30000001192092896,
+              "GravityScale": 1.0,
+              "Height": 4.849999904632568,
+              "IsDynamic": false,
+              "IsSensor": false,
+              "LinearDamping": 0.0,
+              "LockRotation": false,
+              "Mass": 0.0,
+              "Radius": 0.5,
+              "Restitution": 0.0,
+              "ShapeType": "RECTANGLE",
+              "UseGravity": false,
+              "Width": 1.4500000476837158
+            }
+          ],
+          "Enabled": true,
+          "ID": 3395891845,
+          "Name": "map_collider_right",
+          "ParentID": 1765880267,
+          "ParentLayerID": 6,
+          "Tag": "wall",
+          "Visible": true
+        },
+        {
+          "Components": [
+            {
+              "AspectRatio": 1.0,
+              "ComponentID": 1460297102,
+              "ComponentName": "Transform",
+              "ComponentType": 0,
+              "ContainerGOID": 1212233273,
+              "Enabled": true,
+              "LockAspect": true,
+              "Position": [
+                0.7079645991325378,
+                0.2654867172241211
+              ],
+              "Rotation": 0.0,
+              "Scale": [
+                1.0,
+                1.0
+              ]
+            },
+            {
+              "Color": {
+                "A": 255,
+                "B": 0,
+                "G": 255,
+                "R": 0
+              },
+              "ComponentID": 2363913606,
+              "ComponentName": "Collider2D",
+              "ComponentType": 5,
+              "ContainerGOID": 1212233273,
+              "Enabled": true,
+              "Friction": 0.30000001192092896,
+              "GravityScale": 1.0,
+              "Height": 4.849999904632568,
+              "IsDynamic": false,
+              "IsSensor": false,
+              "LinearDamping": 0.0,
+              "LockRotation": false,
+              "Mass": 0.0,
+              "Radius": 0.5,
+              "Restitution": 0.0,
+              "ShapeType": "RECTANGLE",
+              "UseGravity": false,
+              "Width": 1.4500000476837158
+            }
+          ],
+          "Enabled": true,
+          "ID": 1212233273,
+          "Name": "map_collider_right_(1)",
+          "ParentID": 1765880267,
+          "ParentLayerID": 6,
+          "Tag": "wall",
+          "Visible": true
+        },
+        {
+          "Components": [
+            {
+              "AspectRatio": 1.0,
+              "ComponentID": 3888646469,
+              "ComponentName": "Transform",
+              "ComponentType": 0,
+              "ContainerGOID": 2806888272,
+              "Enabled": true,
+              "LockAspect": true,
+              "Position": [
+                -0.7079645991325378,
+                0.0
+              ],
+              "Rotation": 0.0,
+              "Scale": [
+                1.0,
+                1.0
+              ]
+            },
+            {
+              "Color": {
+                "A": 255,
+                "B": 232,
+                "G": 255,
+                "R": 0
+              },
+              "ComponentID": 337635228,
+              "ComponentName": "Collider2D",
+              "ComponentType": 5,
+              "ContainerGOID": 2806888272,
+              "Enabled": true,
+              "Friction": 0.30000001192092896,
+              "GravityScale": 1.0,
+              "Height": 1.0,
+              "IsDynamic": false,
+              "IsSensor": true,
+              "LinearDamping": 0.0,
+              "LockRotation": false,
+              "Mass": 0.0,
+              "Radius": 0.5,
+              "Restitution": 0.0,
+              "ShapeType": "RECTANGLE",
+              "UseGravity": false,
+              "Width": 1.0
+            }
+          ],
+          "Enabled": true,
+          "ID": 2806888272,
+          "Name": "door_collider_left",
+          "ParentID": 1765880267,
+          "ParentLayerID": 7,
+          "Tag": "door_left",
+          "Visible": true
+        },
+        {
+          "Components": [
+            {
+              "AspectRatio": 1.0,
+              "ComponentID": 2285088253,
+              "ComponentName": "Transform",
+              "ComponentType": 0,
+              "ContainerGOID": 2570734164,
+              "Enabled": true,
+              "LockAspect": true,
+              "Position": [
+                0.7079645991325378,
+                0.0
+              ],
+              "Rotation": 0.0,
+              "Scale": [
+                1.0,
+                1.0
+              ]
+            },
+            {
+              "Color": {
+                "A": 255,
+                "B": 232,
+                "G": 255,
+                "R": 0
+              },
+              "ComponentID": 4256130256,
+              "ComponentName": "Collider2D",
+              "ComponentType": 5,
+              "ContainerGOID": 2570734164,
+              "Enabled": true,
+              "Friction": 0.30000001192092896,
+              "GravityScale": 1.0,
+              "Height": 1.0,
+              "IsDynamic": false,
+              "IsSensor": true,
+              "LinearDamping": 0.0,
+              "LockRotation": false,
+              "Mass": 0.0,
+              "Radius": 0.5,
+              "Restitution": 0.0,
+              "ShapeType": "RECTANGLE",
+              "UseGravity": false,
+              "Width": 1.0
+            }
+          ],
+          "Enabled": true,
+          "ID": 2570734164,
+          "Name": "door_collider_right",
+          "ParentID": 1765880267,
+          "ParentLayerID": 7,
+          "Tag": "door_right",
+          "Visible": true
+        },
+        {
+          "Components": [
+            {
+              "AspectRatio": 1.0,
+              "ComponentID": 1157671201,
+              "ComponentName": "Transform",
+              "ComponentType": 0,
+              "ContainerGOID": 1456513820,
+              "Enabled": true,
+              "LockAspect": true,
+              "Position": [
+                0.0,
+                0.44247788190841675
+              ],
+              "Rotation": 0.0,
+              "Scale": [
+                1.0,
+                1.0
+              ]
+            },
+            {
+              "Color": {
+                "A": 255,
+                "B": 232,
+                "G": 255,
+                "R": 0
+              },
+              "ComponentID": 1233954450,
+              "ComponentName": "Collider2D",
+              "ComponentType": 5,
+              "ContainerGOID": 1456513820,
+              "Enabled": true,
+              "Friction": 0.30000001192092896,
+              "GravityScale": 1.0,
+              "Height": 1.0,
+              "IsDynamic": false,
+              "IsSensor": true,
+              "LinearDamping": 0.0,
+              "LockRotation": false,
+              "Mass": 0.0,
+              "Radius": 0.5,
+              "Restitution": 0.0,
+              "ShapeType": "RECTANGLE",
+              "UseGravity": false,
+              "Width": 1.0
+            }
+          ],
+          "Enabled": true,
+          "ID": 1456513820,
+          "Name": "door_collider_up",
+          "ParentID": 1765880267,
+          "ParentLayerID": 7,
+          "Tag": "door_up",
+          "Visible": true
+        },
+        {
+          "Components": [
+            {
+              "AspectRatio": 1.0,
+              "ComponentID": 677619740,
+              "ComponentName": "Transform",
+              "ComponentType": 0,
+              "ContainerGOID": 3897048184,
+              "Enabled": true,
+              "LockAspect": true,
+              "Position": [
+                0.0,
+                -0.44247788190841675
+              ],
+              "Rotation": 0.0,
+              "Scale": [
+                1.0,
+                1.0
+              ]
+            },
+            {
+              "Color": {
+                "A": 255,
+                "B": 232,
+                "G": 255,
+                "R": 0
+              },
+              "ComponentID": 3467477673,
+              "ComponentName": "Collider2D",
+              "ComponentType": 5,
+              "ContainerGOID": 3897048184,
+              "Enabled": true,
+              "Friction": 0.30000001192092896,
+              "GravityScale": 1.0,
+              "Height": 1.0,
+              "IsDynamic": false,
+              "IsSensor": true,
+              "LinearDamping": 0.0,
+              "LockRotation": false,
+              "Mass": 0.0,
+              "Radius": 0.5,
+              "Restitution": 0.0,
+              "ShapeType": "RECTANGLE",
+              "UseGravity": false,
+              "Width": 1.0
+            }
+          ],
+          "Enabled": true,
+          "ID": 3897048184,
+          "Name": "door_collider_down",
+          "ParentID": 1765880267,
+          "ParentLayerID": 7,
+          "Tag": "door_down",
+          "Visible": true
+        }
+      ],
+      "ID": 1765880267,
+      "Name": "Map",
+      "ParentID": 1405544867,
+      "ParentLayerID": 0,
+      "Tag": "Default",
+      "Visible": true
+    },
+    {
+      "Components": [
+        {
+          "AspectRatio": 1.0,
+          "ComponentID": 4033270225,
+          "ComponentName": "Transform",
+          "ComponentType": 0,
+          "ContainerGOID": 1605604289,
+          "Enabled": true,
+          "LockAspect": true,
+          "Position": [
+            0.0,
+            0.0
+          ],
+          "Rotation": 0.0,
+          "Scale": [
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "Color": {
+            "A": 255,
+            "B": 0,
+            "G": 255,
+            "R": 0
+          },
+          "ComponentID": 2924153731,
+          "ComponentName": "Collider2D",
+          "ComponentType": 5,
+          "ContainerGOID": 1605604289,
+          "Enabled": true,
+          "Friction": 0.30000001192092896,
+          "GravityScale": 1.0,
+          "Height": 1.0,
+          "IsDynamic": true,
+          "IsSensor": false,
+          "LinearDamping": 0.0,
+          "LockRotation": true,
+          "Mass": 0.0,
+          "Radius": 0.25,
+          "Restitution": 0.0,
+          "ShapeType": "CIRCLE",
+          "UseGravity": false,
+          "Width": 1.0
+        },
+        {
+          "ComponentID": 831441408,
+          "ComponentName": "Isaac_Script",
+          "ComponentType": 4,
+          "ContainerGOID": 1605604289,
+          "Enabled": true,
+          "ScriptFields": {
+            "body_go": {
+              "type": 5,
+              "value": 400988780
+            },
+            "canvas_go": {
+              "type": 5,
+              "value": 2881402769
+            },
+            "fire_rate": {
+              "type": 1,
+              "value": 0.4000000059604645
+            },
+            "head_go": {
+              "type": 5,
+              "value": 962679116
+            },
+            "hp": {
+              "type": 2,
+              "value": 3
+            },
+            "player_speed": {
+              "type": 1,
+              "value": 5.0
+            },
+            "shadow_go": {
+              "type": 5,
+              "value": 1610797109
+            },
+            "tear_speed": {
+              "type": 1,
+              "value": 7.0
+            }
+          }
+        },
+        {
+          "ComponentID": 1662845417,
+          "ComponentName": "AudioSource",
+          "ComponentType": 7,
+          "ContainerGOID": 1605604289,
+          "Enabled": true,
+          "Musics": null,
+          "Sounds": [
+            {
+              "loop": false,
+              "name": "health_up",
+              "path": "Assets\\Audio\\SoundEffects\\health_up.wav",
+              "play_on_awake": false,
+              "spatial": false,
+              "spatial_distance": 10,
+              "volume": 34
+            },
+            {
+              "loop": false,
+              "name": "isaac_die",
+              "path": "Assets\\Audio\\SoundEffects\\isaac_die.wav",
+              "play_on_awake": false,
+              "spatial": false,
+              "spatial_distance": 10,
+              "volume": 100
+            },
+            {
+              "loop": false,
+              "name": "isaac_hurt",
+              "path": "Assets\\Audio\\SoundEffects\\isaac_hurt.wav",
+              "play_on_awake": false,
+              "spatial": false,
+              "spatial_distance": 10,
+              "volume": 100
+            },
+            {
+              "loop": false,
+              "name": "item_pickup",
+              "path": "Assets\\Audio\\SoundEffects\\item_pickup.wav",
+              "play_on_awake": false,
+              "spatial": false,
+              "spatial_distance": 10,
+              "volume": 100
+            }
+          ]
+        },
+        {
+          "ComponentID": 3910799950,
+          "ComponentName": "ParticleSystem",
+          "ComponentType": 8,
+          "ContainerGOID": 1605604289,
+          "Enabled": false,
+          "ParticlePath": "Assets\\Particles\\Isaac_Die_Particles.mlparticle"
+        }
+      ],
+      "Enabled": true,
+      "GameObjects": [
+        {
+          "Components": [
+            {
+              "AspectRatio": 1.0,
+              "ComponentID": 922151795,
+              "ComponentName": "Transform",
+              "ComponentType": 0,
+              "ContainerGOID": 962679116,
+              "Enabled": true,
+              "LockAspect": true,
+              "Position": [
+                0.0,
+                0.3499999940395355
+              ],
+              "Rotation": 0.0,
+              "Scale": [
+                1.0,
+                1.0
+              ]
+            },
+            {
+              "ComponentID": 3353625441,
+              "ComponentName": "Sprite2D",
+              "ComponentType": 2,
+              "ContainerGOID": 962679116,
+              "Enabled": true,
+              "FlipHorizontal": false,
+              "FlipVertical": false,
+              "Offset": [
+                0.0,
+                0.0
+              ],
+              "PixelArtRender": true,
+              "TexturePath": "Assets\\Textures\\isaac\\isaac_spritesheet.png",
+              "TextureSection": [
+                0,
+                0,
+                32,
+                32
+              ],
+              "TextureSize": [
+                256,
+                160
+              ],
+              "TextureUVs": [
+                0.0,
+                0.800000011920929,
+                0.125,
+                1.0
+              ]
+            },
+            {
+              "Animations": [
+                {
+                  "name": "isaac_head_idle_right",
+                  "path": "Assets\\Animations\\isaac_head_idle_right.animation"
+                },
+                {
+                  "name": "isaac_head_idle_down",
+                  "path": "Assets\\Animations\\isaac_head_idle_down.animation"
+                },
+                {
+                  "name": "isaac_head_idle_up",
+                  "path": "Assets\\Animations\\isaac_head_idle_up.animation"
+                },
+                {
+                  "name": "isaac_head_shooting_down",
+                  "path": "Assets\\Animations\\isaac_head_shooting_down.animation"
+                },
+                {
+                  "name": "isaac_head_idle_left",
+                  "path": "Assets\\Animations\\isaac_head_idle_left.animation"
+                },
+                {
+                  "name": "isaac_head_shooting_up",
+                  "path": "Assets\\Animations\\isaac_head_shooting_up.animation"
+                },
+                {
+                  "name": "isaac_head_shooting_left",
+                  "path": "Assets\\Animations\\isaac_head_shooting_left.animation"
+                },
+                {
+                  "name": "isaac_head_shooting_right",
+                  "path": "Assets\\Animations\\isaac_head_shooting_right.animation"
+                }
+              ],
+              "ComponentID": 1890118554,
+              "ComponentName": "Animator",
+              "ComponentType": 3,
+              "ContainerGOID": 962679116,
+              "CurrentAnimation": "isaac_head_idle_down",
+              "Enabled": true
+            }
+          ],
+          "Enabled": true,
+          "ID": 962679116,
+          "Name": "player_sprite_head",
+          "ParentID": 1605604289,
+          "ParentLayerID": 3,
+          "Tag": "Default",
+          "Visible": true
+        },
+        {
+          "Components": [
+            {
+              "AspectRatio": 1.0,
+              "ComponentID": 2994946946,
+              "ComponentName": "Transform",
+              "ComponentType": 0,
+              "ContainerGOID": 400988780,
+              "Enabled": true,
+              "LockAspect": true,
+              "Position": [
+                0.0,
+                0.0
+              ],
+              "Rotation": 0.0,
+              "Scale": [
+                1.0,
+                1.0
+              ]
+            },
+            {
+              "ComponentID": 2526167017,
+              "ComponentName": "Sprite2D",
+              "ComponentType": 2,
+              "ContainerGOID": 400988780,
+              "Enabled": true,
+              "FlipHorizontal": false,
+              "FlipVertical": false,
+              "Offset": [
+                0.0,
+                0.0
+              ],
+              "PixelArtRender": true,
+              "TexturePath": "Assets\\Textures\\isaac\\isaac_spritesheet.png",
+              "TextureSection": [
+                0,
+                32,
+                32,
+                32
+              ],
+              "TextureSize": [
+                256,
+                160
+              ],
+              "TextureUVs": [
+                0.0,
+                0.6000000238418579,
+                0.125,
+                0.800000011920929
+              ]
+            },
+            {
+              "Animations": [
+                {
+                  "name": "isaac_body_idle_down",
+                  "path": "Assets\\Animations\\isaac_body_idle_down.animation"
+                },
+                {
+                  "name": "isaac_body_walk_up",
+                  "path": "Assets\\Animations\\isaac_body_walk_up.animation"
+                },
+                {
+                  "name": "isaac_body_walk_down",
+                  "path": "Assets\\Animations\\isaac_body_walk_down.animation"
+                },
+                {
+                  "name": "isaac_body_walk_right",
+                  "path": "Assets\\Animations\\isaac_body_walk_right.animation"
+                },
+                {
+                  "name": "isaac_body_walk_left",
+                  "path": "Assets\\Animations\\isaac_body_walk_left.animation"
+                }
+              ],
+              "ComponentID": 1395181887,
+              "ComponentName": "Animator",
+              "ComponentType": 3,
+              "ContainerGOID": 400988780,
+              "CurrentAnimation": "isaac_body_idle_down",
+              "Enabled": true
+            }
+          ],
+          "Enabled": true,
+          "ID": 400988780,
+          "Name": "player_sprite_body",
+          "ParentID": 1605604289,
+          "ParentLayerID": 3,
+          "Tag": "Default",
+          "Visible": true
+        },
+        {
+          "Components": [
+            {
+              "AspectRatio": 1.0,
+              "ComponentID": 3214202383,
+              "ComponentName": "Transform",
+              "ComponentType": 0,
+              "ContainerGOID": 1610797109,
+              "Enabled": true,
+              "LockAspect": true,
+              "Position": [
+                0.0,
+                -0.10000000149011612
+              ],
+              "Rotation": 0.0,
+              "Scale": [
+                1.0,
+                1.0
+              ]
+            },
+            {
+              "ComponentID": 1574095566,
+              "ComponentName": "Sprite2D",
+              "ComponentType": 2,
+              "ContainerGOID": 1610797109,
+              "Enabled": true,
+              "FlipHorizontal": false,
+              "FlipVertical": false,
+              "Offset": [
+                0.0,
+                0.0
+              ],
+              "PixelArtRender": true,
+              "TexturePath": "Assets\\Textures\\isaac\\isaac_spritesheet.png",
+              "TextureSection": [
+                64,
+                128,
+                32,
+                32
+              ],
+              "TextureSize": [
+                256,
+                160
+              ],
+              "TextureUVs": [
+                0.25,
+                0.0,
+                0.375,
+                0.20000000298023224
+              ]
+            }
+          ],
+          "Enabled": true,
+          "ID": 1610797109,
+          "Name": "player_sprite_shadow",
+          "ParentID": 1605604289,
+          "ParentLayerID": 3,
+          "Tag": "Default",
+          "Visible": true
+        }
+      ],
+      "ID": 1605604289,
+      "Name": "Player",
+      "ParentID": 1405544867,
+      "ParentLayerID": 3,
+      "Tag": "player",
+      "Visible": true
+    },
+    {
+      "Components": [
+        {
+          "AspectRatio": 1.0,
+          "ComponentID": 872087274,
+          "ComponentName": "Transform",
+          "ComponentType": 0,
+          "ContainerGOID": 2425599693,
+          "Enabled": true,
+          "LockAspect": true,
+          "Position": [
+            6.349999904632568,
+            3.299999952316284
+          ],
+          "Rotation": 0.0,
+          "Scale": [
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "Color": {
+            "A": 255,
+            "B": 0,
+            "G": 255,
+            "R": 0
+          },
+          "ComponentID": 3047336062,
+          "ComponentName": "Collider2D",
+          "ComponentType": 5,
+          "ContainerGOID": 2425599693,
+          "Enabled": true,
+          "Friction": 0.30000001192092896,
+          "GravityScale": 1.0,
+          "Height": 1.0,
+          "IsDynamic": false,
+          "IsSensor": false,
+          "LinearDamping": 0.0,
+          "LockRotation": true,
+          "Mass": 0.0,
+          "Radius": 0.3499999940395355,
+          "Restitution": 0.0,
+          "ShapeType": "CIRCLE",
+          "UseGravity": false,
+          "Width": 1.0
+        },
+        {
+          "ComponentID": 439645000,
+          "ComponentName": "Sprite2D",
+          "ComponentType": 2,
+          "ContainerGOID": 2425599693,
+          "Enabled": true,
+          "FlipHorizontal": false,
+          "FlipVertical": false,
+          "Offset": [
+            0.054999999701976776,
+            0.6579999923706055
+          ],
+          "PixelArtRender": true,
+          "TexturePath": "Assets\\Textures\\isaac\\isaac_spritesheet.png",
+          "TextureSection": [
+            64,
+            96,
+            32,
+            32
+          ],
+          "TextureSize": [
+            256,
+            160
+          ],
+          "TextureUVs": [
+            0.25,
+            0.20000000298023224,
+            0.375,
+            0.4000000059604645
+          ]
+        }
+      ],
+      "Enabled": true,
+      "GameObjects": [
+        {
+          "Components": [
+            {
+              "AspectRatio": 1.0,
+              "ComponentID": 2034338135,
+              "ComponentName": "Transform",
+              "ComponentType": 0,
+              "ContainerGOID": 3879944408,
+              "Enabled": true,
+              "LockAspect": true,
+              "Position": [
+                0.0,
+                0.0
+              ],
+              "Rotation": 0.0,
+              "Scale": [
+                1.0,
+                1.0
+              ]
+            },
+            {
+              "ComponentID": 1500877405,
+              "ComponentName": "Sprite2D",
+              "ComponentType": 2,
+              "ContainerGOID": 3879944408,
+              "Enabled": true,
+              "FlipHorizontal": false,
+              "FlipVertical": false,
+              "Offset": [
+                0.0,
+                0.0
+              ],
+              "PixelArtRender": true,
+              "TexturePath": "Assets\\Textures\\isaac\\isaac_spritesheet.png",
+              "TextureSection": [
+                96,
+                96,
+                32,
+                32
+              ],
+              "TextureSize": [
+                256,
+                160
+              ],
+              "TextureUVs": [
+                0.375,
+                0.20000000298023224,
+                0.5,
+                0.4000000059604645
+              ]
+            }
+          ],
+          "Enabled": true,
+          "ID": 3879944408,
+          "Name": "pedestal",
+          "ParentID": 2425599693,
+          "ParentLayerID": 2,
+          "Tag": "Default",
+          "Visible": true
+        }
+      ],
+      "ID": 2425599693,
+      "Name": "pickable_item",
+      "ParentID": 1405544867,
+      "ParentLayerID": 2,
+      "Tag": "item",
+      "Visible": true
+    },
+    {
+      "Components": [
+        {
+          "AspectRatio": 1.0,
+          "ComponentID": 212404635,
+          "ComponentName": "Transform",
+          "ComponentType": 0,
+          "ContainerGOID": 4141335105,
+          "Enabled": true,
+          "LockAspect": true,
+          "Position": [
+            6.0,
+            -2.0
+          ],
+          "Rotation": 0.0,
+          "Scale": [
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "Color": {
+            "A": 255,
+            "B": 0,
+            "G": 0,
+            "R": 255
+          },
+          "ComponentID": 2643582208,
+          "ComponentName": "Collider2D",
+          "ComponentType": 5,
+          "ContainerGOID": 4141335105,
+          "Enabled": true,
+          "Friction": 0.30000001192092896,
+          "GravityScale": 1.0,
+          "Height": 1.0,
+          "IsDynamic": true,
+          "IsSensor": false,
+          "LinearDamping": 0.0,
+          "LockRotation": true,
+          "Mass": 0.0,
+          "Radius": 0.4000000059604645,
+          "Restitution": 0.0,
+          "ShapeType": "CIRCLE",
+          "UseGravity": false,
+          "Width": 1.0
+        },
+        {
+          "ComponentID": 4179701228,
+          "ComponentName": "FlyEnemy",
+          "ComponentType": 4,
+          "ContainerGOID": 4141335105,
+          "Enabled": true,
+          "ScriptFields": {
+            "fly_speed": {
+              "type": 1,
+              "value": 2.5
+            },
+            "hp": {
+              "type": 2,
+              "value": 3
+            },
+            "player": {
+              "type": 5,
+              "value": 1605604289
+            }
+          }
+        },
+        {
+          "ComponentID": 3436646772,
+          "ComponentName": "AudioSource",
+          "ComponentType": 7,
+          "ContainerGOID": 4141335105,
+          "Enabled": true,
+          "Musics": null,
+          "Sounds": [
+            {
+              "loop": false,
+              "name": "pop_sound",
+              "path": "Assets\\Audio\\SoundEffects\\pop_sound.wav",
+              "play_on_awake": false,
+              "spatial": false,
+              "spatial_distance": 10,
+              "volume": 42
+            }
+          ]
+        },
+        {
+          "ComponentID": 2764933152,
+          "ComponentName": "ParticleSystem",
+          "ComponentType": 8,
+          "ContainerGOID": 4141335105,
+          "Enabled": false,
+          "ParticlePath": "Assets\\Particles\\Fly_Die_Particles.mlparticle"
+        }
+      ],
+      "Enabled": true,
+      "GameObjects": [
+        {
+          "Components": [
+            {
+              "AspectRatio": 1.0,
+              "ComponentID": 3839152674,
+              "ComponentName": "Transform",
+              "ComponentType": 0,
+              "ContainerGOID": 1886936871,
+              "Enabled": true,
+              "LockAspect": true,
+              "Position": [
+                0.0,
+                0.550000011920929
+              ],
+              "Rotation": 0.0,
+              "Scale": [
+                1.0,
+                1.0
+              ]
+            },
+            {
+              "ComponentID": 146117029,
+              "ComponentName": "Sprite2D",
+              "ComponentType": 2,
+              "ContainerGOID": 1886936871,
+              "Enabled": true,
+              "FlipHorizontal": false,
+              "FlipVertical": false,
+              "Offset": [
+                0.0,
+                0.0
+              ],
+              "PixelArtRender": true,
+              "TexturePath": "Assets\\Textures\\isaac\\isaac_spritesheet.png",
+              "TextureSection": [
+                32,
+                128,
+                32,
+                32
+              ],
+              "TextureSize": [
+                256,
+                160
+              ],
+              "TextureUVs": [
+                0.125,
+                0.0,
+                0.25,
+                0.20000000298023224
+              ]
+            },
+            {
+              "Animations": [
+                {
+                  "name": "isaac_fly_enemy_unique",
+                  "path": "Assets\\Animations\\isaac_fly_enemy_unique.animation"
+                }
+              ],
+              "ComponentID": 2399186928,
+              "ComponentName": "Animator",
+              "ComponentType": 3,
+              "ContainerGOID": 1886936871,
+              "CurrentAnimation": "isaac_fly_enemy_unique",
+              "Enabled": true
+            }
+          ],
+          "Enabled": true,
+          "ID": 1886936871,
+          "Name": "sprite_fly",
+          "ParentID": 4141335105,
+          "ParentLayerID": 1,
+          "Tag": "Default",
+          "Visible": true
+        },
+        {
+          "Components": [
+            {
+              "AspectRatio": 1.0,
+              "ComponentID": 3730150092,
+              "ComponentName": "Transform",
+              "ComponentType": 0,
+              "ContainerGOID": 170753279,
+              "Enabled": true,
+              "LockAspect": true,
+              "Position": [
+                0.0,
+                0.0
+              ],
+              "Rotation": 0.0,
+              "Scale": [
+                0.75,
+                0.75
+              ]
+            },
+            {
+              "ComponentID": 1446744970,
+              "ComponentName": "Sprite2D",
+              "ComponentType": 2,
+              "ContainerGOID": 170753279,
+              "Enabled": true,
+              "FlipHorizontal": false,
+              "FlipVertical": false,
+              "Offset": [
+                0.0,
+                0.0
+              ],
+              "PixelArtRender": true,
+              "TexturePath": "Assets\\Textures\\isaac\\isaac_spritesheet.png",
+              "TextureSection": [
+                64,
+                128,
+                32,
+                32
+              ],
+              "TextureSize": [
+                256,
+                160
+              ],
+              "TextureUVs": [
+                0.25,
+                0.0,
+                0.375,
+                0.20000000298023224
+              ]
+            }
+          ],
+          "Enabled": true,
+          "ID": 170753279,
+          "Name": "fly_sprite_shadow",
+          "ParentID": 4141335105,
+          "ParentLayerID": 1,
+          "Tag": "Default",
+          "Visible": true
+        }
+      ],
+      "ID": 4141335105,
+      "Name": "fly_enemy",
+      "ParentID": 1405544867,
+      "ParentLayerID": 1,
+      "Tag": "enemy",
+      "Visible": true
+    },
+    {
+      "Components": [
+        {
+          "AspectRatio": 1.0,
+          "ComponentID": 192744030,
+          "ComponentName": "Transform",
+          "ComponentType": 0,
+          "ContainerGOID": 1092815576,
+          "Enabled": true,
+          "LockAspect": true,
+          "Position": [
+            -5.0,
+            -2.0
+          ],
+          "Rotation": 0.0,
+          "Scale": [
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "ComponentID": 2401395567,
+          "ComponentName": "Sprite2D",
+          "ComponentType": 2,
+          "ContainerGOID": 1092815576,
+          "Enabled": true,
+          "FlipHorizontal": false,
+          "FlipVertical": false,
+          "Offset": [
+            0.0,
+            0.0
+          ],
+          "PixelArtRender": true,
+          "TexturePath": "Assets\\Textures\\isaac\\isaac_spritesheet.png",
+          "TextureSection": [
+            128,
+            96,
+            32,
+            32
+          ],
+          "TextureSize": [
+            256,
+            160
+          ],
+          "TextureUVs": [
+            0.5,
+            0.20000000298023224,
+            0.625,
+            0.4000000059604645
+          ]
+        },
+        {
+          "Color": {
+            "A": 255,
+            "B": 255,
+            "G": 248,
+            "R": 0
+          },
+          "ComponentID": 705585572,
+          "ComponentName": "Collider2D",
+          "ComponentType": 5,
+          "ContainerGOID": 1092815576,
+          "Enabled": true,
+          "Friction": 0.30000001192092896,
+          "GravityScale": 1.0,
+          "Height": 1.0,
+          "IsDynamic": true,
+          "IsSensor": true,
+          "LinearDamping": 0.0,
+          "LockRotation": true,
+          "Mass": 0.0,
+          "Radius": 0.25,
+          "Restitution": 0.0,
+          "ShapeType": "CIRCLE",
+          "UseGravity": false,
+          "Width": 1.0
+        }
+      ],
+      "Enabled": true,
+      "GameObjects": [
+        {
+          "Components": [
+            {
+              "AspectRatio": 1.0,
+              "ComponentID": 3666007137,
+              "ComponentName": "Transform",
+              "ComponentType": 0,
+              "ContainerGOID": 1397679398,
+              "Enabled": true,
+              "LockAspect": true,
+              "Position": [
+                0.0,
+                -0.10000000149011612
+              ],
+              "Rotation": 0.0,
+              "Scale": [
+                0.800000011920929,
+                0.800000011920929
+              ]
+            },
+            {
+              "ComponentID": 2162408833,
+              "ComponentName": "Sprite2D",
+              "ComponentType": 2,
+              "ContainerGOID": 1397679398,
+              "Enabled": true,
+              "FlipHorizontal": false,
+              "FlipVertical": false,
+              "Offset": [
+                0.0,
+                0.0
+              ],
+              "PixelArtRender": true,
+              "TexturePath": "Assets\\Textures\\isaac\\isaac_spritesheet.png",
+              "TextureSection": [
+                64,
+                128,
+                32,
+                32
+              ],
+              "TextureSize": [
+                256,
+                160
+              ],
+              "TextureUVs": [
+                0.25,
+                0.0,
+                0.375,
+                0.20000000298023224
+              ]
+            }
+          ],
+          "Enabled": true,
+          "ID": 1397679398,
+          "Name": "heart_shadow",
+          "ParentID": 1092815576,
+          "ParentLayerID": 4,
+          "Tag": "Default",
+          "Visible": true
+        }
+      ],
+      "ID": 1092815576,
+      "Name": "heart_pickup",
+      "ParentID": 1405544867,
+      "ParentLayerID": 4,
+      "Tag": "heart_pickup",
+      "Visible": true
+    },
+    {
+      "Components": [
+        {
+          "AspectRatio": 1.0,
+          "ComponentID": 3826634597,
+          "ComponentName": "Transform",
+          "ComponentType": 0,
+          "ContainerGOID": 3626420006,
+          "Enabled": true,
+          "LockAspect": true,
+          "Position": [
+            0.0,
+            0.0
+          ],
+          "Rotation": 0.0,
+          "Scale": [
+            1.0,
+            1.0
+          ]
+        }
+      ],
+      "Enabled": true,
+      "ID": 3626420006,
+      "Name": "EmptyGameObject",
+      "ParentID": 1405544867,
+      "ParentLayerID": 8,
+      "Tag": "Default",
+      "Visible": true
+    }
+  ],
+  "layers": [
+    {
+      "Layer_children_go_id": [
+        2881402769,
+        3626420006
+      ],
+      "children_count": 2,
+      "layer_id": 8,
+      "layer_name": "Camera And Canvas",
+      "visible": true
+    },
+    {
+      "Layer_children_go_id": [
+        1605604289,
+        962679116,
+        400988780,
+        1610797109
+      ],
+      "children_count": 4,
+      "layer_id": 3,
+      "layer_name": "Player_Layer",
+      "visible": true
+    },
+    {
+      "children_count": 0,
+      "layer_id": 5,
+      "layer_name": "Tear",
+      "visible": true
+    },
+    {
+      "Layer_children_go_id": [
+        1092815576,
+        1397679398
+      ],
+      "children_count": 2,
+      "layer_id": 4,
+      "layer_name": "Heart_PickUp",
+      "visible": true
+    },
+    {
+      "Layer_children_go_id": [
+        2425599693,
+        3879944408
+      ],
+      "children_count": 2,
+      "layer_id": 2,
+      "layer_name": "Item",
+      "visible": true
+    },
+    {
+      "Layer_children_go_id": [
+        4141335105,
+        1886936871,
+        170753279
+      ],
+      "children_count": 3,
+      "layer_id": 1,
+      "layer_name": "Fly_Enemy",
+      "visible": true
+    },
+    {
+      "Layer_children_go_id": [
+        2806888272,
+        2570734164,
+        1456513820,
+        3897048184
+      ],
+      "children_count": 4,
+      "layer_id": 7,
+      "layer_name": "Door_Colliders",
+      "visible": true
+    },
+    {
+      "Layer_children_go_id": [
+        2059651212,
+        1358213181,
+        30561896,
+        1760249697,
+        3710473962,
+        139031746,
+        3395891845,
+        1212233273
+      ],
+      "children_count": 8,
+      "layer_id": 6,
+      "layer_name": "Walls_Colliders",
+      "visible": true
+    },
+    {
+      "Layer_children_go_id": [
+        1765880267
+      ],
+      "children_count": 1,
+      "layer_id": 0,
+      "layer_name": "Room",
+      "visible": true
+    }
+  ],
+  "scene_gravity": [
+    0.0,
+    -9.8100004196167
+  ],
+  "scene_id": 1405544867,
+  "scene_name": "RogueLike_Prototype",
+  "scene_path": "Assets\\Scenes\\Prototype3_RogueLike.mlscene"
+}

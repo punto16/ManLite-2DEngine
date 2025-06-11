@@ -1,0 +1,166 @@
+{
+    "Components": [
+        {
+            "AspectRatio": 1.0,
+            "ComponentName": "Transform",
+            "ComponentType": 0,
+            "Enabled": true,
+            "LockAspect": true,
+            "Position": [
+                -50.0,
+                -50.0
+            ],
+            "Rotation": 0.0,
+            "Scale": [
+                1.0,
+                1.0
+            ]
+        },
+        {
+            "ComponentName": "Sprite2D",
+            "ComponentType": 2,
+            "Enabled": true,
+            "FlipHorizontal": false,
+            "FlipVertical": false,
+            "Offset": [
+                0.0,
+                0.3499999940395355
+            ],
+            "PixelArtRender": true,
+            "TexturePath": "Assets\\Textures\\isaac\\isaac_spritesheet.png",
+            "TextureSection": [
+                192,
+                96,
+                32,
+                32
+            ],
+            "TextureSize": [
+                256,
+                160
+            ],
+            "TextureUVs": [
+                0.75,
+                0.20000000298023224,
+                0.875,
+                0.4000000059604645
+            ]
+        },
+        {
+            "Color": {
+                "A": 255,
+                "B": 0,
+                "G": 255,
+                "R": 0
+            },
+            "ComponentName": "Collider2D",
+            "ComponentType": 5,
+            "Enabled": true,
+            "Friction": 0.0,
+            "GravityScale": 1.0,
+            "Height": 1.0,
+            "IsDynamic": true,
+            "IsSensor": true,
+            "LinearDamping": 0.0,
+            "LockRotation": true,
+            "Mass": 0.0,
+            "Radius": 0.20000000298023224,
+            "Restitution": 0.0,
+            "ShapeType": "CIRCLE",
+            "UseGravity": false,
+            "Width": 1.0
+        },
+        {
+            "ComponentName": "AutoDestroyAtTimer",
+            "ComponentType": 4,
+            "Enabled": true,
+            "ScriptFields": {
+                "seconds_to_be_destroyed": {
+                    "type": 1,
+                    "value": 1.2999999523162842
+                }
+            }
+        },
+        {
+            "ComponentName": "ParticleSystem",
+            "ComponentType": 8,
+            "Enabled": false,
+            "ParticlePath": "Assets\\Particles\\Tear_Die_Particles.mlparticle"
+        },
+        {
+            "ComponentName": "AudioSource",
+            "ComponentType": 7,
+            "Enabled": true,
+            "Musics": null,
+            "Sounds": [
+                {
+                    "loop": false,
+                    "name": "tear_drop",
+                    "path": "Assets\\Audio\\SoundEffects\\tear_drop.wav",
+                    "play_on_awake": false,
+                    "spatial": false,
+                    "spatial_distance": 10,
+                    "volume": 100
+                }
+            ]
+        }
+    ],
+    "Enabled": true,
+    "GameObjects": [
+        {
+            "Components": [
+                {
+                    "AspectRatio": 1.0,
+                    "ComponentName": "Transform",
+                    "ComponentType": 0,
+                    "Enabled": true,
+                    "LockAspect": true,
+                    "Position": [
+                        0.0,
+                        0.0
+                    ],
+                    "Rotation": 0.0,
+                    "Scale": [
+                        0.5,
+                        0.5
+                    ]
+                },
+                {
+                    "ComponentName": "Sprite2D",
+                    "ComponentType": 2,
+                    "Enabled": true,
+                    "FlipHorizontal": false,
+                    "FlipVertical": false,
+                    "Offset": [
+                        0.0,
+                        0.0
+                    ],
+                    "PixelArtRender": true,
+                    "TexturePath": "Assets\\Textures\\isaac\\isaac_spritesheet.png",
+                    "TextureSection": [
+                        64,
+                        128,
+                        32,
+                        32
+                    ],
+                    "TextureSize": [
+                        256,
+                        160
+                    ],
+                    "TextureUVs": [
+                        0.25,
+                        0.0,
+                        0.375,
+                        0.20000000298023224
+                    ]
+                }
+            ],
+            "Enabled": true,
+            "Name": "isaac_tear_shadow",
+            "Tag": "Default",
+            "Visible": true
+        }
+    ],
+    "Name": "isaac_tear",
+    "Tag": "isaac_tear",
+    "Visible": true
+}

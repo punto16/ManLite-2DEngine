@@ -252,6 +252,18 @@ bool Gui::PreUpdate()
 bool Gui::Update(double dt)
 {
 	bool ret = true;
+
+	if (engine->GetEngineState() == EngineState::PLAY)
+	{
+		ImGuiIO& io = ImGui::GetIO();
+		io.ConfigFlags &= ~ImGuiConfigFlags_NavEnableKeyboard;
+	}
+	else
+	{
+		ImGuiIO& io = ImGui::GetIO();
+		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+	}
+
 	AutoSaveSceneBg((float)dt);
 	HandleShortcut();
 
@@ -1462,8 +1474,25 @@ void Gui::HandleShortcut()
 
 void Gui::HandleInput()
 {
+	//for (auto& event : engine->input_em->GetSDLEvents())
+	//	ImGui_ImplSDL2_ProcessEvent(&event);
+
 	for (auto& event : engine->input_em->GetSDLEvents())
+	{
+		if (event.type == SDL_WINDOWEVENT)
+		{
+			if (event.window.event == SDL_WINDOWEVENT_FOCUS_LOST ||
+				event.window.event == SDL_WINDOWEVENT_HIDDEN ||
+				event.window.event == SDL_WINDOWEVENT_MINIMIZED)
+			{
+				if (engine->input_em->IsAppFocused())
+				{
+					continue;
+				}
+			}
+		}
 		ImGui_ImplSDL2_ProcessEvent(&event);
+	}
 }
 
 void Gui::ProcessEvent()

@@ -47,6 +47,8 @@ public:
 	int GetMouseWheelMotion() const { return mouse_wheelY; }
 	void CloseApp();
 
+	bool IsAppFocused();
+
 	std::vector<SDL_Event> GetSDLEvents() { return events; }
 
 private:
@@ -61,7 +63,7 @@ private:
 	std::vector<SDL_Event> events;
 
 	//
-	float window_ev_fix_time = 5.0f;
+	float window_ev_fix_time = 0.5f;
 	float window_ev_fix_timer = 0.0f;
 };
 

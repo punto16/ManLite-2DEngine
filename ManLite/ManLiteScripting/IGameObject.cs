@@ -88,6 +88,13 @@ namespace ManLiteScripting
             IGameObject parentGO = new IGameObject(InternalCalls.GetGOParent(game_object_ptr));
             return parentGO;
         }
+
+        public IGameObject GetChildGO(string name)
+        {
+            IGameObject parentGO = new IGameObject(InternalCalls.GetGOChild(game_object_ptr, name));
+            return parentGO;
+        }
+
         public void ReparentGO(IGameObject new_parent)
         {
             InternalCalls.ReparentGO(game_object_ptr, new_parent.game_object_ptr);
@@ -655,6 +662,11 @@ namespace ManLiteScripting
             Vec2f speed = new Vec2f();
             InternalCalls.GetSpeedCollider(container_go.game_object_ptr, out speed);
             return speed;
+        }
+
+        public void SetPosition(Vec2f pos)
+        {
+            InternalCalls.SetPositionCollider(container_go.game_object_ptr, pos);
         }
 
         public void SetSpeed(Vec2f speed)

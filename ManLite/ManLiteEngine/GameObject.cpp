@@ -360,6 +360,10 @@ void GameObject::CloneComponents(const std::shared_ptr<GameObject>& original, bo
 
 void GameObject::AddChild(std::shared_ptr<GameObject> child)
 {
+    if (auto old_parent = child->parent_gameobject.lock())
+    {
+        old_parent->RemoveChild(child);
+    }
     child->parent_gameobject = weak_from_this();
     children_gameobject.push_back(child);
 }

@@ -3,6 +3,8 @@
 #pragma once
 
 #include "Defs.h"
+#include "mat3f.h"
+
 #include <memory>
 
 class Emitter;
@@ -25,6 +27,8 @@ public:
     float duration;
     //current duration since spawn to now
     float life_time;
+
+    mat3f spawn_transform;
 
     //init stuff
     //color

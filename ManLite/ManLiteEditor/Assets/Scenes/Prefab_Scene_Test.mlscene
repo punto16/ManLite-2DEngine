@@ -1,4 +1,10 @@
 {
+  "background_color": [
+    102,
+    102,
+    102,
+    255
+  ],
   "game_objects": [
     {
       "Components": [
@@ -88,6 +94,10 @@
       "layer_name": "DefaultLayer_0",
       "visible": true
     }
+  ],
+  "scene_gravity": [
+    0.0,
+    -9.8100004196167
   ],
   "scene_id": 2451377295,
   "scene_name": "Prefab_Scene_Test",

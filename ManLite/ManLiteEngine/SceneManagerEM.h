@@ -31,7 +31,7 @@ public:
 
 	//general functions for game objects
 	std::shared_ptr<GameObject> CreateEmptyGO(GameObject& parent);
-	std::shared_ptr<GameObject> DuplicateGO(GameObject& go_to_copy, bool scene_duplication = false);
+	std::shared_ptr<GameObject> DuplicateGO(GameObject& go_to_copy, bool scene_duplication = false, bool prefab_duplication = false);
 	//general functions for layers
 	std::shared_ptr<Layer> CreateEmptyLayer(bool insert_first_or_last = true);
 	std::shared_ptr<Layer> DuplicateLayer(Layer& layer_to_copy);
@@ -129,6 +129,8 @@ private:
 
 	float prefab_check_timer = 0.0f;
 	float prefab_check_frequency = 1.5;
+
+	bool updating = false;
 
 	//
 	ML_Color bg_color = { 102, 102, 102, 255 };

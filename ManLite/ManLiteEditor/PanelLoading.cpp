@@ -27,6 +27,8 @@ bool PanelLoading::Update()
 	if (enabled && app->gui->save_scene_panel->is_loading)
 	{
 		ImGuiIO& io = ImGui::GetIO();
+		ImGuiViewport* viewport = ImGui::GetMainViewport();
+		ImGui::SetNextWindowViewport(viewport->ID);
 		ImGui::SetNextWindowPos(ImGui::GetMainViewport()->GetCenter(), ImGuiCond_Appearing, { 0.5, 0.5 });
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { 10, 10 });
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 5);

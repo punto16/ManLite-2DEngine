@@ -71,6 +71,7 @@ Emitter::Emitter(const Emitter& emitter_to_copy, std::shared_ptr<GameObject> con
 	enabled(emitter_to_copy.enabled),
 	emitter_type_manager(new EmitterTypeManager(emitter_to_copy.emitter_type_manager)),
 	emitter_id(GameObject::GenerateGameObjectID()),
+	lock_to_go_transform(emitter_to_copy.lock_to_go_transform),
 	max_particles(emitter_to_copy.max_particles),
 	particles_amount_per_spawn(emitter_to_copy.particles_amount_per_spawn),
 	spawn_rate(emitter_to_copy.spawn_rate),
@@ -215,9 +216,16 @@ void Emitter::Draw()
 
 			mat3f mat;
 			
-			if (auto t = container_go.lock()->GetComponent<Transform>())
+			if (lock_to_go_transform)
 			{
-				mat = t->GetWorldMatrix();
+				if (auto t = container_go.lock()->GetComponent<Transform>())
+				{
+					mat = t->GetWorldMatrix();
+				}
+			}
+			else
+			{
+				mat = particle.spawn_transform;
 			}
 
 			mat3f particle_t = mat3f::CreateTransformMatrix(
@@ -247,9 +255,16 @@ void Emitter::Draw()
 
 			mat3f mat;
 
-			if (auto t = container_go.lock()->GetComponent<Transform>())
+			if (lock_to_go_transform)
 			{
-				mat = t->GetWorldMatrix();
+				if (auto t = container_go.lock()->GetComponent<Transform>())
+				{
+					mat = t->GetWorldMatrix();
+				}
+			}
+			else
+			{
+				mat = particle.spawn_transform;
 			}
 
 			mat3f particle_t = mat3f::CreateTransformMatrix(
@@ -286,9 +301,16 @@ void Emitter::Draw()
 
 			mat3f mat;
 
-			if (auto t = container_go.lock()->GetComponent<Transform>())
+			if (lock_to_go_transform)
 			{
-				mat = t->GetWorldMatrix();
+				if (auto t = container_go.lock()->GetComponent<Transform>())
+				{
+					mat = t->GetWorldMatrix();
+				}
+			}
+			else
+			{
+				mat = particle.spawn_transform;
 			}
 
 			mat3f particle_t = mat3f::CreateTransformMatrix(
@@ -315,9 +337,16 @@ void Emitter::Draw()
 
 			mat3f mat;
 
-			if (auto t = container_go.lock()->GetComponent<Transform>())
+			if (lock_to_go_transform)
 			{
-				mat = t->GetWorldMatrix();
+				if (auto t = container_go.lock()->GetComponent<Transform>())
+				{
+					mat = t->GetWorldMatrix();
+				}
+			}
+			else
+			{
+				mat = particle.spawn_transform;
 			}
 
 			mat3f particle_t = mat3f::CreateTransformMatrix(
@@ -369,6 +398,14 @@ void Emitter::SafeAddParticle()
 	Particle& p = particle_pool[idx];
 	p.Reset();
 
+	if (!lock_to_go_transform)
+	{
+		if (auto t = container_go.lock()->GetComponent<Transform>())
+		{
+			p.spawn_transform = t->GetWorldMatrix();
+		}
+	}
+
 	//init stats
 	p.duration = RandomRange(particle_duration_min, particle_duration_max);
 	p.init_color = RandomRange(init_color_min, init_color_max);
@@ -396,6 +433,8 @@ nlohmann::json Emitter::SaveComponent()
 
 	emitterJSON["EmitterName"] = emitter_name;
 	emitterJSON["Enabled"] = enabled;
+
+	emitterJSON["LockToGOTransform"] = lock_to_go_transform;
 
 	emitterJSON["MaxParticles"] = max_particles;
 	emitterJSON["ParticlesPerSpawn"] = particles_amount_per_spawn;
@@ -455,6 +494,8 @@ void Emitter::LoadComponent(const nlohmann::json& emitterJSON)
 {
 	if (emitterJSON.contains("EmitterName")) emitter_name = emitterJSON["EmitterName"];
 	if (emitterJSON.contains("Enabled")) enabled = emitterJSON["Enabled"];
+
+	if (emitterJSON.contains("LockToGOTransform")) lock_to_go_transform = emitterJSON["LockToGOTransform"];
 
 	if (emitterJSON.contains("MaxParticles")) max_particles = emitterJSON["MaxParticles"];
 	if (emitterJSON.contains("ParticlesPerSpawn")) particles_amount_per_spawn = emitterJSON["ParticlesPerSpawn"];

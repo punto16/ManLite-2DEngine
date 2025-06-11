@@ -247,8 +247,11 @@ void AudioSource::RePlayMusic(const std::string& name)
 
 void AudioSource::StopAll()
 {
-    Mix_HaltChannel(-1);
-    Mix_HaltMusic();
+    for (auto music : musics)
+        StopMusic(music.first);
+
+    for (auto sound : sounds)
+        StopSound(sound.first);
 }
 
 void AudioSource::StopSound(const std::string& name)

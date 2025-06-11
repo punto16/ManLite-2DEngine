@@ -71,7 +71,7 @@
           "ContainerGOID": 3203064939,
           "Enabled": true,
           "Friction": 0.30000001192092896,
-          "GravityScale": 2.0,
+          "GravityScale": 3.0,
           "Height": 1.0,
           "IsDynamic": true,
           "IsSensor": false,
@@ -106,7 +106,15 @@
           "ComponentType": 7,
           "ContainerGOID": 3203064939,
           "Enabled": true,
-          "Musics": null,
+          "Musics": [
+            {
+              "loop": true,
+              "name": "Polargeist",
+              "path": "Assets\\Audio\\Music\\Polargeist.ogg",
+              "play_on_awake": true,
+              "volume": 11
+            }
+          ],
           "Sounds": null
         },
         {

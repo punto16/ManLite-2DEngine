@@ -71,6 +71,15 @@ static GameObject* GetGOParent(GameObject* go)
 	return go->GetParentGO().lock().get();
 }
 
+static GameObject* GetGOChild(GameObject* go, MonoString* name)
+{
+	if (!go) return nullptr;
+	std::string child_name = MonoRegisterer::ToCppString(name);
+	for (auto child : go->GetChildren())
+		if (child->GetName() == child_name) return child.get();
+	return nullptr;
+}
+
 static bool GetGOEnabled(GameObject* go)
 {
 	if (!go) return false;
@@ -164,7 +173,14 @@ static int GetMouseWheelMotion()
 }
 static void CloseApp()
 {
-	engine->input_em->CloseApp();
+	if (engine->GetEditorOrBuild())
+	{
+		engine->scene_manager_em->StopSession();
+	}
+	else
+	{
+		engine->input_em->CloseApp();
+	}
 }
 
 
@@ -244,8 +260,12 @@ GameObject* MonoRegisterer::InstantiatePrefab(MonoString* path)
 	auto& template_ptr = prefab_templates[path_string];
 	if (!template_ptr) template_ptr = Prefab::Instantiate(path_string, nullptr, true);
 
-	auto instantiated_prefab = engine->scene_manager_em->GetCurrentScene().DuplicateGO(*template_ptr.get());
-	engine->scene_manager_em->GetCurrentScene().SafeAddGO(instantiated_prefab);
+	auto instantiated_prefab = engine->scene_manager_em->GetCurrentScene().DuplicateGO(*template_ptr.get(),false, true);
+	//auto instantiated_prefab = Prefab::Instantiate(path_string, engine->scene_manager_em->GetCurrentScene().GetSceneRoot().GetSharedPtr());
+	auto scene_root = engine->scene_manager_em->GetCurrentScene().GetSceneRoot().GetSharedPtr();
+	scene_root->AddChild(instantiated_prefab);
+	instantiated_prefab->Init();
+	//engine->scene_manager_em->GetCurrentScene().SafeAddGO(instantiated_prefab);
 	engine->scene_manager_em->GetCurrentScene().GetSceneLayers()[0]->AddChild(instantiated_prefab);
 	instantiated_prefab->SetParentLayer(engine->scene_manager_em->GetCurrentScene().GetSceneLayers()[0]);
 	instantiated_prefab->CheckForEmptyLayers(&engine->scene_manager_em->GetCurrentScene());
@@ -783,6 +803,12 @@ static void GetSpeedCollider(GameObject* go, vec2f* outSpeed)
 		*outSpeed = c->GetVelocity();
 	else
 		*outSpeed = { 0, 0 };
+}
+static void SetPositionCollider(GameObject* go, vec2f p)
+{
+	if (!go) return;
+	if (auto c = go->GetComponent<Collider2D>())
+		c->SetPosition(p);
 }
 static void SetSpeedCollider(GameObject* go, vec2f s)
 {
@@ -1461,6 +1487,7 @@ void MonoRegisterer::RegisterFunctions()
 	mono_add_internal_call("ManLiteScripting.InternalCalls::SetGOTag", (void*)SetGOTag);
 	mono_add_internal_call("ManLiteScripting.InternalCalls::GetGOID", (void*)GetGOID);
 	mono_add_internal_call("ManLiteScripting.InternalCalls::GetGOParent", (void*)GetGOParent);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::GetGOChild", (void*)GetGOChild);
 	mono_add_internal_call("ManLiteScripting.InternalCalls::GetGOEnabled", (void*)GetGOEnabled);
 	mono_add_internal_call("ManLiteScripting.InternalCalls::SetGOEnabled", (void*)SetGOEnabled);
 	mono_add_internal_call("ManLiteScripting.InternalCalls::SwitchGOEnabled", (void*)SwitchGOEnabled);
@@ -1567,6 +1594,7 @@ void MonoRegisterer::RegisterFunctions()
 	mono_add_internal_call("ManLiteScripting.InternalCalls::SetCollierUsingGravity", (void*)SetCollierUsingGravity);
 	mono_add_internal_call("ManLiteScripting.InternalCalls::ApplyForceCollider", (void*)ApplyForceCollider);
 	mono_add_internal_call("ManLiteScripting.InternalCalls::GetSpeedCollider", (void*)GetSpeedCollider);
+	mono_add_internal_call("ManLiteScripting.InternalCalls::SetPositionCollider", (void*)SetPositionCollider);
 	mono_add_internal_call("ManLiteScripting.InternalCalls::SetSpeedCollider", (void*)SetSpeedCollider);
 	mono_add_internal_call("ManLiteScripting.InternalCalls::GetColliderFriction", (void*)GetColliderFriction);
 	mono_add_internal_call("ManLiteScripting.InternalCalls::SetColliderFriction", (void*)SetColliderFriction);

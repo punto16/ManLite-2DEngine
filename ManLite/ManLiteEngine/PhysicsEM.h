@@ -5,6 +5,8 @@
 #include "EngineModule.h"
 #include "Defs.h"
 #include <string>
+#include <functional>
+#include <vector>
 #include "box2d/box2d.h"
 
 class GameObject;
@@ -12,13 +14,9 @@ class GameObject;
 class ContactListener : public b2ContactListener
 {
 public:
-    void BeginContact(b2Contact* contact) override {
-        HandleContact(contact, true);
-    }
+	void BeginContact(b2Contact* contact) override;
 
-    void EndContact(b2Contact* contact) override {
-        HandleContact(contact, false);
-    }
+	void EndContact(b2Contact* contact) override;
 
 private:
 	void HandleContact(b2Contact* contact, bool begin);
@@ -52,7 +50,15 @@ private:
 	static int32 m_positionIterations;
     static ContactListener* m_contactListener;
 
+	// manage things that happens while the world is stepping
 	static bool world_stepping;
+	static std::vector<std::function<void()>> deferredActions;
+public:
+	static void DeferAction(std::function<void()> action);
+	static void ProcessDeferredActions();
+
+private:
+
 };
 
 #endif // !__PHYSICS_EM_H__

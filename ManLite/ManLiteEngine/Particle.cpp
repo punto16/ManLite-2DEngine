@@ -44,6 +44,8 @@ void Particle::Reset()
 	final_scale = { 1.0f, 1.0f };
 	wind_effect = { 0.0f, 0.0f };
 
+	spawn_transform = mat3f();
+
 	if (container_emitter != nullptr) char_to_print = RandomCharacter(container_emitter->GetCharacters());
 }
 

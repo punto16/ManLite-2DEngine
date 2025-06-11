@@ -86,6 +86,9 @@ public:
 
     //getters // setters
 
+    void SetLockToGOTransform(bool lock) { lock_to_go_transform = lock; }
+    bool GetLockToGOTransform() const { return lock_to_go_transform; }
+
     EmitterTypeManager* GetEmitterTypeManager() { return emitter_type_manager; }
 
     std::string GetCharacters() { return characters; }
@@ -203,6 +206,8 @@ private:
     std::string emitter_name = "";
     uint32_t emitter_id = 0;
     bool enabled = true;
+
+    bool lock_to_go_transform = true;
 
     int max_particles = 10000;
     int particles_amount_per_spawn = 1;

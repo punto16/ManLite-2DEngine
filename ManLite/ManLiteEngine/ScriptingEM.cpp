@@ -448,7 +448,8 @@ void ScriptingEM::RecompileScripts()
     }
     mono_data.userAssemblyImage = mono_assembly_get_image(mono_data.userAssembly);
 
-    for (Script* script : active_scripts) {
+    auto temp_active_scrpts = active_scripts;
+    for (Script* script : temp_active_scrpts) {
         script->ReloadScript();
     }
 }

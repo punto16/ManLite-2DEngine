@@ -28,9 +28,19 @@ Collider2D::Collider2D(std::weak_ptr<GameObject> container_go,
     m_useGravity(true)
 {
     if (std::this_thread::get_id() != engine->main_thread_id) return;
-    RecreateBody();
-
-    m_body->SetEnabled(false);
+    if (PhysicsEM::IsWorldStepping())
+    {
+        PhysicsEM::DeferAction([this]()
+            {
+                RecreateBody();
+                m_body->SetEnabled(false);
+            });
+    }
+    else
+    {
+        RecreateBody();
+        m_body->SetEnabled(false);
+    }
 }
 
 Collider2D::Collider2D(const Collider2D& component_to_copy, std::shared_ptr<GameObject> container_go)
@@ -51,15 +61,31 @@ Collider2D::Collider2D(const Collider2D& component_to_copy, std::shared_ptr<Game
     m_gravity_scale(component_to_copy.m_gravity_scale)
 {
     if (std::this_thread::get_id() != engine->main_thread_id) return;
-    RecreateBody();
-
-    if (m_isDynamic && component_to_copy.m_body)
+    if (PhysicsEM::IsWorldStepping())
     {
-        m_body->SetLinearVelocity(component_to_copy.m_body->GetLinearVelocity());
-        m_body->SetAngularVelocity(component_to_copy.m_body->GetAngularVelocity());
-    }
+        PhysicsEM::DeferAction([this, component_to_copy]()
+            {
+                RecreateBody();
+                if (m_isDynamic && component_to_copy.m_body)
+                {
+                    m_body->SetLinearVelocity(component_to_copy.m_body->GetLinearVelocity());
+                    m_body->SetAngularVelocity(component_to_copy.m_body->GetAngularVelocity());
+                }
 
-    m_body->SetEnabled(false);
+                m_body->SetEnabled(false);
+            });
+    }
+    else
+    {
+        RecreateBody();
+        if (m_isDynamic && component_to_copy.m_body)
+        {
+            m_body->SetLinearVelocity(component_to_copy.m_body->GetLinearVelocity());
+            m_body->SetAngularVelocity(component_to_copy.m_body->GetAngularVelocity());
+        }
+
+        m_body->SetEnabled(false);
+    }
 }
 
 Collider2D::~Collider2D()
@@ -203,23 +229,49 @@ bool Collider2D::Unpause()
 void Collider2D::SetPosition(vec2f pos)
 {
     if (std::this_thread::get_id() != engine->main_thread_id) return;
-
-    if (!m_body) RecreateBody();
-
-    b2Vec2 new_pos(
-        (pos.x),
-        (pos.y)
-    );
-
-    m_body->SetTransform(new_pos, m_body->GetAngle());
-
-    if (engine->GetEngineState() == EngineState::PLAY)
+    if (PhysicsEM::IsWorldStepping())
     {
-        bool was_enabled = IsEnabled();
-        if (was_enabled)
+        PhysicsEM::DeferAction([this, pos]()
+            {
+                if (!m_body) RecreateBody();
+
+                b2Vec2 new_pos(
+                    (pos.x),
+                    (pos.y)
+                );
+
+                m_body->SetTransform(new_pos, m_body->GetAngle());
+
+                if (engine->GetEngineState() == EngineState::PLAY)
+                {
+                    bool was_enabled = IsEnabled();
+                    if (was_enabled)
+                    {
+                        SetEnabled(false);
+                        SetEnabled(was_enabled);
+                    }
+                }
+            });
+    }
+    else
+    {
+        if (!m_body) RecreateBody();
+
+        b2Vec2 new_pos(
+            (pos.x),
+            (pos.y)
+        );
+
+        m_body->SetTransform(new_pos, m_body->GetAngle());
+
+        if (engine->GetEngineState() == EngineState::PLAY)
         {
-            SetEnabled(false);
-            SetEnabled(was_enabled);
+            bool was_enabled = IsEnabled();
+            if (was_enabled)
+            {
+                SetEnabled(false);
+                SetEnabled(was_enabled);
+            }
         }
     }
 }
@@ -228,17 +280,39 @@ void Collider2D::SetAngle(float angle)
 {
     if (std::this_thread::get_id() != engine->main_thread_id) return;
 
-    if (!m_body) RecreateBody();
-
-    m_body->SetTransform(m_body->GetPosition(), DEGTORAD * angle);
-
-    if (engine->GetEngineState() == EngineState::PLAY)
+    if (PhysicsEM::IsWorldStepping())
     {
-        bool was_enabled = m_body->IsEnabled();
-        if (was_enabled)
+        PhysicsEM::DeferAction([this, angle]()
+            {
+                if (!m_body) RecreateBody();
+
+                m_body->SetTransform(m_body->GetPosition(), DEGTORAD * angle);
+
+                if (engine->GetEngineState() == EngineState::PLAY)
+                {
+                    bool was_enabled = m_body->IsEnabled();
+                    if (was_enabled)
+                    {
+                        m_body->SetEnabled(false);
+                        m_body->SetEnabled(was_enabled);
+                    }
+                }
+            });
+    }
+    else
+    {
+        if (!m_body) RecreateBody();
+
+        m_body->SetTransform(m_body->GetPosition(), DEGTORAD * angle);
+
+        if (engine->GetEngineState() == EngineState::PLAY)
         {
-            m_body->SetEnabled(false);
-            m_body->SetEnabled(was_enabled);
+            bool was_enabled = m_body->IsEnabled();
+            if (was_enabled)
+            {
+                m_body->SetEnabled(false);
+                m_body->SetEnabled(was_enabled);
+            }
         }
     }
 }
@@ -505,9 +579,6 @@ void Collider2D::LoadComponent(const nlohmann::json& componentJSON)
     //
     RecreateBody();
     m_body->SetEnabled(false);
-
-    SetSensor(m_isSensor);
-    SetLockRotation(m_lockRotation);
 }
 
 void Collider2D::SetLockRotation(bool lockRotation)
@@ -614,8 +685,19 @@ void Collider2D::SetEnabled(bool enable)
 {
     if (enabled == enable) return;
 
-    this->enabled = enable;
-    UpdateBodyActivation();
+    if (PhysicsEM::IsWorldStepping())
+    {
+        PhysicsEM::DeferAction([this, enable]()
+            {
+                this->enabled = enable;
+                UpdateBodyActivation();
+            });
+    }
+    else
+    {
+        this->enabled = enable;
+        UpdateBodyActivation();
+    }
 }
 
 void Collider2D::UpdateBodyActivation()
@@ -638,23 +720,55 @@ void Collider2D::UpdateBodyActivation()
 
 void Collider2D::RecreateBody()
 {
-    if (std::this_thread::get_id() != engine->main_thread_id) return;
-    b2BodyDef bodyDef;
-    Transform* t = container_go.lock()->GetComponent<Transform>();
-    bodyDef.type = m_isDynamic ? b2_dynamicBody : b2_staticBody;
-    bodyDef.position.Set(
-        (t->GetWorldPosition().x),
-        (t->GetWorldPosition().y)
-    );
-    bodyDef.linearDamping = m_linearDamping;
-    bodyDef.fixedRotation = m_lockRotation;
-    bodyDef.gravityScale = m_useGravity ? 1.0f : 0.0f;
+    if (PhysicsEM::IsWorldStepping())
+    {
+        PhysicsEM::DeferAction([this]()
+            {
+                if (std::this_thread::get_id() != engine->main_thread_id) return;
+                b2BodyDef bodyDef;
+                Transform* t = container_go.lock()->GetComponent<Transform>();
+                bodyDef.type = m_isDynamic ? b2_dynamicBody : b2_staticBody;
+                bodyDef.position.Set(
+                    (t->GetWorldPosition().x),
+                    (t->GetWorldPosition().y)
+                );
+                bodyDef.linearDamping = m_linearDamping;
+                bodyDef.fixedRotation = m_lockRotation;
+                bodyDef.gravityScale = m_useGravity ? m_gravity_scale : 0.0f;
 
 
-    if (PhysicsEM::GetWorld())
-        m_body = PhysicsEM::GetWorld()->CreateBody(&bodyDef);
+                if (PhysicsEM::GetWorld())
+                    m_body = PhysicsEM::GetWorld()->CreateBody(&bodyDef);
 
-    RecreateFixture();
+                RecreateFixture();
+
+                SetSensor(m_isSensor);
+                SetLockRotation(m_lockRotation);
+            });
+    }
+    else
+    {
+        if (std::this_thread::get_id() != engine->main_thread_id) return;
+        b2BodyDef bodyDef;
+        Transform* t = container_go.lock()->GetComponent<Transform>();
+        bodyDef.type = m_isDynamic ? b2_dynamicBody : b2_staticBody;
+        bodyDef.position.Set(
+            (t->GetWorldPosition().x),
+            (t->GetWorldPosition().y)
+        );
+        bodyDef.linearDamping = m_linearDamping;
+        bodyDef.fixedRotation = m_lockRotation;
+        bodyDef.gravityScale = m_useGravity ? m_gravity_scale : 0.0f;
+
+
+        if (PhysicsEM::GetWorld())
+            m_body = PhysicsEM::GetWorld()->CreateBody(&bodyDef);
+
+        RecreateFixture();
+
+        SetSensor(m_isSensor);
+        SetLockRotation(m_lockRotation);
+    }
 }
 
 void Collider2D::RecreateFixture()
@@ -662,46 +776,97 @@ void Collider2D::RecreateFixture()
     if (std::this_thread::get_id() != engine->main_thread_id) return;
     if (!m_body || !PhysicsEM::GetWorld()) return;
 
-    while (m_body->GetFixtureList()) m_body->DestroyFixture(m_body->GetFixtureList());
-
-    b2Shape* shape = nullptr;
-    if (m_shapeType == ShapeType::RECTANGLE)
+    if (PhysicsEM::IsWorldStepping())
     {
-        b2PolygonShape* boxShape = new b2PolygonShape();
-        boxShape->SetAsBox(
-            (m_width / 2),
-            (m_height / 2)
-        );
-        shape = boxShape;
+        PhysicsEM::DeferAction([this]()
+            {
+                while (m_body->GetFixtureList()) m_body->DestroyFixture(m_body->GetFixtureList());
+
+                b2Shape* shape = nullptr;
+                if (m_shapeType == ShapeType::RECTANGLE)
+                {
+                    b2PolygonShape* boxShape = new b2PolygonShape();
+                    boxShape->SetAsBox(
+                        (m_width / 2),
+                        (m_height / 2)
+                    );
+                    shape = boxShape;
+                }
+                else
+                {
+                    b2CircleShape* circleShape = new b2CircleShape();
+                    circleShape->m_radius = (m_radius);
+                    shape = circleShape;
+                }
+
+                b2FixtureDef fixtureDef;
+                fixtureDef.shape = shape;
+                fixtureDef.isSensor = m_isSensor;
+                fixtureDef.friction = m_friction;
+                fixtureDef.restitution = m_restitution;
+
+                float density = m_isDynamic ? 1.0f : 0.0f;
+                if (m_mass > 0.0f && m_isDynamic)
+                {
+                    float area = (m_shapeType == ShapeType::RECTANGLE) ?
+                        (m_width) * (m_height) :
+                        b2_pi * (m_radius) * (m_radius);
+
+                    density = (area > 0.0f) ? m_mass / area : 0.0f;
+                }
+                fixtureDef.density = density;
+
+                b2Fixture* fixture = m_body->CreateFixture(&fixtureDef);
+                fixture->GetUserData().pointer = reinterpret_cast<uintptr_t>(this);
+
+                if (m_isDynamic) m_body->ResetMassData();
+
+                delete shape;
+            });
     }
     else
     {
-        b2CircleShape* circleShape = new b2CircleShape();
-        circleShape->m_radius = (m_radius);
-        shape = circleShape;
+        while (m_body->GetFixtureList()) m_body->DestroyFixture(m_body->GetFixtureList());
+
+        b2Shape* shape = nullptr;
+        if (m_shapeType == ShapeType::RECTANGLE)
+        {
+            b2PolygonShape* boxShape = new b2PolygonShape();
+            boxShape->SetAsBox(
+                (m_width / 2),
+                (m_height / 2)
+            );
+            shape = boxShape;
+        }
+        else
+        {
+            b2CircleShape* circleShape = new b2CircleShape();
+            circleShape->m_radius = (m_radius);
+            shape = circleShape;
+        }
+
+        b2FixtureDef fixtureDef;
+        fixtureDef.shape = shape;
+        fixtureDef.isSensor = m_isSensor;
+        fixtureDef.friction = m_friction;
+        fixtureDef.restitution = m_restitution;
+
+        float density = m_isDynamic ? 1.0f : 0.0f;
+        if (m_mass > 0.0f && m_isDynamic)
+        {
+            float area = (m_shapeType == ShapeType::RECTANGLE) ?
+                (m_width) * (m_height) :
+                b2_pi * (m_radius) * (m_radius);
+
+            density = (area > 0.0f) ? m_mass / area : 0.0f;
+        }
+        fixtureDef.density = density;
+
+        b2Fixture* fixture = m_body->CreateFixture(&fixtureDef);
+        fixture->GetUserData().pointer = reinterpret_cast<uintptr_t>(this);
+
+        if (m_isDynamic) m_body->ResetMassData();
+
+        delete shape;
     }
-
-    b2FixtureDef fixtureDef;
-    fixtureDef.shape = shape;
-    fixtureDef.isSensor = m_isSensor;
-    fixtureDef.friction = m_friction;
-    fixtureDef.restitution = m_restitution;
-
-    float density = m_isDynamic ? 1.0f : 0.0f;
-    if (m_mass > 0.0f && m_isDynamic)
-    {
-        float area = (m_shapeType == ShapeType::RECTANGLE) ?
-            (m_width) * (m_height) :
-            b2_pi * (m_radius) * (m_radius);
-
-        density = (area > 0.0f) ? m_mass / area : 0.0f;
-    }
-    fixtureDef.density = density;
-
-    b2Fixture* fixture = m_body->CreateFixture(&fixtureDef);
-    fixture->GetUserData().pointer = reinterpret_cast<uintptr_t>(this);
-
-    if (m_isDynamic) m_body->ResetMassData();
-
-    delete shape;
 }

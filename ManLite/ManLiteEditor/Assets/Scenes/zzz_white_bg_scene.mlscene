@@ -1,0 +1,70 @@
+{
+  "CurrentCamID": 878665666,
+  "background_color": [
+    253,
+    253,
+    253,
+    255
+  ],
+  "game_objects": [
+    {
+      "Components": [
+        {
+          "AspectRatio": 1.0,
+          "ComponentID": 212629849,
+          "ComponentName": "Transform",
+          "ComponentType": 0,
+          "ContainerGOID": 878665666,
+          "Enabled": true,
+          "LockAspect": true,
+          "Position": [
+            0.0,
+            0.0
+          ],
+          "Rotation": 0.0,
+          "Scale": [
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "CameraZoom": 80.0,
+          "ComponentID": 813839165,
+          "ComponentName": "Camera",
+          "ComponentType": 1,
+          "ContainerGOID": 878665666,
+          "Enabled": true,
+          "ViewportSize": [
+            1700,
+            900
+          ]
+        }
+      ],
+      "Enabled": true,
+      "ID": 878665666,
+      "Name": "MainCamera",
+      "ParentID": 3783958039,
+      "ParentLayerID": 0,
+      "Tag": "Default",
+      "Visible": true
+    }
+  ],
+  "layers": [
+    {
+      "Layer_children_go_id": [
+        878665666
+      ],
+      "children_count": 1,
+      "layer_id": 0,
+      "layer_name": "DefaultLayer_0",
+      "visible": true
+    }
+  ],
+  "scene_gravity": [
+    0.0,
+    -9.8100004196167
+  ],
+  "scene_id": 3783958039,
+  "scene_name": "zzz_white_bg_scene",
+  "scene_path": "Assets\\Scenes\\zzz_white_bg_scene.mlscene"
+}

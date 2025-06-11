@@ -17,7 +17,6 @@ public class SamuraiMovement : MonoBehaviour
     public IGameObject samurai_animations;
 
     //components
-    private Transform transform;
     private Collider2D collider;
     private Animator animator;
     private Audio player_audios;
@@ -26,7 +25,6 @@ public class SamuraiMovement : MonoBehaviour
 
     public override void Start()
     {
-        transform = new Transform(attached_game_object);
         collider = new Collider2D(attached_game_object);
         animator = new Animator(samurai_animations);
         player_audios = new Audio(attached_game_object);
@@ -44,23 +42,6 @@ public class SamuraiMovement : MonoBehaviour
         if (Input.GetKeyboardKey(KeyboardKey.KEY_D) == KeyState.KEY_REPEAT)
         {
             speed.X = 4.0f;
-        }
-        if (Input.GetKeyboardKey(KeyboardKey.KEY_R) == KeyState.KEY_DOWN)
-        {
-            Vec2f newpos = new Vec2f(2.0f, -3.8f);
-            transform.SetWorldPosition(newpos);
-        }
-        if (Input.GetKeyboardKey(KeyboardKey.KEY_1) == KeyState.KEY_DOWN)
-        {
-            player_audios.PauseAll();
-        }
-        if (Input.GetKeyboardKey(KeyboardKey.KEY_2) == KeyState.KEY_DOWN)
-        {
-            player_audios.UnpauseAll();
-        }
-        if (Input.GetKeyboardKey(KeyboardKey.KEY_3) == KeyState.KEY_DOWN)
-        {
-            player_audios.StopAll();
         }
 
         //animation and sound

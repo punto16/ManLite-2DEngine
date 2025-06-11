@@ -99,6 +99,7 @@
         ],
         "InitSpeedMax": 1.0,
         "InitSpeedMin": 1.0,
+        "LockToGOTransform": true,
         "MaxParticles": 10000,
         "ParticleDurationMax": 1.0,
         "ParticleDurationMin": 1.0,

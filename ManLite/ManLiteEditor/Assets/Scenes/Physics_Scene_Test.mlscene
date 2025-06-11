@@ -78,10 +78,10 @@
           "LockRotation": false,
           "Mass": 0.0,
           "Radius": 0.5,
-          "Restitution": 1.0,
+          "Restitution": 0.0,
           "ShapeType": "RECTANGLE",
           "UseGravity": false,
-          "Width": 1.0
+          "Width": 22.049999237060547
         }
       ],
       "Enabled": true,
@@ -103,8 +103,8 @@
           "Enabled": true,
           "LockAspect": true,
           "Position": [
-            0.0,
-            4.0
+            -10.0,
+            2.0
           ],
           "Rotation": 0.0,
           "Scale": [
@@ -156,7 +156,7 @@
           "ContainerGOID": 1245056060,
           "Enabled": true,
           "Friction": 0.30000001192092896,
-          "GravityScale": 1.0,
+          "GravityScale": 3.0,
           "Height": 1.0,
           "IsDynamic": true,
           "IsSensor": false,
@@ -168,6 +168,14 @@
           "ShapeType": "RECTANGLE",
           "UseGravity": true,
           "Width": 1.0
+        },
+        {
+          "ComponentID": 3611186798,
+          "ComponentName": "Test_Physics_Script",
+          "ComponentType": 4,
+          "ContainerGOID": 1245056060,
+          "Enabled": true,
+          "ScriptFields": null
         }
       ],
       "Enabled": true,

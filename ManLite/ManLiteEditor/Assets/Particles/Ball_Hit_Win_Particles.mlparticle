@@ -1,0 +1,119 @@
+[
+    {
+        "Characters": "",
+        "EmitterName": "explosion",
+        "EmitterTypeManager": [
+            1,
+            [
+                true,
+                false,
+                true,
+                false,
+                true,
+                false,
+                false
+            ],
+            0
+        ],
+        "Enabled": true,
+        "FinalAngleSpeedMax": 0.0,
+        "FinalAngleSpeedMin": 0.0,
+        "FinalColorMax": [
+            255,
+            255,
+            255,
+            74
+        ],
+        "FinalColorMin": [
+            255,
+            255,
+            255,
+            30
+        ],
+        "FinalDirectionMax": [
+            0.0,
+            1.0
+        ],
+        "FinalDirectionMin": [
+            0.0,
+            1.0
+        ],
+        "FinalPositionMax": [
+            0.0,
+            0.0
+        ],
+        "FinalPositionMin": [
+            0.0,
+            0.0
+        ],
+        "FinalScaleMax": [
+            0.20000000298023224,
+            0.20000000298023224
+        ],
+        "FinalScaleMin": [
+            0.20000000298023224,
+            0.20000000298023224
+        ],
+        "FinalSpeedMax": 1.5,
+        "FinalSpeedMin": 0.5,
+        "FontPath": "",
+        "InitAnglMax": 0.0,
+        "InitAnglMin": 0.0,
+        "InitAngleSpeedMax": 0.0,
+        "InitAngleSpeedMin": 0.0,
+        "InitColorMax": [
+            255,
+            255,
+            255,
+            255
+        ],
+        "InitColorMin": [
+            255,
+            255,
+            255,
+            153
+        ],
+        "InitDirectionMax": [
+            1.0,
+            0.05000000074505806
+        ],
+        "InitDirectionMin": [
+            0.20000000298023224,
+            -0.05000000074505806
+        ],
+        "InitPositionMax": [
+            0.0,
+            0.5
+        ],
+        "InitPositionMin": [
+            0.0,
+            -0.5
+        ],
+        "InitScaleMax": [
+            0.20000000298023224,
+            0.20000000298023224
+        ],
+        "InitScaleMin": [
+            0.20000000298023224,
+            0.20000000298023224
+        ],
+        "InitSpeedMax": 3.5,
+        "InitSpeedMin": 0.0,
+        "LockToGOTransform": false,
+        "MaxParticles": 120,
+        "ParticleDurationMax": 1.2999999523162842,
+        "ParticleDurationMin": 0.800000011920929,
+        "ParticlesPerSpawn": 120,
+        "PixelArt": false,
+        "SpawnRate": 0.0,
+        "TexturePath": "",
+        "WindEffectMax": [
+            0.5,
+            0.5
+        ],
+        "WindEffectMin": [
+            -0.5,
+            -0.5
+        ]
+    }
+]

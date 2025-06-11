@@ -1847,7 +1847,7 @@
               "play_on_awake": false,
               "spatial": false,
               "spatial_distance": 10,
-              "volume": 21
+              "volume": 6
             }
           ]
         }
@@ -1926,14 +1926,6 @@
               "ContainerGOID": 773180722,
               "CurrentAnimation": "samurai_idle",
               "Enabled": true
-            },
-            {
-              "ComponentID": 1642598136,
-              "ComponentName": "Test_Communicative_Script",
-              "ComponentType": 4,
-              "ContainerGOID": 773180722,
-              "Enabled": true,
-              "ScriptFields": null
             }
           ],
           "Enabled": true,

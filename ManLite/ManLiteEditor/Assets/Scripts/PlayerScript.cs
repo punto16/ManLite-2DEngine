@@ -94,7 +94,7 @@ public class PlayerScript : MonoBehaviour
         {
             jump_available = true;
             friction_floor_particles.Play();
-	    ML_System.Log("Collision with block now");
+	        ML_System.Log("Collision with block now");
         }
     }
     public override void OnTriggerSensor(IGameObject other)
@@ -104,7 +104,7 @@ public class PlayerScript : MonoBehaviour
             //die
             alive = false;
             level_music.StopMusic("Polargeist");
-	    ML_System.Log("Player Killed");
+	        ML_System.Log("Player Killed");
         }
         if (other.tag == "yellow_orb")
         {
@@ -123,7 +123,7 @@ public class PlayerScript : MonoBehaviour
         {
             jump_available = false;
             friction_floor_particles.Stop();
-	    ML_System.Log("END Collision with block now");
+	        ML_System.Log("END Collision with block now");
         }
     }
     public override void OnExitSensor(IGameObject other)

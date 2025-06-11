@@ -1,0 +1,22 @@
+{
+  "flipHorizontal": false,
+  "flipVertical": false,
+  "frames": [
+    {
+      "h": 32.0,
+      "w": 32.0,
+      "x": 0.0,
+      "y": 128.0
+    },
+    {
+      "h": 32.0,
+      "w": 32.0,
+      "x": 32.0,
+      "y": 128.0
+    }
+  ],
+  "loop": true,
+  "pingpong": false,
+  "speed": 0.3499999940395355,
+  "totalFrames": 2
+}

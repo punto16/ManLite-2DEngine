@@ -1,0 +1,1743 @@
+{
+  "CurrentCamID": 3681906927,
+  "background_color": [
+    0,
+    0,
+    0,
+    255
+  ],
+  "game_objects": [
+    {
+      "Components": [
+        {
+          "AspectRatio": 1.0,
+          "ComponentID": 3805266392,
+          "ComponentName": "Transform",
+          "ComponentType": 0,
+          "ContainerGOID": 3681906927,
+          "Enabled": true,
+          "LockAspect": true,
+          "Position": [
+            0.0,
+            0.0
+          ],
+          "Rotation": 0.0,
+          "Scale": [
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "CameraZoom": 80.0,
+          "ComponentID": 3570757514,
+          "ComponentName": "Camera",
+          "ComponentType": 1,
+          "ContainerGOID": 3681906927,
+          "Enabled": true,
+          "ViewportSize": [
+            1700,
+            900
+          ]
+        },
+        {
+          "ComponentID": 1134845921,
+          "ComponentName": "Canvas",
+          "ComponentType": 6,
+          "ContainerGOID": 3681906927,
+          "Enabled": true,
+          "UIElements": [
+            {
+              "Color": [
+                255,
+                255,
+                255,
+                255
+              ],
+              "ContainerCanvasID": 1134845921,
+              "FontPath": "Assets\\Fonts\\Symtext.ttf",
+              "Text": "Player 1:  0",
+              "TextAlignment": 0,
+              "UIElementAngle": 0.0,
+              "UIElementAspectLocked": true,
+              "UIElementAspectLockedRatio": 1.0,
+              "UIElementEnabled": true,
+              "UIElementID": 3656181100,
+              "UIElementName": "Player1",
+              "UIElementPosition": [
+                -9.550000190734863,
+                4.099999904632568
+              ],
+              "UIElementScale": [
+                0.25,
+                0.25
+              ],
+              "UIElementType": 4
+            },
+            {
+              "Color": [
+                255,
+                255,
+                255,
+                255
+              ],
+              "ContainerCanvasID": 1134845921,
+              "FontPath": "Assets\\Fonts\\Symtext.ttf",
+              "Text": "Player 2:  0",
+              "TextAlignment": 2,
+              "UIElementAngle": 0.0,
+              "UIElementAspectLocked": true,
+              "UIElementAspectLockedRatio": 1.0,
+              "UIElementEnabled": true,
+              "UIElementID": 578778939,
+              "UIElementName": "Player2",
+              "UIElementPosition": [
+                9.600000381469727,
+                4.099999904632568
+              ],
+              "UIElementScale": [
+                0.25,
+                0.25
+              ],
+              "UIElementType": 4
+            },
+            {
+              "Color": [
+                255,
+                255,
+                255,
+                255
+              ],
+              "ContainerCanvasID": 1134845921,
+              "FontPath": "Assets\\Fonts\\Symtext.ttf",
+              "Text": "Pong!",
+              "TextAlignment": 1,
+              "UIElementAngle": 0.0,
+              "UIElementAspectLocked": false,
+              "UIElementAspectLockedRatio": 1.0,
+              "UIElementEnabled": true,
+              "UIElementID": 3615613934,
+              "UIElementName": "Title1",
+              "UIElementPosition": [
+                0.0,
+                0.0
+              ],
+              "UIElementScale": [
+                1.0,
+                1.0
+              ],
+              "UIElementType": 4
+            },
+            {
+              "Color": [
+                255,
+                255,
+                255,
+                255
+              ],
+              "ContainerCanvasID": 1134845921,
+              "FontPath": "Assets\\Fonts\\Symtext.ttf",
+              "Text": "Made with ManLite",
+              "TextAlignment": 1,
+              "UIElementAngle": 0.0,
+              "UIElementAspectLocked": true,
+              "UIElementAspectLockedRatio": 1.0,
+              "UIElementEnabled": true,
+              "UIElementID": 1367082010,
+              "UIElementName": "Subtitle1",
+              "UIElementPosition": [
+                0.0,
+                -1.2999999523162842
+              ],
+              "UIElementScale": [
+                0.3199999928474426,
+                0.3199999928474426
+              ],
+              "UIElementType": 4
+            }
+          ]
+        }
+      ],
+      "Enabled": true,
+      "ID": 3681906927,
+      "Name": "MainCamera",
+      "ParentID": 1151115360,
+      "ParentLayerID": 3,
+      "Tag": "Default",
+      "Visible": true
+    },
+    {
+      "Components": [
+        {
+          "AspectRatio": 1.0,
+          "ComponentID": 896244165,
+          "ComponentName": "Transform",
+          "ComponentType": 0,
+          "ContainerGOID": 1918941579,
+          "Enabled": true,
+          "LockAspect": true,
+          "Position": [
+            0.0,
+            0.0
+          ],
+          "Rotation": 0.0,
+          "Scale": [
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "ComponentID": 3368619664,
+          "ComponentName": "PongGameManager",
+          "ComponentType": 4,
+          "ContainerGOID": 1918941579,
+          "Enabled": true,
+          "ScriptFields": {
+            "ball_go": {
+              "type": 5,
+              "value": 1546757090
+            },
+            "canvas_go": {
+              "type": 5,
+              "value": 3681906927
+            },
+            "player1_go": {
+              "type": 5,
+              "value": 1578890678
+            },
+            "player2_go": {
+              "type": 5,
+              "value": 1152907250
+            },
+            "players_speed": {
+              "type": 1,
+              "value": 6.0
+            }
+          }
+        },
+        {
+          "ComponentID": 2231033093,
+          "ComponentName": "AudioSource",
+          "ComponentType": 7,
+          "ContainerGOID": 1918941579,
+          "Enabled": true,
+          "Musics": [
+            {
+              "loop": true,
+              "name": "pong_music",
+              "path": "Assets\\Audio\\Music\\pong_music.ogg",
+              "play_on_awake": true,
+              "volume": 5
+            }
+          ],
+          "Sounds": null
+        }
+      ],
+      "Enabled": true,
+      "ID": 1918941579,
+      "Name": "GameManager",
+      "ParentID": 1151115360,
+      "ParentLayerID": 1,
+      "Tag": "Default",
+      "Visible": true
+    },
+    {
+      "Components": [
+        {
+          "AspectRatio": 1.0672645568847656,
+          "ComponentID": 1205840938,
+          "ComponentName": "Transform",
+          "ComponentType": 0,
+          "ContainerGOID": 946481251,
+          "Enabled": true,
+          "LockAspect": true,
+          "Position": [
+            0.0,
+            0.0
+          ],
+          "Rotation": 0.0,
+          "Scale": [
+            11.899999618530273,
+            11.149999618530273
+          ]
+        },
+        {
+          "ComponentID": 1035872853,
+          "ComponentName": "Sprite2D",
+          "ComponentType": 2,
+          "ContainerGOID": 946481251,
+          "Enabled": true,
+          "FlipHorizontal": false,
+          "FlipVertical": false,
+          "Offset": [
+            0.0,
+            0.0
+          ],
+          "PixelArtRender": true,
+          "TexturePath": "Assets\\Textures\\pong\\background.png",
+          "TextureSection": [
+            0,
+            0,
+            1443,
+            810
+          ],
+          "TextureSize": [
+            1443,
+            810
+          ],
+          "TextureUVs": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ]
+        }
+      ],
+      "Enabled": true,
+      "GameObjects": [
+        {
+          "Components": [
+            {
+              "AspectRatio": 1.0,
+              "ComponentID": 2805832974,
+              "ComponentName": "Transform",
+              "ComponentType": 0,
+              "ContainerGOID": 2900783272,
+              "Enabled": true,
+              "LockAspect": true,
+              "Position": [
+                0.0,
+                0.0
+              ],
+              "Rotation": 0.0,
+              "Scale": [
+                0.08399999886751175,
+                0.08399999886751175
+              ]
+            }
+          ],
+          "Enabled": true,
+          "GameObjects": [
+            {
+              "Components": [
+                {
+                  "AspectRatio": 1.0,
+                  "ComponentID": 2255592914,
+                  "ComponentName": "Transform",
+                  "ComponentType": 0,
+                  "ContainerGOID": 360508924,
+                  "Enabled": true,
+                  "LockAspect": true,
+                  "Position": [
+                    0.0,
+                    4.804612636566162
+                  ],
+                  "Rotation": 0.0,
+                  "Scale": [
+                    0.5,
+                    0.5
+                  ]
+                },
+                {
+                  "ComponentID": 3070520052,
+                  "ComponentName": "Sprite2D",
+                  "ComponentType": 2,
+                  "ContainerGOID": 360508924,
+                  "Enabled": true,
+                  "FlipHorizontal": false,
+                  "FlipVertical": false,
+                  "Offset": [
+                    0.0,
+                    0.0
+                  ],
+                  "PixelArtRender": true,
+                  "TexturePath": "Assets\\Textures\\pong\\small_line.png",
+                  "TextureSection": [
+                    0,
+                    0,
+                    8,
+                    33
+                  ],
+                  "TextureSize": [
+                    8,
+                    33
+                  ],
+                  "TextureUVs": [
+                    0.0,
+                    0.0,
+                    1.0,
+                    1.0
+                  ]
+                }
+              ],
+              "Enabled": true,
+              "ID": 360508924,
+              "Name": "line",
+              "ParentID": 2900783272,
+              "ParentLayerID": 0,
+              "Tag": "Default",
+              "Visible": true
+            },
+            {
+              "Components": [
+                {
+                  "AspectRatio": 1.0,
+                  "ComponentID": 319004862,
+                  "ComponentName": "Transform",
+                  "ComponentType": 0,
+                  "ContainerGOID": 2726134965,
+                  "Enabled": true,
+                  "LockAspect": true,
+                  "Position": [
+                    0.0,
+                    3.7369208335876465
+                  ],
+                  "Rotation": 0.0,
+                  "Scale": [
+                    0.5,
+                    0.5
+                  ]
+                },
+                {
+                  "ComponentID": 1377458771,
+                  "ComponentName": "Sprite2D",
+                  "ComponentType": 2,
+                  "ContainerGOID": 2726134965,
+                  "Enabled": true,
+                  "FlipHorizontal": false,
+                  "FlipVertical": false,
+                  "Offset": [
+                    0.0,
+                    0.0
+                  ],
+                  "PixelArtRender": true,
+                  "TexturePath": "Assets\\Textures\\pong\\small_line.png",
+                  "TextureSection": [
+                    0,
+                    0,
+                    8,
+                    33
+                  ],
+                  "TextureSize": [
+                    8,
+                    33
+                  ],
+                  "TextureUVs": [
+                    0.0,
+                    0.0,
+                    1.0,
+                    1.0
+                  ]
+                }
+              ],
+              "Enabled": true,
+              "ID": 2726134965,
+              "Name": "line_(1)",
+              "ParentID": 2900783272,
+              "ParentLayerID": 0,
+              "Tag": "Default",
+              "Visible": true
+            },
+            {
+              "Components": [
+                {
+                  "AspectRatio": 1.0,
+                  "ComponentID": 3105071271,
+                  "ComponentName": "Transform",
+                  "ComponentType": 0,
+                  "ContainerGOID": 4271439775,
+                  "Enabled": true,
+                  "LockAspect": true,
+                  "Position": [
+                    0.0,
+                    2.66922926902771
+                  ],
+                  "Rotation": 0.0,
+                  "Scale": [
+                    0.5,
+                    0.5
+                  ]
+                },
+                {
+                  "ComponentID": 2272547806,
+                  "ComponentName": "Sprite2D",
+                  "ComponentType": 2,
+                  "ContainerGOID": 4271439775,
+                  "Enabled": true,
+                  "FlipHorizontal": false,
+                  "FlipVertical": false,
+                  "Offset": [
+                    0.0,
+                    0.0
+                  ],
+                  "PixelArtRender": true,
+                  "TexturePath": "Assets\\Textures\\pong\\small_line.png",
+                  "TextureSection": [
+                    0,
+                    0,
+                    8,
+                    33
+                  ],
+                  "TextureSize": [
+                    8,
+                    33
+                  ],
+                  "TextureUVs": [
+                    0.0,
+                    0.0,
+                    1.0,
+                    1.0
+                  ]
+                }
+              ],
+              "Enabled": true,
+              "ID": 4271439775,
+              "Name": "line_(2)",
+              "ParentID": 2900783272,
+              "ParentLayerID": 0,
+              "Tag": "Default",
+              "Visible": true
+            },
+            {
+              "Components": [
+                {
+                  "AspectRatio": 1.0,
+                  "ComponentID": 3211585790,
+                  "ComponentName": "Transform",
+                  "ComponentType": 0,
+                  "ContainerGOID": 1296696615,
+                  "Enabled": true,
+                  "LockAspect": true,
+                  "Position": [
+                    0.0,
+                    1.6015374660491943
+                  ],
+                  "Rotation": 0.0,
+                  "Scale": [
+                    0.5,
+                    0.5
+                  ]
+                },
+                {
+                  "ComponentID": 2550425704,
+                  "ComponentName": "Sprite2D",
+                  "ComponentType": 2,
+                  "ContainerGOID": 1296696615,
+                  "Enabled": true,
+                  "FlipHorizontal": false,
+                  "FlipVertical": false,
+                  "Offset": [
+                    0.0,
+                    0.0
+                  ],
+                  "PixelArtRender": true,
+                  "TexturePath": "Assets\\Textures\\pong\\small_line.png",
+                  "TextureSection": [
+                    0,
+                    0,
+                    8,
+                    33
+                  ],
+                  "TextureSize": [
+                    8,
+                    33
+                  ],
+                  "TextureUVs": [
+                    0.0,
+                    0.0,
+                    1.0,
+                    1.0
+                  ]
+                }
+              ],
+              "Enabled": true,
+              "ID": 1296696615,
+              "Name": "line_(3)",
+              "ParentID": 2900783272,
+              "ParentLayerID": 0,
+              "Tag": "Default",
+              "Visible": true
+            },
+            {
+              "Components": [
+                {
+                  "AspectRatio": 1.0,
+                  "ComponentID": 3670056583,
+                  "ComponentName": "Transform",
+                  "ComponentType": 0,
+                  "ContainerGOID": 4080095879,
+                  "Enabled": true,
+                  "LockAspect": true,
+                  "Position": [
+                    0.0,
+                    0.533845841884613
+                  ],
+                  "Rotation": 0.0,
+                  "Scale": [
+                    0.5,
+                    0.5
+                  ]
+                },
+                {
+                  "ComponentID": 976510086,
+                  "ComponentName": "Sprite2D",
+                  "ComponentType": 2,
+                  "ContainerGOID": 4080095879,
+                  "Enabled": true,
+                  "FlipHorizontal": false,
+                  "FlipVertical": false,
+                  "Offset": [
+                    0.0,
+                    0.0
+                  ],
+                  "PixelArtRender": true,
+                  "TexturePath": "Assets\\Textures\\pong\\small_line.png",
+                  "TextureSection": [
+                    0,
+                    0,
+                    8,
+                    33
+                  ],
+                  "TextureSize": [
+                    8,
+                    33
+                  ],
+                  "TextureUVs": [
+                    0.0,
+                    0.0,
+                    1.0,
+                    1.0
+                  ]
+                }
+              ],
+              "Enabled": true,
+              "ID": 4080095879,
+              "Name": "line_(4)",
+              "ParentID": 2900783272,
+              "ParentLayerID": 0,
+              "Tag": "Default",
+              "Visible": true
+            },
+            {
+              "Components": [
+                {
+                  "AspectRatio": 1.0,
+                  "ComponentID": 2139240386,
+                  "ComponentName": "Transform",
+                  "ComponentType": 0,
+                  "ContainerGOID": 1870912514,
+                  "Enabled": true,
+                  "LockAspect": true,
+                  "Position": [
+                    0.0,
+                    -0.533845841884613
+                  ],
+                  "Rotation": 0.0,
+                  "Scale": [
+                    0.5,
+                    0.5
+                  ]
+                },
+                {
+                  "ComponentID": 3412387186,
+                  "ComponentName": "Sprite2D",
+                  "ComponentType": 2,
+                  "ContainerGOID": 1870912514,
+                  "Enabled": true,
+                  "FlipHorizontal": false,
+                  "FlipVertical": false,
+                  "Offset": [
+                    0.0,
+                    0.0
+                  ],
+                  "PixelArtRender": true,
+                  "TexturePath": "Assets\\Textures\\pong\\small_line.png",
+                  "TextureSection": [
+                    0,
+                    0,
+                    8,
+                    33
+                  ],
+                  "TextureSize": [
+                    8,
+                    33
+                  ],
+                  "TextureUVs": [
+                    0.0,
+                    0.0,
+                    1.0,
+                    1.0
+                  ]
+                }
+              ],
+              "Enabled": true,
+              "ID": 1870912514,
+              "Name": "line_(5)",
+              "ParentID": 2900783272,
+              "ParentLayerID": 0,
+              "Tag": "Default",
+              "Visible": true
+            },
+            {
+              "Components": [
+                {
+                  "AspectRatio": 1.0,
+                  "ComponentID": 9635585,
+                  "ComponentName": "Transform",
+                  "ComponentType": 0,
+                  "ContainerGOID": 1892813181,
+                  "Enabled": true,
+                  "LockAspect": true,
+                  "Position": [
+                    0.0,
+                    -1.6015374660491943
+                  ],
+                  "Rotation": 0.0,
+                  "Scale": [
+                    0.5,
+                    0.5
+                  ]
+                },
+                {
+                  "ComponentID": 1238004349,
+                  "ComponentName": "Sprite2D",
+                  "ComponentType": 2,
+                  "ContainerGOID": 1892813181,
+                  "Enabled": true,
+                  "FlipHorizontal": false,
+                  "FlipVertical": false,
+                  "Offset": [
+                    0.0,
+                    0.0
+                  ],
+                  "PixelArtRender": true,
+                  "TexturePath": "Assets\\Textures\\pong\\small_line.png",
+                  "TextureSection": [
+                    0,
+                    0,
+                    8,
+                    33
+                  ],
+                  "TextureSize": [
+                    8,
+                    33
+                  ],
+                  "TextureUVs": [
+                    0.0,
+                    0.0,
+                    1.0,
+                    1.0
+                  ]
+                }
+              ],
+              "Enabled": true,
+              "ID": 1892813181,
+              "Name": "line_(6)",
+              "ParentID": 2900783272,
+              "ParentLayerID": 0,
+              "Tag": "Default",
+              "Visible": true
+            },
+            {
+              "Components": [
+                {
+                  "AspectRatio": 1.0,
+                  "ComponentID": 4058918422,
+                  "ComponentName": "Transform",
+                  "ComponentType": 0,
+                  "ContainerGOID": 3744744301,
+                  "Enabled": true,
+                  "LockAspect": true,
+                  "Position": [
+                    0.0,
+                    -2.66922926902771
+                  ],
+                  "Rotation": 0.0,
+                  "Scale": [
+                    0.5,
+                    0.5
+                  ]
+                },
+                {
+                  "ComponentID": 3881302596,
+                  "ComponentName": "Sprite2D",
+                  "ComponentType": 2,
+                  "ContainerGOID": 3744744301,
+                  "Enabled": true,
+                  "FlipHorizontal": false,
+                  "FlipVertical": false,
+                  "Offset": [
+                    0.0,
+                    0.0
+                  ],
+                  "PixelArtRender": true,
+                  "TexturePath": "Assets\\Textures\\pong\\small_line.png",
+                  "TextureSection": [
+                    0,
+                    0,
+                    8,
+                    33
+                  ],
+                  "TextureSize": [
+                    8,
+                    33
+                  ],
+                  "TextureUVs": [
+                    0.0,
+                    0.0,
+                    1.0,
+                    1.0
+                  ]
+                }
+              ],
+              "Enabled": true,
+              "ID": 3744744301,
+              "Name": "line_(7)",
+              "ParentID": 2900783272,
+              "ParentLayerID": 0,
+              "Tag": "Default",
+              "Visible": true
+            },
+            {
+              "Components": [
+                {
+                  "AspectRatio": 1.0,
+                  "ComponentID": 1619700826,
+                  "ComponentName": "Transform",
+                  "ComponentType": 0,
+                  "ContainerGOID": 3032714489,
+                  "Enabled": true,
+                  "LockAspect": true,
+                  "Position": [
+                    0.0,
+                    -3.7369208335876465
+                  ],
+                  "Rotation": 0.0,
+                  "Scale": [
+                    0.5,
+                    0.5
+                  ]
+                },
+                {
+                  "ComponentID": 2489017036,
+                  "ComponentName": "Sprite2D",
+                  "ComponentType": 2,
+                  "ContainerGOID": 3032714489,
+                  "Enabled": true,
+                  "FlipHorizontal": false,
+                  "FlipVertical": false,
+                  "Offset": [
+                    0.0,
+                    0.0
+                  ],
+                  "PixelArtRender": true,
+                  "TexturePath": "Assets\\Textures\\pong\\small_line.png",
+                  "TextureSection": [
+                    0,
+                    0,
+                    8,
+                    33
+                  ],
+                  "TextureSize": [
+                    8,
+                    33
+                  ],
+                  "TextureUVs": [
+                    0.0,
+                    0.0,
+                    1.0,
+                    1.0
+                  ]
+                }
+              ],
+              "Enabled": true,
+              "ID": 3032714489,
+              "Name": "line_(8)",
+              "ParentID": 2900783272,
+              "ParentLayerID": 0,
+              "Tag": "Default",
+              "Visible": true
+            },
+            {
+              "Components": [
+                {
+                  "AspectRatio": 1.0,
+                  "ComponentID": 3890888661,
+                  "ComponentName": "Transform",
+                  "ComponentType": 0,
+                  "ContainerGOID": 1962426323,
+                  "Enabled": true,
+                  "LockAspect": true,
+                  "Position": [
+                    0.0,
+                    -4.804612636566162
+                  ],
+                  "Rotation": 0.0,
+                  "Scale": [
+                    0.5,
+                    0.5
+                  ]
+                },
+                {
+                  "ComponentID": 2085100372,
+                  "ComponentName": "Sprite2D",
+                  "ComponentType": 2,
+                  "ContainerGOID": 1962426323,
+                  "Enabled": true,
+                  "FlipHorizontal": false,
+                  "FlipVertical": false,
+                  "Offset": [
+                    0.0,
+                    0.0
+                  ],
+                  "PixelArtRender": true,
+                  "TexturePath": "Assets\\Textures\\pong\\small_line.png",
+                  "TextureSection": [
+                    0,
+                    0,
+                    8,
+                    33
+                  ],
+                  "TextureSize": [
+                    8,
+                    33
+                  ],
+                  "TextureUVs": [
+                    0.0,
+                    0.0,
+                    1.0,
+                    1.0
+                  ]
+                }
+              ],
+              "Enabled": true,
+              "ID": 1962426323,
+              "Name": "line_(9)",
+              "ParentID": 2900783272,
+              "ParentLayerID": 0,
+              "Tag": "Default",
+              "Visible": true
+            }
+          ],
+          "ID": 2900783272,
+          "Name": "lines_parent",
+          "ParentID": 946481251,
+          "ParentLayerID": 0,
+          "Tag": "Default",
+          "Visible": true
+        },
+        {
+          "Components": [
+            {
+              "AspectRatio": 1.0,
+              "ComponentID": 963591567,
+              "ComponentName": "Transform",
+              "ComponentType": 0,
+              "ContainerGOID": 2936213527,
+              "Enabled": true,
+              "LockAspect": true,
+              "Position": [
+                0.0,
+                0.0
+              ],
+              "Rotation": 0.0,
+              "Scale": [
+                0.08399999886751175,
+                0.08399999886751175
+              ]
+            }
+          ],
+          "Enabled": true,
+          "GameObjects": [
+            {
+              "Components": [
+                {
+                  "AspectRatio": 1.0,
+                  "ComponentID": 844516992,
+                  "ComponentName": "Transform",
+                  "ComponentType": 0,
+                  "ContainerGOID": 4028235730,
+                  "Enabled": true,
+                  "LockAspect": true,
+                  "Position": [
+                    0.0,
+                    -5.872304439544678
+                  ],
+                  "Rotation": 0.0,
+                  "Scale": [
+                    1.0,
+                    1.0
+                  ]
+                },
+                {
+                  "Color": {
+                    "A": 255,
+                    "B": 0,
+                    "G": 255,
+                    "R": 0
+                  },
+                  "ComponentID": 3041125844,
+                  "ComponentName": "Collider2D",
+                  "ComponentType": 5,
+                  "ContainerGOID": 4028235730,
+                  "Enabled": true,
+                  "Friction": 0.0,
+                  "GravityScale": 1.0,
+                  "Height": 0.8500000238418579,
+                  "IsDynamic": false,
+                  "IsSensor": false,
+                  "LinearDamping": 0.0,
+                  "LockRotation": false,
+                  "Mass": 0.0,
+                  "Radius": 0.5,
+                  "Restitution": 1.0,
+                  "ShapeType": "RECTANGLE",
+                  "UseGravity": false,
+                  "Width": 20.0
+                }
+              ],
+              "Enabled": true,
+              "ID": 4028235730,
+              "Name": "BottomWall",
+              "ParentID": 2936213527,
+              "ParentLayerID": 0,
+              "Tag": "BottomWall",
+              "Visible": true
+            },
+            {
+              "Components": [
+                {
+                  "AspectRatio": 1.0,
+                  "ComponentID": 1605180357,
+                  "ComponentName": "Transform",
+                  "ComponentType": 0,
+                  "ContainerGOID": 2217399000,
+                  "Enabled": true,
+                  "LockAspect": true,
+                  "Position": [
+                    0.0,
+                    5.872304439544678
+                  ],
+                  "Rotation": 0.0,
+                  "Scale": [
+                    1.0,
+                    1.0
+                  ]
+                },
+                {
+                  "Color": {
+                    "A": 255,
+                    "B": 0,
+                    "G": 255,
+                    "R": 0
+                  },
+                  "ComponentID": 609396435,
+                  "ComponentName": "Collider2D",
+                  "ComponentType": 5,
+                  "ContainerGOID": 2217399000,
+                  "Enabled": true,
+                  "Friction": 0.0,
+                  "GravityScale": 1.0,
+                  "Height": 0.8500000238418579,
+                  "IsDynamic": false,
+                  "IsSensor": false,
+                  "LinearDamping": 0.0,
+                  "LockRotation": false,
+                  "Mass": 0.0,
+                  "Radius": 0.5,
+                  "Restitution": 1.0,
+                  "ShapeType": "RECTANGLE",
+                  "UseGravity": false,
+                  "Width": 20.0
+                }
+              ],
+              "Enabled": true,
+              "ID": 2217399000,
+              "Name": "TopWall",
+              "ParentID": 2936213527,
+              "ParentLayerID": 0,
+              "Tag": "TopWall",
+              "Visible": true
+            },
+            {
+              "Components": [
+                {
+                  "AspectRatio": 1.0,
+                  "ComponentID": 2799566267,
+                  "ComponentName": "Transform",
+                  "ComponentType": 0,
+                  "ContainerGOID": 396123304,
+                  "Enabled": true,
+                  "LockAspect": true,
+                  "Position": [
+                    -10.504201889038086,
+                    0.0
+                  ],
+                  "Rotation": 0.0,
+                  "Scale": [
+                    1.0,
+                    1.0
+                  ]
+                },
+                {
+                  "Color": {
+                    "A": 255,
+                    "B": 255,
+                    "G": 224,
+                    "R": 4
+                  },
+                  "ComponentID": 764450989,
+                  "ComponentName": "Collider2D",
+                  "ComponentType": 5,
+                  "ContainerGOID": 396123304,
+                  "Enabled": true,
+                  "Friction": 0.0,
+                  "GravityScale": 1.0,
+                  "Height": 10.0,
+                  "IsDynamic": false,
+                  "IsSensor": true,
+                  "LinearDamping": 0.0,
+                  "LockRotation": false,
+                  "Mass": 0.0,
+                  "Radius": 0.5,
+                  "Restitution": 1.0,
+                  "ShapeType": "RECTANGLE",
+                  "UseGravity": false,
+                  "Width": 0.8500000238418579
+                }
+              ],
+              "Enabled": true,
+              "ID": 396123304,
+              "Name": "LeftWall",
+              "ParentID": 2936213527,
+              "ParentLayerID": 0,
+              "Tag": "LeftWall",
+              "Visible": true
+            },
+            {
+              "Components": [
+                {
+                  "AspectRatio": 1.0,
+                  "ComponentID": 4285950980,
+                  "ComponentName": "Transform",
+                  "ComponentType": 0,
+                  "ContainerGOID": 4064782948,
+                  "Enabled": true,
+                  "LockAspect": true,
+                  "Position": [
+                    10.504201889038086,
+                    0.0
+                  ],
+                  "Rotation": 0.0,
+                  "Scale": [
+                    1.0,
+                    1.0
+                  ]
+                },
+                {
+                  "Color": {
+                    "A": 255,
+                    "B": 255,
+                    "G": 224,
+                    "R": 4
+                  },
+                  "ComponentID": 47439181,
+                  "ComponentName": "Collider2D",
+                  "ComponentType": 5,
+                  "ContainerGOID": 4064782948,
+                  "Enabled": true,
+                  "Friction": 0.0,
+                  "GravityScale": 1.0,
+                  "Height": 10.0,
+                  "IsDynamic": false,
+                  "IsSensor": true,
+                  "LinearDamping": 0.0,
+                  "LockRotation": false,
+                  "Mass": 0.0,
+                  "Radius": 0.5,
+                  "Restitution": 1.0,
+                  "ShapeType": "RECTANGLE",
+                  "UseGravity": false,
+                  "Width": 0.8500000238418579
+                }
+              ],
+              "Enabled": true,
+              "ID": 4064782948,
+              "Name": "RightWall",
+              "ParentID": 2936213527,
+              "ParentLayerID": 0,
+              "Tag": "RightWall",
+              "Visible": true
+            }
+          ],
+          "ID": 2936213527,
+          "Name": "MapColliders",
+          "ParentID": 946481251,
+          "ParentLayerID": 0,
+          "Tag": "Default",
+          "Visible": true
+        },
+        {
+          "Components": [
+            {
+              "AspectRatio": 1.0,
+              "ComponentID": 562988811,
+              "ComponentName": "Transform",
+              "ComponentType": 0,
+              "ContainerGOID": 1786430070,
+              "Enabled": true,
+              "LockAspect": true,
+              "Position": [
+                0.0,
+                0.0
+              ],
+              "Rotation": 0.0,
+              "Scale": [
+                0.08399999886751175,
+                0.08399999886751175
+              ]
+            },
+            {
+              "ComponentID": 2498027803,
+              "ComponentName": "ParticleSystem",
+              "ComponentType": 8,
+              "ContainerGOID": 1786430070,
+              "Enabled": true,
+              "ParticlePath": "Assets\\Particles\\Pong_Ambient_Particles.mlparticle"
+            }
+          ],
+          "Enabled": true,
+          "ID": 1786430070,
+          "Name": "BackGroundParticles",
+          "ParentID": 946481251,
+          "ParentLayerID": 4,
+          "Tag": "Default",
+          "Visible": true
+        }
+      ],
+      "ID": 946481251,
+      "Name": "BackGround",
+      "ParentID": 1151115360,
+      "ParentLayerID": 0,
+      "Tag": "Default",
+      "Visible": true
+    },
+    {
+      "Components": [
+        {
+          "AspectRatio": 1.0,
+          "ComponentID": 2128254895,
+          "ComponentName": "Transform",
+          "ComponentType": 0,
+          "ContainerGOID": 1578890678,
+          "Enabled": true,
+          "LockAspect": true,
+          "Position": [
+            -9.0,
+            0.0
+          ],
+          "Rotation": 0.0,
+          "Scale": [
+            2.0,
+            2.0
+          ]
+        },
+        {
+          "ComponentID": 1786953599,
+          "ComponentName": "Sprite2D",
+          "ComponentType": 2,
+          "ContainerGOID": 1578890678,
+          "Enabled": true,
+          "FlipHorizontal": false,
+          "FlipVertical": false,
+          "Offset": [
+            0.0,
+            0.0
+          ],
+          "PixelArtRender": true,
+          "TexturePath": "Assets\\Textures\\pong\\player_pad.png",
+          "TextureSection": [
+            0,
+            0,
+            32,
+            153
+          ],
+          "TextureSize": [
+            32,
+            153
+          ],
+          "TextureUVs": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "Color": {
+            "A": 255,
+            "B": 0,
+            "G": 255,
+            "R": 0
+          },
+          "ComponentID": 34919357,
+          "ComponentName": "Collider2D",
+          "ComponentType": 5,
+          "ContainerGOID": 1578890678,
+          "Enabled": true,
+          "Friction": 0.0,
+          "GravityScale": 1.0,
+          "Height": 2.0,
+          "IsDynamic": true,
+          "IsSensor": false,
+          "LinearDamping": 0.0,
+          "LockRotation": true,
+          "Mass": 1000.0,
+          "Radius": 0.5,
+          "Restitution": 1.0,
+          "ShapeType": "RECTANGLE",
+          "UseGravity": false,
+          "Width": 0.4000000059604645
+        }
+      ],
+      "Enabled": true,
+      "ID": 1578890678,
+      "Name": "Player1",
+      "ParentID": 1151115360,
+      "ParentLayerID": 1,
+      "Tag": "LeftPad",
+      "Visible": true
+    },
+    {
+      "Components": [
+        {
+          "AspectRatio": 1.0,
+          "ComponentID": 2475325426,
+          "ComponentName": "Transform",
+          "ComponentType": 0,
+          "ContainerGOID": 1152907250,
+          "Enabled": true,
+          "LockAspect": true,
+          "Position": [
+            9.0,
+            0.0
+          ],
+          "Rotation": 0.0,
+          "Scale": [
+            2.0,
+            2.0
+          ]
+        },
+        {
+          "ComponentID": 1527411437,
+          "ComponentName": "Sprite2D",
+          "ComponentType": 2,
+          "ContainerGOID": 1152907250,
+          "Enabled": true,
+          "FlipHorizontal": true,
+          "FlipVertical": false,
+          "Offset": [
+            0.0,
+            0.0
+          ],
+          "PixelArtRender": true,
+          "TexturePath": "Assets\\Textures\\pong\\player_pad.png",
+          "TextureSection": [
+            0,
+            0,
+            32,
+            153
+          ],
+          "TextureSize": [
+            32,
+            153
+          ],
+          "TextureUVs": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "Color": {
+            "A": 255,
+            "B": 0,
+            "G": 255,
+            "R": 0
+          },
+          "ComponentID": 329846455,
+          "ComponentName": "Collider2D",
+          "ComponentType": 5,
+          "ContainerGOID": 1152907250,
+          "Enabled": true,
+          "Friction": 0.0,
+          "GravityScale": 1.0,
+          "Height": 2.0,
+          "IsDynamic": true,
+          "IsSensor": false,
+          "LinearDamping": 0.0,
+          "LockRotation": true,
+          "Mass": 1000.0,
+          "Radius": 0.5,
+          "Restitution": 1.0,
+          "ShapeType": "RECTANGLE",
+          "UseGravity": false,
+          "Width": 0.4000000059604645
+        }
+      ],
+      "Enabled": true,
+      "ID": 1152907250,
+      "Name": "Player2",
+      "ParentID": 1151115360,
+      "ParentLayerID": 1,
+      "Tag": "RightPad",
+      "Visible": true
+    },
+    {
+      "Components": [
+        {
+          "AspectRatio": 1.0,
+          "ComponentID": 1267770633,
+          "ComponentName": "Transform",
+          "ComponentType": 0,
+          "ContainerGOID": 1546757090,
+          "Enabled": true,
+          "LockAspect": true,
+          "Position": [
+            0.0,
+            0.0
+          ],
+          "Rotation": 0.0,
+          "Scale": [
+            0.5,
+            0.5
+          ]
+        },
+        {
+          "ComponentID": 3514902083,
+          "ComponentName": "Sprite2D",
+          "ComponentType": 2,
+          "ContainerGOID": 1546757090,
+          "Enabled": true,
+          "FlipHorizontal": false,
+          "FlipVertical": false,
+          "Offset": [
+            0.0,
+            0.0
+          ],
+          "PixelArtRender": true,
+          "TexturePath": "Assets\\Textures\\pong\\ball.png",
+          "TextureSection": [
+            0,
+            0,
+            32,
+            32
+          ],
+          "TextureSize": [
+            32,
+            32
+          ],
+          "TextureUVs": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "Color": {
+            "A": 255,
+            "B": 0,
+            "G": 255,
+            "R": 0
+          },
+          "ComponentID": 969123604,
+          "ComponentName": "Collider2D",
+          "ComponentType": 5,
+          "ContainerGOID": 1546757090,
+          "Enabled": true,
+          "Friction": 0.0,
+          "GravityScale": 1.0,
+          "Height": 1.0,
+          "IsDynamic": true,
+          "IsSensor": false,
+          "LinearDamping": 0.0,
+          "LockRotation": false,
+          "Mass": 12.0,
+          "Radius": 0.25,
+          "Restitution": 0.0,
+          "ShapeType": "CIRCLE",
+          "UseGravity": false,
+          "Width": 1.0
+        },
+        {
+          "ComponentID": 1999127578,
+          "ComponentName": "PongBall",
+          "ComponentType": 4,
+          "ContainerGOID": 1546757090,
+          "Enabled": true,
+          "ScriptFields": {
+            "ball_speed": {
+              "type": 1,
+              "value": 10.0
+            },
+            "game_manager_go": {
+              "type": 5,
+              "value": 1918941579
+            },
+            "pad_particles_go": {
+              "type": 5,
+              "value": 1086740017
+            },
+            "wall_particles_go": {
+              "type": 5,
+              "value": 138295961
+            },
+            "win_particles_go": {
+              "type": 5,
+              "value": 1734716160
+            }
+          }
+        },
+        {
+          "ComponentID": 3588339426,
+          "ComponentName": "ParticleSystem",
+          "ComponentType": 8,
+          "ContainerGOID": 1546757090,
+          "Enabled": true,
+          "ParticlePath": "Assets\\Particles\\Ball_Trail_Particles.mlparticle"
+        },
+        {
+          "ComponentID": 1641689627,
+          "ComponentName": "AudioSource",
+          "ComponentType": 7,
+          "ContainerGOID": 1546757090,
+          "Enabled": true,
+          "Musics": null,
+          "Sounds": [
+            {
+              "loop": false,
+              "name": "pong_ball_explosion",
+              "path": "Assets\\Audio\\SoundEffects\\pong_ball_explosion.wav",
+              "play_on_awake": false,
+              "spatial": true,
+              "spatial_distance": 13,
+              "volume": 34
+            },
+            {
+              "loop": false,
+              "name": "pong_ball_hit_pad",
+              "path": "Assets\\Audio\\SoundEffects\\pong_ball_hit_pad.wav",
+              "play_on_awake": false,
+              "spatial": true,
+              "spatial_distance": 13,
+              "volume": 100
+            },
+            {
+              "loop": false,
+              "name": "pong_ball_hit_wall",
+              "path": "Assets\\Audio\\SoundEffects\\pong_ball_hit_wall.wav",
+              "play_on_awake": false,
+              "spatial": true,
+              "spatial_distance": 13,
+              "volume": 100
+            }
+          ]
+        }
+      ],
+      "Enabled": true,
+      "ID": 1546757090,
+      "Name": "Ball",
+      "ParentID": 1151115360,
+      "ParentLayerID": 2,
+      "Tag": "ball",
+      "Visible": true
+    },
+    {
+      "Components": [
+        {
+          "AspectRatio": 1.0,
+          "ComponentID": 3966297799,
+          "ComponentName": "Transform",
+          "ComponentType": 0,
+          "ContainerGOID": 1086740017,
+          "Enabled": true,
+          "LockAspect": true,
+          "Position": [
+            0.0,
+            -10.0
+          ],
+          "Rotation": 0.0,
+          "Scale": [
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "ComponentID": 261223087,
+          "ComponentName": "ParticleSystem",
+          "ComponentType": 8,
+          "ContainerGOID": 1086740017,
+          "Enabled": true,
+          "ParticlePath": "Assets\\Particles\\Ball_Hit_Pad_Particles.mlparticle"
+        }
+      ],
+      "Enabled": true,
+      "ID": 1086740017,
+      "Name": "Particles_Hit_Pad",
+      "ParentID": 1151115360,
+      "ParentLayerID": 4,
+      "Tag": "Default",
+      "Visible": true
+    },
+    {
+      "Components": [
+        {
+          "AspectRatio": 1.0,
+          "ComponentID": 4286060692,
+          "ComponentName": "Transform",
+          "ComponentType": 0,
+          "ContainerGOID": 138295961,
+          "Enabled": true,
+          "LockAspect": true,
+          "Position": [
+            0.0,
+            -10.0
+          ],
+          "Rotation": 0.0,
+          "Scale": [
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "ComponentID": 1281426646,
+          "ComponentName": "ParticleSystem",
+          "ComponentType": 8,
+          "ContainerGOID": 138295961,
+          "Enabled": true,
+          "ParticlePath": "Assets\\Particles\\Ball_Hit_Wall_Particles.mlparticle"
+        }
+      ],
+      "Enabled": true,
+      "ID": 138295961,
+      "Name": "Particles_Hit_Wall",
+      "ParentID": 1151115360,
+      "ParentLayerID": 4,
+      "Tag": "Default",
+      "Visible": true
+    },
+    {
+      "Components": [
+        {
+          "AspectRatio": 1.0,
+          "ComponentID": 1693637819,
+          "ComponentName": "Transform",
+          "ComponentType": 0,
+          "ContainerGOID": 1734716160,
+          "Enabled": true,
+          "LockAspect": true,
+          "Position": [
+            0.0,
+            -10.0
+          ],
+          "Rotation": 0.0,
+          "Scale": [
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "ComponentID": 257642412,
+          "ComponentName": "ParticleSystem",
+          "ComponentType": 8,
+          "ContainerGOID": 1734716160,
+          "Enabled": true,
+          "ParticlePath": "Assets\\Particles\\Ball_Hit_Win_Particles.mlparticle"
+        }
+      ],
+      "Enabled": true,
+      "ID": 1734716160,
+      "Name": "Particles_Win",
+      "ParentID": 1151115360,
+      "ParentLayerID": 4,
+      "Tag": "Default",
+      "Visible": true
+    }
+  ],
+  "layers": [
+    {
+      "Layer_children_go_id": [
+        3681906927
+      ],
+      "children_count": 1,
+      "layer_id": 3,
+      "layer_name": "UI",
+      "visible": true
+    },
+    {
+      "Layer_children_go_id": [
+        1086740017,
+        138295961,
+        1734716160,
+        1786430070
+      ],
+      "children_count": 4,
+      "layer_id": 4,
+      "layer_name": "Particles",
+      "visible": true
+    },
+    {
+      "Layer_children_go_id": [
+        1546757090
+      ],
+      "children_count": 1,
+      "layer_id": 2,
+      "layer_name": "Ball",
+      "visible": true
+    },
+    {
+      "Layer_children_go_id": [
+        1918941579,
+        1578890678,
+        1152907250
+      ],
+      "children_count": 3,
+      "layer_id": 1,
+      "layer_name": "Players",
+      "visible": true
+    },
+    {
+      "Layer_children_go_id": [
+        2900783272,
+        360508924,
+        2726134965,
+        4271439775,
+        1296696615,
+        4080095879,
+        1870912514,
+        1892813181,
+        3744744301,
+        3032714489,
+        1962426323,
+        946481251,
+        2936213527,
+        4028235730,
+        2217399000,
+        396123304,
+        4064782948
+      ],
+      "children_count": 17,
+      "layer_id": 0,
+      "layer_name": "BackGround",
+      "visible": true
+    }
+  ],
+  "scene_gravity": [
+    0.0,
+    -9.8100004196167
+  ],
+  "scene_id": 1151115360,
+  "scene_name": "Prototype4_RetroGame",
+  "scene_path": "Assets\\Scenes\\Prototype4_RetroGame.mlscene"
+}

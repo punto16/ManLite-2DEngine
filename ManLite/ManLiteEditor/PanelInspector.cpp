@@ -2036,6 +2036,17 @@ void PanelInspector::ParticleSystemOptions(GameObject& go)
 
 						ImGui::TableNextRow();
 						ImGui::TableSetColumnIndex(0);
+						ImGui::Text("Lock Transform");
+						ImGui::SameLine();
+						Gui::HelpMarker("When enabled, particles will move at the same time the Game Object does");
+						ImGui::TableSetColumnIndex(1);
+						bool lock_to_go_transform = emitter->GetLockToGOTransform();
+						if (ImGui::Checkbox("##SetLockToGOTransform", &lock_to_go_transform)) {
+							emitter->SetLockToGOTransform(lock_to_go_transform);
+						}
+
+						ImGui::TableNextRow();
+						ImGui::TableSetColumnIndex(0);
 						ImGui::Text("Max Particles");
 						ImGui::SameLine();
 						std::string curr_amount_particles = "Current amount of Particles in this Emitter:\n<< " + std::to_string(emitter->GetActiveParticlesCount()) + " particles>>";

@@ -1,0 +1,78 @@
+{
+  "CurrentCamID": 1017370556,
+  "background_color": [
+    102,
+    102,
+    102,
+    255
+  ],
+  "game_objects": [
+    {
+      "Components": [
+        {
+          "AspectRatio": 1.0,
+          "ComponentID": 3877415685,
+          "ComponentName": "Transform",
+          "ComponentType": 0,
+          "ContainerGOID": 1017370556,
+          "Enabled": true,
+          "LockAspect": true,
+          "Position": [
+            0.0,
+            0.0
+          ],
+          "Rotation": 0.0,
+          "Scale": [
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "CameraZoom": 80.0,
+          "ComponentID": 2776205132,
+          "ComponentName": "Camera",
+          "ComponentType": 1,
+          "ContainerGOID": 1017370556,
+          "Enabled": true,
+          "ViewportSize": [
+            1700,
+            900
+          ]
+        }
+      ],
+      "Enabled": true,
+      "ID": 1017370556,
+      "Name": "MainCamera",
+      "ParentID": 204583245,
+      "ParentLayerID": 0,
+      "Tag": "Default",
+      "Visible": true
+    },
+    {
+      "ID": 3781787612,
+      "ParentID": 204583245,
+      "ParentLayerID": 0,
+      "PrefabPath": "Assets\\Prefabs\\Isaac_Tear_Prefab.prefab"
+    }
+  ],
+  "layers": [
+    {
+      "Layer_children_go_id": [
+        1017370556,
+        3781787612,
+        2527665117
+      ],
+      "children_count": 3,
+      "layer_id": 0,
+      "layer_name": "DefaultLayer_0",
+      "visible": true
+    }
+  ],
+  "scene_gravity": [
+    0.0,
+    -9.8100004196167
+  ],
+  "scene_id": 204583245,
+  "scene_name": "Untitled_Scene",
+  "scene_path": "Assets\\Scenes\\Untitled_Scene.mlscene"
+}

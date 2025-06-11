@@ -230,7 +230,7 @@ void SceneManagerEM::LoadSceneFromJson(const std::string& file_name_const)
 
 	if (sceneJSON.contains("background_color"))
 	{
-		engine->renderer_em->SetBackGroundColor({
+		current_scene->SetBackGroundColor({
 			(int)sceneJSON["background_color"][0],
 			(int)sceneJSON["background_color"][1],
 			(int)sceneJSON["background_color"][2],
@@ -238,7 +238,7 @@ void SceneManagerEM::LoadSceneFromJson(const std::string& file_name_const)
 			});
 	}
 
-	if (sceneJSON.contains("scene_gravity")) PhysicsEM::GetWorld()->SetGravity({ sceneJSON["scene_gravity"][0], sceneJSON["scene_gravity"][1] });
+	if (sceneJSON.contains("scene_gravity")) current_scene->SetSceneGravity({ sceneJSON["scene_gravity"][0], sceneJSON["scene_gravity"][1] });
 
 	current_scene->GetSceneRoot().GetChildren().clear();
 
@@ -343,7 +343,7 @@ void SceneManagerEM::LoadSceneToScene(const std::string& file_name_const, Scene&
 
 	if (sceneJSON.contains("background_color"))
 	{
-		engine->renderer_em->SetBackGroundColor({
+		scene.SetBackGroundColor({
 			(int)sceneJSON["background_color"][0],
 			(int)sceneJSON["background_color"][1],
 			(int)sceneJSON["background_color"][2],
@@ -351,7 +351,7 @@ void SceneManagerEM::LoadSceneToScene(const std::string& file_name_const, Scene&
 			});
 	}
 
-	if (sceneJSON.contains("scene_gravity")) PhysicsEM::GetWorld()->SetGravity({ sceneJSON["scene_gravity"][0], sceneJSON["scene_gravity"][1] });
+	if (sceneJSON.contains("scene_gravity")) scene.SetSceneGravity({ sceneJSON["scene_gravity"][0], sceneJSON["scene_gravity"][1] });
 
 	scene.GetSceneRoot().GetChildren().clear();
 	scene.GetSceneLayers().clear();
@@ -631,6 +631,7 @@ void SceneManagerEM::StopSession()
 		MonoRegisterer::prefab_templates.clear();
 		engine->StopLogs(true);
 		current_scene->CleanUp();
+		PhysicsEM::Init();
 		if (engine->GetEditorOrBuild()) current_scene = std::move(pre_play_scene);
 		engine->StopLogs(false);
 	}
@@ -696,6 +697,7 @@ bool Scene::Update(double dt)
 	AddPengindGOs();
 	AddPengindLayers();
 	//
+	updating = true;
 	if (engine->GetEngineState() == EngineState::STOP)
 	{
 		prefab_check_timer += (float)dt;
@@ -707,16 +709,20 @@ bool Scene::Update(double dt)
 		}
 	}
 
-	for (const auto& item : scene_root.get()->GetChildren())
+	auto childrenCopy = scene_root->GetChildren();
+	auto layersCopy = scene_layers;
+
+	for (const auto& item : childrenCopy)
 		if (item->IsEnabled() && engine->GetEngineState() == EngineState::PLAY)
 			if (!item->Update(dt))
 				return false;
 
-	for (const auto& item : scene_layers)
+	for (const auto& item : layersCopy)
 		if (item->IsVisible())
 			if (!item->Update(dt))
 				return false;
 
+	updating = false;
 	//
 	DeletePengindGOs();
 	DeletePengindLayers();
@@ -776,13 +782,13 @@ std::shared_ptr<GameObject> Scene::CreateEmptyGO(GameObject& parent)
 	return empty_go;
 }
 
-std::shared_ptr<GameObject> Scene::DuplicateGO(GameObject& go_to_copy, bool scene_duplication)
+std::shared_ptr<GameObject> Scene::DuplicateGO(GameObject& go_to_copy, bool scene_duplication, bool prefab_duplication)
 {
 	std::shared_ptr<GameObject> copy = std::make_shared<GameObject>(go_to_copy.GetSharedPtr());
-	if (scene_duplication)
+	if (scene_duplication || prefab_duplication)
 	{
 		copy->SetName(go_to_copy.GetName(), false);
-		copy->SetID(go_to_copy.GetID());
+		if (scene_duplication) copy->SetID(go_to_copy.GetID());
 	}
 	copy->CloneComponents(go_to_copy.GetSharedPtr(), scene_duplication);
 	if (go_to_copy.GetParentGO().lock().get())
@@ -798,7 +804,7 @@ std::shared_ptr<GameObject> Scene::DuplicateGO(GameObject& go_to_copy, bool scen
 	{
 		auto children = std::vector<std::shared_ptr<GameObject>>(go_to_copy.GetChildren());
 		for (const auto& child_to_copy : children)
-			DuplicateGO(*child_to_copy, scene_duplication)->Reparent(copy);
+			DuplicateGO(*child_to_copy, scene_duplication, prefab_duplication)->Reparent(copy);
 	}
 
 	return copy;
@@ -862,7 +868,11 @@ void Scene::AddPengindGOs()
 
 void Scene::DeletePengindGOs()
 {
-	for (const auto& item : objects_to_delete) item.get()->Delete();
+	for (const auto& item : objects_to_delete)
+	{
+		item.get()->CleanUp();
+		item.get()->Delete();
+	}
 	objects_to_delete.clear();
 }
 
@@ -1120,7 +1130,7 @@ vec2f Scene::GetSceneGravity()
 void Scene::SetSceneGravity(vec2f g)
 {
 	world_gravity = g;
-	if (std::this_thread::get_id() != engine->main_thread_id) return;
+
 	if (PhysicsEM::GetWorld())
 	{
 		PhysicsEM::GetWorld()->SetGravity({ world_gravity.x, world_gravity.y });

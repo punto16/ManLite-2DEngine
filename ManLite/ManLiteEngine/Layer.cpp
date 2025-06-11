@@ -28,8 +28,9 @@ bool Layer::Update(double dt)
 	bool ret = true;
 
 	for (const auto& item : children_gameobject)
-		if (item->IsVisible())
-			item->Draw();
+		if (item.get())
+			if (item->IsVisible())
+				item->Draw();
 
 	return ret;
 }

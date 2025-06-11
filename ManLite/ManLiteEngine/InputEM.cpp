@@ -1,6 +1,7 @@
 #include "InputEM.h"
 
 #include "EngineCore.h"
+#include "WindowEM.h"
 
 #include <string.h>
 #include <SDL2/SDL.h>
@@ -41,14 +42,8 @@ bool InputEM::Start()
 bool InputEM::PreUpdate()
 {
 	bool ret = true;
-
-	window_ev_fix_timer += engine->GetDT();
-	if (window_ev_fix_timer >= window_ev_fix_time)
-	{
-		window_ev_fix_timer = 0.0f;
-	}
-	else
-		memset(windowEvents, 0, sizeof(bool) * WindowEvent_Count);
+	
+	memset(windowEvents, 0, sizeof(bool) * WindowEvent_Count);
 
 	mouse_wheelY = 0;
 
@@ -136,6 +131,17 @@ bool InputEM::PreUpdate()
 		}
 	}
 
+	window_ev_fix_timer += engine->GetDT();
+	if (window_ev_fix_timer >= window_ev_fix_time)
+	{
+		if (IsAppFocused())
+			windowEvents[WindowEvent_Show] = true;
+		else
+			windowEvents[WindowEvent_Show] = false;
+
+		window_ev_fix_timer = 0.0f;
+	}
+
 	return close_app ? false : ret;
 }
 
@@ -151,4 +157,16 @@ bool InputEM::CleanUp()
 void InputEM::CloseApp()
 {
 	close_app = true;
+}
+
+bool InputEM::IsAppFocused()
+{
+	if (engine->window_em->GetSDLWindow() == nullptr) return true;
+
+	Uint32 flags = SDL_GetWindowFlags(engine->window_em->GetSDLWindow());
+	bool hasInputFocus = (flags & SDL_WINDOW_INPUT_FOCUS) != 0;
+	bool hasMouseFocus = (flags & SDL_WINDOW_MOUSE_FOCUS) != 0;
+	bool isMinimized = (flags & SDL_WINDOW_MINIMIZED) != 0;
+
+	return hasInputFocus && hasMouseFocus && !isMinimized;
 }
