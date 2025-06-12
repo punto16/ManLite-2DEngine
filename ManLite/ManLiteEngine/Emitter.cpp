@@ -205,7 +205,7 @@ bool Emitter::Update(float dt)
 void Emitter::Draw()
 {
 	std::lock_guard<std::mutex> lock(pool_mutex);
-
+	int it = 0;
 	switch (emitter_type_manager->render_type)
 	{
 	case RenderType::SQUARE:
@@ -240,10 +240,11 @@ void Emitter::Draw()
 				particle.color,
 				false,
 				engine->scene_manager_em->GetCurrentScene().GetGOOrderInLayer(container_go.lock()),
-				0.0f,
+				it,
 				0.0f,
 				true
 			);
+			it++;
 		}
 		break;
 	}
@@ -278,9 +279,10 @@ void Emitter::Draw()
 				particle.color,
 				true,
 				engine->scene_manager_em->GetCurrentScene().GetGOOrderInLayer(container_go.lock()),
-				0.0f,
+				it,
 				particle.scale.x / 2,
 				true);
+			it++;
 		}
 		break;
 	}
@@ -324,8 +326,10 @@ void Emitter::Draw()
 				particle_t,
 				0, 1, 1, 0,
 				pixel_art,
-				engine->scene_manager_em->GetCurrentScene().GetGOOrderInLayer(container_go.lock())
+				engine->scene_manager_em->GetCurrentScene().GetGOOrderInLayer(container_go.lock()),
+				it
 			);
+			it++;
 		}
 
 		break;
@@ -355,7 +359,14 @@ void Emitter::Draw()
 				{ particle.scale.x * tex_w / tex_h * 0.005, particle.scale.y * 0.005 });
 			particle_t = mat * particle_t;
 
-			engine->renderer_em->SubmitText(particle.char_to_print, font, particle_t, particle.color, TextAlignment::TEXT_ALIGN_CENTER);
+			engine->renderer_em->SubmitText(particle.char_to_print,
+				font,
+				particle_t,
+				particle.color,
+				TextAlignment::TEXT_ALIGN_CENTER,
+				engine->scene_manager_em->GetCurrentScene().GetGOOrderInLayer(container_go.lock()),
+				it);
+			it++;
 		}
 		break;
 	default:
@@ -424,7 +435,19 @@ void Emitter::SafeAddParticle()
 	p.final_scale = RandomRange(final_scale_min, final_scale_max);
 	p.wind_effect = RandomRange(wind_effect_min, wind_effect_max);
 	p.Restart();
-	active_indices.push_back(idx);
+	
+	const uint8_t new_alpha = p.final_color.a;
+
+	auto insert_pos = active_indices.begin();
+	while (insert_pos != active_indices.end()) {
+		const Particle& existing_particle = particle_pool[*insert_pos];
+		if (existing_particle.color.a < new_alpha) {
+			break;
+		}
+		++insert_pos;
+	}
+
+	active_indices.insert(insert_pos, idx);
 }
 
 nlohmann::json Emitter::SaveComponent()

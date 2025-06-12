@@ -27,7 +27,10 @@ bool Layer::Update(double dt)
 {
 	bool ret = true;
 
-	for (const auto& item : children_gameobject)
+	auto children_copy = children_gameobject;
+	std::ranges::reverse(children_copy);
+
+	for (const auto& item : children_copy)
 		if (item.get())
 			if (item->IsVisible())
 				item->Draw();

@@ -9,6 +9,7 @@
 #include "SceneManagerEM.h"
 #include "FileDialog.h"
 #include "PanelLoading.h"
+#include "PanelTileMap.h"
 
 #include <imgui.h>
 #include "filesystem"
@@ -89,6 +90,7 @@ bool PanelSaveScene::Update()
 					//
 					if (save_panel_action == SavePanelAction::NEW_SCENE)
 					{
+						app->gui->tile_map_panel->SetMap(nullptr);
 						engine->scene_manager_em->CreateEmptyScene();
 						app->gui->RestartAutoSaveTimer();
 					}
@@ -112,6 +114,7 @@ bool PanelSaveScene::Update()
 							new_scene = std::make_shared<Scene>();
 							auto scene_copy = new_scene;
 							int w = 0, h = 0;
+							app->gui->tile_map_panel->SetMap(nullptr);
 							ResourceManager::GetInstance().LoadTexture("Config\\placeholder.png", w, h);//load placeholder
 							engine->scripting_em->stop_process_instantiate_queue = true;
 							loading_task = std::async(std::launch::async, [this, filePath, scene_copy]() {
@@ -151,6 +154,7 @@ bool PanelSaveScene::Update()
 						//
 						if (save_panel_action == SavePanelAction::NEW_SCENE)
 						{
+							app->gui->tile_map_panel->SetMap(nullptr);
 							engine->scene_manager_em->CreateEmptyScene();
 							app->gui->RestartAutoSaveTimer();
 						}
@@ -175,6 +179,7 @@ bool PanelSaveScene::Update()
 								auto scene_copy = new_scene;
 								int w = 0, h = 0;
 								ResourceManager::GetInstance().LoadTexture("Config\\placeholder.png", w, h);//load placeholder
+								app->gui->tile_map_panel->SetMap(nullptr);
 								engine->scripting_em->stop_process_instantiate_queue = true;
 								loading_task = std::async(std::launch::async, [this, filePath, scene_copy]() {
 									engine->scene_manager_em->LoadSceneToScene(filePath, *scene_copy);
@@ -192,6 +197,7 @@ bool PanelSaveScene::Update()
 					//
 					if (save_panel_action == SavePanelAction::NEW_SCENE)
 					{
+						app->gui->tile_map_panel->SetMap(nullptr);
 						engine->scene_manager_em->CreateEmptyScene();
 						app->gui->RestartAutoSaveTimer();
 					}
@@ -216,6 +222,7 @@ bool PanelSaveScene::Update()
 							auto scene_copy = new_scene;
 							int w = 0, h = 0;
 							ResourceManager::GetInstance().LoadTexture("Config\\placeholder.png", w, h);//load placeholder
+							app->gui->tile_map_panel->SetMap(nullptr);
 							engine->scripting_em->stop_process_instantiate_queue = true;
 							loading_task = std::async(std::launch::async, [this, filePath, scene_copy]() {
 								engine->scene_manager_em->LoadSceneToScene(filePath, *scene_copy);

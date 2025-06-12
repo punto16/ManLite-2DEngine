@@ -562,12 +562,20 @@ void ScriptingEM::ProcessInstantiateQueue()
                 MonoObject* mono_obj = InstantiateClass(data.class_name, script);
                 if (!mono_obj) continue;
                 script->SetMonoObject(mono_obj);
+                bool did_init = script->DidInit();
+                script->SetDidInit(true);
                 script->FinishLoad();
+                script->SetDidInit(did_init);
                 break;
             }
         }
     }
     instantiate_queue.clear();
+
+    if (engine->GetEngineState() == EngineState::PLAY)
+        for (auto script : active_scripts)
+            if (!script->DidInit())
+                script->Init();
 }
 
 void* ScriptingEM::ToMonoParam(const auto& value)

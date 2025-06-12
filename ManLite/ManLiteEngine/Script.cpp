@@ -16,7 +16,6 @@ Script::Script(std::weak_ptr<GameObject> container_go, std::string name, bool en
         mono_object = engine->scripting_em->InstantiateClass(name, this);
         if (mono_object)
         {
-            mono_object = engine->scripting_em->InstantiateClass(name, this);
             did_init = true;
             FinishLoad();
             did_init = false;

@@ -88,11 +88,13 @@ bool GameObject::Update(double dt)
 {
     bool ret = true;
 
+    auto children_copy = children_gameobject;
+
     //update components
     for (const auto& item : components_gameobject) if (item->IsEnabled()) item->Update(dt);
 
     //then, update children game objects
-    for (const auto& item : children_gameobject) if (item->IsEnabled()) item->Update(dt);
+    for (const auto& item : children_copy) if (item->IsEnabled()) item->Update(dt);
 
     return ret;
 }
@@ -138,8 +140,12 @@ bool GameObject::Unpause()
 
 void GameObject::Draw()
 {
+    std::ranges::reverse(components_gameobject);
+
     //draw components
     for (const auto& item : components_gameobject) if (item->IsEnabled()) item->Draw();
+
+    std::ranges::reverse(components_gameobject);
 
     //layer system!! do not iterate children.draw()
 }

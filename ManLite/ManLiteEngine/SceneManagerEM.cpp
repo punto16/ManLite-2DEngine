@@ -632,7 +632,9 @@ void SceneManagerEM::StopSession()
 		engine->StopLogs(true);
 		current_scene->CleanUp();
 		PhysicsEM::Init();
-		if (engine->GetEditorOrBuild()) current_scene = std::move(pre_play_scene);
+		current_scene = std::move(pre_play_scene);
+		current_scene->SetBackGroundColor(current_scene->GetBackGroundColor());
+		current_scene->SetSceneGravity(current_scene->GetSceneGravity());
 		engine->StopLogs(false);
 	}
 	else if (!engine->GetEditorOrBuild())
@@ -716,6 +718,8 @@ bool Scene::Update(double dt)
 		if (item->IsEnabled() && engine->GetEngineState() == EngineState::PLAY)
 			if (!item->Update(dt))
 				return false;
+
+	std::ranges::reverse(layersCopy);
 
 	for (const auto& item : layersCopy)
 		if (item->IsVisible())
@@ -1108,7 +1112,6 @@ void Scene::SetSceneName(std::string name)
 
 ML_Color Scene::GetBackGroundColor()
 {
-	bg_color = engine->renderer_em->GetBackGroundColor();
 	return bg_color;
 }
 
@@ -1120,10 +1123,6 @@ void Scene::SetBackGroundColor(ML_Color c)
 
 vec2f Scene::GetSceneGravity()
 {
-	if (std::this_thread::get_id() != engine->main_thread_id) return world_gravity;
-	if (PhysicsEM::GetWorld())
-		world_gravity = { PhysicsEM::GetWorld()->GetGravity().x, PhysicsEM::GetWorld()->GetGravity().y };
-
 	return world_gravity;
 }
 

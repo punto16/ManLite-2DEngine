@@ -7,6 +7,7 @@
 #include "EngineCore.h"
 #include "RendererEM.h"
 #include "Camera.h"
+#include "SceneManagerEM.h"
 
 #include "mat3f.h"
 
@@ -72,7 +73,14 @@ void TextUI::Draw()
 
         mat3f finalMat = modelMat * localMat;
 
-        engine->renderer_em->SubmitText(text, font, finalMat, color, text_alignment);
+        engine->renderer_em->SubmitText(text,
+            font,
+            finalMat,
+            color,
+            text_alignment,
+            engine->scene_manager_em->GetCurrentScene().GetGOOrderInLayer(container_go.lock()),
+            container_go.lock()->GetComponent<Canvas>()->GetUIElementOrderPosition(this)
+        );
     }
 }
 

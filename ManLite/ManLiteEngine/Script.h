@@ -59,6 +59,9 @@ public:
     void FinishLoad() override;
     void ReloadScript();
 
+    bool DidInit() const { return did_init; }
+    void SetDidInit(bool init) { did_init = init; }
+
 private:
 
     MonoObject* mono_object = nullptr;
