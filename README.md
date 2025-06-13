@@ -26,17 +26,17 @@ ManLite is a modular 2D game engine developed as the capstone project for my Vid
 - **Customizable UI**: UI system
 - **Animation System**: Sprite sheet animations
 
-![ManLiteScreenshot1](https://i.imgur.com/cutDxcF.png)
+![ManLiteScreenshot1](https://raw.githubusercontent.com/punto16/MyPortfolio/refs/heads/main/docs/images/ManLite/ManLite.png)
 
 
-![ManLiteScreenshot2](https://i.imgur.com/hFAaCDw.png)
+![ManLiteScreenshot2](https://raw.githubusercontent.com/punto16/MyPortfolio/refs/heads/main/docs/images/ManLite/ManLite2.png)
 
 
 ## 📚 Documentation
-Explore our growing documentation:
-- Engine Architecture     (in future this will be a link to MY PORTFOLIO website, specifically to Manlite tab)
-- Usable Scripts          (in future this will be a link to MY PORTFOLIO website, specifically to ManLite tab -> usable scripts)
-- Tutorial Series         (in future this will link to a youtube playlist of ManLite tutorials)
+Explore our growing documentation and [WebPage](https://punto16.github.io/MyPortfolio/manlite.html):
+- [Engine Architecture](https://punto16.github.io/MyPortfolio/manlite_architecture.html)
+- [Usable Scripts](https://punto16.github.io/MyPortfolio/manlite_scripts.html)
+- [Tutorial Series](https://www.youtube.com/watch?v=vHi_n5ZdBuM)
 
 ## 🤝 Contributing
 Contributions are welcome! Please see our Contribution Guidelines.
