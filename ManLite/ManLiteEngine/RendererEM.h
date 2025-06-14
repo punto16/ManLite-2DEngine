@@ -213,6 +213,19 @@ public:
 	GLuint rbo;
 	glm::ivec2 fbSize = { DEFAULT_CAM_WIDTH, DEFAULT_CAM_HEIGHT };
 
+    GLuint fbo_scene;        
+    GLuint sceneTexture;     
+    GLuint rbo_scene;        
+
+    GLuint fbo_game;         
+    GLuint gameTexture;      
+    GLuint rbo_game;    
+
+
+    Grid* grid = nullptr;
+    bool renderGrid = true;
+
+
     //collider stuff
     GLuint debugShaderProgram;
     GLuint lineVAO, lineVBO;

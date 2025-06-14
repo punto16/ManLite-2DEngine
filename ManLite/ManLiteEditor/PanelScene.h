@@ -31,12 +31,10 @@ public:
 private:
 
 	GLuint openglTextureID = 0;
-	Grid* grid = nullptr;
 	float cam_speed;
 
 	bool gizmoMode = 1;
 	bool snapEnabled = true;
-	bool render_grid = true;
 	float snapValue = 1.0f;
 	int op;
 };

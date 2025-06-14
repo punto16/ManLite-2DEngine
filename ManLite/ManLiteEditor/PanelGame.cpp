@@ -57,7 +57,7 @@ bool PanelGame::Update()
 
 		//rendering in imgui panel
 		ImGui::GetWindowDrawList()->AddImage(
-			(ImTextureID)(uintptr_t)engine->renderer_em->renderTexture,
+			(ImTextureID)(uintptr_t)engine->renderer_em->gameTexture,
 			image_pos,
 			ImVec2(image_pos.x + scaled_size.x, image_pos.y + scaled_size.y),
 			ImVec2(0, 1),

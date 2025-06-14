@@ -35,7 +35,6 @@ PanelScene::~PanelScene()
 void PanelScene::Start()
 {
 	openglTextureID = engine->renderer_em->renderTexture;
-	grid = new Grid(METERS_TO_PIXELS(1), 32);
 }
 
 bool PanelScene::Update()
@@ -53,8 +52,6 @@ bool PanelScene::Update()
 		DrawTopBarControls();
 		
 		engine->renderer_em->UseSceneViewCam();
-
-		if (render_grid) grid->Draw(engine->renderer_em->GetSceneCamera().GetViewProjMatrix());
 		
 		//movement of scene camera
 		InputToCamMovement();
@@ -81,7 +78,7 @@ bool PanelScene::Update()
 
 		//rendering in imgui panel
 		ImGui::GetWindowDrawList()->AddImage(
-			(ImTextureID)(uintptr_t)engine->renderer_em->renderTexture,
+			(ImTextureID)(uintptr_t)engine->renderer_em->sceneTexture,
 			image_pos,
 			ImVec2(image_pos.x + scaled_size.x, image_pos.y + scaled_size.y),
 			ImVec2(0, 1),
@@ -143,8 +140,6 @@ bool PanelScene::Update()
 bool PanelScene::CleanUp()
 {
 	bool ret = true;
-
-	RELEASE(grid)
 
 	return ret;
 }
@@ -414,7 +409,7 @@ void PanelScene::DrawTopBarControls()
 	ImGui::SameLine();
 	ImGui::Checkbox("Lights##ImGuizmoFunctionality", &engine->renderer_em->rend_lights);
 	ImGui::SameLine();
-	ImGui::Checkbox("Grid##ImGuizmoFunctionality", &render_grid);
+	ImGui::Checkbox("Grid##ImGuizmoFunctionality", &engine->renderer_em->renderGrid);
 	ImGui::SameLine();
 	ImGui::Checkbox("Colliders##ImGuizmoFunctionality", &engine->renderer_em->rend_colliders);
 

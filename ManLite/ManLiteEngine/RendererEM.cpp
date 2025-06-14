@@ -61,6 +61,38 @@ bool RendererEM::Start()
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
 	glEnableVertexAttribArray(2);
 
+
+
+
+	glGenFramebuffers(1, &fbo_scene);
+	glBindFramebuffer(GL_FRAMEBUFFER, fbo_scene);
+	glGenTextures(1, &sceneTexture);
+	glBindTexture(GL_TEXTURE_2D, sceneTexture);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, fbSize.x, fbSize.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, sceneTexture, 0);
+	glGenRenderbuffers(1, &rbo_scene);
+	glBindRenderbuffer(GL_RENDERBUFFER, rbo_scene);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, fbSize.x, fbSize.y);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo_scene);
+
+	// Vista de Game
+	glGenFramebuffers(1, &fbo_game);
+	glBindFramebuffer(GL_FRAMEBUFFER, fbo_game);
+	glGenTextures(1, &gameTexture);
+	glBindTexture(GL_TEXTURE_2D, gameTexture);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, fbSize.x, fbSize.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, gameTexture, 0);
+	glGenRenderbuffers(1, &rbo_game);
+	glBindRenderbuffer(GL_RENDERBUFFER, rbo_game);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, fbSize.x, fbSize.y);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo_game);
+
+
+
 	glGenFramebuffers(1, &fbo_lights);
 	glBindFramebuffer(GL_FRAMEBUFFER, fbo_lights);
 
@@ -310,66 +342,103 @@ void main() {
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
 
+
+	grid = new Grid(METERS_TO_PIXELS(1), 32);
+
+
 	return ret;
 }
 
 bool RendererEM::PreUpdate()
 {
-
-	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-
 	unsigned int w, h;
 	engine->window_em->GetWindowSize(w, h);
-	if (w != fbSize.x || h != fbSize.y) {
-		ResizeFBO(w, h);
+	if (w != fbSize.x || h != fbSize.y) ResizeFBO(w, h);
+
+	if (engine->GetEditorOrBuild()) {
+		glBindFramebuffer(GL_FRAMEBUFFER, fbo_scene);
+		glClearColor(bg_color.r / 255.0f, bg_color.g / 255.0f, bg_color.b / 255.0f, bg_color.a / 255.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		glBindFramebuffer(GL_FRAMEBUFFER, fbo_game);
+		glClearColor(bg_color.r / 255.0f, bg_color.g / 255.0f, bg_color.b / 255.0f, bg_color.a / 255.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
-	glViewport(0, 0, w, h);
-
-	glClearColor(
-		(float)((float)bg_color.r / 255),
-		(float)((float)bg_color.g / 255),
-		(float)((float)bg_color.b / 255),
-		(float)((float)bg_color.a / 255));
-
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+	else {
+		glBindFramebuffer(GL_FRAMEBUFFER, fbo_game);
+		glClearColor(bg_color.r / 255.0f, bg_color.g / 255.0f, bg_color.b / 255.0f, bg_color.a / 255.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	}
 	return true;
 }
 
 bool RendererEM::Update(double dt)
 {
-	bool ret = true;
+	if (engine->GetEditorOrBuild()) {
+		glBindFramebuffer(GL_FRAMEBUFFER, fbo_scene);
+		use_scene_cam = true;
 
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	RenderBatch();
-	RenderDebugColliders();
-	RenderLights();
 
-	glDisable(GL_BLEND);
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		RenderBatch();
+		RenderDebugColliders();
+		RenderLights();
 
-	return ret;
+		if (grid && renderGrid) {
+			grid->Draw(scene_camera.GetViewProjMatrix());
+		}
+
+
+		glDisable(GL_BLEND);
+
+		glBindFramebuffer(GL_FRAMEBUFFER, fbo_game);
+		use_scene_cam = false;
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		RenderBatch();
+		RenderDebugColliders();
+		RenderLights();
+
+
+
+
+
+		glDisable(GL_BLEND);
+	}
+	else {
+		glBindFramebuffer(GL_FRAMEBUFFER, fbo_game);
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		RenderBatch();
+		RenderDebugColliders();
+		RenderLights();
+		glDisable(GL_BLEND);
+	}
+
+	debugCollidersCircleFilled.clear();
+	debugCollidersCircleContorn.clear();
+	debugCollidersRectFilled.clear();
+	debugCollidersRectContorn.clear();
+	spritesToRender.clear();
+	lightsToRender.clear();
+
+	return true;
 }
 
 bool RendererEM::PostUpdate()
 {
-	if (engine->GetEditorOrBuild())
-	{
+	if (engine->GetEditorOrBuild()) {
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		int w, h;
 		SDL_GetWindowSize(engine->window_em->GetSDLWindow(), &w, &h);
 		glViewport(0, 0, w, h);
 	}
-	else
-	{
-		glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo);
+	else {
+		glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo_game);
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-		glBlitFramebuffer(
-			0, 0, fbSize.x, fbSize.y,
-			0, 0, fbSize.x, fbSize.y,
-			GL_COLOR_BUFFER_BIT, GL_NEAREST
-		);
+		glBlitFramebuffer(0, 0, fbSize.x, fbSize.y, 0, 0, fbSize.x, fbSize.y, GL_COLOR_BUFFER_BIT, GL_NEAREST);
 		SDL_GL_SwapWindow(engine->window_em->GetSDLWindow());
 	}
 	return true;
@@ -555,7 +624,7 @@ void RendererEM::RenderBatch()
 		glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, sprites.size());
 	}
 
-	spritesToRender.clear();
+	//spritesToRender.clear();
 	glBindVertexArray(0);
 }
 
@@ -567,6 +636,18 @@ void RendererEM::ResizeFBO(int width, int height)
 
 	glBindTexture(GL_TEXTURE_2D, renderTexture);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+
+
+	glBindTexture(GL_TEXTURE_2D, sceneTexture);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glBindRenderbuffer(GL_RENDERBUFFER, rbo_scene);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
+
+	// Redimensionar FBO de juego
+	glBindTexture(GL_TEXTURE_2D, gameTexture);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glBindRenderbuffer(GL_RENDERBUFFER, rbo_game);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
 
 	glBindTexture(GL_TEXTURE_2D, lightRenderTexture);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
@@ -727,6 +808,9 @@ void RendererEM::RenderLights()
 		return;
 	}
 
+	GLuint currentFBO;
+	glGetIntegerv(GL_FRAMEBUFFER_BINDING, (GLint*)&currentFBO);
+
 	glBindFramebuffer(GL_FRAMEBUFFER, fbo_lights);
 	glViewport(0, 0, fbSize.x, fbSize.y);
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -737,6 +821,16 @@ void RendererEM::RenderLights()
 
 	glUseProgram(lightShaderProgram);
 
+	GLuint mainTexture = 0;
+	if (currentFBO == fbo_scene) {
+		mainTexture = sceneTexture;
+	}
+	else if (currentFBO == fbo_game) {
+		mainTexture = gameTexture;
+	}
+	else {
+		mainTexture = sceneTexture; // Por defecto
+	}
 
 	glm::mat4 viewProj;
 	float zoom = 0;
@@ -778,7 +872,7 @@ void RendererEM::RenderLights()
 	glUniform2fv(glGetUniformLocation(lightShaderProgram, "uScreenSize"), 1, &screenSize[0]);
 
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, renderTexture);
+	glBindTexture(GL_TEXTURE_2D, mainTexture);
 	glUniform1i(glGetUniformLocation(lightShaderProgram, "uMainTexture"), 0);
 
 	glm::vec3 ambientColor(0.0f);
@@ -813,10 +907,10 @@ void RendererEM::RenderLights()
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glDisable(GL_BLEND);
 
-	lightsToRender.clear();
+	//lightsToRender.clear();
 
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo_lights);
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fbo);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, currentFBO);
 	glBlitFramebuffer(
 		0, 0, fbSize.x, fbSize.y,
 		0, 0, fbSize.x, fbSize.y,
@@ -1035,28 +1129,24 @@ void RendererEM::RenderDebugColliders()
 	if (!debugCollidersCircleFilled.empty())
 	{
 		RenderBatchShapes(debugCollidersCircleFilled, filledCircleVAO, GL_TRIANGLE_FAN, filledCircleVertexCount);
-		debugCollidersCircleFilled.clear();
 	}
 
 	if (!debugCollidersCircleContorn.empty())
 	{
 		glLineWidth(2.0f);
 		RenderBatchShapes(debugCollidersCircleContorn, outlineCircleVAO, GL_LINE_LOOP, outlineCircleVertexCount);
-		debugCollidersCircleContorn.clear();
 		glLineWidth(1.0f);
 	}
 
 	if (!debugCollidersRectFilled.empty())
 	{
 		RenderBatchShapes(debugCollidersRectFilled, filledQuadVAO, GL_TRIANGLES, filledQuadVertexCount);
-		debugCollidersRectFilled.clear();
 	}
 
 	if (!debugCollidersRectContorn.empty())
 	{
 		glLineWidth(2.0f);
 		RenderBatchShapes(debugCollidersRectContorn, outlineQuadVAO, GL_LINE_LOOP, outlineQuadVertexCount);
-		debugCollidersRectContorn.clear();
 		glLineWidth(1.0f);
 	}
 }
